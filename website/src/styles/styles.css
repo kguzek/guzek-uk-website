@@ -1,0 +1,70 @@
+@import url("https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Slab:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+::selection,
+select {
+  color: rgb(17, 17, 17);
+  background: rgb(199, 241, 43);
+}
+
+@media screen and (min-width: 961px) {
+  .text {
+    margin-left: 10vw;
+    margin-right: 10vw;
+  }
+}
+
+.text {
+  font-family: "Raleway", sans-serif;
+  font-weight: 500;
+}
+
+button .btn {
+  border-radius: 0px;
+  border-width: 3px;
+  border-color: black;
+  background-color: white;
+  padding: 2px 20px;
+}
+
+.centred {
+  text-align: center;
+}
+
+.link,
+.link:visited {
+  background-image: linear-gradient(45deg, red, blue);
+  background-size: 0% 2px;
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  transition: background-size 300ms ease-in-out;
+
+  color: rgb(0, 255, 42);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.link:hover {
+  background-size: 100% 2px;
+}
+
+/* Presentational styles */
+html {
+  background-color: rgb(26, 26, 26);
+  height: 95%;
+}
+
+body {
+  background-color: rgb(0, 0, 0);
+  color: rgb(18, 161, 42);
+  font-family: "Roboto Slab", serif;
+  font-size: 1.2rem;
+  padding: 10px 2em;
+  margin: 0 5%;
+  min-height: 100%;
+}
+
+@media screen and (max-width: 960px) {
+  body {
+    margin: 0;
+  }
+}
