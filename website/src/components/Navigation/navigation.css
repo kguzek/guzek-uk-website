@@ -86,10 +86,15 @@
 
 .langSelector button.active {
   color: black;
+  text-decoration: none;
   background: rgb(199, 241, 43);
   outline-style: solid;
   outline-color: rgb(199, 241, 43);
   outline-width: 1%;
+}
+
+.langOptions {
+  display: inline-block;
 }
 
 @media screen and (min-width: 961px) {
