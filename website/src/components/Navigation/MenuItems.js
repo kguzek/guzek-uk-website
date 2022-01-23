@@ -9,11 +9,11 @@ const MenuItems = [
 		url: "/konrad",
 		className: "nav-link",
 	},
-	{
+	/*{
 		title: "404",
 		url: "/NotFound",
 		className: "nav-link",
-	},
+	},*/
 ]
 
 export default MenuItems;
