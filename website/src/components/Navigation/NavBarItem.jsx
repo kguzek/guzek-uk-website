@@ -1,13 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 function NavBarItem({ item, onClick, activePage }) {
   const path = useLocation().pathname;
   // check if the active page name is provided
   const isActive = activePage
     ? item.pageName === activePage
-    : item.url === path;
+    : useLocation().startswith(item.url);
   return (
     <a
       href={item.url}
