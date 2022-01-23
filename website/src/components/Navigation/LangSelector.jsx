@@ -6,7 +6,6 @@ function LangSelector({ selectedLanguage, changeLang }) {
   const data = Translations[selectedLanguage];
   return (
     <div className="centred langSelector">
-      <div className="langOptions">
         {Object.keys(Translations).map((lang) => (
           <button
             key={lang}
@@ -16,7 +15,6 @@ function LangSelector({ selectedLanguage, changeLang }) {
             {lang}
           </button>
         ))}
-      </div>
       <small>{data.language}</small>
     </div>
   );

@@ -93,10 +93,6 @@
   outline-width: 1%;
 }
 
-.langOptions {
-  display: inline-block;
-}
-
 @media screen and (min-width: 961px) {
   .hamburger {
     display: none;
