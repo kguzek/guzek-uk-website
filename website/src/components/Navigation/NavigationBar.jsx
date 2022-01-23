@@ -5,7 +5,7 @@ import MenuItems from "./MenuItems";
 import NavBarItem from "./NavBarItem";
 import LangSelector from "./LangSelector";
 import Hamburger from "./Hamburger";
-import "./navigation.css";
+import "../../styles/navigation.css";
 
 function NavigationBar({ data, selectedLanguage, changeLang }) {
   const [menuOpen, setMenuOpen] = useState(false);
