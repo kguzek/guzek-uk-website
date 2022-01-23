@@ -62,6 +62,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home data={data} />} />
           <Route path="/konrad" element={<Konrad data={data} />} />
+          <Route path="/error/404" element={<NotFound data={data} />} />
           <Route path="*" element={<NotFound data={data} />} />
         </Routes>
         <Footer data={data} />
