@@ -9,7 +9,19 @@ import Konrad from "./pages/Konrad";
 import NotFound from "./pages/NotFound";
 
 function App() {
-  const [language, setLanguage] = useState("EN");
+  // check if user has set the language before
+  let userLang = localStorage.getItem("userLanguage");
+  // check if the URL has the language set
+  if (typeof URLSearchParams !== "undefined") {
+    const queryParams = new URLSearchParams(window.location.search);
+    const pageLang = queryParams.get("lang");
+    if (pageLang in Translations) {
+      userLang = pageLang;
+    }
+  } else {
+    console.log("Your browser does not support URLSearchParams.");
+  }
+  const [language, setLanguage] = useState(userLang || "EN");
   const data = Translations[language];
   useEffect(() => {}, [language]);
 
@@ -20,6 +32,22 @@ function App() {
       /[\s\u00A0]/,
       ""
     );
+    if (!(lang in Translations)) {
+      return;
+    }
+    // set user preferences in local storage
+    localStorage.setItem("userLanguage", lang);
+
+    // ignore the "lang" parameter in URL if it's set
+    const queryParams = new URLSearchParams(window.location.search);
+    queryParams.delete("lang");
+    const queryParamsString = queryParams.toString() ? `?${queryParams}` : "";
+    window.history.replaceState(
+      {},
+      document.title,
+      document.location.pathname + queryParamsString
+    );
+    // update page state setting
     setLanguage(lang);
   }
 
