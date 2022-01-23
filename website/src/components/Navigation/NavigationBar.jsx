@@ -15,11 +15,9 @@ function NavigationBar({ data, selectedLanguage, changeLang }) {
   }
 
   useEffect(() => {
-    console.log("Menu is open: " + menuOpen);
   }, [menuOpen]);
 
   function closeMenu() {
-    console.log("Closing menu...");
     setMenuOpen(false);
   }
 
