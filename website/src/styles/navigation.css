@@ -48,6 +48,8 @@
 
 .nav-link:hover {
   opacity: 85%;
+  cursor: pointer;
+  user-select: none;
 }
 
 .nav-link:active {

@@ -51,6 +51,34 @@ function App() {
     setLanguage(lang);
   }
 
+  const subdomainPaths = {
+    "/konrad": "konrad",
+  };
+
+  for (let path of Object.keys(subdomainPaths)) {
+    const pathname = window.location.pathname;
+    if (!pathname.startsWith(path)) {
+      continue;
+    }
+    const newHostname = `${subdomainPaths[path]}.guzek.uk`;
+    const newPathname = pathname.slice(path.length, pathname.length);
+    window.location = `http://${newHostname}${newPathname}${window.location.search}`;
+    break;
+  }
+
+  const subdomains = {
+    konrad: <Konrad data={data} />,
+  };
+
+  let pageName;
+  let page;
+
+  const hostnames = window.location.host.split(".");
+  if (hostnames[0] in subdomains) {
+    pageName = hostnames[0];
+    page = subdomains[pageName];
+  }
+
   return (
     <Router>
       <div className="App">
@@ -58,13 +86,15 @@ function App() {
           data={data}
           selectedLanguage={language}
           changeLang={changeLang}
+          pageName={pageName}
         />
-        <Routes>
-          <Route path="/" element={<Home data={data} />} />
-          <Route path="/konrad" element={<Konrad data={data} />} />
-          <Route path="/error/404" element={<NotFound data={data} />} />
-          <Route path="*" element={<NotFound data={data} />} />
-        </Routes>
+        {page || (
+          <Routes>
+            <Route path="/" element={<Home data={data} />} />
+            <Route path="/konrad" element={<Konrad data={data} />} />
+            <Route path="*" element={<NotFound data={data} />} />
+          </Routes>
+        )}
         <Footer data={data} />
       </div>
     </Router>

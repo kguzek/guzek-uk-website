@@ -7,15 +7,14 @@ import LangSelector from "./LangSelector";
 import Hamburger from "./Hamburger";
 import "../../styles/navigation.css";
 
-function NavigationBar({ data, selectedLanguage, changeLang }) {
+function NavigationBar({ data, selectedLanguage, changeLang, pageName }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   function toggleMenu(_) {
     setMenuOpen(!menuOpen);
   }
 
-  useEffect(() => {
-  }, [menuOpen]);
+  useEffect(() => {}, [menuOpen]);
 
   function closeMenu() {
     setMenuOpen(false);
@@ -30,7 +29,11 @@ function NavigationBar({ data, selectedLanguage, changeLang }) {
           {MenuItems.map((item, index) => {
             return (
               <li key={index}>
-                <NavBarItem item={item} onClick={closeMenu} />
+                <NavBarItem
+                  item={item}
+                  onClick={closeMenu}
+                  activePage={pageName}
+                />
               </li>
             );
           })}
@@ -50,6 +53,7 @@ NavigationBar.propTypes = {
   data: PropTypes.object,
   selectedLanguage: PropTypes.string,
   changeLang: PropTypes.func,
+  pageName: PropTypes.string,
 };
 
 export default NavigationBar;
