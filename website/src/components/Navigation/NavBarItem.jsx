@@ -2,14 +2,13 @@ import React from "react";
 import PropTypes from "prop-types";
 
 function NavBarItem({ item, onClick, activePage }) {
-  const url = `https://${item.url}`
   // check if the active page name is provided
   const isActive = activePage
     ? item.pageName === activePage
-    : window.location.toString().startsWith(url);
+    : window.location.pathname.startsWith(item.url);
   return (
     <a
-      href={url}
+      href={item.url}
       onClick={onClick}
       className={item.className + (isActive ? " active" : "")}
     >

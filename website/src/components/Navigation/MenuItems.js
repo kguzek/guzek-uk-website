@@ -1,13 +1,13 @@
 const MenuItems = [
 	{
 		title: "Home",
-		url: "guzek.uk/",
+		url: "https://guzek.uk/",
 		pageName: "home",
 		className: "nav-link",
 	},
 	{
 		title: "Konrad",
-		url: "konrad.guzek.uk/",
+		url: "https://konrad.guzek.uk/",
 		pageName: "konrad",
 		className: "nav-link",
 	},

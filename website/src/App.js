@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import "./styles/styles.css";
 import Translations from "./Translations";
 import NavigationBar from "./components/Navigation/NavigationBar";
@@ -10,20 +10,20 @@ import NotFound from "./pages/NotFound";
 
 function App() {
   // check if user has set the language before
-  let userLang = localStorage.getItem("userLanguage");
+  const [cookies, setCookie] = useCookies(["language"]);
+  let language = cookies.language || "EN";
+
   // check if the URL has the language set
   if (typeof URLSearchParams !== "undefined") {
     const queryParams = new URLSearchParams(window.location.search);
     const pageLang = queryParams.get("lang");
     if (pageLang in Translations) {
-      userLang = pageLang;
+      language = pageLang;
     }
   } else {
     console.log("Your browser does not support URLSearchParams.");
   }
-  const [language, setLanguage] = useState(userLang || "EN");
   const data = Translations[language];
-  useEffect(() => {}, [language]);
 
   function changeLang(e) {
     e.preventDefault();
@@ -35,8 +35,6 @@ function App() {
     if (!(lang in Translations)) {
       return;
     }
-    // set user preferences in local storage
-    localStorage.setItem("userLanguage", lang);
 
     // ignore the "lang" parameter in URL if it's set
     const queryParams = new URLSearchParams(window.location.search);
@@ -48,11 +46,11 @@ function App() {
       document.location.pathname + queryParamsString
     );
     // update page state setting
-    setLanguage(lang);
+    setCookie("language", lang, { path: "/", sameSite: "lax" });
   }
 
   const subdomainPaths = {
-    "/konrad": "konrad",
+    // "/konrad": "konrad",
   };
 
   for (let path of Object.keys(subdomainPaths)) {
