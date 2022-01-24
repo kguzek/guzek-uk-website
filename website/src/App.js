@@ -44,8 +44,8 @@ function App() {
     const queryParamsString = queryParams.toString() ? `?${queryParams}` : "";
     window.history.replaceState(
       {},
-      document.title,
-      document.location.pathname + queryParamsString
+      window.title,
+      window.location.pathname + queryParamsString
     );
     // update page state setting
     setCookie("language", lang, { path: "/", sameSite: "lax" });
