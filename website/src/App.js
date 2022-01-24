@@ -13,6 +13,8 @@ function App() {
   const [cookies, setCookie] = useCookies(["language"]);
   let language = cookies.language || "EN";
 
+  console.log(cookies);
+  
   // check if the URL has the language set
   if (typeof URLSearchParams !== "undefined") {
     const queryParams = new URLSearchParams(window.location.search);
@@ -50,7 +52,8 @@ function App() {
   }
 
   const subdomainPaths = {
-    // "/konrad": "konrad",
+    "/home": "www",
+    "/konrad": "konrad",
   };
 
   for (let path of Object.keys(subdomainPaths)) {
@@ -65,6 +68,7 @@ function App() {
   }
 
   const subdomains = {
+    www: <Home data={data} />,
     konrad: <Konrad data={data} />,
   };
 
@@ -89,6 +93,7 @@ function App() {
         {page || (
           <Routes>
             <Route path="/" element={<Home data={data} />} />
+            <Route path="/home" element={<Home data={data} />} />
             <Route path="/konrad" element={<Konrad data={data} />} />
             <Route path="*" element={<NotFound data={data} />} />
           </Routes>

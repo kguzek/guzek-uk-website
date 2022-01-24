@@ -5,7 +5,7 @@ function NavBarItem({ item, onClick, activePage }) {
   // check if the active page name is provided
   const isActive = activePage
     ? item.pageName === activePage
-    : window.location.pathname.startsWith(item.url);
+    : window.location.pathname === item.url;
   return (
     <a
       href={item.url}

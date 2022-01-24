@@ -4,7 +4,7 @@ import favicon from "./favicon.ico";
 
 function Logo({ size = 80 }) {
   return (
-    <a href={"https://guzek.uk/"}>
+    <a href={"https://www.guzek.uk/"}>
       <img src={favicon} width={size} height={size} alt="Guzek UK Logo" />
     </a>
   );
