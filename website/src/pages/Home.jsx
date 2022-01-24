@@ -7,7 +7,7 @@ function Home({ data }) {
   useEffect(() => {
     document.title = data.title;
   }, [data.title]);
-  window.location === HOMEPAGE_URL || (window.location = HOMEPAGE_URL);
+  window.location.toString() === HOMEPAGE_URL || (window.location = HOMEPAGE_URL);
   return (
     <div className="text">
       <p>{data.bodyHome}</p>
