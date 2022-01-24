@@ -63,7 +63,9 @@ function App() {
     }
     const newHostname = `${subdomainPaths[path]}.guzek.uk`;
     const newPathname = pathname.slice(path.length, pathname.length);
-    window.location = `https://${newHostname}${newPathname}${window.location.search}`;
+    const newURL = `https://${newHostname}${newPathname}${window.location.search}`;
+    console.log("New URL: " + newURL);
+    window.location = newURL;
     break;
   }
 
