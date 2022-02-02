@@ -1,19 +1,19 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 
-function NavBarItem({ item, onClick, activePage }) {
+function NavBarItem({ item, onClick }) {
   // check if the active page name is provided
-  const isActive = activePage
-    ? item.pageName === activePage
-    : window.location.pathname === item.url;
+  const path = window.location.pathname;
+  const isActive = item.url === "/" ? path === "/" : path.startsWith(item.url);
   return (
-    <a
-      href={item.url}
+    <Link
+      to={item.url}
       onClick={onClick}
-      className={item.className + (isActive ? " active" : "")}
+      className={"nav-link" + (isActive ? " active" : "")}
     >
       {item.title}
-    </a>
+    </Link>
   );
 }
 

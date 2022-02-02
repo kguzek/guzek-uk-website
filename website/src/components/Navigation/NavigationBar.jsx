@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import Logo from "../../media/Logo";
-import MenuItems from "./MenuItems";
+import MenuItems from "./NavBarItems";
 import NavBarItem from "./NavBarItem";
 import LangSelector from "./LangSelector";
 import Hamburger from "./Hamburger";

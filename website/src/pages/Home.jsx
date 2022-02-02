@@ -5,6 +5,7 @@ function Home({ data }) {
   useEffect(() => {
     document.title = data.title;
   }, [data.title]);
+
   return (
     <div className="text">
       <p>{data.bodyHome}</p>

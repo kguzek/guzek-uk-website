@@ -52,10 +52,6 @@
   user-select: none;
 }
 
-.nav-link:active {
-  opacity: 70%;
-}
-
 .nav-link.active {
   font-weight: 700;
   color: white;

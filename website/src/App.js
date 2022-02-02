@@ -1,5 +1,6 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useCookies } from "react-cookie";
+import { useState, useEffect } from "react";
+import { Routes, Route, useSearchParams, useNavigate } from "react-router-dom";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import "./styles/styles.css";
 import Translations from "./Translations";
 import NavigationBar from "./components/Navigation/NavigationBar";
@@ -9,100 +10,91 @@ import Konrad from "./pages/Konrad";
 import NotFound from "./pages/NotFound";
 
 function App() {
-  // check if user has set the language before
-  const [cookies, setCookie] = useCookies(["language"]);
-  let language = cookies.language || "EN";
+  const [userLanguage, setUserLanguage] = useState("EN");
+  const [searchParams, setSearchParams] = useSearchParams({});
 
-  console.log(cookies);
-  
-  // check if the URL has the language set
-  if (typeof URLSearchParams !== "undefined") {
-    const queryParams = new URLSearchParams(window.location.search);
-    const pageLang = queryParams.get("lang");
-    if (pageLang in Translations) {
-      language = pageLang;
-    }
-  } else {
-    console.log("Your browser does not support URLSearchParams.");
+  function removeLanguageParam() {
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.delete("lang");
+    setSearchParams(newSearchParams);
   }
-  const data = Translations[language];
 
-  function changeLang(e) {
-    e.preventDefault();
-    // get the button text and remove whitespaces as well as Non-Breaking Spaces (&nbsp;)
-    const lang = (e.target.textContent || e.target.innerText).replace(
-      /[\s\u00A0]/,
-      ""
-    );
-    if (!(lang in Translations)) {
+  useEffect(() => {
+    // check if the subdomain is anything other than www
+    const host = window.location.host;
+    if (!host.startsWith("www")) {
+      // redirects abc.domain.tld/foo -> www.domain.tld/abc/foo
+      const domain = host.includes(":") ? "localhost:3000" : "guzek.uk";
+      let subdomain = host.split(domain, 1)[0];
+      subdomain && // prepend a forward slash and remove the trailing dot
+        (subdomain = "/" + subdomain.substring(0, subdomain.length - 1));
+      const path = subdomain + window.location.pathname;
+      // prepend the original subdomain as the root subdirectory
+      const newLocation = `${window.location.protocol}//www.${domain}${path}`;
+      window.location = newLocation;
       return;
     }
 
-    // ignore the "lang" parameter in URL if it's set
-    const queryParams = new URLSearchParams(window.location.search);
-    queryParams.delete("lang");
-    const queryParamsString = queryParams.toString() ? `?${queryParams}` : "";
-    window.history.replaceState(
-      {},
-      window.title,
-      window.location.pathname + queryParamsString
-    );
-    // update page state setting
-    setCookie("language", lang, { path: "/", sameSite: "lax" });
-  }
-
-  const subdomainPaths = {
-    "/home": "www",
-    "/konrad": "konrad",
-  };
-
-  for (let path of Object.keys(subdomainPaths)) {
-    const pathname = window.location.pathname;
-    if (!pathname.startsWith(path)) {
-      continue;
+    // check if the URL contains the lang parameter
+    const lang = searchParams.get("lang");
+    if (lang) {
+      // it does; clear the lang parameter
+      removeLanguageParam();
+      const newPageContent = Translations[lang];
+      if (newPageContent) {
+        // set the page content to the translations corresponding to the lang parameter
+        return setUserLanguage(lang);
+      }
     }
-    const newHostname = `${subdomainPaths[path]}.guzek.uk`;
-    const newPathname = pathname.slice(path.length, pathname.length);
-    const newURL = `https://${newHostname}${newPathname}${window.location.search}`;
-    console.log("New URL: " + newURL);
-    window.location = newURL;
-    break;
+
+    // the search parameter language was invalid or not set
+    AsyncStorage.getItem("userLanguage").then((lang) => {
+      console.log("Got language from storage:", lang);
+      if (lang && lang !== "undefined") {
+        setUserLanguage(lang);
+      }
+    }, console.log);
+  }, []);
+
+  useEffect(() => {
+    // update user language preferences so they are saved on refresh
+    AsyncStorage.setItem("userLanguage", userLanguage).then();
+  }, [userLanguage]);
+
+  /** Event handler for when the user selects one of the lanugage options. */
+  function changeLang(e) {
+    e.preventDefault();
+    // get the button text and remove whitespaces as well as Non-Breaking Spaces (&nbsp;)
+    const elemText = e.target.textContent || e.target.innerText;
+    const lang = elemText.replace(/[\s\u00A0]/, "");
+    if (Translations[lang]) {
+      setUserLanguage(lang);
+    }
   }
 
-  const subdomains = {
-    www: <Home data={data} />,
-    konrad: <Konrad data={data} />,
-  };
-
-  let pageName;
-  let page;
-
-  const hostnames = window.location.host.split(".");
-  if (hostnames[0] in subdomains) {
-    pageName = hostnames[0];
-    page = subdomains[pageName];
-  }
-
-  return (
-    <Router>
-      <div className="App">
-        <NavigationBar
-          data={data}
-          selectedLanguage={language}
-          changeLang={changeLang}
-          pageName={pageName}
-        />
-        {page || (
-          <Routes>
-            <Route path="/" element={<Home data={data} />} />
-            <Route path="/home" element={<Home data={data} />} />
-            <Route path="/konrad" element={<Konrad data={data} />} />
-            <Route path="*" element={<NotFound data={data} />} />
-          </Routes>
-        )}
-        <Footer data={data} />
+  const pageContent = Translations[userLanguage];
+  // I don't know if this is possible but better to have a failsafe
+  if (!pageContent) {
+    return (
+      <div className="centred">
+        <p>"Loading Guzek UK..."</p>
       </div>
-    </Router>
+    );
+  }
+  return (
+    <div className="App">
+      <NavigationBar
+        data={pageContent}
+        selectedLanguage={userLanguage}
+        changeLang={changeLang}
+      />
+      <Routes>
+        <Route path="/" element={<Home data={pageContent} />} />
+        <Route path="konrad" element={<Konrad data={pageContent} />} />
+        <Route path="*" element={<NotFound data={pageContent} />} />
+      </Routes>
+      <Footer data={pageContent} />
+    </div>
   );
 }
 
