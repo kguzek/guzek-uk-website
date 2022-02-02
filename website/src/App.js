@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
-import { Routes, Route, useSearchParams, useNavigate } from "react-router-dom";
+import { Routes, Route, useSearchParams } from "react-router-dom";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import "./styles/styles.css";
-import Translations from "./Translations";
-import NavigationBar from "./components/Navigation/NavigationBar";
-import Footer from "./components/Footer/Footer";
+import Translations from "./translations";
+import NavigationBar from "./components/NavigationBar";
+import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Konrad from "./pages/Konrad";
 import NotFound from "./pages/NotFound";
 
 function App() {
   const [userLanguage, setUserLanguage] = useState("EN");
+  const [redirecting, setRedirecting] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams({});
 
   function removeLanguageParam() {
@@ -32,7 +33,7 @@ function App() {
       // prepend the original subdomain as the root subdirectory
       const newLocation = `${window.location.protocol}//www.${domain}${path}`;
       window.location = newLocation;
-      return;
+      return setRedirecting(true);
     }
 
     // check if the URL contains the lang parameter
@@ -49,7 +50,7 @@ function App() {
 
     // the search parameter language was invalid or not set
     AsyncStorage.getItem("userLanguage").then((lang) => {
-      console.log("Got language from storage:", lang);
+      // console.log("Got language from storage:", lang);
       if (lang && lang !== "undefined") {
         setUserLanguage(lang);
       }
@@ -73,8 +74,7 @@ function App() {
   }
 
   const pageContent = Translations[userLanguage];
-  // I don't know if this is possible but better to have a failsafe
-  if (!pageContent) {
+  if (!pageContent || redirecting) {
     return (
       <div className="centred">
         <p>"Loading Guzek UK..."</p>

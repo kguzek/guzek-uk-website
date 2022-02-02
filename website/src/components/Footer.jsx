@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Logo from "../../media/Logo";
-import "./footer.css";
+import Logo from "../media/Logo";
+import "../styles/footer.css";
 
 function Footer({ data }) {
   const copyrightSymbol = "\u00a9";
