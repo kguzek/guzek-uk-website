@@ -23,21 +23,6 @@ function App() {
   }
 
   useEffect(() => {
-    // check if the subdomain is anything other than www
-    const host = window.location.host;
-    if (!host.startsWith("www")) {
-      // redirects abc.domain.tld/foo -> www.domain.tld/abc/foo
-      const domain = host.includes(":") ? "localhost:3000" : "guzek.uk";
-      let subdomain = host.split(domain, 1)[0];
-      subdomain && // prepend a forward slash and remove the trailing dot
-        (subdomain = "/" + subdomain.substring(0, subdomain.length - 1));
-      const path = subdomain + window.location.pathname;
-      // prepend the original subdomain as the root subdirectory
-      const newLocation = `${window.location.protocol}//www.${domain}${path}`;
-      window.location = newLocation;
-      return setRedirecting(true);
-    }
-
     // check if the URL contains the lang parameter
     const lang = searchParams.get("lang");
     if (lang) {
@@ -86,8 +71,8 @@ function App() {
   const pageContent = Translations[userLanguage];
   if (!pageContent || !menuItems || redirecting) {
     return (
-      <div className="centred">
-        <p>"Loading Guzek UK..."</p>
+      <div className="centred" style={{ marginTop: "35vh" }}>
+        <h2>Loading Guzek UK...</h2>
       </div>
     );
   }
