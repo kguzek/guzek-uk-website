@@ -2,8 +2,8 @@
 
 ::selection,
 select {
-  color: rgb(17, 17, 17);
-  background: rgb(199, 241, 43);
+  color: #111111;
+  background: #c7f12b;
 }
 
 @media screen and (min-width: 961px) {
@@ -21,8 +21,8 @@ select {
 button .btn {
   border-radius: 0px;
   border-width: 3px;
-  border-color: black;
-  background-color: white;
+  border-color: #000000;
+  background-color: #ffffff;
   padding: 2px 20px;
 }
 
@@ -32,13 +32,13 @@ button .btn {
 
 .link,
 .link:visited {
-  background-image: linear-gradient(45deg, red, blue);
+  background-image: linear-gradient(45deg, #ff0000, #0000ff);
   background-size: 0% 2px;
   background-repeat: no-repeat;
   background-position: left bottom;
   transition: background-size 300ms ease-in-out;
 
-  color: rgb(0, 255, 42);
+  color: #00ff2a;
   text-decoration: none;
   font-weight: bold;
 }
@@ -49,13 +49,13 @@ button .btn {
 
 /* Presentational styles */
 html {
-  background-color: rgb(26, 26, 26);
+  background-color: #1a1a1a;
   height: 95%;
 }
 
 body {
-  background-color: rgb(0, 0, 0);
-  color: rgb(18, 161, 42);
+  background-color: #000000;
+  color: #12a12a;
   font-family: "Roboto Slab", serif;
   font-size: 1.2rem;
   padding: 10px 2em;
