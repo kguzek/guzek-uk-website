@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import Logo from "../media/Logo";
 import Translations from "../translations";
 import "../styles/navigation.css";
-import { fetchFromAPI } from "../firebase";
+import { fetchFromAPI } from "../backend";
 
 function NavigationBar({ data, selectedLanguage, changeLang, pageName }) {
   const [menuOpen, setMenuOpen] = useState(false);
