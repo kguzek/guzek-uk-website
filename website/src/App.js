@@ -8,10 +8,12 @@ import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Konrad from "./pages/Konrad";
 import NotFound from "./pages/NotFound";
+import { fetchFromAPI } from "./backend";
 
 function App() {
   const [userLanguage, setUserLanguage] = useState("EN");
   const [redirecting, setRedirecting] = useState(false);
+  const [menuItems, setMenuItems] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams({});
 
   function removeLanguageParam() {
@@ -55,6 +57,14 @@ function App() {
         setUserLanguage(lang);
       }
     }, console.log);
+
+    // retrieve the menu items from the API
+    if (!menuItems) {
+      fetchFromAPI("pages").then(
+        (res) => res.ok && res.json().then(setMenuItems),
+        (error) => console.log("Error fetching menu items.", error)
+      );
+    }
   }, []);
 
   useEffect(() => {
@@ -74,7 +84,7 @@ function App() {
   }
 
   const pageContent = Translations[userLanguage];
-  if (!pageContent || redirecting) {
+  if (!pageContent || !menuItems || redirecting) {
     return (
       <div className="centred">
         <p>"Loading Guzek UK..."</p>
@@ -87,6 +97,7 @@ function App() {
         data={pageContent}
         selectedLanguage={userLanguage}
         changeLang={changeLang}
+        menuItems={menuItems}
       />
       <Routes>
         <Route path="/" element={<Home data={pageContent} />} />
