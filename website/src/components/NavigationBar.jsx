@@ -1,24 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import Logo from "../media/Logo";
 import Translations from "../translations";
 import "../styles/navigation.css";
-import { fetchFromAPI } from "../backend";
 
-function NavigationBar({ data, selectedLanguage, changeLang, pageName }) {
+function NavigationBar({
+  data,
+  selectedLanguage,
+  changeLang,
+  pageName,
+  menuItems = [],
+}) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [menuItems, setMenuItems] = useState(null);
-
-  useEffect(() => {
-    if (menuItems) {
-      return;
-    }
-    fetchFromAPI("pages").then(
-        (res) => res.ok && res.json().then(setMenuItems),
-        (error) => console.log("Error fetching menu items.", error)
-      );
-  }, []);
 
   return (
     <div className="ribbon">
