@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import Logo from "../media/Logo";
@@ -7,35 +7,50 @@ import "../styles/navigation.css";
 
 function NavigationBar({
   data,
+  user,
   selectedLanguage,
   changeLang,
-  pageName,
-  menuItems = [],
+  menuItems,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const winDims = useWindowDimensions();
+
+  // don't render items that are set as 'hidden' in the nav bar
+  const visibleItems = (menuItems || []).filter((item) => !item.hidden);
+
+  // create the array of nav bar page elements
+  const menuItemElements = visibleItems.map((item, index) => (
+    <li key={index}>
+      <NavBarItem item={item} setMenuOpen={setMenuOpen} />
+    </li>
+  ));
+
+  const displayStyle =
+    winDims.width > 800 ? "desktop" : winDims.width > 550 ? "medium" : "mobile";
+  const userWidget = (
+    <UserWidget
+      data={data}
+      user={user}
+      displayStyle={displayStyle}
+      setMenuOpen={setMenuOpen}
+    />
+  );
 
   return (
     <div className="ribbon">
       <nav className="navigation">
         <Logo size={80} />
         <h1>{data.header}</h1>
-        <ul className={"nav-items " + (menuOpen ? "open" : "closed")}>
-          {(menuItems || []).map((item, index) => {
-            return (
-              <li key={index}>
-                <NavBarItem
-                  item={item}
-                  onClick={() => setMenuOpen(false)}
-                  activePage={pageName}
-                />
-              </li>
-            );
-          })}
+        <ul className={`${menuOpen ? "open" : "closed"} no-select nav-items `}>
+          {displayStyle === "mobile" && userWidget}
+          {menuItemElements}
           <LangSelector
             selectedLanguage={selectedLanguage}
             changeLang={changeLang}
           />
+          {displayStyle === "desktop" && userWidget}
         </ul>
+        {displayStyle === "medium" && userWidget}
         <Hamburger menuOpen={menuOpen} onClick={() => setMenuOpen(!menuOpen)} />
       </nav>
       <hr />
@@ -43,47 +58,31 @@ function NavigationBar({
   );
 }
 
-NavigationBar.propTypes = {
-  data: PropTypes.object,
-  selectedLanguage: PropTypes.string,
-  changeLang: PropTypes.func,
-  pageName: PropTypes.string,
-};
-
-function NavBarItem({ item, onClick }) {
-  if (item.hidden) {
-    return null;
-  }
-
+function NavBarItem({ item, setMenuOpen }) {
   // check if the active page name is provided
   const path = window.location.pathname;
+  // handle edge case for index page ("/")
   const isActive = item.url === "/" ? path === "/" : path.startsWith(item.url);
   return (
     <Link
       to={item.url}
-      onClick={onClick}
-      className={"nav-link" + (isActive ? " active" : "")}
+      onClick={() => setMenuOpen(false)}
+      className={"clickable nav-link" + (isActive ? " active" : "")}
     >
       {item.title}
     </Link>
   );
 }
 
-NavBarItem.propTypes = {
-  item: PropTypes.object,
-  onClick: PropTypes.func,
-  activePage: PropTypes.string,
-};
-
 function LangSelector({ selectedLanguage, changeLang }) {
   const data = Translations[selectedLanguage];
   return (
-    <div className="centred langSelector">
+    <div className="centred lang-selector">
       {Object.keys(Translations).map((lang) => (
         <button
           key={lang}
           onClick={changeLang}
-          className={selectedLanguage === lang ? "active" : null}
+          className={selectedLanguage === lang ? "active" : "clickable"}
         >
           {lang}
         </button>
@@ -93,10 +92,24 @@ function LangSelector({ selectedLanguage, changeLang }) {
   );
 }
 
-LangSelector.propTypes = {
-  selectedLanguage: PropTypes.string,
-  changeLang: PropTypes.func,
-};
+function UserWidget({ data, user, displayStyle, setMenuOpen }) {
+  const imgUrl =
+    (user && user.url) ||
+    "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/default-avatar.png";
+  const active = window.location.pathname.startsWith("/profile")
+    ? "active"
+    : "";
+  return (
+    <Link
+      to="/profile"
+      className={`${active} clickable ${displayStyle} nav-link user-widget`}
+      onClick={() => setMenuOpen(false)}
+    >
+      <img alt="User avatar" className="user-avatar" src={imgUrl} />
+      <b className={"user-name"}>{(user && user.name) || data.guest}</b>
+    </Link>
+  );
+}
 
 function Hamburger({ menuOpen, onClick }) {
   return (
@@ -106,8 +119,55 @@ function Hamburger({ menuOpen, onClick }) {
   );
 }
 
+NavigationBar.propTypes = {
+  data: PropTypes.object.isRequired,
+  user: PropTypes.object,
+  selectedLanguage: PropTypes.string.isRequired,
+  changeLang: PropTypes.func.isRequired,
+  menuItems: PropTypes.array,
+};
+
+NavBarItem.propTypes = {
+  item: PropTypes.object.isRequired,
+  setMenuOpen: PropTypes.func.isRequired,
+};
+
+LangSelector.propTypes = {
+  selectedLanguage: PropTypes.string.isRequired,
+  changeLang: PropTypes.func.isRequired,
+};
+
+UserWidget.propTypes = {
+  data: PropTypes.object.isRequired,
+  user: PropTypes.object,
+  dispayStyle: PropTypes.oneOf(["desktop", "medium", "mobile"]),
+  setMenuOpen: PropTypes.func.isRequired,
+};
+
 Hamburger.propTypes = {
+  menuOpen: PropTypes.bool,
   onClick: PropTypes.func,
 };
+
+function useWindowDimensions() {
+  function getWindowDimensions() {
+    return { width: window.innerWidth, height: window.innerHeight };
+  }
+
+  const [windowDimensions, setWindowDimensions] = useState(
+    getWindowDimensions()
+  );
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowDimensions(getWindowDimensions());
+    }
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return windowDimensions;
+}
 
 export default NavigationBar;

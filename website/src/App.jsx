@@ -9,10 +9,11 @@ import Home from "./pages/Home";
 import Konrad from "./pages/Konrad";
 import NotFound from "./pages/NotFound";
 import { fetchFromAPI } from "./backend";
+import Profile from "./pages/Profile";
 
 function App() {
   const [userLanguage, setUserLanguage] = useState("EN");
-  const [redirecting, setRedirecting] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
   const [menuItems, setMenuItems] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams({});
 
@@ -69,7 +70,7 @@ function App() {
   }
 
   const pageContent = Translations[userLanguage];
-  if (!pageContent || !menuItems || redirecting) {
+  if (!pageContent || !menuItems) {
     return (
       <div className="centred" style={{ marginTop: "35vh" }}>
         <h2>Loading Guzek UK...</h2>
@@ -83,10 +84,12 @@ function App() {
         selectedLanguage={userLanguage}
         changeLang={changeLang}
         menuItems={menuItems}
+        user={currentUser}
       />
       <Routes>
         <Route path="/" element={<Home data={pageContent} />} />
         <Route path="konrad" element={<Konrad data={pageContent} />} />
+        <Route path="profile" element={<Profile data={pageContent} user={currentUser} setUser={setCurrentUser} />} />
         <Route path="*" element={<NotFound data={pageContent} />} />
       </Routes>
       <Footer data={pageContent} />
