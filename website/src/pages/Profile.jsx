@@ -16,7 +16,7 @@ function Profile({ data, user, setUser }) {
 
 Profile.propTypes = {
   data: PropTypes.object.isRequired,
-  user: PropTypes,
+  user: PropTypes.object,
   setUser: PropTypes.func.isRequired,
 };
 

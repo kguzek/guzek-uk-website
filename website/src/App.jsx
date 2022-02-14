@@ -17,23 +17,22 @@ function App() {
   const [menuItems, setMenuItems] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams({});
 
-  function removeLanguageParam() {
+  function removeSearchParam(param) {
+    const oldValue = searchParams.get(param);
     const newSearchParams = new URLSearchParams(searchParams);
-    newSearchParams.delete("lang");
+    newSearchParams.delete(param);
     setSearchParams(newSearchParams);
+    return oldValue || "";
   }
 
   useEffect(() => {
-    // check if the URL contains the lang parameter
-    const lang = searchParams.get("lang");
-    if (lang) {
-      // it does; clear the lang parameter
-      removeLanguageParam();
-      const newPageContent = Translations[lang];
-      if (newPageContent) {
-        // set the page content to the translations corresponding to the lang parameter
-        return setUserLanguage(lang);
-      }
+    // if the URL contains the lang parameter, clear it
+    const lang = removeSearchParam("lang").toUpperCase();
+    const newPageContent = Translations[lang];
+    if (newPageContent) {
+      // set the page content to the translations corresponding to the lang parameter
+      console.log("Changing lang to", lang)
+      return setUserLanguage(lang);
     }
 
     // the search parameter language was invalid or not set
@@ -43,15 +42,18 @@ function App() {
         setUserLanguage(lang);
       }
     }, console.log);
-
-    // retrieve the menu items from the API
-    if (!menuItems) {
-      fetchFromAPI("pages").then(
-        (res) => res.ok && res.json().then(setMenuItems),
-        (error) => console.log("Error fetching menu items.", error)
-      );
-    }
   }, []);
+  
+  useEffect(() => {
+    if (menuItems) {
+      return;
+    }
+    // retrieve the menu items from the API
+    fetchFromAPI("pages").then(
+      (res) => res.ok && res.json().then(setMenuItems),
+      (error) => console.log("Error fetching menu items.", error)
+    );
+  }, [menuItems])
 
   useEffect(() => {
     // update user language preferences so they are saved on refresh

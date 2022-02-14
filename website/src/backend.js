@@ -1,4 +1,4 @@
-const API_URL = "https://api.guzek.uk/"; // "https://europe-west1-guzek-uk.cloudfunctions.net/api/";
+const API_URL = process.env.NODE_ENV === "development" ? "http://localhost:5017/" : "https://api.guzek.uk/";
 
 /** Performs a HTTP request to the API using the specified relative URL and HTTP method. */
 export function fetchFromAPI(url, method = "get") {

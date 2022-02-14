@@ -9,7 +9,7 @@ const logger = getLogger(__filename);
 
 // Initialise the application instance
 const app = express();
-const PORT = process.env["NODE_PORT"];
+const PORT = process.env.NODE_PORT;
 
 console.log(); // add newline before app output for readability
 if (!PORT) {
