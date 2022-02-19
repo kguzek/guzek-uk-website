@@ -22,7 +22,8 @@ app.use(bodyParser.json());
 app.use(loggingMiddleware);
 
 // enable individual API routes
-app.use("/pages", require("./routes/pages.js"));
+app.use("/pages", require("./routes/pages"));
+app.use("/logs", require("./routes/logs"));
 
 // catch-all 404 response for any other route
 app.all("*", (req, res) =>
