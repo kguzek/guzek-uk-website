@@ -1,5 +1,6 @@
 const path = require("path");
 const { createLogger, format, transports } = require("winston");
+require("winston-daily-rotate-file");
 
 const c = {
   clr: "\x1b[0m",
@@ -54,6 +55,15 @@ const logFormat = format.printf(({ timestamp, level, label, message }) => {
 function getLogger(filename) {
   // idk this magic got it from stackoverflow
   // https://stackoverflow.com/a/56091110/15757366
+
+  const fileTransport = new transports.DailyRotateFile({
+    filename: "%DATE%",
+    dirname: "logs",
+    extension: ".log",
+    maxFiles: "14d",
+    format: format.combine(format.json()),
+  });
+
   const loggerOptions = {
     level: "info",
     levels: {
@@ -72,12 +82,7 @@ function getLogger(filename) {
         fillExcept: ["message", "level", "timestamp", "label"],
       })
     ),
-    transports: [
-      new transports.File({
-        filename: "api.log",
-        format: format.combine(format.json()),
-      }),
-    ],
+    transports: [fileTransport],
   };
   if (process.env.NODE_ENV === "development") {
     loggerOptions.level = "debug";
@@ -97,7 +102,9 @@ function getLogger(filename) {
 const logger = getLogger(__filename);
 
 async function loggingMiddleware(req, _res, next) {
-  logger.request(`${req.method} ${req.originalUrl}`, req.body);
+  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
+  const metadata = { ip, ...req.body };
+  logger.request(`${req.method} ${req.originalUrl}`, metadata);
   next();
 }
 
