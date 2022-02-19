@@ -52,17 +52,25 @@ const logFormat = format.printf(({ timestamp, level, label, message }) => {
   return `${c.dim + timestamp + c.clr} ${lvl} [${lbl}]: ${msg}`;
 });
 
+const jsonFormat = format.combine(format.json());
+
+const defaultFileTransport = new transports.DailyRotateFile({
+  filename: "%DATE%",
+  dirname: "logs",
+  extension: ".log",
+  maxFiles: "14d",
+  format: jsonFormat,
+});
+
+const errorFileTransport = new transports.File({
+  filename: "logs/error.log",
+  level: "error",
+  format: jsonFormat,
+});
+
 function getLogger(filename) {
   // idk this magic got it from stackoverflow
   // https://stackoverflow.com/a/56091110/15757366
-
-  const fileTransport = new transports.DailyRotateFile({
-    filename: "%DATE%",
-    dirname: "logs",
-    extension: ".log",
-    maxFiles: "14d",
-    format: format.combine(format.json()),
-  });
 
   const loggerOptions = {
     level: "info",
@@ -82,7 +90,7 @@ function getLogger(filename) {
         fillExcept: ["message", "level", "timestamp", "label"],
       })
     ),
-    transports: [fileTransport],
+    transports: [defaultFileTransport, errorFileTransport],
   };
   if (process.env.NODE_ENV === "development") {
     loggerOptions.level = "debug";
