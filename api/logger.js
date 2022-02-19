@@ -68,6 +68,7 @@ const errorFileTransport = new transports.File({
   format: jsonFormat,
 });
 
+/** Gets the logger instance for the given source code file. */
 function getLogger(filename) {
   // idk this magic got it from stackoverflow
   // https://stackoverflow.com/a/56091110/15757366

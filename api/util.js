@@ -1,7 +1,7 @@
 const fs = require("fs");
 const { getLogger } = require("./logger");
 
-const dbPath = "database/";
+const DATABASE_DIRECTORY = "database/";
 const logger = getLogger(__filename);
 
 const STATUS_CODES = {
@@ -32,7 +32,7 @@ function sendError(res, code, error = { message: "Unknown error." }) {
  * Otherwise, sends the appropriate HTTP 404 or 500 response.
  */
 function _readFile(filename, res, callback) {
-  fs.readFile(`${dbPath}${filename}.json`, (fileErr, data) => {
+  fs.readFile(`${DATABASE_DIRECTORY}${filename}.json`, (fileErr, data) => {
     if (fileErr) {
       // The file could not be read
       return void sendError(res, 404, fileErr);
@@ -52,7 +52,7 @@ function _readFile(filename, res, callback) {
 function _writeFile(filename, dataObj, res, callback) {
   const dataString = JSON.stringify(dataObj, undefined, 4);
   const data = new Uint8Array(Buffer.from(dataString));
-  fs.writeFile(`${dbPath}${filename}.json`, data, (err) => {
+  fs.writeFile(`${DATABASE_DIRECTORY}${filename}.json`, data, (err) => {
     if (err) {
       return sendError(res, 500, err);
     } else {
