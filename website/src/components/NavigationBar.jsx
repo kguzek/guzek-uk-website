@@ -15,10 +15,10 @@ function NavigationBar({
   const [menuOpen, setMenuOpen] = useState(false);
   const winDims = useWindowDimensions();
 
-  // don't render items that are set as 'hidden' in the nav bar
+  // Don't render items that are set as 'hidden' in the nav bar
   const visibleItems = (menuItems || []).filter((item) => !item.hidden);
 
-  // create the array of nav bar page elements
+  // Create the array of nav bar page elements
   const menuItemElements = visibleItems.map((item, index) => (
     <li key={index}>
       <NavBarItem item={item} setMenuOpen={setMenuOpen} />
@@ -59,9 +59,9 @@ function NavigationBar({
 }
 
 function NavBarItem({ item, setMenuOpen }) {
-  // check if the active page name is provided
+  // Check if the active page name is provided
   const path = window.location.pathname;
-  // handle edge case for index page ("/")
+  // Handle edge case for index page ("/")
   const isActive = item.url === "/" ? path === "/" : path.startsWith(item.url);
   return (
     <Link
