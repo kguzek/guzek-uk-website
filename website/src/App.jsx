@@ -8,7 +8,7 @@ import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Konrad from "./pages/Konrad";
 import NotFound from "./pages/NotFound";
-import { fetchFromAPI } from "./backend";
+import { fetchCachedData, readResponseBody } from "./backend";
 import Profile from "./pages/Profile";
 
 function App() {
@@ -26,44 +26,46 @@ function App() {
   }
 
   useEffect(() => {
-    // if the URL contains the lang parameter, clear it
+    // If the URL contains the lang parameter, clear it
     const lang = removeSearchParam("lang").toUpperCase();
     const newPageContent = Translations[lang];
     if (newPageContent) {
-      // set the page content to the translations corresponding to the lang parameter
-      console.log("Changing lang to", lang)
+      // Set the page content to the translations corresponding to the lang parameter
+      console.log("Changing lang to", lang);
       return setUserLanguage(lang);
     }
 
-    // the search parameter language was invalid or not set
+    // The search parameter language was invalid or not set
     AsyncStorage.getItem("userLanguage").then((lang) => {
-      // console.log("Got language from storage:", lang);
       if (lang && lang !== "undefined") {
         setUserLanguage(lang);
       }
     }, console.log);
   }, []);
-  
-  useEffect(() => {
+
+  useEffect(async () => {
     if (menuItems) {
       return;
     }
-    // retrieve the menu items from the API
-    fetchFromAPI("pages").then(
-      (res) => res.ok && res.json().then(setMenuItems),
-      (error) => console.log("Error fetching menu items.", error)
-    );
-  }, [menuItems])
+    // Retrieve the menu items from the API
+    try {
+      const res = await fetchCachedData("pages");
+      setMenuItems(await readResponseBody(res, []));
+    } catch (networkError) {
+      console.log("Could not fetch from API:", networkError);
+      return void setMenuItems([]);
+    }
+  }, [menuItems]);
 
   useEffect(() => {
-    // update user language preferences so they are saved on refresh
+    // Update user language preferences so they are saved on refresh
     AsyncStorage.setItem("userLanguage", userLanguage).then();
   }, [userLanguage]);
 
   /** Event handler for when the user selects one of the lanugage options. */
   function changeLang(e) {
     e.preventDefault();
-    // get the button text and remove whitespaces as well as Non-Breaking Spaces (&nbsp;)
+    // Get the button text and remove whitespaces as well as Non-Breaking Spaces (&nbsp;)
     const elemText = e.target.textContent || e.target.innerText;
     const lang = elemText.replace(/[\s\u00A0]/, "");
     if (Translations[lang]) {
@@ -91,7 +93,16 @@ function App() {
       <Routes>
         <Route path="/" element={<Home data={pageContent} />} />
         <Route path="konrad" element={<Konrad data={pageContent} />} />
-        <Route path="profile" element={<Profile data={pageContent} user={currentUser} setUser={setCurrentUser} />} />
+        <Route
+          path="profile"
+          element={
+            <Profile
+              data={pageContent}
+              user={currentUser}
+              setUser={setCurrentUser}
+            />
+          }
+        />
         <Route path="*" element={<NotFound data={pageContent} />} />
       </Routes>
       <Footer data={pageContent} />

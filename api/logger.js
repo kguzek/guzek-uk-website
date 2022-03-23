@@ -70,7 +70,7 @@ const errorFileTransport = new transports.File({
 
 /** Gets the logger instance for the given source code file. */
 function getLogger(filename) {
-  // idk this magic got it from stackoverflow
+  // Idk this magic got it from stackoverflow
   // https://stackoverflow.com/a/56091110/15757366
 
   const loggerOptions = {
