@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 function Konrad({ data }) {
   useEffect(() => {
     document.title = data.title;
-  }, [data.title]);
+  }, [data]);
 
   return (
     <div className="text">
