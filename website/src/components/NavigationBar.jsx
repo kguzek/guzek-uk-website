@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import Logo from "../media/Logo";
-import Translations from "../translations";
+import TRANSLATIONS from "../translations";
 import "../styles/navigation.css";
 
 function NavigationBar({
@@ -75,10 +75,10 @@ function NavBarItem({ item, setMenuOpen }) {
 }
 
 function LangSelector({ selectedLanguage, changeLang }) {
-  const data = Translations[selectedLanguage];
+  const data = TRANSLATIONS[selectedLanguage];
   return (
     <div className="centred lang-selector">
-      {Object.keys(Translations).map((lang) => (
+      {Object.keys(TRANSLATIONS).map((lang) => (
         <button
           key={lang}
           onClick={changeLang}

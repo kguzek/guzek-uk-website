@@ -1,4 +1,4 @@
-const Translations = {
+const TRANSLATIONS = {
   EN: {
     header: "Guzek UK",
     footer: "Copyright {YEAR} by KonCorp Media",
@@ -13,6 +13,8 @@ const Translations = {
     title404: "404 Not Found",
     body403: "403: You do not have permission to view this resource.",
     body404: "404: The requested resource was not found.",
+    titlePipeDesigner: "Pipe Designer",
+    bodyPipeDesigner: "Redirecting to the pipe designer...",
   },
   PL: {
     header: "Guzek UK",
@@ -28,7 +30,9 @@ const Translations = {
     title404: "404 Nie Znaleziono",
     body403: "403: Nie masz uprawnień do wyświetlania tego zasobu.",
     body404: "404: Nie znaleziono zasobu, którego szukasz.",
+    titlePipeDesigner: "Kreator rur",
+    bodyPipeDesigner: "Trwa przekierowywanie do kreatora rur...",
   },
 };
 
-export default Translations;
+export default TRANSLATIONS;

@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 function NotFound({ data }) {
   useEffect(() => {
     document.title = data.title404;
-  }, [data.title404]);
+  }, [data]);
 
   return (
     <div className="text">
