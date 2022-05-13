@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Routes, Route, useSearchParams } from "react-router-dom";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import "./styles/styles.css";
 import TRANSLATIONS from "./translations";
 import NavigationBar from "./components/NavigationBar";
@@ -37,15 +36,10 @@ function App() {
     }
 
     // The search parameter language was invalid or not set
-    AsyncStorage.getItem("userLanguage").then(
-      (lang) => {
-        // Check for `undefined` serialised as a string
-        if (lang && lang !== "undefined") {
-          setUserLanguage(lang);
-        }
-      },
-      (error) => console.error(error.message)
-    );
+    const prevLang = localStorage.getItem("userLanguage");
+    if (prevLang && prevLang !== "undefined") {
+      setUserLanguage(prevLang);
+    }
   }, [searchParams]);
 
   useEffect(() => {
@@ -67,7 +61,7 @@ function App() {
 
   useEffect(() => {
     // Update user language preferences so they are saved on refresh
-    AsyncStorage.setItem("userLanguage", userLanguage).then();
+    localStorage.setItem("userLanguage", userLanguage);
   }, [userLanguage]);
 
   /** Event handler for when the user selects one of the lanugage options. */
