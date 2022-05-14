@@ -1,6 +1,5 @@
 import React, { useState, useEffect, MouseEvent } from "react";
 import { Routes, Route, useSearchParams } from "react-router-dom";
-import "./styles/styles.css";
 import TRANSLATIONS from "./translations";
 import NavigationBar, { MenuItem } from "./components/NavigationBar";
 import Footer from "./components/Footer";
@@ -11,6 +10,7 @@ import { fetchCachedData } from "./backend";
 import Profile from "./pages/Profile";
 import PipeDesigner from "./pages/PipeDesigner";
 import LoadingScreen from "./components/LoadingScreen";
+import "./styles/styles.css";
 
 function App() {
   const [userLanguage, setUserLanguage] = useState<string>("EN");
@@ -79,7 +79,7 @@ function App() {
   }
 
   const pageContent = TRANSLATIONS[userLanguage];
-  if (!pageContent || !menuItems || 1) {
+  if (!pageContent || !menuItems) {
     return <LoadingScreen />;
   }
   return (
@@ -88,7 +88,7 @@ function App() {
         data={pageContent}
         selectedLanguage={userLanguage}
         changeLang={changeLang}
-        menuItems={menuItems}
+        menuItems={menuItems as MenuItem[]}
         user={currentUser}
       />
       <Routes>
