@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { Translation } from "../translations";
 
 function Profile({
@@ -24,11 +23,5 @@ function Profile({
     </div>
   );
 }
-
-Profile.propTypes = {
-  data: PropTypes.object.isRequired,
-  user: PropTypes.object,
-  setUser: PropTypes.func.isRequired,
-};
 
 export default Profile;

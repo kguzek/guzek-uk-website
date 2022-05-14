@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import Logo from "../media/Logo";
 import "../styles/footer.css";
 import { Translation } from "../translations";
@@ -17,9 +16,5 @@ function Footer({ data }: { data: Translation }) {
     </footer>
   );
 }
-
-Footer.propTypes = {
-  data: PropTypes.object,
-};
 
 export default Footer;
