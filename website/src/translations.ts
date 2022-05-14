@@ -1,4 +1,26 @@
-const TRANSLATIONS = {
+export interface Translation {
+  readonly header: string;
+  readonly footer: string;
+  readonly title: string;
+  readonly language: string;
+  readonly bodyHome: string;
+  readonly bodyKonrad: string;
+  readonly goHome: string;
+  readonly goKonrad: string;
+  readonly guest: string;
+  readonly title403: string;
+  readonly title404: string;
+  readonly body403: string;
+  readonly body404: string;
+  readonly titlePipeDesigner: string;
+  readonly bodyPipeDesigner: string;
+}
+
+interface TranslationContainer {
+  [lang: string]: Translation;
+}
+
+const TRANSLATIONS: TranslationContainer = {
   EN: {
     header: "Guzek UK",
     footer: "Copyright {YEAR} by KonCorp Media",

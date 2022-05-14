@@ -1,12 +1,17 @@
 import React, { useEffect } from "react";
+import { Translation } from "../translations";
 
-export default function PipeDesigner({ data }) {
+export default function PipeDesigner({
+  data,
+}: {
+  data: Translation;
+}) {
   useEffect(() => {
     document.title = data.titlePipeDesigner + " | " + data.title;
   }, [data]);
 
   useEffect(() => {
-    window.location = "https://www.guzek.uk/pipe-designer/";
+    window.location.href = "https://www.guzek.uk/pipe-designer/";
   }, []);
 
   return (

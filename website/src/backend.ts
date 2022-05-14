@@ -1,4 +1,5 @@
 const USE_EMULATOR_URL = false;
+const CACHE_NAME = "guzek-uk-cache";
 
 const API_URL =
   process.env.NODE_ENV === "development" && USE_EMULATOR_URL
@@ -9,30 +10,40 @@ const API_URL =
  *  the cached response. Otherwise, performs the fetch request and adds the response
  *  to cache. Returns the HTTP response.
  */
-export async function fetchCachedData(path, method = "GET", params, body) {
+export async function fetchCachedData(
+  path: string,
+  method: string = "GET",
+  params?: string,
+  body?: BodyInit
+) {
   // Add search parameters to URL
   const search = params ? `?${new URLSearchParams(params)}` : "";
   const url = API_URL + path + search;
-  const fetchOptions = { method };
-  body && (fetchOptions.body = body);
+  const fetchOptions = { method, body };
+
   const request = new Request(url, fetchOptions);
-  const _cache = await caches.open("cache");
-  const cache = await _cache.match(request);
-  if (cache) {
+  const cachedResponse = await caches.match(request);
+  if (cachedResponse) {
     console.debug("Using cached response for", url);
-    return cache;
+    return cachedResponse;
   }
 
   console.debug("Fetching", url, "...");
   const response = await fetch(request);
-  await _cache.put(request, response);
+  if (response.ok) {
+    const cache = await caches.open(CACHE_NAME);
+    await cache.put(request, response);
+  }
   return response;
 }
 
 /** Consumes the body of a cloned response object. If the status is non-200 and
  *  `onError` is provided, returns `onError`. Otherwise returns the consumed body.
  */
-export async function readResponseBody(res, onError) {
+export async function readResponseBody(
+  res: Response,
+  onError: object
+): Promise<object | any[]> {
   if (!res.ok) {
     console.log("The API returned a non-200 response:", res);
     if (onError) return onError;
