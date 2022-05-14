@@ -7,9 +7,10 @@ import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Konrad from "./pages/Konrad";
 import NotFound from "./pages/NotFound";
-import { fetchCachedData, readResponseBody } from "./backend";
+import { fetchCachedData } from "./backend";
 import Profile from "./pages/Profile";
 import PipeDesigner from "./pages/PipeDesigner";
+import LoadingScreen from "./components/LoadingScreen";
 
 function App() {
   const [userLanguage, setUserLanguage] = useState<string>("EN");
@@ -50,7 +51,8 @@ function App() {
     async function fetchPagesData() {
       try {
         const res = await fetchCachedData("pages");
-        setMenuItems((await readResponseBody(res, [])) as MenuItem[]);
+        const body = (await res.json()) as MenuItem[];
+        setMenuItems(body);
       } catch (networkError) {
         console.log("Could not fetch from API:", networkError);
         setMenuItems([]);
@@ -77,12 +79,8 @@ function App() {
   }
 
   const pageContent = TRANSLATIONS[userLanguage];
-  if (!pageContent || !menuItems) {
-    return (
-      <div className="centred" style={{ marginTop: "35vh" }}>
-        <h2>Loading Guzek UK...</h2>
-      </div>
-    );
+  if (!pageContent || !menuItems || 1) {
+    return <LoadingScreen />;
   }
   return (
     <div className="App">
