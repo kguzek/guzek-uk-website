@@ -1,6 +1,5 @@
 import React, { useState, useEffect, MouseEventHandler } from "react";
 import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
 import Logo from "../media/Logo";
 import TRANSLATIONS, { Translation } from "../translations";
 import "../styles/navigation.css";
@@ -158,36 +157,6 @@ function Hamburger({
     </div>
   );
 }
-
-NavigationBar.propTypes = {
-  data: PropTypes.object.isRequired,
-  user: PropTypes.object,
-  selectedLanguage: PropTypes.string.isRequired,
-  changeLang: PropTypes.func.isRequired,
-  menuItems: PropTypes.array,
-};
-
-NavBarItem.propTypes = {
-  item: PropTypes.object.isRequired,
-  setMenuOpen: PropTypes.func.isRequired,
-};
-
-LangSelector.propTypes = {
-  selectedLanguage: PropTypes.string.isRequired,
-  changeLang: PropTypes.func.isRequired,
-};
-
-UserWidget.propTypes = {
-  data: PropTypes.object.isRequired,
-  user: PropTypes.object,
-  dispayStyle: PropTypes.oneOf(["desktop", "medium", "mobile"]),
-  setMenuOpen: PropTypes.func.isRequired,
-};
-
-Hamburger.propTypes = {
-  menuOpen: PropTypes.bool,
-  onClick: PropTypes.func,
-};
 
 function useWindowDimensions() {
   function getWindowDimensions() {

@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import PropTypes from "prop-types";
 import { Translation } from "../translations";
 
 function Home({ data }: { data: Translation }) {
@@ -13,9 +12,5 @@ function Home({ data }: { data: Translation }) {
     </div>
   );
 }
-
-Home.propTypes = {
-  data: PropTypes.object,
-};
 
 export default Home;

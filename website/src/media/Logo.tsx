@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
 import logo from "./logo128.png";
 
 function Logo({ size = 80 }) {
@@ -10,9 +9,5 @@ function Logo({ size = 80 }) {
     </Link>
   );
 }
-
-Logo.propTypes = {
-  size: PropTypes.number,
-};
 
 export default Logo;

@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import PropTypes from "prop-types";
 import { Translation } from "../translations";
 
 function NotFound({ data }: { data: Translation }) {
@@ -13,9 +12,5 @@ function NotFound({ data }: { data: Translation }) {
     </div>
   );
 }
-
-NotFound.propTypes = {
-  data: PropTypes.object,
-};
 
 export default NotFound;
