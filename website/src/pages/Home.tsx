@@ -1,20 +1,21 @@
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
+import { Translation } from "../translations";
 
-function NotFound({ data }) {
+function Home({ data }: { data: Translation }) {
   useEffect(() => {
-    document.title = data.title404;
+    document.title = data.title;
   }, [data]);
 
   return (
     <div className="text">
-      <p>{data.body404}</p>
+      <p>{data.bodyHome}</p>
     </div>
   );
 }
 
-NotFound.propTypes = {
+Home.propTypes = {
   data: PropTypes.object,
 };
 
-export default NotFound;
+export default Home;

@@ -1,20 +1,21 @@
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
+import { Translation } from "../translations";
 
-function Home({ data }) {
+function Konrad({ data }: { data: Translation }) {
   useEffect(() => {
     document.title = data.title;
   }, [data]);
 
   return (
     <div className="text">
-      <p>{data.bodyHome}</p>
+      <p>{data.bodyKonrad}</p>
     </div>
   );
 }
 
-Home.propTypes = {
+Konrad.propTypes = {
   data: PropTypes.object,
 };
 
-export default Home;
+export default Konrad;

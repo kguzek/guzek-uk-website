@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, MouseEvent } from "react";
 import { Routes, Route, useSearchParams } from "react-router-dom";
 import "./styles/styles.css";
 import TRANSLATIONS from "./translations";
-import NavigationBar from "./components/NavigationBar";
+import NavigationBar, { MenuItem } from "./components/NavigationBar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Konrad from "./pages/Konrad";
@@ -12,14 +12,14 @@ import Profile from "./pages/Profile";
 import PipeDesigner from "./pages/PipeDesigner";
 
 function App() {
-  const [userLanguage, setUserLanguage] = useState("EN");
-  const [currentUser, setCurrentUser] = useState(null);
-  const [menuItems, setMenuItems] = useState(null);
+  const [userLanguage, setUserLanguage] = useState<string>("EN");
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [menuItems, setMenuItems] = useState<MenuItem[] | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     /** Removes the given search parameter from the client-side URL. */
-    function removeSearchParam(param) {
+    function removeSearchParam(param: string) {
       const oldValue = searchParams.get(param);
       const newSearchParams = new URLSearchParams(searchParams);
       newSearchParams.delete(param);
@@ -50,7 +50,7 @@ function App() {
     async function fetchPagesData() {
       try {
         const res = await fetchCachedData("pages");
-        setMenuItems(await readResponseBody(res, []));
+        setMenuItems((await readResponseBody(res, [])) as MenuItem[]);
       } catch (networkError) {
         console.log("Could not fetch from API:", networkError);
         setMenuItems([]);
@@ -65,12 +65,13 @@ function App() {
   }, [userLanguage]);
 
   /** Event handler for when the user selects one of the lanugage options. */
-  function changeLang(e) {
-    e.preventDefault();
+  function changeLang(event: MouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
     // Get the button text and remove whitespaces as well as Non-Breaking Spaces (&nbsp;)
-    const elemText = e.target.textContent || e.target.innerText;
+    const button = event.target as HTMLButtonElement;
+    const elemText = button.textContent || button.innerText;
     const lang = elemText.replace(/[\s\u00A0]/, "");
-    if (TRANSLATIONS[lang]) {
+    if (TRANSLATIONS.hasOwnProperty(lang)) {
       setUserLanguage(lang);
     }
   }

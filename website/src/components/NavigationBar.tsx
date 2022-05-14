@@ -1,9 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, MouseEventHandler } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import Logo from "../media/Logo";
-import TRANSLATIONS from "../translations";
+import TRANSLATIONS, { Translation } from "../translations";
 import "../styles/navigation.css";
+
+export interface MenuItem {
+  title: string;
+  url: string;
+  hidden: boolean;
+}
 
 function NavigationBar({
   data,
@@ -11,6 +17,12 @@ function NavigationBar({
   selectedLanguage,
   changeLang,
   menuItems,
+}: {
+  data: Translation;
+  user: any;
+  selectedLanguage: string;
+  changeLang: MouseEventHandler<HTMLButtonElement>;
+  menuItems: MenuItem[];
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const winDims = useWindowDimensions();
@@ -58,7 +70,13 @@ function NavigationBar({
   );
 }
 
-function NavBarItem({ item, setMenuOpen }) {
+function NavBarItem({
+  item,
+  setMenuOpen,
+}: {
+  item: MenuItem;
+  setMenuOpen: Function;
+}) {
   // Check if the active page name is provided
   const path = window.location.pathname;
   // Handle edge case for index page ("/")
@@ -74,7 +92,13 @@ function NavBarItem({ item, setMenuOpen }) {
   );
 }
 
-function LangSelector({ selectedLanguage, changeLang }) {
+function LangSelector({
+  selectedLanguage,
+  changeLang,
+}: {
+  selectedLanguage: string;
+  changeLang: MouseEventHandler<HTMLButtonElement>;
+}) {
   const data = TRANSLATIONS[selectedLanguage];
   return (
     <div className="centred lang-selector">
@@ -92,7 +116,17 @@ function LangSelector({ selectedLanguage, changeLang }) {
   );
 }
 
-function UserWidget({ data, user, displayStyle, setMenuOpen }) {
+function UserWidget({
+  data,
+  user,
+  displayStyle,
+  setMenuOpen,
+}: {
+  data: Translation;
+  user: any;
+  displayStyle: string;
+  setMenuOpen: Function;
+}) {
   const imgUrl =
     (user && user.url) ||
     "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/default-avatar.png";
@@ -111,7 +145,13 @@ function UserWidget({ data, user, displayStyle, setMenuOpen }) {
   );
 }
 
-function Hamburger({ menuOpen, onClick }) {
+function Hamburger({
+  menuOpen,
+  onClick,
+}: {
+  menuOpen: boolean;
+  onClick: MouseEventHandler;
+}) {
   return (
     <div onClick={onClick} className="hamburger">
       <p className={menuOpen ? "fas fa-times" : "fas fa-bars"}></p>
