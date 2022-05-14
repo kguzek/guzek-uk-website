@@ -1,22 +1,34 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import LoadingScreen from "../components/LoadingScreen";
 import { Translation } from "../translations";
 
-export default function PipeDesigner({
-  data,
-}: {
-  data: Translation;
-}) {
+export default function PipeDesigner({ data }: { data: Translation }) {
+  const [attemptedRefresh, setAttemptedRefresh] = useState(false);
+
   useEffect(() => {
     document.title = data.titlePipeDesigner + " | " + data.title;
   }, [data]);
 
   useEffect(() => {
-    window.location.href = "https://www.guzek.uk/pipe-designer/";
+    const lastRedirectTime = localStorage.getItem("lastReloadTime");
+    const now = new Date();
+    if (lastRedirectTime) {
+      const time = new Date(lastRedirectTime);
+      if (time.getTime() >= now.getTime() - 5000) {
+        setAttemptedRefresh(true);
+        return;
+      }
+    }
+    localStorage.setItem("lastReloadTime", now.toISOString());
+    window.location.reload();
   }, []);
 
-  return (
-    <div className="text">
-      <p>{data.bodyPipeDesigner}</p>
-    </div>
-  );
+  if (attemptedRefresh) {
+    return (
+      <div className="text">
+        <p>{data.bodyPipeDesigner}</p>
+      </div>
+    );
+  }
+  return <LoadingScreen />;
 }

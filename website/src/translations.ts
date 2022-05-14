@@ -36,7 +36,7 @@ const TRANSLATIONS: TranslationContainer = {
     body403: "403: You do not have permission to view this resource.",
     body404: "404: The requested resource was not found.",
     titlePipeDesigner: "Pipe Designer",
-    bodyPipeDesigner: "Redirecting to the pipe designer...",
+    bodyPipeDesigner: "Redirecting to the pipe designer failed. Please try again later, or refresh your page manually.",
   },
   PL: {
     header: "Guzek UK",
@@ -53,7 +53,7 @@ const TRANSLATIONS: TranslationContainer = {
     body403: "403: Nie masz uprawnień do wyświetlania tego zasobu.",
     body404: "404: Nie znaleziono zasobu, którego szukasz.",
     titlePipeDesigner: "Kreator rur",
-    bodyPipeDesigner: "Trwa przekierowywanie do kreatora rur...",
+    bodyPipeDesigner: "Przekierowywanie do kreatora rur nie powiodło się. Spróbuj ponownie wkrótce lub odśwież stronę ręcznie.",
   },
 };
 
