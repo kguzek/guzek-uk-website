@@ -1,0 +1,28 @@
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: end;
+  height: 50vh;
+}
+
+@keyframes load {
+  0% {
+    opacity: 0;
+  }
+	50% {
+		opacity: 1;
+	}
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.loading-text {
+	animation-name: load;
+	animation-duration: 2.5s;
+  animation-iteration-count: infinite;
+}
