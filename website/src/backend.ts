@@ -32,7 +32,7 @@ export async function fetchCachedData(
   const response = await fetch(request);
   if (response.ok) {
     const cache = await caches.open(CACHE_NAME);
-    await cache.put(request, response);
+    await cache.put(request, response.clone());
   }
-  return response.clone();
+  return response;
 }

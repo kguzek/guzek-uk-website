@@ -48,7 +48,7 @@ function App() {
       return;
     }
     // Retrieve the menu items from the API
-    async function fetchPagesData() {
+    (async function fetchPagesData() {
       try {
         const res = await fetchCachedData("pages");
         const body = (await res.json()) as MenuItem[];
@@ -57,8 +57,7 @@ function App() {
         console.log("Could not fetch from API:", networkError);
         setMenuItems([]);
       }
-    }
-    fetchPagesData();
+    })();
   }, [menuItems]);
 
   useEffect(() => {
