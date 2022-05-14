@@ -25,7 +25,7 @@ export async function fetchCachedData(
   const cachedResponse = await caches.match(request);
   if (cachedResponse) {
     console.debug("Using cached response for", url);
-    return cachedResponse;
+    return cachedResponse.clone();
   }
 
   console.debug("Fetching", url, "...");
@@ -34,20 +34,5 @@ export async function fetchCachedData(
     const cache = await caches.open(CACHE_NAME);
     await cache.put(request, response);
   }
-  return response;
-}
-
-/** Consumes the body of a cloned response object. If the status is non-200 and
- *  `onError` is provided, returns `onError`. Otherwise returns the consumed body.
- */
-export async function readResponseBody(
-  res: Response,
-  onError: object
-): Promise<object | any[]> {
-  if (!res.ok) {
-    console.log("The API returned a non-200 response:", res);
-    if (onError) return onError;
-  }
-  const data = await res.clone().json();
-  return data;
+  return response.clone();
 }
