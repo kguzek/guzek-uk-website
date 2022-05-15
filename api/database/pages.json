@@ -1,15 +1,15 @@
 [
-    {
-        "title": "Home",
-        "url": "/"
-    },
-    {
-        "title": "Konrad",
-        "url": "/konrad"
-    },
-    {
-        "title": "404",
-        "url": "/not_found",
-        "hidden": true
-    }
+  {
+    "title": "Home",
+    "url": "/"
+  },
+  {
+    "title": "Konrad",
+    "url": "/konrad"
+  },
+  {
+    "title": "404",
+    "url": "/not_found",
+    "hidden": true
+  }
 ]
