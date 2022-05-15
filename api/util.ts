@@ -22,7 +22,7 @@ interface ServerError {
 }
 
 /** Sends the response with a 200 status and JSON body containing the given data object. */
-function sendOK(res: Response, data: object | object[]) {
+export function sendOK(res: Response, data: object | object[]) {
   logger.response("200 OK");
   res.status(200).json(data);
 }
