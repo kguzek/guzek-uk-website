@@ -1,6 +1,8 @@
-const path = require("path");
-const { createLogger, format, transports } = require("winston");
-require("winston-daily-rotate-file");
+import { NextFunction, Request, Response } from "express";
+import path from "path";
+import { createLogger, format, Logger, LoggerOptions, transports } from "winston";
+import DailyRotateFile from "winston-daily-rotate-file";
+import TransportStream from "winston-transport";
 
 const c = {
   clr: "\x1b[0m",
@@ -30,7 +32,20 @@ const c = {
   bgWhite: "\x1b[47m",
 };
 
-const colours = {
+interface Colour {
+  [logLevel: string]: string;
+}
+
+interface CustomLoggerOptions extends LoggerOptions {
+  transports: TransportStream[];
+}
+
+interface CustomLogger extends Logger {
+  request: Function;
+  response: Function;
+}
+
+const colours: { lbl: Colour; msg: Colour } = {
   lbl: {
     error: c.bgRed,
     warn: c.bgYellow + c.fgBlack,
@@ -54,7 +69,7 @@ const logFormat = format.printf(({ timestamp, level, label, message }) => {
 
 const jsonFormat = format.combine(format.json());
 
-const defaultFileTransport = new transports.DailyRotateFile({
+const defaultFileTransport = new DailyRotateFile({
   filename: "%DATE%",
   dirname: "logs",
   extension: ".log",
@@ -69,11 +84,11 @@ const errorFileTransport = new transports.File({
 });
 
 /** Gets the logger instance for the given source code file. */
-function getLogger(filename) {
+export function getLogger(filename: string) {
   // Idk this magic got it from stackoverflow
   // https://stackoverflow.com/a/56091110/15757366
 
-  const loggerOptions = {
+  const loggerOptions: CustomLoggerOptions = {
     level: "info",
     levels: {
       error: 0,
@@ -96,25 +111,25 @@ function getLogger(filename) {
   if (process.env.NODE_ENV === "development") {
     loggerOptions.level = "debug";
     // Special options for when running from a development environment
-    loggerOptions.transports.push(
-      // Log output to the console
-      new transports.Console({
-        format: logFormat,
-      })
-    );
+    const consoleTransport = new transports.Console({
+      format: logFormat,
+    });
+    loggerOptions.transports.push(consoleTransport);
   }
-  const logger = createLogger(loggerOptions);
 
-  return logger;
+  const logger = createLogger(loggerOptions);
+  return logger as CustomLogger;
 }
 
 const logger = getLogger(__filename);
 
-async function loggingMiddleware(req, _res, next) {
+export async function loggingMiddleware(
+  req: Request,
+  _res: Response,
+  next: NextFunction
+) {
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
   const metadata = { ip, ...req.body };
   logger.request(`${req.method} ${req.originalUrl}`, metadata);
   next();
 }
-
-module.exports = { getLogger, loggingMiddleware };
