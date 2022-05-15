@@ -1,9 +1,9 @@
 // Initialise dependencies
-const cors = require("cors");
-const express = require("express");
-const bodyParser = require("body-parser");
-const { sendError } = require("./util");
-const { getLogger, loggingMiddleware } = require("./logger");
+import cors from "cors";
+import express from "express";
+import bodyParser from "body-parser";
+import { sendError } from "./util";
+import { getLogger, loggingMiddleware } from "./logger";
 
 const logger = getLogger(__filename);
 

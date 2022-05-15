@@ -1,17 +1,28 @@
-const fs = require("fs");
-const { getLogger } = require("./logger");
+import { Response } from "express";
+
+import fs from "fs";
+import { getLogger } from "./logger";
 
 const DATABASE_DIRECTORY = "database/";
 const logger = getLogger(__filename);
 
-const STATUS_CODES = {
+interface StatusCodeMap {
+  [code: number]: string;
+}
+
+const STATUS_CODES: StatusCodeMap = {
   400: "Bad Request",
   404: "Not Found",
   500: "Internal Server Error",
 };
 
+interface ServerError {
+  name?: string;
+  message: string;
+}
+
 /** Sends the response with a 200 status and JSON body containing the given data object. */
-function sendOK(res, data) {
+function sendOK(res: Response, data: object | object[]) {
   logger.response("200 OK");
   res.status(200).json(data);
 }
@@ -20,10 +31,13 @@ function sendOK(res, data) {
  *
  * `(res, 404, err) => res.status(404).json({ "404 Not Found": err.message })`
  */
-function sendError(res, code, error = { message: "Unknown error." }) {
+export function sendError(
+  res: Response,
+  code: number,
+  error: ServerError = { message: "Unknown error." }
+) {
   const codeDescription = `${code} ${STATUS_CODES[code] || STATUS_CODES[500]}`;
-  const jsonRes = {};
-  jsonRes[codeDescription] = error.message;
+  const jsonRes = { [codeDescription]: error.message };
   logger.response(`${codeDescription}: ${error.message}`);
   res.status(code).json(jsonRes);
 }
@@ -31,7 +45,7 @@ function sendError(res, code, error = { message: "Unknown error." }) {
 /** Reads the given file and calls the callback if it was parsed as JSON successfully.
  * Otherwise, sends the appropriate HTTP 404 or 500 response.
  */
-function _readFile(filename, res, callback) {
+function _readFile(filename: string, res: Response, callback: Function) {
   fs.readFile(`${DATABASE_DIRECTORY}${filename}.json`, (fileErr, data) => {
     if (fileErr) {
       // The file could not be read
@@ -39,17 +53,22 @@ function _readFile(filename, res, callback) {
     }
     try {
       // Return the file contents as JSON
-      var parsed = JSON.parse(data);
+      var parsed = JSON.parse(data as unknown as string);
     } catch (parseErr) {
       // The file contents could not be parsed as JSON
-      return void sendError(res, 500, parseErr);
+      return void sendError(res, 500, parseErr as Error);
     }
     callback(parsed);
   });
 }
 
 /** Encodes the raw object as an unsigned integer array and writes it to the destination. */
-function _writeFile(filename, dataObj, res, callback) {
+function _writeFile(
+  filename: string,
+  dataObj: object,
+  res: Response,
+  callback: Function
+) {
   const dataString = JSON.stringify(dataObj, undefined, 4);
   const data = new Uint8Array(Buffer.from(dataString));
   fs.writeFile(`${DATABASE_DIRECTORY}${filename}.json`, data, (err) => {
@@ -65,7 +84,7 @@ function _writeFile(filename, dataObj, res, callback) {
  * If so, returns true.
  * Otherwise, sends a 400 response and returns false.
  */
-function _parseObjectInput(res, input) {
+function _parseObjectInput(res: Response, input: object) {
   if (Object.keys(input).length > 0) {
     return true;
   }
@@ -80,7 +99,7 @@ function _parseObjectInput(res, input) {
  * If so, returns true.
  * Otherwise, sends a 400 response and returns false.
  */
-function _parseArrayInput(res, input) {
+function _parseArrayInput(res: Response, input: object[]) {
   if (Array.isArray(input)) {
     return true;
   }
@@ -93,26 +112,30 @@ function _parseArrayInput(res, input) {
 /** Checks if the input string can be parsed as an integer.
  * If so, returns the parsed integer.
  * Otherwise, sends a 400 response and returns null. */
-function _parseIntegerInput(res, input) {
+function _parseIntegerInput(res: Response, input: string) {
   const parsed = parseInt(input);
   if (!isNaN(parsed)) {
     return parsed;
   }
   sendError(res, 400, {
-    message: `Invalid input '${index}'.`,
+    message: `Invalid input '${input}'.`,
   });
   return null;
 }
 
 /** Appends a JS object to an array within a JSON file. */
-function appendToDatabase(res, filename, newData = {}) {
+export function appendToDatabase(
+  res: Response,
+  filename: string,
+  newData = {}
+) {
   // Check if the object contains any keys
   if (!_parseObjectInput(res, newData)) {
     // It is an empty object; error response has been sent
     return;
   }
   // Retrieve the old data
-  _readFile(filename, res, (data) => {
+  _readFile(filename, res, (data: object[]) => {
     // Append the new object to the array of existing objects
     const updatedData = [...data, newData];
     // Replace the entire file with the merged data
@@ -124,7 +147,7 @@ function appendToDatabase(res, filename, newData = {}) {
 }
 
 /** Replaces the entire JSON file with the given data. */
-function replaceDatabase(res, filename, newData = []) {
+export function replaceDatabase(res: Response, filename: string, newData = []) {
   if (!_parseArrayInput(res, newData)) {
     return;
   }
@@ -132,14 +155,19 @@ function replaceDatabase(res, filename, newData = []) {
 }
 
 /** Replaces the entry with the given index in the array within a JSON file. */
-function modifyInDatabase(res, filename, indexStr, newData = {}) {
+export function modifyInDatabase(
+  res: Response,
+  filename: string,
+  indexStr: string,
+  newData = {}
+) {
   // Check if the input string index could not be parsed or if the data has no keys
   const index = _parseIntegerInput(res, indexStr);
   if (index === null || !_parseObjectInput(res, newData)) {
     return;
   }
   // Read the document and replace the entry object
-  _readFile(filename, res, (data) => {
+  _readFile(filename, res, (data: object[]) => {
     if (data.length < index + 1) {
       sendError(res, 400, {
         message: `The data only contains ${
@@ -154,20 +182,24 @@ function modifyInDatabase(res, filename, indexStr, newData = {}) {
 }
 
 /** Sends the entire contents of a JSON file. */
-function readFromDatabase(res, filename) {
+export function readFromDatabase(res: Response, filename: string) {
   // Read the entire document and send its contents
-  _readFile(filename, res, (data) => sendOK(res, data));
+  _readFile(filename, res, (data: object) => sendOK(res, data));
 }
 
 /** Removes an item with the given index from the array within a JSON file. */
-function deleteFromDatabase(res, filename, indexStr) {
+export function deleteFromDatabase(
+  res: Response,
+  filename: string,
+  indexStr: string
+) {
   // Check if the input string index could not be parsed
   const index = _parseIntegerInput(res, indexStr);
   if (index === null) {
     return;
   }
   // Read the file and remove the item at the specified index
-  _readFile(filename, res, (data) => {
+  _readFile(filename, res, (data: object[]) => {
     data.splice(index, 1);
     // Write the spliced array
     _writeFile(filename, data, res, () =>
@@ -175,13 +207,3 @@ function deleteFromDatabase(res, filename, indexStr) {
     );
   });
 }
-
-module.exports = {
-  sendOK,
-  sendError,
-  appendToDatabase,
-  readFromDatabase,
-  replaceDatabase,
-  modifyInDatabase,
-  deleteFromDatabase,
-};
