@@ -10,9 +10,9 @@ import {
 
 router
   // CREATE new page
-  .post("/", (req: Request, res: Response) =>
-    appendToDatabase(res, "pages", req.body)
-  )
+  .post("/", (req: Request, res: Response) => {
+    
+  })
 
   // READ all pages
   .get("/", (_req: Request, res: Response) => readFromDatabase(res, "pages"))

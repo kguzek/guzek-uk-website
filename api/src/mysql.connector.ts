@@ -3,7 +3,7 @@ import { DATA_SOURCES } from "../config/vars.config";
 import { getLogger } from "./logger";
 
 const logger = getLogger(__filename);
-const dataSource = DATA_SOURCES.mySqlDataSource;
+const dataSource = DATA_SOURCES.mySQL;
 
 let pool: Pool;
 

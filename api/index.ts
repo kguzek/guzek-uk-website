@@ -5,6 +5,7 @@ import bodyParser from "body-parser";
 import { sendError } from "./src/util";
 import { getLogger, loggingMiddleware } from "./src/logger";
 import { initialiseDatabasePool } from "./src/mysql.connector";
+import ".src/sequelize";
 
 const logger = getLogger(__filename);
 
@@ -20,7 +21,7 @@ console.log(); // Add newline before app output for readability
 function initialise() {
   // Create the database pool
   initialiseDatabasePool();
-  
+
   // Enable middleware
   app.use(cors());
   app.use(bodyParser.json());
@@ -28,7 +29,6 @@ function initialise() {
 
   // Enable individual API routes
   app.use("/pages", require("./routes/pages"));
-  app.use("/logs", require("./routes/logs"));
 
   // Catch-all 404 response for any other route
   app.all("*", (req, res) =>
