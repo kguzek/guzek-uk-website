@@ -1,7 +1,7 @@
-const fs = require("fs");
-const express = require("express");
+import fs from "fs";
+import express from "express";
 const router = express.Router();
-const { sendError, sendOK } = require("../util");
+import { sendError, sendOK } from "../util";
 
 const LOGS_DIRECTORY = "logs/";
 const ERROR_LOG_FILE = "error.log";
@@ -24,7 +24,7 @@ router
           return JSON.parse(line);
         } catch (parseErr) {
           // The string could not be parsed; put in its place the error message
-          const msg = parseErr.message;
+          const msg = (parseErr as Error).message;
           const errorDescription = `Error parsing line ${index + 1}: ${msg}.`;
           return { errorDescription };
         }
