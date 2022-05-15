@@ -2,8 +2,9 @@
 import cors from "cors";
 import express from "express";
 import bodyParser from "body-parser";
-import { sendError } from "./util";
-import { getLogger, loggingMiddleware } from "./logger";
+import { sendError } from "./src/util";
+import { getLogger, loggingMiddleware } from "./src/logger";
+import { initialiseDatabasePool } from "./src/mysql.connector";
 
 const logger = getLogger(__filename);
 
@@ -17,6 +18,9 @@ console.log(); // Add newline before app output for readability
 
 /** Initialises the HTTP RESTful API server. */
 function initialise() {
+  // Create the database pool
+  initialiseDatabasePool();
+  
   // Enable middleware
   app.use(cors());
   app.use(bodyParser.json());

@@ -1,7 +1,7 @@
 import fs from "fs";
 import express from "express";
 const router = express.Router();
-import { sendError, sendOK } from "../util";
+import { sendError, sendOK } from "../src/util";
 
 const LOGS_DIRECTORY = "logs/";
 const ERROR_LOG_FILE = "error.log";

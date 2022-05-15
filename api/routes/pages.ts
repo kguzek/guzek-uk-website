@@ -6,7 +6,7 @@ import {
   replaceDatabase,
   modifyInDatabase,
   deleteFromDatabase,
-} from "../util";
+} from "../src/util";
 
 router
   // CREATE new page
