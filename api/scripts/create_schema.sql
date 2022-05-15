@@ -1,0 +1,8 @@
+CREATE DATABASE guzek_uk;
+CREATE TABLE `guzek_uk`.`pages` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`title` VARCHAR(45) NOT NULL,
+	`url` VARCHAR(45) NOT NULL,
+	`hidden` BOOLEAN NULL,
+	PRIMARY KEY (`id`)
+);
