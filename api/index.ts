@@ -2,10 +2,9 @@
 import cors from "cors";
 import express from "express";
 import bodyParser from "body-parser";
+import "dotenv/config";
 import { sendError } from "./src/util";
 import { getLogger, loggingMiddleware } from "./src/logger";
-import { initialiseDatabasePool } from "./src/mysql.connector";
-import ".src/sequelize";
 
 const logger = getLogger(__filename);
 
@@ -15,20 +14,23 @@ const app = express();
 // Determine the server port
 const PORT = process.env.NODE_PORT;
 
+// Define the endpoints
+const ENDPOINTS = ["pages"];
+
 console.log(); // Add newline before app output for readability
 
 /** Initialises the HTTP RESTful API server. */
 function initialise() {
-  // Create the database pool
-  initialiseDatabasePool();
-
   // Enable middleware
   app.use(cors());
   app.use(bodyParser.json());
   app.use(loggingMiddleware);
 
   // Enable individual API routes
-  app.use("/pages", require("./routes/pages"));
+  for (const endpoint of ENDPOINTS) {
+    const middleware = require("./routes/" + endpoint)
+    app.use("/" + endpoint, middleware.router);
+  }
 
   // Catch-all 404 response for any other route
   app.all("*", (req, res) =>

@@ -1,9 +1,8 @@
-import { Response } from "express";
-
-import fs from "fs";
+import { Request, Response } from "express";
+import { Model } from "sequelize/types";
 import { getLogger } from "./logger";
+import { Page } from "./sequelize";
 
-const DATABASE_DIRECTORY = "database/";
 const logger = getLogger(__filename);
 
 interface StatusCodeMap {
@@ -36,174 +35,76 @@ export function sendError(
   code: number,
   error: ServerError = { message: "Unknown error." }
 ) {
-  const codeDescription = `${code} ${STATUS_CODES[code] || STATUS_CODES[500]}`;
+  const codeDescription = `${code} ${STATUS_CODES[code] ?? STATUS_CODES[500]}`;
   const jsonRes = { [codeDescription]: error.message };
   logger.response(`${codeDescription}: ${error.message}`);
   res.status(code).json(jsonRes);
 }
 
-/** Reads the given file and calls the callback if it was parsed as JSON successfully.
- * Otherwise, sends the appropriate HTTP 404 or 500 response.
- */
-function _readFile(filename: string, res: Response, callback: Function) {
-  fs.readFile(`${DATABASE_DIRECTORY}${filename}.json`, (fileErr, data) => {
-    if (fileErr) {
-      // The file could not be read
-      return void sendError(res, 404, fileErr);
-    }
-    try {
-      // Return the file contents as JSON
-      var parsed = JSON.parse(data as unknown as string);
-    } catch (parseErr) {
-      // The file contents could not be parsed as JSON
-      return void sendError(res, 500, parseErr as Error);
-    }
-    callback(parsed);
-  });
-}
-
-/** Encodes the raw object as an unsigned integer array and writes it to the destination. */
-function _writeFile(
-  filename: string,
-  dataObj: object,
-  res: Response,
-  callback: Function
+/** Creates a new database entry in the database table model derivative provided. */
+export async function createDatabaseEntry(
+  model: typeof Page,
+  req: Request,
+  res: Response
 ) {
-  const dataString = JSON.stringify(dataObj, undefined, 4);
-  const data = new Uint8Array(Buffer.from(dataString));
-  fs.writeFile(`${DATABASE_DIRECTORY}${filename}.json`, data, (err) => {
-    if (err) {
-      return sendError(res, 500, err);
-    } else {
-      callback();
-    }
-  });
-}
-
-/** Checks if the input object contains any keys.
- * If so, returns true.
- * Otherwise, sends a 400 response and returns false.
- */
-function _parseObjectInput(res: Response, input: object) {
-  if (Object.keys(input).length > 0) {
-    return true;
+  let obj;
+  try {
+    obj = await model.create(req.body);
+  } catch (error) {
+    return void sendError(res, 400, error as Error);
   }
-  sendError(res, 400, {
-    message:
-      "Invalid request body. Must be an object containing at least one field to update.",
-  });
-  return false;
+
+  sendOK(res, obj);
 }
 
-/** Checks if the input is an array.
- * If so, returns true.
- * Otherwise, sends a 400 response and returns false.
- */
-function _parseArrayInput(res: Response, input: object[]) {
-  if (Array.isArray(input)) {
-    return true;
-  }
-  sendError(res, 400, {
-    message: `Invalid request body. Must be an array containing data. `,
-  });
-  return false;
-}
-
-/** Checks if the input string can be parsed as an integer.
- * If so, returns the parsed integer.
- * Otherwise, sends a 400 response and returns null. */
-function _parseIntegerInput(res: Response, input: string) {
-  const parsed = parseInt(input);
-  if (!isNaN(parsed)) {
-    return parsed;
-  }
-  sendError(res, 400, {
-    message: `Invalid input '${input}'.`,
-  });
-  return null;
-}
-
-/** Appends a JS object to an array within a JSON file. */
-export function appendToDatabase(
-  res: Response,
-  filename: string,
-  newData = {}
+/** Retrieves all entries in the database table model derivative provided. */
+export async function readAllDatabaseEntries(
+  model: typeof Page,
+  res: Response
 ) {
-  // Check if the object contains any keys
-  if (!_parseObjectInput(res, newData)) {
-    // It is an empty object; error response has been sent
-    return;
+  let objs;
+  try {
+    objs = await model.findAll();
+  } catch (error) {
+    return void sendError(res, 500, error as Error);
   }
-  // Retrieve the old data
-  _readFile(filename, res, (data: object[]) => {
-    // Append the new object to the array of existing objects
-    const updatedData = [...data, newData];
-    // Replace the entire file with the merged data
-    _writeFile(filename, updatedData, res, () => {
-      // Send the merged data as JSON
-      sendOK(res, updatedData);
+  sendOK(res, objs);
+}
+
+/** Updates the entry with the request payload in the database table model derivative provided. */
+export async function updateDatabaseEntry(
+  model: typeof Page,
+  req: Request,
+  res: Response
+) {
+  let result: number[];
+  try {
+    result = await model.update(req.body, {
+      where: {
+        id: req.params.id,
+      },
     });
-  });
-}
-
-/** Replaces the entire JSON file with the given data. */
-export function replaceDatabase(res: Response, filename: string, newData = []) {
-  if (!_parseArrayInput(res, newData)) {
-    return;
+  } catch (error) {
+    return void sendError(res, 400, error as Error);
   }
-  _writeFile(filename, newData, res, () => sendOK(res, newData));
+  sendOK(res, { affectedRows: result.shift() });
 }
 
-/** Replaces the entry with the given index in the array within a JSON file. */
-export function modifyInDatabase(
-  res: Response,
-  filename: string,
-  indexStr: string,
-  newData = {}
+/** Deletes the specified entry from the database table model derivative provided. */
+export async function deleteDatabaseEntry(
+  model: typeof Page,
+  req: Request,
+  res: Response
 ) {
-  // Check if the input string index could not be parsed or if the data has no keys
-  const index = _parseIntegerInput(res, indexStr);
-  if (index === null || !_parseObjectInput(res, newData)) {
-    return;
+  let destroyedRows: number;
+  try {
+    destroyedRows = await model.destroy({
+      where: {
+        id: req.params.id,
+      },
+    });
+  } catch (error) {
+    return void sendError(res, 400, error as Error);
   }
-  // Read the document and replace the entry object
-  _readFile(filename, res, (data: object[]) => {
-    if (data.length < index + 1) {
-      sendError(res, 400, {
-        message: `The data only contains ${
-          data.length
-        } items. Cannot modify element ${index + 1}.`,
-      });
-    } else {
-      data[index] = newData;
-      _writeFile(filename, data, res, () => sendOK(res, data));
-    }
-  });
-}
-
-/** Sends the entire contents of a JSON file. */
-export function readFromDatabase(res: Response, filename: string) {
-  // Read the entire document and send its contents
-  _readFile(filename, res, (data: object) => sendOK(res, data));
-}
-
-/** Removes an item with the given index from the array within a JSON file. */
-export function deleteFromDatabase(
-  res: Response,
-  filename: string,
-  indexStr: string
-) {
-  // Check if the input string index could not be parsed
-  const index = _parseIntegerInput(res, indexStr);
-  if (index === null) {
-    return;
-  }
-  // Read the file and remove the item at the specified index
-  _readFile(filename, res, (data: object[]) => {
-    data.splice(index, 1);
-    // Write the spliced array
-    _writeFile(filename, data, res, () =>
-      sendOK(res, { success: `Item with index ${index} was deleted.` })
-    );
-  });
+  sendOK(res, { destroyedRows });
 }

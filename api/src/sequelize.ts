@@ -1,4 +1,4 @@
-import { DataTypes, Sequelize } from "sequelize/types";
+import { DataTypes, Model, Sequelize } from "sequelize";
 import { DATA_SOURCES } from "../config/vars.config";
 
 // Initialise Sequelize
@@ -12,16 +12,25 @@ const sequelize = new Sequelize(
   }
 );
 
-const Page = sequelize.define("Page", {
-  title: {
-    type: DataTypes.STRING,
-    allowNull: false,
+export class Page extends Model {}
+
+Page.init(
+  {
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    url: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    hidden: {
+      type: DataTypes.BOOLEAN,
+    },
   },
-  url: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  hidden: {
-    type: DataTypes.BOOLEAN,
-  },
-});
+  {
+    sequelize,
+    modelName: "Page",
+    timestamps: false,
+  }
+);

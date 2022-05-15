@@ -1,35 +1,31 @@
 import express, { Request, Response } from "express";
-const router = express.Router();
+import { Page } from "../src/sequelize";
 import {
-  appendToDatabase,
-  readFromDatabase,
-  replaceDatabase,
-  modifyInDatabase,
-  deleteFromDatabase,
+  createDatabaseEntry,
+  deleteDatabaseEntry,
+  readAllDatabaseEntries,
+  updateDatabaseEntry,
 } from "../src/util";
+
+export const router = express.Router();
 
 router
   // CREATE new page
-  .post("/", (req: Request, res: Response) => {
-    
+  .post("/", async (req: Request, res: Response) => {
+    await createDatabaseEntry(Page, req, res);
   })
 
   // READ all pages
-  .get("/", (_req: Request, res: Response) => readFromDatabase(res, "pages"))
-
-  // UPDATE all pages
-  .put("/", (req: Request, res: Response) =>
-    replaceDatabase(res, "pages", req.body)
-  )
+  .get("/", async (_req: Request, res: Response) => {
+    await readAllDatabaseEntries(Page, res);
+  })
 
   // UPDATE single page
-  .put("/:index", (req: Request, res: Response) =>
-    modifyInDatabase(res, "pages", req.params.index, req.body)
-  )
+  .put("/:id", async (req: Request, res: Response) => {
+    await updateDatabaseEntry(Page, req, res);
+  })
 
   // DELETE single page
-  .delete("/:index", (req: Request, res: Response) =>
-    deleteFromDatabase(res, "pages", req.params.index)
-  );
-
-module.exports = router;
+  .delete("/:id", async (req: Request, res: Response) => {
+    await deleteDatabaseEntry(Page, req, res);
+  });
