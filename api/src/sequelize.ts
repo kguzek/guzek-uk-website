@@ -32,5 +32,6 @@ Page.init(
     sequelize,
     modelName: "Page",
     timestamps: false,
+    tableName: "pages",
   }
 );
