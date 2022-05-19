@@ -23,7 +23,7 @@ interface TranslationContainer {
 const TRANSLATIONS: TranslationContainer = {
   EN: {
     header: "Guzek UK",
-    footer: "Copyright {YEAR} by KonCorp Media",
+    footer: "{YEAR} \u00a9 Konrad Guzek",
     title: "Guzek UK",
     language: "Language",
     bodyHome: "Welcome to the Guzek UK Homepage!",
@@ -40,7 +40,7 @@ const TRANSLATIONS: TranslationContainer = {
   },
   PL: {
     header: "Guzek UK",
-    footer: "{YEAR} KonCorp Media",
+    footer: "{YEAR} \u00a9 Konrad Guzek",
     title: "Guzek UK",
     language: "Język",
     bodyHome: "Witaj na stronie głównej Guzek UK!",
