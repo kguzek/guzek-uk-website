@@ -5,6 +5,5 @@ CREATE USER 'guzek_uk_api' @'localhost' IDENTIFIED BY 'CHANGE_THIS_PASSWORD';
 /* In an ideal world, we should strictly provide the grants the API has access
  * to a specific table rather than all the privileges.
  */
-GRANT ALL PRIVILEGES ON guzek_uk.pages TO 'guzek_uk_api' @'localhost';
+GRANT ALL PRIVILEGES ON `guzek_uk`.`*` TO 'guzek_uk_api' @'localhost';
 FLUSH PRIVILEGES;
-

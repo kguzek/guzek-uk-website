@@ -1,18 +1,21 @@
 {
-	"sqltools.connections": [
-		{
-			"mysqlOptions": {
-				"authProtocol": "xprotocol"
-			},
-			"previewLimit": 10,
-			"server": "localhost",
-			"port": 3306,
-			"askForPassword": true,
-			"driver": "MySQL",
-			"name": "Guzek UK API",
-			"database": "guzek_uk",
-			"username": "guzek_uk_api",
-			"connectionTimeout": 28800
-		}
-	]
+  "sqltools.connections": [
+    {
+      "mysqlOptions": {
+        "authProtocol": "xprotocol"
+      },
+      "previewLimit": 10,
+      "server": "localhost",
+      "port": 3306,
+      "askForPassword": true,
+      "driver": "MySQL",
+      "name": "Guzek UK API",
+      "database": "guzek_uk",
+      "username": "guzek_uk_api",
+      "connectionTimeout": 28800
+    }
+  ],
+  "python.linting.pylintEnabled": true,
+  "python.linting.enabled": true,
+  "python.linting.pylintArgs": ["--rcfile=../api/v2/.pylintrc"]
 }

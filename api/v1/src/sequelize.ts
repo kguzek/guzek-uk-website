@@ -3,7 +3,7 @@ import { DATA_SOURCES } from "../config/vars.config";
 
 // Initialise Sequelize
 const sequelize = new Sequelize(
-  DATA_SOURCES.mySQL.DB_DATABASE,
+  DATA_SOURCES.mySQL.DB_NAME,
   DATA_SOURCES.mySQL.DB_USER,
   DATA_SOURCES.mySQL.DB_PASSWORD,
   {
