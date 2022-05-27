@@ -11,6 +11,9 @@ autopep8 = "*"
 pep8 = "*"
 python-dotenv = "*"
 pylint-django = "*"
+djangorestframework = "*"
+django-filter = "*"
+markdown = "*"
 
 [dev-packages]
 
