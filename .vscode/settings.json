@@ -17,5 +17,6 @@
   ],
   "python.linting.pylintEnabled": true,
   "python.linting.enabled": true,
-  "python.linting.pylintArgs": ["--rcfile=../api/v2/.pylintrc"]
+  "python.linting.pylintArgs": ["--rcfile=../api/v2/.pylintrc"],
+  "typescript.tsdk": "./website/.yarn/sdks/typescript/lib"
 }
