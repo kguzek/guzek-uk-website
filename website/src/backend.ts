@@ -1,7 +1,7 @@
-const USE_EMULATOR_URL = false;
+const USE_EMULATOR_URL = 1;
 const CACHE_NAME = "guzek-uk-cache";
 
-const API_URL =
+export const API_URL =
   process.env.NODE_ENV === "development" && USE_EMULATOR_URL
     ? "http://localhost:5017/"
     : "https://api.guzek.uk/";
@@ -35,4 +35,17 @@ export async function fetchCachedData(
     await cache.put(request, response.clone());
   }
   return response;
+}
+
+export function fetchFromAPI(
+  path: string,
+  method: string = "GET",
+  body?: object
+) {
+  const options: RequestInit = { method };
+  if (body) {
+    options.headers = { "Content-Type": "application/json" };
+    options.body = JSON.stringify(body);
+  }
+  return fetch(API_URL + path, options);
 }
