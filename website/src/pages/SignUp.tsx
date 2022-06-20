@@ -1,5 +1,6 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { API_URL, fetchFromAPI } from "../backend";
 import InputBox from "../components/Forms/InputBox";
 import { LoadingButton } from "../components/LoadingScreen";
 import { Translation } from "../translations";
@@ -33,29 +34,26 @@ export default function SignUp({
       return;
     }
     setLoading(true);
-    for (const func of [
-      setName,
-      setSurname,
-      setEmail,
-      setPassword,
-      setRepeatPassword,
-    ]) {
-      func("");
-    }
+    // for (const func of [
+    //   setName,
+    //   setSurname,
+    //   setEmail,
+    //   setPassword,
+    //   setRepeatPassword,
+    // ]) {
+    //   func("");
+    // }
     const data = {
       name,
       surname,
       email,
       password,
     };
-    const res = await fetch("https://api.guzek.uk/auth/create-account", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
+    const res = await fetchFromAPI("auth/create-account", "POST", data);
     const json = await res.json();
     setLoading(false);
     if (res.ok) {
-      setUser();
+      setUser(json);
     } else {
       const msg = Object.entries(json).shift() ?? [];
       setErrorMessage(msg.join(": "));

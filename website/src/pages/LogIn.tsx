@@ -1,5 +1,6 @@
 import React, { FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
+import { API_URL, fetchFromAPI } from "../backend";
 import InputBox from "../components/Forms/InputBox";
 import LoadingScreen, { LoadingButton } from "../components/LoadingScreen";
 import { Translation } from "../translations";
@@ -28,14 +29,11 @@ export default function LogIn({
       email,
       password,
     };
-    const res = await fetch("https://api.guzek.uk/auth/login", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
+    const res = await fetchFromAPI("auth/login", "POST", data);
     const json = await res.json();
     setLoading(false);
     if (res.ok) {
-      setUser();
+      setUser({ email });
     } else {
       setErrorMessage("Invalid credentials.");
     }
