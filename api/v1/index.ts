@@ -2,9 +2,13 @@
 import cors from "cors";
 import express from "express";
 import bodyParser from "body-parser";
-import "dotenv/config";
+import dotenv from "dotenv";
 import { sendError } from "./src/util";
 import { getLogger, loggingMiddleware } from "./src/logger";
+import path from "path";
+const password = require("s-salt-pepper");
+
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const logger = getLogger(__filename);
 
@@ -15,12 +19,21 @@ const app = express();
 const PORT = process.env.NODE_PORT;
 
 // Define the endpoints
-const ENDPOINTS = ["pages"];
+const ENDPOINTS = ["pages", "auth"];
 
 console.log(); // Add newline before app output for readability
 
 /** Initialises the HTTP RESTful API server. */
 function initialise() {
+  const iterations = process.env.HASH_ITERATIONS;
+  if (!iterations) {
+    console.log(process.env);
+    logger.error("No hash_iterations environment variable set.");
+    return;
+  }
+  password.iterations(parseInt(iterations));
+  password.pepper(process.env.HASH_PEPPER);
+
   // Enable middleware
   app.use(cors());
   app.use(bodyParser.json());
@@ -28,7 +41,7 @@ function initialise() {
 
   // Enable individual API routes
   for (const endpoint of ENDPOINTS) {
-    const middleware = require("./routes/" + endpoint)
+    const middleware = require("./routes/" + endpoint);
     app.use("/" + endpoint, middleware.router);
   }
 

@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { WhereOptions } from "sequelize";
 import { Model } from "sequelize/types";
 import { getLogger } from "./logger";
 import { Page } from "./sequelize";
@@ -45,16 +46,18 @@ export function sendError(
 export async function createDatabaseEntry(
   model: typeof Page,
   req: Request,
-  res: Response
+  res: Response,
+  modelParams?: object,
+  sendMethod?: Function
 ) {
   let obj;
   try {
-    obj = await model.create(req.body);
+    obj = await model.create(modelParams ?? req.body);
   } catch (error) {
     return void sendError(res, 400, error as Error);
   }
 
-  sendOK(res, obj);
+  (sendMethod ?? sendOK)(res, obj);
 }
 
 /** Retrieves all entries in the database table model derivative provided. */
@@ -69,6 +72,29 @@ export async function readAllDatabaseEntries(
     return void sendError(res, 500, error as Error);
   }
   sendOK(res, objs);
+}
+
+/** Retrieves all entries in the database with the provided values and returns the array. */
+export async function readDatabaseEntry(
+  model: typeof Page,
+  res: Response,
+  filter: WhereOptions,
+  onError?: Function
+) {
+  let objs;
+  try {
+    objs = await model.findAll({ where: filter });
+    if (objs.length === 0) {
+      throw Error("The database query returned no results.");
+    }
+  } catch (error) {
+    if (onError) {
+      return void onError(error);
+    } else {
+      return void sendError(res, 500, error as Error);
+    }
+  }
+  return objs;
 }
 
 /** Updates the entry with the request payload in the database table model derivative provided. */

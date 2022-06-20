@@ -13,6 +13,7 @@ const sequelize = new Sequelize(
 );
 
 export class Page extends Model {}
+export class User extends Model {}
 
 Page.init(
   {
@@ -33,5 +34,39 @@ Page.init(
     modelName: "Page",
     timestamps: false,
     tableName: "pages",
+  }
+);
+
+User.init(
+  {
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    surname: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    hash: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    salt: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    admin: {
+      type: DataTypes.BOOLEAN,
+    },
+  },
+  {
+    sequelize,
+    modelName: "User",
+    timestamps: false,
+    tableName: "users",
   }
 );
