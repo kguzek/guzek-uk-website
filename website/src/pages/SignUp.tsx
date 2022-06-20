@@ -91,7 +91,7 @@ export default function SignUp({
           setValue={setRepeatPassword}
         />
         {errorMessage && <p className="error-msg">{errorMessage}</p>}
-        {loading || 1 ? (
+        {loading ? (
           <LoadingButton className="login" color="white" />
         ) : (
           <button type="submit" className="login-btn submit-btn">
