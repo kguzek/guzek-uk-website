@@ -10,3 +10,17 @@ export default function LoadingScreen() {
     </div>
   );
 }
+
+export function LoadingButton({
+  className,
+  color,
+}: {
+  className: string;
+  color?: string;
+}) {
+  return (
+    <div className={className}>
+      <ThreeDots color={color} />
+    </div>
+  );
+}
