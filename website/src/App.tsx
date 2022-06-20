@@ -11,6 +11,9 @@ import Profile from "./pages/Profile";
 import PipeDesigner from "./pages/PipeDesigner";
 import LoadingScreen from "./components/LoadingScreen";
 import "./styles/styles.css";
+import "./styles/forms.css";
+import LogIn from "./pages/LogIn";
+import SignUp from "./pages/SignUp";
 
 function App() {
   const [userLanguage, setUserLanguage] = useState<string>("EN");
@@ -66,10 +69,10 @@ function App() {
   }, [userLanguage]);
 
   /** Event handler for when the user selects one of the lanugage options. */
-  function changeLang(event: MouseEvent<HTMLButtonElement>) {
-    event.preventDefault();
+  function changeLang(evt: MouseEvent<HTMLButtonElement>) {
+    evt.preventDefault();
     // Get the button text and remove whitespaces as well as Non-Breaking Spaces (&nbsp;)
-    const button = event.target as HTMLButtonElement;
+    const button = evt.target as HTMLButtonElement;
     const elemText = button.textContent || button.innerText;
     const lang = elemText.replace(/[\s\u00A0]/, "");
     if (TRANSLATIONS.hasOwnProperty(lang)) {
@@ -101,6 +104,26 @@ function App() {
           path="profile"
           element={
             <Profile
+              data={pageContent}
+              user={currentUser}
+              setUser={setCurrentUser}
+            />
+          }
+        />
+        <Route
+          path="login"
+          element={
+            <LogIn
+              data={pageContent}
+              user={currentUser}
+              setUser={setCurrentUser}
+            />
+          }
+        />
+        <Route
+          path="signup"
+          element={
+            <SignUp
               data={pageContent}
               user={currentUser}
               setUser={setCurrentUser}
