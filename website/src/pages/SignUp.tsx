@@ -1,6 +1,6 @@
 import React, { FormEvent, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { API_URL, fetchFromAPI } from "../backend";
+import { Link, useNavigate } from "react-router-dom";
+import { fetchFromAPI } from "../backend";
 import InputBox from "../components/Forms/InputBox";
 import { LoadingButton } from "../components/LoadingScreen";
 import { Translation } from "../translations";
@@ -22,6 +22,11 @@ export default function SignUp({
 
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) navigate("/profile");
+  }, [user]);
 
   useEffect(() => {
     setErrorMessage("");
@@ -33,6 +38,7 @@ export default function SignUp({
       setErrorMessage("Passwords do not match.");
       return;
     }
+    setErrorMessage("");
     setLoading(true);
     // for (const func of [
     //   setName,
@@ -54,6 +60,7 @@ export default function SignUp({
     setLoading(false);
     if (res.ok) {
       setUser(json);
+      console.log(json);
     } else {
       const msg = Object.entries(json).shift() ?? [];
       setErrorMessage(msg.join(": "));

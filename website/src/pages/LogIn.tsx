@@ -1,6 +1,6 @@
-import React, { FormEvent, useState } from "react";
-import { Link } from "react-router-dom";
-import { API_URL, fetchFromAPI } from "../backend";
+import React, { FormEvent, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { fetchFromAPI } from "../backend";
 import InputBox from "../components/Forms/InputBox";
 import LoadingScreen, { LoadingButton } from "../components/LoadingScreen";
 import { Translation } from "../translations";
@@ -18,9 +18,15 @@ export default function LogIn({
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) navigate("/profile");
+  }, [user]);
 
   async function handleLogin(evt: FormEvent<HTMLFormElement>) {
     evt.preventDefault();
+    setErrorMessage("");
     setLoading(true);
     for (const func of [setEmail, setPassword]) {
       func("");
@@ -33,7 +39,7 @@ export default function LogIn({
     const json = await res.json();
     setLoading(false);
     if (res.ok) {
-      setUser({ email });
+      setUser(json);
     } else {
       setErrorMessage("Invalid credentials.");
     }
