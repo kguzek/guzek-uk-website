@@ -6,7 +6,7 @@ export default function PipeDesigner({ data }: { data: Translation }) {
   const [attemptedRefresh, setAttemptedRefresh] = useState(false);
 
   useEffect(() => {
-    document.title = data.titlePipeDesigner + " | " + data.title;
+    document.title = data.pipeDesigner.title + " | " + data.title;
   }, [data]);
 
   useEffect(() => {
@@ -26,9 +26,9 @@ export default function PipeDesigner({ data }: { data: Translation }) {
   if (attemptedRefresh) {
     return (
       <div className="text">
-        <p>{data.bodyPipeDesigner}</p>
+        <p>{data.pipeDesigner.body}</p>
       </div>
     );
   }
-  return <LoadingScreen />;
+  return <LoadingScreen text={data.loading} />;
 }

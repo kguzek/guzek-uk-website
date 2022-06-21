@@ -1,5 +1,6 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { user } from "../App";
 import { fetchFromAPI } from "../backend";
 import InputBox from "../components/Forms/InputBox";
 import LoadingScreen, { LoadingButton } from "../components/LoadingScreen";
@@ -39,14 +40,14 @@ export default function LogIn({
     const json = await res.json();
     setLoading(false);
     if (res.ok) {
-      setUser(json);
+      setUser(json as user);
     } else {
       setErrorMessage("Invalid credentials.");
     }
   }
 
   if (loading) {
-    return <LoadingScreen />;
+    return <LoadingScreen className="login-page" text={data.profile.loading} />;
   }
 
   return (
@@ -69,13 +70,13 @@ export default function LogIn({
           <LoadingButton className="login" color="white" />
         ) : (
           <button type="submit" className="login-btn submit-btn">
-            Log In
+            {data.formDetails.login}
           </button>
         )}
       </form>
-      <p>or</p>
+      <p>{data.formDetails.or}</p>
       <Link to="/signup" className="signup-btn">
-        <i>Sign Up</i>
+        <i>{data.formDetails.signup}</i>
       </Link>
     </div>
   );

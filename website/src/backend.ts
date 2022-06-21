@@ -1,4 +1,4 @@
-const USE_EMULATOR_URL = 1;
+const USE_EMULATOR_URL = false;
 const CACHE_NAME = "guzek-uk-cache";
 
 export const API_URL =

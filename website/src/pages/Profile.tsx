@@ -1,4 +1,4 @@
-import React from "react";
+import React, { MouseEvent } from "react";
 import { Link } from "react-router-dom";
 import { Translation } from "../translations";
 
@@ -11,22 +11,28 @@ function Profile({
   user: any;
   setUser: Function;
 }) {
+  function handleLogOut(evt: MouseEvent<HTMLButtonElement>) {
+    setUser(null);
+    localStorage.removeItem("user");
+  }
+
   if (!user) {
-    return <LogInButton />;
+    return (
+      <div className="login">
+        <Link to="/login" className="login-btn">
+          {data.formDetails.login}
+        </Link>
+      </div>
+    );
   }
   return (
     <div className="text">
-      <p>Your Profile</p>
-    </div>
-  );
-}
-
-function LogInButton() {
-  return (
-    <div className="login">
-      <Link to="/login" className="login-btn">
-        Log In
-      </Link>
+      <p>{data.profile.body}</p>
+      <div className="login-page">
+        <button className="login-btn submit-btn" onClick={handleLogOut}>
+          {data.formDetails.logout}
+        </button>
+      </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { user } from "../App";
 import { fetchFromAPI } from "../backend";
 import InputBox from "../components/Forms/InputBox";
 import { LoadingButton } from "../components/LoadingScreen";
@@ -59,8 +60,7 @@ export default function SignUp({
     const json = await res.json();
     setLoading(false);
     if (res.ok) {
-      setUser(json);
-      console.log(json);
+      setUser(json as user);
     } else {
       const msg = Object.entries(json).shift() ?? [];
       setErrorMessage(msg.join(": "));
@@ -70,27 +70,32 @@ export default function SignUp({
   return (
     <div className="login-page">
       <form className="login" onSubmit={handleSignUp}>
-        <InputBox label="Name" type="text" value={name} setValue={setName} />
         <InputBox
-          label="Surname"
+          label={data.formDetails.name}
+          type="text"
+          value={name}
+          setValue={setName}
+        />
+        <InputBox
+          label={data.formDetails.surname}
           type="text"
           value={surname}
           setValue={setSurname}
         />
         <InputBox
-          label="Email"
+          label={data.formDetails.email}
           type="email"
           value={email}
           setValue={setEmail}
         />
         <InputBox
-          label="Password"
+          label={data.formDetails.password}
           type="password"
           value={password}
           setValue={setPassword}
         />
         <InputBox
-          label="Repeat password"
+          label={data.formDetails.passwordRepeat}
           type="password"
           value={repeatPassword}
           setValue={setRepeatPassword}
@@ -100,13 +105,13 @@ export default function SignUp({
           <LoadingButton className="login" color="white" />
         ) : (
           <button type="submit" className="login-btn submit-btn">
-            Sign Up
+            {data.formDetails.signup}
           </button>
         )}
       </form>
-      <p>have an account already?</p>
+      <p>{data.formDetails.haveAccountAlready}</p>
       <Link to="/login" className="signup-btn">
-        <i>Log In</i>
+        <i>{data.formDetails.login}</i>
       </Link>
     </div>
   );

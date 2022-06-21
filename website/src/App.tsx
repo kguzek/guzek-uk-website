@@ -15,11 +15,22 @@ import "./styles/forms.css";
 import LogIn from "./pages/LogIn";
 import SignUp from "./pages/SignUp";
 
-function App() {
+export default function App() {
   const [userLanguage, setUserLanguage] = useState<string>("EN");
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [currentUser, setCurrentUser] = useState<user | null>(null);
   const [menuItems, setMenuItems] = useState<MenuItem[] | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    const localUser = localStorage.getItem("user");
+    if (currentUser) {
+      if (!localUser) {
+        localStorage.setItem("user", JSON.stringify(currentUser));
+      }
+    } else if (localUser) {
+      setCurrentUser(JSON.parse(localUser));
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     /** Removes the given search parameter from the client-side URL. */
@@ -82,7 +93,9 @@ function App() {
 
   const pageContent = TRANSLATIONS[userLanguage];
   if (!pageContent || !menuItems) {
-    return <LoadingScreen />;
+    return (
+      <LoadingScreen text={`${pageContent.loading} ${pageContent.title}`} />
+    );
   }
   return (
     <div className="App">
@@ -137,4 +150,10 @@ function App() {
   );
 }
 
-export default App;
+export interface user {
+  name: string;
+  surname: string;
+  email: string;
+  admin: boolean;
+  token: string;
+}
