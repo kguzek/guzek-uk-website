@@ -18,7 +18,7 @@ export default function LogIn({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [invalidCredentials, setInvalidCredentials] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export default function LogIn({
 
   async function handleLogin(evt: FormEvent<HTMLFormElement>) {
     evt.preventDefault();
-    setErrorMessage("");
+    setInvalidCredentials(false);
     setLoading(true);
     for (const func of [setEmail, setPassword]) {
       func("");
@@ -42,7 +42,7 @@ export default function LogIn({
     if (res.ok) {
       setUser(json as user);
     } else {
-      setErrorMessage(data.profile.invalidCredentials);
+      setInvalidCredentials(true);
     }
   }
 
@@ -65,7 +65,9 @@ export default function LogIn({
           value={password}
           setValue={setPassword}
         />
-        {errorMessage && <p className="error-msg">{errorMessage}</p>}
+        {invalidCredentials && (
+          <p className="error-msg">{data.profile.invalidCredentials}</p>
+        )}
         {loading ? (
           <LoadingButton className="login" color="white" />
         ) : (
