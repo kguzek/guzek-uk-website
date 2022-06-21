@@ -20,6 +20,7 @@ export interface Translation {
   readonly profile: {
     body: string;
     loading: string;
+    invalidCredentials: string;
   };
   readonly formDetails: {
     name: string;
@@ -57,7 +58,8 @@ const TRANSLATIONS: { [lang: string]: Translation } = {
     },
     profile: {
       body: "Welcome to your profile!",
-      loading: "Loading profile",
+      loading: "Validating",
+      invalidCredentials: "Invalid credentials.",
     },
     formDetails: {
       name: "Name",
@@ -93,7 +95,8 @@ const TRANSLATIONS: { [lang: string]: Translation } = {
     },
     profile: {
       body: "Witamy na Twoim profilu!",
-      loading: "Trwa ładowanie profilu",
+      loading: "Trwa walidacja",
+      invalidCredentials: "Niepoprawne dane loginowe.",
     },
     formDetails: {
       name: "Imię",

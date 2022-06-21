@@ -32,17 +32,17 @@ export default function LogIn({
     for (const func of [setEmail, setPassword]) {
       func("");
     }
-    const data = {
+    const fetchData = {
       email,
       password,
     };
-    const res = await fetchFromAPI("auth/login", "POST", data);
+    const res = await fetchFromAPI("auth/login", "POST", fetchData);
     const json = await res.json();
     setLoading(false);
     if (res.ok) {
       setUser(json as user);
     } else {
-      setErrorMessage("Invalid credentials.");
+      setErrorMessage(data.profile.invalidCredentials);
     }
   }
 

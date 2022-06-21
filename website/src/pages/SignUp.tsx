@@ -50,13 +50,13 @@ export default function SignUp({
     // ]) {
     //   func("");
     // }
-    const data = {
+    const fetchData = {
       name,
       surname,
       email,
       password,
     };
-    const res = await fetchFromAPI("auth/create-account", "POST", data);
+    const res = await fetchFromAPI("auth/create-account", "POST", fetchData);
     const json = await res.json();
     setLoading(false);
     if (res.ok) {
