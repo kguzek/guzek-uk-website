@@ -54,13 +54,13 @@ export default function LogIn({
     <div className="login-page">
       <form className="login" onSubmit={handleLogin}>
         <InputBox
-          label="Email"
+          label={data.formDetails.email}
           type="email"
           value={email}
           setValue={setEmail}
         />
         <InputBox
-          label="Password"
+          label={data.formDetails.password}
           type="password"
           value={password}
           setValue={setPassword}
