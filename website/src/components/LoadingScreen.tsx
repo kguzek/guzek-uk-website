@@ -2,10 +2,16 @@ import React from "react";
 import { ThreeDots } from "react-loader-spinner";
 import "../styles/loadingScreen.css";
 
-export default function LoadingScreen() {
+export default function LoadingScreen({
+  text,
+  className = "loading-screen",
+}: {
+  text: string;
+  className?: string;
+}) {
   return (
-    <div className="loading-screen">
-      <h2 className="loading-text">Loading Guzek UK</h2>
+    <div className={className}>
+      <h2 className="loading-text">{text}</h2>
       <ThreeDots height={15} />
     </div>
   );
