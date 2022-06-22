@@ -1,8 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import path from "path";
-import { createLogger, format, Logger, LoggerOptions, transports } from "winston";
+import {
+  createLogger,
+  format,
+  Logger,
+  LoggerOptions,
+  transports,
+} from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
-import TransportStream from "winston-transport";
 
 const c = {
   clr: "\x1b[0m",
@@ -37,7 +42,11 @@ interface Colour {
 }
 
 interface CustomLoggerOptions extends LoggerOptions {
-  transports: TransportStream[];
+  transports: Array<
+    | transports.FileTransportInstance
+    | transports.ConsoleTransportInstance
+    | DailyRotateFile
+  >;
 }
 
 interface CustomLogger extends Logger {

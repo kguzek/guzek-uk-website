@@ -1,7 +1,6 @@
 // Initialise dependencies
 import cors from "cors";
 import express from "express";
-import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { sendError } from "./src/util";
 import { getLogger, loggingMiddleware } from "./src/logger";
@@ -36,7 +35,7 @@ function initialise() {
 
   // Enable middleware
   app.use(cors());
-  app.use(bodyParser.json());
+  app.use(express.json());
   app.use(loggingMiddleware);
 
   // Enable individual API routes
