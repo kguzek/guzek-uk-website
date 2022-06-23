@@ -13,11 +13,11 @@ export function getTokenSecret(type: string) {
 const ENDPOINTS: { [level: string]: { [method: string]: string[] } } = {
   anonymous: {
     GET: ["/pages"],
-    POST: ["/auth/login", "/auth/create-account"],
+    POST: ["/auth/user", "/auth/users"],
   },
   loggedInUser: {
     POST: ["/auth/token"],
-    DELETE: ["/auth/logout"],
+    DELETE: ["/auth/token"],
   },
 };
 

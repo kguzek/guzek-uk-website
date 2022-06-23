@@ -1,4 +1,4 @@
-const USE_EMULATOR_URL = false;
+const USE_EMULATOR_URL = 1;
 const CACHE_NAME = "guzek-uk-cache";
 
 interface RequestOptions {
@@ -7,7 +7,7 @@ interface RequestOptions {
   body?: string;
 }
 
-export const API_URL =
+export const API_BASE =
   process.env.NODE_ENV === "development" && USE_EMULATOR_URL
     ? "http://localhost:5017/"
     : "https://api.guzek.uk/";
@@ -29,12 +29,13 @@ export async function fetchCachedData(
 
   const request = new Request(relativeURL, fetchOptions);
   const cachedResponse = await caches.match(request);
+  const absoluteURL = API_BASE + relativeURL;
   if (cachedResponse) {
-    console.debug("Using cached response for", relativeURL);
+    console.debug("Using cached response for", absoluteURL);
     return cachedResponse.clone();
   }
 
-  console.debug("Fetching", relativeURL, "...");
+  console.debug("Fetching", absoluteURL, "...");
   const response = await fetchFromAPI(relativeURL, "GET");
   if (response.ok) {
     const cache = await caches.open(CACHE_NAME);
@@ -61,7 +62,7 @@ function fetchWithBody(
     options.headers["Content-Type"] = "application/json";
     options.body = JSON.stringify(body);
   }
-  return fetch(API_URL + path, options);
+  return fetch(API_BASE + path, options);
 }
 
 /** Sets the access token metadata (value and expiration date) in the local storage. */
