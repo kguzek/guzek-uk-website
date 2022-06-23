@@ -21,6 +21,7 @@ interface StatusCodeMap {
 }
 
 const STATUS_CODES: StatusCodeMap = {
+  200: "OK",
   400: "Bad Request",
   401: "Unauthorised",
   403: "Forbidden",
@@ -34,9 +35,13 @@ interface ServerError {
 }
 
 /** Sends the response with a 200 status and JSON body containing the given data object. */
-export function sendOK(res: Response, data: object | object[]) {
-  logger.response("200 OK");
-  res.status(200).json(data);
+export function sendOK(
+  res: Response,
+  data: object | object[],
+  code: number = 200
+) {
+  logger.response(`${code} ${STATUS_CODES[code] ?? STATUS_CODES[200]}`);
+  res.status(code).json(data);
 }
 
 /** Sends the response with the given code and the provided error object's message property, i.e.
@@ -68,7 +73,7 @@ export async function createDatabaseEntry(
   } catch (error) {
     return void sendError(res, 400, error as Error);
   }
-  (sendMethod ?? sendOK)(res, obj);
+  (sendMethod ?? sendOK)(res, obj, 201);
 }
 
 /** Retrieves all entries in the database table model derivative provided. */

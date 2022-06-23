@@ -51,12 +51,12 @@ function sendNewTokens(res: Response, user: UserObj) {
   const accessToken = generateAccessToken(user);
   const refreshToken = jwt.sign({ uuid: user.uuid }, getTokenSecret("refresh"));
   Token.create({ value: refreshToken }).then();
-  sendOK(res, { ...user, accessToken, refreshToken });
+  sendOK(res, { ...user, accessToken, refreshToken }, 201);
 }
 
 router
   // CREATE new account
-  .post("/create-account", async (req: Request, res: Response) => {
+  .post("/users", async (req: Request, res: Response) => {
     for (const requiredProperty of ["name", "surname", "email", "password"]) {
       if (!req.body[requiredProperty]) {
         return sendError(res, 400, {
@@ -101,7 +101,7 @@ router
   })
 
   // POST login details
-  .post("/login", async (req: Request, res: Response) => {
+  .post("/user", async (req: Request, res: Response) => {
     function reject(message: string) {
       sendError(res, 400, { message });
     }
@@ -146,7 +146,7 @@ router
           return reject("Invalid or expired refresh token.");
         }
         const accessToken = generateAccessToken(user as UserObj);
-        sendOK(res, { accessToken });
+        sendOK(res, { accessToken }, 201);
       }
     );
   })
@@ -179,7 +179,7 @@ router
   })
 
   // DELETE user token
-  .delete("/logout", async (req: Request, res: Response) => {
+  .delete("/token", async (req: Request, res: Response) => {
     function reject(message: string) {
       sendError(res, 400, { message });
     }
