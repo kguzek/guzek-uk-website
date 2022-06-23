@@ -7,12 +7,19 @@ CREATE TABLE `guzek_uk`.`pages` (
   PRIMARY KEY (`id`)
 );
 CREATE TABLE `guzek_uk`.`users` (
-  `id` INT NOT NULL AUTO_INCREMENT,
+  `uuid` VARCHAR(36) NOT NULL,
   `name` VARCHAR(45) NOT NULL,
   `surname` VARCHAR(45) NOT NULL,
-  `email` VARCHAR(45) NOT NULL,
-  `hash` VARCHAR(256) NOT NULL,
+  `email` VARCHAR(255) NOT NULL,
+  `created_at` DATETIME NOT NULL,
+  `modified_at` DATETIME NOT NULL,
+  `hash` VARCHAR(255) NOT NULL,
   `salt` VARCHAR(45) NOT NULL,
   `admin` BOOLEAN NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`uuid`)
+);
+CREATE TABLE `guzek_uk`.`tokens` (
+  `value` VARCHAR(1024) NOT NULL,
+  `created_at` DATETIME NOT NULL,
+  PRIMARY KEY (`value`)
 );

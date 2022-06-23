@@ -1,30 +1,75 @@
 import express, { Request, Response } from "express";
-import { User } from "../src/sequelize";
+import { v4 as uuidv4 } from "uuid";
+import { WhereOptions } from "sequelize";
+import jwt from "jsonwebtoken";
 import {
   createDatabaseEntry,
   readDatabaseEntry,
+  readAllDatabaseEntries,
+  updateDatabaseEntry,
+  deleteDatabaseEntry,
+  UserObj,
   sendError,
   sendOK,
 } from "../src/util";
-
+import { Token, User } from "../src/sequelize";
+import { getTokenSecret } from "../src/authMiddleware";
 const password = require("s-salt-pepper");
 
 export const router = express.Router();
 
+const MODIFIABLE_USER_PROPERTIES = ["name", "surname", "email"];
+
+/** Authenticate given password against the stored credentials in the database. */
+async function authenticateUser(
+  res: Response,
+  filter: WhereOptions,
+  pw: string
+) {
+  if (!pw) {
+    throw Error("Password not provided.");
+  }
+
+  const records = await readDatabaseEntry(User, res, filter, () => {
+    const property = Object.keys(filter).shift();
+    sendError(res, 400, { message: `Invalid ${property}.` });
+  });
+  if (!records) return;
+  const userRecord = records.shift() as User;
+  const { hash, salt, ...userDetails } = userRecord.get();
+  const isValid = await password.compare(pw, { hash, salt });
+  if (!isValid) throw Error("Invalid password.");
+  return userDetails;
+}
+
+const generateAccessToken = (user: UserObj) =>
+  jwt.sign(user, getTokenSecret("access"), {
+    expiresIn: "30m",
+  });
+
+function sendNewTokens(res: Response, user: UserObj) {
+  const accessToken = generateAccessToken(user);
+  const refreshToken = jwt.sign({ uuid: user.uuid }, getTokenSecret("refresh"));
+  Token.create({ value: refreshToken }).then();
+  sendOK(res, { ...user, accessToken, refreshToken });
+}
+
 router
   // CREATE new account
   .post("/create-account", async (req: Request, res: Response) => {
-    const { password: pw, ...body } = req.body;
-
-    if (!pw || !body.email) {
-      return sendError(res, 400, { message: "Invalid account details." });
+    for (const requiredProperty of ["name", "surname", "email", "password"]) {
+      if (!req.body[requiredProperty]) {
+        return sendError(res, 400, {
+          message: `Invalid account details. No ${requiredProperty} specified.`,
+        });
+      }
     }
-
+    // Check for existing entries
     const results = await readDatabaseEntry(
       User,
       res,
-      { email: body.email },
-      () => {}
+      { email: req.body.email },
+      () => null
     );
 
     if (results?.shift()) {
@@ -32,22 +77,25 @@ router
         message: "A user with that email address already exists.",
       });
     }
-
-    const credentials = await password.hash(pw);
-
-    const user = {
-      ...body,
-      ...credentials,
-    };
+    // Hash password
+    const credentials: { hash: string; salt: string } = await password.hash(
+      req.body.password
+    );
 
     await createDatabaseEntry(
       User,
       req,
       res,
-      user,
+      {
+        uuid: uuidv4(),
+        name: req.body.name,
+        surname: req.body.surname,
+        email: req.body.email,
+        ...credentials,
+      },
       (_res: Response, record: User) => {
-        const { hash, salt, id, ...data } = record.get();
-        sendOK(res, data);
+        const { hash, salt, ...userData } = record.get();
+        sendNewTokens(res, userData);
       }
     );
   })
@@ -60,13 +108,129 @@ router
 
     const { password: pw, email } = req.body;
 
-    if (!email || !pw) return reject("Credentials not provided.");
+    if (!email) return reject("Email not provided.");
 
-    const records = await readDatabaseEntry(User, res, { email });
-    if (!records) return;
-    const userRecord = records.shift() as User;
-    const { hash, salt, ...userDetails } = userRecord.get();
-    const isValid = await password.compare(pw, { hash, salt });
-    if (!isValid) return reject("Invalid credentials.");
-    return res.status(200).json(userDetails);
+    let userData;
+    try {
+      userData = await authenticateUser(res, { email }, pw);
+    } catch (err) {
+      return void reject((err as Error).message);
+    }
+    sendNewTokens(res, userData);
+  })
+
+  // CREATE new access JWT
+  .post("/token", async (req: Request, res: Response) => {
+    function reject(message: string) {
+      sendError(res, 400, { message });
+    }
+    const refreshToken = req.body.token;
+    if (!refreshToken) {
+      return void reject("No refresh token provided.");
+    }
+    const tokens = await readDatabaseEntry(
+      Token,
+      res,
+      { value: refreshToken },
+      () => {
+        reject("Invalid or corrupt refresh token.");
+      }
+    );
+    if (!tokens) return;
+    jwt.verify(
+      refreshToken as string,
+      getTokenSecret("refresh"),
+      (err, user) => {
+        if (err) {
+          return reject("Invalid or expired refresh token.");
+        }
+        const accessToken = generateAccessToken(user as UserObj);
+        sendOK(res, { accessToken });
+      }
+    );
+  })
+
+  // READ all users
+  .get("/users", async (_req: Request, res: Response) => {
+    function callback(_sameResAsBefore: Response, users: User[]) {
+      sendOK(
+        res,
+        users.map((user: User) => {
+          const { hash, salt, ...publicProperties } = user.get();
+          return publicProperties;
+        })
+      );
+    }
+    await readAllDatabaseEntries(User, res, callback);
+  })
+
+  // READ specific user
+  .get("/user", async (req: Request, res: Response) => {
+    const results = await readDatabaseEntry(User, res, req.query);
+    if (results) {
+      sendOK(res, results);
+    }
+  })
+
+  // DELETE existing user
+  .delete("/user/:uuid", async (req: Request, res: Response) => {
+    await deleteDatabaseEntry(User, { uuid: req.params.uuid }, res);
+  })
+
+  // DELETE user token
+  .delete("/logout", async (req: Request, res: Response) => {
+    function reject(message: string) {
+      sendError(res, 400, { message });
+    }
+    const refreshToken = req.body.token;
+    if (!refreshToken) {
+      return void reject("No refresh token provided.");
+    }
+
+    await deleteDatabaseEntry(Token, { value: refreshToken }, res);
+  })
+
+  // UPDATE existing user details
+  .put("/user/:uuid/details", async (req: Request, res: Response) => {
+    for (const property in req.body) {
+      if (MODIFIABLE_USER_PROPERTIES.includes(property)) {
+        continue;
+      }
+      if (req.user?.admin) {
+        continue;
+      }
+      return sendError(res, 403, {
+        message: `Protected user property '${property}'.`,
+      });
+    }
+
+    await updateDatabaseEntry(User, req, res);
+  })
+
+  // UPDATE existing user password
+  .put("/user/:uuid/password", async (req: Request, res: Response) => {
+    function reject(message: string) {
+      sendError(res, 400, { message });
+    }
+
+    if (!req.body.oldPassword) {
+      return reject("Old password not provided.");
+    }
+    try {
+      await authenticateUser(res, req.params, req.body.oldPassword);
+    } catch (e) {
+      const err = e as Error;
+      if (err.message === "Password not provided.") {
+        return reject("Old password not provided.");
+      }
+      return reject(err.message);
+    }
+    const credentials: { hash: string; salt: string } = await password.hash(
+      req.body.newPassword
+    );
+    await updateDatabaseEntry(
+      User,
+      { params: req.params, body: credentials } as Request,
+      res
+    );
   });

@@ -27,5 +27,5 @@ router
 
   // DELETE single page
   .delete("/:id", async (req: Request, res: Response) => {
-    await deleteDatabaseEntry(Page, req, res);
+    await deleteDatabaseEntry(Page, { id: req.params.id }, res);
   });

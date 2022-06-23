@@ -4,10 +4,12 @@ import express from "express";
 import dotenv from "dotenv";
 import { sendError } from "./src/util";
 import { getLogger, loggingMiddleware } from "./src/logger";
+import authMiddleware from "./src/authMiddleware";
 import path from "path";
 const password = require("s-salt-pepper");
 
-dotenv.config({ path: path.resolve(__dirname, "../.env") });
+const dotEnvPath = path.resolve(__dirname, "../.env");
+dotenv.config({ path: dotEnvPath });
 
 const logger = getLogger(__filename);
 
@@ -27,7 +29,7 @@ function initialise() {
   const iterations = process.env.HASH_ITERATIONS;
   if (!iterations) {
     console.log(process.env);
-    logger.error("No hash_iterations environment variable set.");
+    logger.error("No HASH_ITERATIONS environment variable set.");
     return;
   }
   password.iterations(parseInt(iterations));
@@ -37,6 +39,7 @@ function initialise() {
   app.use(cors());
   app.use(express.json());
   app.use(loggingMiddleware);
+  app.use(authMiddleware);
 
   // Enable individual API routes
   for (const endpoint of ENDPOINTS) {

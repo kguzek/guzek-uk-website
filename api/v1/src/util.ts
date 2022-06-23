@@ -1,10 +1,20 @@
 import { Request, Response } from "express";
-import { WhereOptions } from "sequelize";
-import { Model } from "sequelize/types";
+import { Filterable, WhereOptions } from "sequelize";
+import { Where } from "sequelize/types/utils";
 import { getLogger } from "./logger";
-import { Page } from "./sequelize";
+import { Page, Token, User } from "./sequelize";
 
 const logger = getLogger(__filename);
+
+export interface UserObj {
+  uuid: string;
+  name: string;
+  surname: string;
+  email: string;
+  admin?: boolean;
+}
+
+export type ModelType = typeof Page | typeof User | typeof Token;
 
 interface StatusCodeMap {
   [code: number]: string;
@@ -12,6 +22,8 @@ interface StatusCodeMap {
 
 const STATUS_CODES: StatusCodeMap = {
   400: "Bad Request",
+  401: "Unauthorised",
+  403: "Forbidden",
   404: "Not Found",
   500: "Internal Server Error",
 };
@@ -44,7 +56,7 @@ export function sendError(
 
 /** Creates a new database entry in the database table model derivative provided. */
 export async function createDatabaseEntry(
-  model: typeof Page,
+  model: ModelType,
   req: Request,
   res: Response,
   modelParams?: object,
@@ -56,14 +68,14 @@ export async function createDatabaseEntry(
   } catch (error) {
     return void sendError(res, 400, error as Error);
   }
-
   (sendMethod ?? sendOK)(res, obj);
 }
 
 /** Retrieves all entries in the database table model derivative provided. */
 export async function readAllDatabaseEntries(
-  model: typeof Page,
-  res: Response
+  model: ModelType,
+  res: Response,
+  callback?: Function
 ) {
   let objs;
   try {
@@ -71,12 +83,12 @@ export async function readAllDatabaseEntries(
   } catch (error) {
     return void sendError(res, 500, error as Error);
   }
-  sendOK(res, objs);
+  (callback ?? sendOK)(res, objs);
 }
 
 /** Retrieves all entries in the database with the provided values and returns the array. */
 export async function readDatabaseEntry(
-  model: typeof Page,
+  model: ModelType,
   res: Response,
   filter: WhereOptions,
   onError?: Function
@@ -91,7 +103,7 @@ export async function readDatabaseEntry(
     if (onError) {
       return void onError(error);
     } else {
-      return void sendError(res, 500, error as Error);
+      return void sendError(res, 400, error as Error);
     }
   }
   return objs;
@@ -99,16 +111,14 @@ export async function readDatabaseEntry(
 
 /** Updates the entry with the request payload in the database table model derivative provided. */
 export async function updateDatabaseEntry(
-  model: typeof Page,
+  model: ModelType,
   req: Request,
   res: Response
 ) {
   let result: number[];
   try {
     result = await model.update(req.body, {
-      where: {
-        id: req.params.id,
-      },
+      where: req.params,
     });
   } catch (error) {
     return void sendError(res, 400, error as Error);
@@ -118,17 +128,13 @@ export async function updateDatabaseEntry(
 
 /** Deletes the specified entry from the database table model derivative provided. */
 export async function deleteDatabaseEntry(
-  model: typeof Page,
-  req: Request,
+  model: ModelType,
+  where: WhereOptions,
   res: Response
 ) {
   let destroyedRows: number;
   try {
-    destroyedRows = await model.destroy({
-      where: {
-        id: req.params.id,
-      },
-    });
+    destroyedRows = await model.destroy({ where });
   } catch (error) {
     return void sendError(res, 400, error as Error);
   }

@@ -201,6 +201,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/jsonwebtoken@npm:^8.5.8":
+  version: 8.5.8
+  resolution: "@types/jsonwebtoken@npm:8.5.8"
+  dependencies:
+    "@types/node": "*"
+  checksum: 56738a918c543dba30786066959f801212e7fb5cd4ec53cf7b8d227711ed358834feb9e5141f7f88ec7c642bb39757330a5a8917e3b22e0ff9084940d35f0d70
+  languageName: node
+  linkType: hard
+
 "@types/keyv@npm:^3.1.1":
   version: 3.1.4
   resolution: "@types/keyv@npm:3.1.4"
@@ -289,6 +298,13 @@ __metadata:
     "@types/mime": ^1
     "@types/node": "*"
   checksum: eaca858739483e3ded254cad7d7a679dc2c8b3f52c8bb0cd845b3b7eb1984bde0371fdcb0a5c83aa12e6daf61b6beb762545021f520f08a1fe882a3fa4ea5554
+  languageName: node
+  linkType: hard
+
+"@types/uuid@npm:^8.3.4":
+  version: 8.3.4
+  resolution: "@types/uuid@npm:8.3.4"
+  checksum: 6f11f3ff70f30210edaa8071422d405e9c1d4e53abbe50fdce365150d3c698fe7bbff65c1e71ae080cbfb8fded860dbb5e174da96fdbbdfcaa3fb3daa474d20f
   languageName: node
   linkType: hard
 
@@ -403,9 +419,11 @@ __metadata:
   dependencies:
     "@types/cors": ^2.8.12
     "@types/express": ^4.17.13
+    "@types/jsonwebtoken": ^8.5.8
     "@types/mysql": ^2.15.21
     "@types/node": ^17.0.33
     "@types/sequelize": ^4.28.13
+    "@types/uuid": ^8.3.4
     cors: ^2.8.5
     dotenv: ^16.0.1
     express: ^4.17.2
@@ -416,6 +434,7 @@ __metadata:
     sequelize: ^6.19.0
     ts-node: ^10.8.1
     typescript: ^4.6.4
+    uuid: ^8.3.2
     winston: ^3.5.1
     winston-daily-rotate-file: ^4.6.1
     winston-transport: ^4.5.0
