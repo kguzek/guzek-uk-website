@@ -116,6 +116,7 @@ router
     } catch (err) {
       return void reject((err as Error).message);
     }
+    if (!userData) return;
     sendNewTokens(res, userData);
   })
 
@@ -217,7 +218,12 @@ router
       return reject("Old password not provided.");
     }
     try {
-      await authenticateUser(res, req.params, req.body.oldPassword);
+      const success = await authenticateUser(
+        res,
+        req.params,
+        req.body.oldPassword
+      );
+      if (!success) return;
     } catch (e) {
       const err = e as Error;
       if (err.message === "Password not provided.") {

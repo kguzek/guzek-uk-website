@@ -53,7 +53,7 @@ export default function authenticateToken(
   jwt.verify(token, getTokenSecret("access"), (err, user) => {
     if (err) {
       logger.error(err);
-      return reject(403, "Invalid authorisation token.");
+      return reject(401, "Invalid authorisation token.");
     }
     req.user = user as UserObj;
     if (
