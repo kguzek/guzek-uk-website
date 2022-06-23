@@ -19,7 +19,7 @@ CREATE TABLE `guzek_uk`.`users` (
   PRIMARY KEY (`uuid`)
 );
 CREATE TABLE `guzek_uk`.`tokens` (
-  `value` VARCHAR(1024) NOT NULL,
+  `value` VARCHAR(512) NOT NULL,
   `created_at` DATETIME NOT NULL,
   PRIMARY KEY (`value`)
 );
