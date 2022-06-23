@@ -1,6 +1,6 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { user } from "../App";
+import { User } from "../App";
 import { fetchFromAPI } from "../backend";
 import InputBox from "../components/Forms/InputBox";
 import { LoadingButton } from "../components/LoadingScreen";
@@ -56,11 +56,11 @@ export default function SignUp({
       email,
       password,
     };
-    const res = await fetchFromAPI("auth/create-account", "POST", fetchData);
+    const res = await fetchFromAPI("auth/users", "POST", fetchData);
     const json = await res.json();
     setLoading(false);
     if (res.ok) {
-      setUser(json as user);
+      setUser(json as User);
     } else {
       const msg = Object.entries(json).shift() ?? [];
       setErrorMessage(msg.join(": "));
