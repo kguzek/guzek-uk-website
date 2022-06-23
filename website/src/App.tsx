@@ -15,9 +15,17 @@ import "./styles/forms.css";
 import LogIn from "./pages/LogIn";
 import SignUp from "./pages/SignUp";
 
+export interface User {
+  name: string;
+  surname: string;
+  email: string;
+  admin: boolean;
+  token: string;
+}
+
 export default function App() {
   const [userLanguage, setUserLanguage] = useState<string>("EN");
-  const [currentUser, setCurrentUser] = useState<user | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [menuItems, setMenuItems] = useState<MenuItem[] | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -148,12 +156,4 @@ export default function App() {
       <Footer data={pageContent} />
     </div>
   );
-}
-
-export interface user {
-  name: string;
-  surname: string;
-  email: string;
-  admin: boolean;
-  token: string;
 }

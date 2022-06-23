@@ -1,6 +1,12 @@
 const USE_EMULATOR_URL = false;
 const CACHE_NAME = "guzek-uk-cache";
 
+interface RequestOptions {
+  method: string;
+  headers: { Authorization?: string; "Content-Type"?: string };
+  body?: string;
+}
+
 export const API_URL =
   process.env.NODE_ENV === "development" && USE_EMULATOR_URL
     ? "http://localhost:5017/"
@@ -18,18 +24,18 @@ export async function fetchCachedData(
 ) {
   // Add search parameters to URL
   const search = params ? `?${new URLSearchParams(params)}` : "";
-  const url = API_URL + path + search;
+  const relativeURL = path + search;
   const fetchOptions = { method, body };
 
-  const request = new Request(url, fetchOptions);
+  const request = new Request(relativeURL, fetchOptions);
   const cachedResponse = await caches.match(request);
   if (cachedResponse) {
-    console.debug("Using cached response for", url);
+    console.debug("Using cached response for", relativeURL);
     return cachedResponse.clone();
   }
 
-  console.debug("Fetching", url, "...");
-  const response = await fetch(request);
+  console.debug("Fetching", relativeURL, "...");
+  const response = await fetchFromAPI(relativeURL, "GET");
   if (response.ok) {
     const cache = await caches.open(CACHE_NAME);
     await cache.put(request, response.clone());
@@ -37,15 +43,60 @@ export async function fetchCachedData(
   return response;
 }
 
-export function fetchFromAPI(
+/** Performs a fetch from the API using the given values. */
+function fetchWithBody(
+  path: string,
+  method: string = "GET",
+  body?: object,
+  accessToken?: string
+) {
+  const options: RequestOptions = {
+    method,
+    headers: {},
+  };
+  if (accessToken) {
+    options.headers.Authorization = `Bearer ${accessToken}`;
+  }
+  if (body) {
+    options.headers["Content-Type"] = "application/json";
+    options.body = JSON.stringify(body);
+  }
+  return fetch(API_URL + path, options);
+}
+
+/** Sets the access token metadata (value and expiration date) in the local storage. */
+export function updateAccessToken(accessToken: string) {
+  const expiresAt = new Date();
+  expiresAt.setMinutes(expiresAt.getMinutes() + 30);
+  const accessTokenInfo = { accessToken, expiresAt };
+  localStorage.setItem("accessToken", JSON.stringify(accessTokenInfo));
+}
+
+/** Determines the API access token and generates a new one if it is out of date. Fetches from the API
+ *  by substituting in the absolute URL and authorisation headers, as well as serialises the JSON payload.
+ */
+export async function fetchFromAPI(
   path: string,
   method: string = "GET",
   body?: object
 ) {
-  const options: RequestInit = { method };
-  if (body) {
-    options.headers = { "Content-Type": "application/json" };
-    options.body = JSON.stringify(body);
+  // Get the locally saved access token
+  let accessToken;
+  const accessTokenInfo = localStorage.getItem("accessTokenInfo");
+  if (accessTokenInfo) {
+    const tokenInfo = JSON.parse(accessTokenInfo);
+    // Check if it's expired
+    if (new Date(tokenInfo.expiresAt) < new Date()) {
+      // Generate a new access token
+      const token = localStorage.getItem("refreshToken");
+      const res = await fetchWithBody("auth/token", "POST", { token });
+      if (res.ok) {
+        ({ token: accessToken } = await res.json());
+        updateAccessToken(accessToken);
+      }
+    } else {
+      accessToken = tokenInfo.accessToken;
+    }
   }
-  return fetch(API_URL + path, options);
+  return await fetchWithBody(path, method, body, accessToken);
 }

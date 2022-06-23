@@ -1,7 +1,7 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { user } from "../App";
-import { fetchFromAPI } from "../backend";
+import { User } from "../App";
+import { fetchFromAPI, updateAccessToken } from "../backend";
 import InputBox from "../components/Forms/InputBox";
 import LoadingScreen, { LoadingButton } from "../components/LoadingScreen";
 import { Translation } from "../translations";
@@ -36,11 +36,14 @@ export default function LogIn({
       email,
       password,
     };
-    const res = await fetchFromAPI("auth/login", "POST", fetchData);
+    const res = await fetchFromAPI("auth/user", "POST", fetchData);
     const json = await res.json();
     setLoading(false);
     if (res.ok) {
-      setUser(json as user);
+      const { accessToken, refreshToken, ...userDetails } = json;
+      setUser(userDetails as User);
+      updateAccessToken(accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
     } else {
       setInvalidCredentials(true);
     }
