@@ -70,7 +70,7 @@ export function updateAccessToken(accessToken: string) {
   const expiresAt = new Date();
   expiresAt.setMinutes(expiresAt.getMinutes() + 30);
   const accessTokenInfo = { accessToken, expiresAt };
-  localStorage.setItem("accessToken", JSON.stringify(accessTokenInfo));
+  localStorage.setItem("accessTokenInfo", JSON.stringify(accessTokenInfo));
 }
 
 /** Determines the API access token and generates a new one if it is out of date. Fetches from the API
