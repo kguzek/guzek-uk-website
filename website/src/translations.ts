@@ -27,9 +27,9 @@ export interface Translation {
     haveAccountAlready: string;
     logout: string;
   };
-  // readonly contentManager: {
-
-  // };
+  readonly contentManager: {
+    title: string;
+  };
   readonly error: { [code in ErrorCode]: ErrorPageContent };
 }
 
@@ -71,6 +71,9 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
         body: "404: The requested resource was not found.",
       },
     },
+    contentManager: {
+      title: "Content Manager",
+    },
   },
   PL: {
     footer: "{YEAR} \u00a9 Konrad Guzek",
@@ -99,7 +102,6 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
       haveAccountAlready: "masz już konto?",
       logout: "Wyloguj się",
     },
-
     error: {
       403: {
         title: "403 Zabroniono",
@@ -109,6 +111,9 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
         title: "404 Nie Znaleziono",
         body: "404: Nie znaleziono zasobu, którego szukasz.",
       },
+    },
+    contentManager: {
+      title: "Edytor Treści",
     },
   },
 };
