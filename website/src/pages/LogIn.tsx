@@ -1,10 +1,10 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { User } from "../App";
 import { fetchFromAPI, updateAccessToken } from "../backend";
 import InputBox from "../components/Forms/InputBox";
 import LoadingScreen, { LoadingButton } from "../components/LoadingScreen";
 import { Translation } from "../translations";
+import { User } from "../models";
 
 export default function LogIn({
   data,

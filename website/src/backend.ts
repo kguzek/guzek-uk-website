@@ -19,7 +19,7 @@ export const API_BASE =
 export async function fetchCachedData(
   path: string,
   method: string = "GET",
-  params?: string,
+  params?: Record<string, string>,
   body?: BodyInit
 ) {
   // Add search parameters to URL

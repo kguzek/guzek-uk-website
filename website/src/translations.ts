@@ -1,18 +1,12 @@
+import { ErrorCode, ErrorPageContent, Language } from "./models";
+
 export interface Translation {
   readonly header: string;
   readonly footer: string;
   readonly title: string;
   readonly loading: string;
   readonly language: string;
-  readonly bodyHome: string;
-  readonly bodyKonrad: string;
-  readonly goHome: string;
-  readonly goKonrad: string;
   readonly guest: string;
-  readonly title403: string;
-  readonly title404: string;
-  readonly body403: string;
-  readonly body404: string;
   readonly pipeDesigner: {
     title: string;
     body: string;
@@ -34,24 +28,19 @@ export interface Translation {
     haveAccountAlready: string;
     logout: string;
   };
+  readonly error: {
+    [code in ErrorCode]: ErrorPageContent;
+  };
 }
 
-const TRANSLATIONS: { [lang: string]: Translation } = {
+const TRANSLATIONS: { [lang in Language]: Translation } = {
   EN: {
     header: "Guzek UK",
     footer: "{YEAR} \u00a9 Konrad Guzek",
     title: "Guzek UK",
     loading: "Loading",
     language: "Language",
-    bodyHome: "Welcome to the Guzek UK Homepage!",
-    bodyKonrad: "Welcome to Konrad's Homepage!",
-    goHome: "Home",
-    goKonrad: "Konrad",
     guest: "Guest",
-    title403: "403 Forbidden",
-    title404: "404 Not Found",
-    body403: "403: You do not have permission to view this resource.",
-    body404: "404: The requested resource was not found.",
     pipeDesigner: {
       title: "Pipe Designer",
       body: "Redirecting to the pipe designer failed. Please try again later, or refresh your page manually.",
@@ -73,6 +62,16 @@ const TRANSLATIONS: { [lang: string]: Translation } = {
       haveAccountAlready: "have an account already?",
       logout: "Log out",
     },
+    error: {
+      403: {
+        title: "403 Forbidden",
+        body: "403: You do not have permission to view this resource.",
+      },
+      404: {
+        title: "404 Not Found",
+        body: "404: The requested resource was not found.",
+      },
+    },
   },
   PL: {
     header: "Guzek UK",
@@ -80,15 +79,7 @@ const TRANSLATIONS: { [lang: string]: Translation } = {
     title: "Guzek UK",
     loading: "Trwa ładowanie strony",
     language: "Język",
-    bodyHome: "Witaj na stronie głównej Guzek UK!",
-    bodyKonrad: "Witaj na stronie Konrada!",
-    goHome: "Strona Główna",
-    goKonrad: "Konrad",
     guest: "Gość",
-    title403: "403 Zabroniono",
-    title404: "404 Nie Znaleziono",
-    body403: "403: Nie masz uprawnień do wyświetlania tego zasobu.",
-    body404: "404: Nie znaleziono zasobu, którego szukasz.",
     pipeDesigner: {
       title: "Kreator rur",
       body: "Przekierowywanie do kreatora rur nie powiodło się. Spróbuj ponownie wkrótce lub odśwież stronę ręcznie.",
@@ -109,6 +100,17 @@ const TRANSLATIONS: { [lang: string]: Translation } = {
       or: "lub",
       haveAccountAlready: "masz już konto?",
       logout: "Wyloguj się",
+    },
+
+    error: {
+      403: {
+        title: "403 Zabroniono",
+        body: "403: Nie masz uprawnień do wyświetlania tego zasobu.",
+      },
+      404: {
+        title: "404 Nie Znaleziono",
+        body: "404: Nie znaleziono zasobu, którego szukasz.",
+      },
     },
   },
 };

@@ -26,8 +26,15 @@ Page.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    hidden: {
+    adminOnly: {
+      field: "admin_only",
       type: DataTypes.BOOLEAN,
+      allowNull: false,
+    },
+    shouldFetch: {
+      field: "should_fetch",
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
     },
   },
   {

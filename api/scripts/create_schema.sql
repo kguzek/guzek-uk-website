@@ -3,7 +3,8 @@ CREATE TABLE `guzek_uk`.`pages` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(45) NOT NULL,
   `url` VARCHAR(45) NOT NULL,
-  `hidden` BOOLEAN NULL,
+  `admin_only` BOOLEAN NOT NULL,
+  `should_fetch` BOOLEAN NOT NULL,
   PRIMARY KEY (`id`)
 );
 CREATE TABLE `guzek_uk`.`users` (
