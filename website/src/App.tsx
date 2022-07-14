@@ -4,7 +4,7 @@ import TRANSLATIONS from "./translations";
 import NavigationBar from "./components/NavigationBar";
 import Footer from "./components/Footer";
 import PageTemplate from "./pages/PageTemplate";
-import ErrorPage from "./pages/Error";
+import ErrorPage from "./pages/ErrorPage";
 import { fetchCachedData } from "./backend";
 import Profile from "./pages/Profile";
 import PipeDesigner from "./pages/PipeDesigner";
