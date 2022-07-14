@@ -39,14 +39,18 @@ function Profile({
   return (
     <div className="text">
       <p>{data.profile.body}</p>
+      <p>Administrator: {user.admin.toString()}</p>
       <p>
-        {data.formDetails.name}, {data.formDetails.surname}: {user.name}{" "}
-        {user.surname}
+        {data.formDetails.name}: {user.name}
+        <br />
+        {data.formDetails.surname}: {user.surname}
       </p>
       <p>
         {data.formDetails.email}: {user.email}
       </p>
-      <small>Account unique ID: {user.uuid}</small>
+      <small>
+        Unique user ID: <span>{user.uuid}</span>
+      </small>
       <br />
       <small>Account created on {userCreatedAt.toString()}</small>
       <div className="login-page">
