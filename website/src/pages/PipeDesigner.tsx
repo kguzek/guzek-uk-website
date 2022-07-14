@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import LoadingScreen from "../components/LoadingScreen";
 import { Translation } from "../translations";
+import { setTitle } from "../util";
 
 export default function PipeDesigner({ data }: { data: Translation }) {
   const [attemptedRefresh, setAttemptedRefresh] = useState(false);
 
   useEffect(() => {
-    document.title = data.pipeDesigner.title + " | " + data.title;
+    setTitle(data.pipeDesigner.title);
   }, [data]);
 
   useEffect(() => {

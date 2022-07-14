@@ -4,6 +4,7 @@ import Logo from "../media/Logo";
 import TRANSLATIONS, { Translation } from "../translations";
 import "../styles/navigation.css";
 import { Language, MenuItem, User } from "../models";
+import { PAGE_NAME } from "../util";
 
 function NavigationBar({
   data,
@@ -48,7 +49,7 @@ function NavigationBar({
     <div className="ribbon">
       <nav className="navigation">
         <Logo size={80} />
-        <h1>{data.header}</h1>
+        <h1>{PAGE_NAME}</h1>
         <ul className={`${menuOpen ? "open" : "closed"} no-select nav-items `}>
           {displayStyle === "mobile" && userWidget}
           {menuItemElements}
