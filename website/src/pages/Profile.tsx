@@ -1,7 +1,8 @@
-import React, { MouseEvent } from "react";
+import React, { MouseEvent, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { fetchFromAPI } from "../backend";
 import { Translation } from "../translations";
+import { setTitle } from "../util";
 
 function Profile({
   data,
@@ -12,7 +13,7 @@ function Profile({
   user: any;
   setUser: Function;
 }) {
-  async function handleLogOut(evt: MouseEvent<HTMLButtonElement>) {
+  async function handleLogOut(_evt: MouseEvent<HTMLButtonElement>) {
     const token = localStorage.getItem("refreshToken");
     await fetchFromAPI("auth/token", "DELETE", { token });
     localStorage.removeItem("user");
@@ -20,6 +21,10 @@ function Profile({
     localStorage.removeItem("refreshToken");
     setUser(null);
   }
+
+  useEffect(() => {
+    setTitle(data.profile.title);
+  }, [data]);
 
   if (!user) {
     return (

@@ -15,6 +15,7 @@ import LogIn from "./pages/LogIn";
 import SignUp from "./pages/SignUp";
 import { ErrorCode, Language, MenuItem, User } from "./models";
 import ContentManager from "./pages/ContentManager";
+import { PAGE_NAME } from "./util";
 
 export default function App() {
   const [userLanguage, setUserLanguage] = useState<Language>(Language.EN);
@@ -97,9 +98,7 @@ export default function App() {
 
   const pageContent = TRANSLATIONS[userLanguage];
   if (!pageContent || !menuItems) {
-    return (
-      <LoadingScreen text={`${pageContent.loading} ${pageContent.title}`} />
-    );
+    return <LoadingScreen text={`${pageContent.loading} ${PAGE_NAME}`} />;
   }
 
   return (

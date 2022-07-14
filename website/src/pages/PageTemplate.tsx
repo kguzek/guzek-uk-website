@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchCachedData } from "../backend";
 import { MenuItem, PageContent } from "../models";
+import { setTitle } from "../util";
 
 function Home({ pageData, lang }: { pageData: MenuItem; lang: string }) {
   const [pageContent, setPageContent] = useState<PageContent | null>(null);
@@ -17,7 +18,7 @@ function Home({ pageData, lang }: { pageData: MenuItem; lang: string }) {
   }, [lang]);
 
   useEffect(() => {
-    document.title = pageData.title;
+    setTitle(pageData.title);
   }, [pageData]);
 
   return (

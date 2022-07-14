@@ -1,9 +1,7 @@
 import { ErrorCode, ErrorPageContent, Language } from "./models";
 
 export interface Translation {
-  readonly header: string;
   readonly footer: string;
-  readonly title: string;
   readonly loading: string;
   readonly language: string;
   readonly guest: string;
@@ -12,6 +10,7 @@ export interface Translation {
     body: string;
   };
   readonly profile: {
+    title: string;
     body: string;
     loading: string;
     invalidCredentials: string;
@@ -28,16 +27,15 @@ export interface Translation {
     haveAccountAlready: string;
     logout: string;
   };
-  readonly error: {
-    [code in ErrorCode]: ErrorPageContent;
-  };
+  // readonly contentManager: {
+
+  // };
+  readonly error: { [code in ErrorCode]: ErrorPageContent };
 }
 
 const TRANSLATIONS: { [lang in Language]: Translation } = {
   EN: {
-    header: "Guzek UK",
     footer: "{YEAR} \u00a9 Konrad Guzek",
-    title: "Guzek UK",
     loading: "Loading",
     language: "Language",
     guest: "Guest",
@@ -46,6 +44,7 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
       body: "Redirecting to the pipe designer failed. Please try again later, or refresh your page manually.",
     },
     profile: {
+      title: "Profile",
       body: "Welcome to your profile!",
       loading: "Validating",
       invalidCredentials: "Invalid credentials.",
@@ -74,17 +73,16 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
     },
   },
   PL: {
-    header: "Guzek UK",
     footer: "{YEAR} \u00a9 Konrad Guzek",
-    title: "Guzek UK",
     loading: "Trwa ładowanie strony",
     language: "Język",
     guest: "Gość",
     pipeDesigner: {
-      title: "Kreator rur",
+      title: "Kreator Rur",
       body: "Przekierowywanie do kreatora rur nie powiodło się. Spróbuj ponownie wkrótce lub odśwież stronę ręcznie.",
     },
     profile: {
+      title: "Profil",
       body: "Witamy na Twoim profilu!",
       loading: "Trwa walidacja",
       invalidCredentials: "Niepoprawne dane loginowe.",
