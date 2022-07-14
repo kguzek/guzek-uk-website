@@ -1,4 +1,5 @@
 const USE_EMULATOR_URL = false;
+const LOG_ACCESS_TOKEN = false;
 const CACHE_NAME = "guzek-uk-cache";
 
 interface RequestOptions {
@@ -56,6 +57,7 @@ function fetchWithBody(
     headers: {},
   };
   if (accessToken) {
+    LOG_ACCESS_TOKEN && console.info(accessToken);
     options.headers.Authorization = `Bearer ${accessToken}`;
   }
   if (body) {

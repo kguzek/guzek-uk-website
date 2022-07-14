@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ErrorPageContent } from "../models";
-import { PAGE_NAME } from "../util";
+import { PAGE_NAME, setTitle } from "../util";
 
 export default function ErrorPage({
   pageData,
@@ -9,7 +9,7 @@ export default function ErrorPage({
   pageData: ErrorPageContent;
 }) {
   useEffect(() => {
-    document.title = pageData.title;
+    setTitle(pageData.title);
   }, [pageData]);
 
   return (
