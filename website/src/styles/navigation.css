@@ -24,11 +24,10 @@
 }
 
 .nav-items {
-  display: grid;
-  grid-template-columns: repeat(5, auto);
-  column-gap: 25px;
+  display: flex;
   list-style: none;
   text-align: center;
+  gap: 15px;
 }
 
 .nav-items li {
@@ -155,7 +154,6 @@
   }
 
   .nav-items {
-    display: flex;
     position: absolute;
     flex-direction: column;
     opacity: 0;

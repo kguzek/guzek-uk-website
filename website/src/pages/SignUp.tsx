@@ -1,10 +1,10 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { User } from "../App";
 import { fetchFromAPI } from "../backend";
 import InputBox from "../components/Forms/InputBox";
 import { LoadingButton } from "../components/LoadingScreen";
 import { Translation } from "../translations";
+import { User } from "../models";
 
 export default function SignUp({
   data,

@@ -3,12 +3,7 @@ import { Link } from "react-router-dom";
 import Logo from "../media/Logo";
 import TRANSLATIONS, { Translation } from "../translations";
 import "../styles/navigation.css";
-
-export interface MenuItem {
-  title: string;
-  url: string;
-  hidden: boolean;
-}
+import { Language, MenuItem, User } from "../models";
 
 function NavigationBar({
   data,
@@ -18,8 +13,8 @@ function NavigationBar({
   menuItems,
 }: {
   data: Translation;
-  user: any;
-  selectedLanguage: string;
+  user: User | null;
+  selectedLanguage: Language;
   changeLang: MouseEventHandler<HTMLButtonElement>;
   menuItems: MenuItem[];
 }) {
@@ -27,7 +22,9 @@ function NavigationBar({
   const winDims = useWindowDimensions();
 
   // Don't render items that are set as 'hidden' in the nav bar
-  const visibleItems = (menuItems || []).filter((item) => !item.hidden);
+  const visibleItems = (menuItems || []).filter(
+    (item) => !item.adminOnly || user?.admin
+  );
 
   // Create the array of nav bar page elements
   const menuItemElements = visibleItems.map((item, index) => (
@@ -95,7 +92,7 @@ function LangSelector({
   selectedLanguage,
   changeLang,
 }: {
-  selectedLanguage: string;
+  selectedLanguage: Language;
   changeLang: MouseEventHandler<HTMLButtonElement>;
 }) {
   const data = TRANSLATIONS[selectedLanguage];

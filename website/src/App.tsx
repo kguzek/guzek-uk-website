@@ -1,11 +1,10 @@
 import React, { useState, useEffect, MouseEvent } from "react";
 import { Routes, Route, useSearchParams } from "react-router-dom";
 import TRANSLATIONS from "./translations";
-import NavigationBar, { MenuItem } from "./components/NavigationBar";
+import NavigationBar from "./components/NavigationBar";
 import Footer from "./components/Footer";
-import Home from "./pages/Home";
-import Konrad from "./pages/Konrad";
-import NotFound from "./pages/NotFound";
+import PageTemplate from "./pages/PageTemplate";
+import ErrorPage from "./pages/Error";
 import { fetchCachedData } from "./backend";
 import Profile from "./pages/Profile";
 import PipeDesigner from "./pages/PipeDesigner";
@@ -14,20 +13,23 @@ import "./styles/styles.css";
 import "./styles/forms.css";
 import LogIn from "./pages/LogIn";
 import SignUp from "./pages/SignUp";
-
-export interface User {
-  name: string;
-  surname: string;
-  email: string;
-  admin: boolean;
-  token: string;
-}
+import { ErrorCode, Language, MenuItem, User } from "./models";
+import ContentManager from "./pages/ContentManager";
 
 export default function App() {
-  const [userLanguage, setUserLanguage] = useState<string>("EN");
+  const [userLanguage, setUserLanguage] = useState<Language>(Language.EN);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [menuItems, setMenuItems] = useState<MenuItem[] | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
+
+  function setLanguage(langString: string) {
+    if (!(langString in Language)) {
+      throw Error("Invalid language name.");
+    }
+    const newLang = Language[langString as keyof typeof Language];
+    localStorage.setItem("userLanguage", langString);
+    setUserLanguage(newLang);
+  }
 
   useEffect(() => {
     const localUser = localStorage.getItem("user");
@@ -51,17 +53,14 @@ export default function App() {
     }
     // If the URL contains the lang parameter, clear it
     const lang = removeSearchParam("lang").toUpperCase();
-    const newPageContent = TRANSLATIONS[lang];
-    if (newPageContent) {
+    try {
       // Set the page content to the translations corresponding to the lang parameter
-      setUserLanguage(lang);
-      return;
-    }
-
-    // The search parameter language was invalid or not set
-    const prevLang = localStorage.getItem("userLanguage");
-    if (prevLang && prevLang !== "undefined") {
-      setUserLanguage(prevLang);
+      setLanguage(lang);
+    } catch {
+      // The search parameter language was invalid or not set
+      const prevLang = localStorage.getItem("userLanguage");
+      if (!prevLang || prevLang === "undefined") return;
+      setLanguage(prevLang);
     }
   }, [searchParams]);
 
@@ -70,10 +69,10 @@ export default function App() {
       return;
     }
     // Retrieve the menu items from the API
-    (async function fetchPagesData() {
+    (async () => {
       try {
         const res = await fetchCachedData("pages");
-        const body = (await res.json()) as MenuItem[];
+        const body: MenuItem[] = await res.json();
         setMenuItems(body);
       } catch (networkError) {
         console.log("Could not fetch from API:", networkError);
@@ -82,11 +81,6 @@ export default function App() {
     })();
   }, [menuItems]);
 
-  useEffect(() => {
-    // Update user language preferences so they are saved on refresh
-    localStorage.setItem("userLanguage", userLanguage);
-  }, [userLanguage]);
-
   /** Event handler for when the user selects one of the lanugage options. */
   function changeLang(evt: MouseEvent<HTMLButtonElement>) {
     evt.preventDefault();
@@ -94,8 +88,10 @@ export default function App() {
     const button = evt.target as HTMLButtonElement;
     const elemText = button.textContent || button.innerText;
     const lang = elemText.replace(/[\s\u00A0]/, "");
-    if (TRANSLATIONS.hasOwnProperty(lang)) {
-      setUserLanguage(lang);
+    try {
+      setLanguage(lang);
+    } catch (error) {
+      console.error(error as Error);
     }
   }
 
@@ -105,18 +101,25 @@ export default function App() {
       <LoadingScreen text={`${pageContent.loading} ${pageContent.title}`} />
     );
   }
+
   return (
     <div className="App">
       <NavigationBar
         data={pageContent}
         selectedLanguage={userLanguage}
         changeLang={changeLang}
-        menuItems={menuItems as MenuItem[]}
+        menuItems={menuItems}
         user={currentUser}
       />
       <Routes>
-        <Route index element={<Home data={pageContent} />} />
-        <Route path="konrad" element={<Konrad data={pageContent} />} />
+        {menuItems
+          .filter((item) => item.shouldFetch)
+          .map((item) => (
+            <Route
+              path={item.url}
+              element={<PageTemplate pageData={item} lang={userLanguage} />}
+            />
+          ))}
         <Route
           path="pipe-designer"
           element={<PipeDesigner data={pageContent} />}
@@ -151,7 +154,16 @@ export default function App() {
             />
           }
         />
-        <Route path="*" element={<NotFound data={pageContent} />} />
+        <Route
+          path="content-manager"
+          element={<ContentManager data={pageContent} user={currentUser} />}
+        />
+        <Route
+          path="*"
+          element={
+            <ErrorPage pageData={pageContent.error[ErrorCode.NotFound]} />
+          }
+        />
       </Routes>
       <Footer data={pageContent} />
     </div>
