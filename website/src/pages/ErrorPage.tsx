@@ -15,8 +15,8 @@ export default function ErrorPage({
   return (
     <div className="text">
       <p>{pageData.body}</p>
-      <div className="login">
-        <Link to="/" className="login-btn">
+      <div className="form">
+        <Link to="/" className="btn">
           {PAGE_NAME}
         </Link>
       </div>

@@ -3,6 +3,7 @@ export interface PageContent {
 }
 
 export interface MenuItem {
+  id: number;
   title: string;
   url: string;
   adminOnly: boolean;

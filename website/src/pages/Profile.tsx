@@ -28,9 +28,9 @@ function Profile({
 
   if (!user) {
     return (
-      <div className="login">
-        <Link to="/login" className="login-btn">
-          {data.formDetails.login}
+      <div className="form">
+        <Link to="/login" className="btn">
+          {data.profile.formDetails.login}
         </Link>
       </div>
     );
@@ -41,21 +41,21 @@ function Profile({
       <p>{data.profile.body}</p>
       <p>Administrator: {user.admin.toString()}</p>
       <p>
-        {data.formDetails.name}: {user.name}
+        {data.profile.formDetails.name}: {user.name}
         <br />
-        {data.formDetails.surname}: {user.surname}
+        {data.profile.formDetails.surname}: {user.surname}
       </p>
       <p>
-        {data.formDetails.email}: {user.email}
+        {data.profile.formDetails.email}: {user.email}
       </p>
       <small>
         Unique user ID: <span>{user.uuid}</span>
       </small>
       <br />
       <small>Account created on {userCreatedAt.toString()}</small>
-      <div className="flex-column">
-        <button className="login-btn submit-btn" onClick={handleLogOut}>
-          {data.formDetails.logout}
+      <div className="form">
+        <button className="btn btn-submit" onClick={handleLogOut}>
+          {data.profile.formDetails.logout}
         </button>
       </div>
     </div>

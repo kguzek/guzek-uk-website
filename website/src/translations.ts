@@ -14,22 +14,29 @@ export interface Translation {
     body: string;
     loading: string;
     invalidCredentials: string;
-  };
-  readonly formDetails: {
-    name: string;
-    surname: string;
-    email: string;
-    password: string;
-    passwordRepeat: string;
-    login: string;
-    signup: string;
-    or: string;
-    haveAccountAlready: string;
-    logout: string;
+    readonly formDetails: {
+      name: string;
+      surname: string;
+      email: string;
+      password: string;
+      passwordRepeat: string;
+      login: string;
+      signup: string;
+      or: string;
+      haveAccountAlready: string;
+      logout: string;
+    };
   };
   readonly contentManager: {
     title: string;
     selectedPage: string;
+    addPage: string;
+    readonly formDetails: {
+      title: string;
+      url: string;
+      hidden: string;
+      update: string;
+    };
   };
   readonly error: { [code in ErrorCode]: ErrorPageContent };
 }
@@ -49,18 +56,18 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
       body: "Welcome to your profile!",
       loading: "Validating",
       invalidCredentials: "Invalid credentials.",
-    },
-    formDetails: {
-      name: "Name",
-      surname: "Surname",
-      email: "Email",
-      password: "Password",
-      passwordRepeat: "Repeat password",
-      login: "Log In",
-      signup: "Sign Up",
-      or: "or",
-      haveAccountAlready: "have an account already?",
-      logout: "Log out",
+      formDetails: {
+        name: "Name",
+        surname: "Surname",
+        email: "Email",
+        password: "Password",
+        passwordRepeat: "Repeat password",
+        login: "Log In",
+        signup: "Sign Up",
+        or: "or",
+        haveAccountAlready: "have an account already?",
+        logout: "Log out",
+      },
     },
     error: {
       403: {
@@ -75,6 +82,13 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
     contentManager: {
       title: "Content Manager",
       selectedPage: "Selected page",
+      addPage: "Create page",
+      formDetails: {
+        title: "Title",
+        url: "URL",
+        hidden: "Hidden?",
+        update: "Update",
+      },
     },
   },
   PL: {
@@ -91,18 +105,18 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
       body: "Witamy na Twoim profilu!",
       loading: "Trwa walidacja",
       invalidCredentials: "Niepoprawne dane loginowe.",
-    },
-    formDetails: {
-      name: "Imię",
-      surname: "Nazwisko",
-      email: "Email",
-      password: "Hasło",
-      passwordRepeat: "Hasło (ponownie)",
-      login: "Zaloguj się",
-      signup: "Załóż konto",
-      or: "lub",
-      haveAccountAlready: "masz już konto?",
-      logout: "Wyloguj się",
+      formDetails: {
+        name: "Imię",
+        surname: "Nazwisko",
+        email: "Email",
+        password: "Hasło",
+        passwordRepeat: "Hasło (ponownie)",
+        login: "Zaloguj się",
+        signup: "Załóż konto",
+        or: "lub",
+        haveAccountAlready: "masz już konto?",
+        logout: "Wyloguj się",
+      },
     },
     error: {
       403: {
@@ -117,6 +131,13 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
     contentManager: {
       title: "Edytor Treści",
       selectedPage: "Wybrana strona",
+      addPage: "Stwórz stronę",
+      formDetails: {
+        title: "Tytuł",
+        url: "URL",
+        hidden: "Ukryta?",
+        update: "Zaktualizuj",
+      },
     },
   },
 };
