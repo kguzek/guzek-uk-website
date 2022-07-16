@@ -69,49 +69,49 @@ export default function SignUp({
 
   return (
     <div className="flex-column">
-      <form className="login" onSubmit={handleSignUp}>
+      <form className="form" onSubmit={handleSignUp}>
         <InputBox
-          label={data.formDetails.name}
+          label={data.profile.formDetails.name}
           type="text"
           value={name}
           setValue={setName}
         />
         <InputBox
-          label={data.formDetails.surname}
+          label={data.profile.formDetails.surname}
           type="text"
           value={surname}
           setValue={setSurname}
         />
         <InputBox
-          label={data.formDetails.email}
+          label={data.profile.formDetails.email}
           type="email"
           value={email}
           setValue={setEmail}
         />
         <InputBox
-          label={data.formDetails.password}
+          label={data.profile.formDetails.password}
           type="password"
           value={password}
           setValue={setPassword}
         />
         <InputBox
-          label={data.formDetails.passwordRepeat}
+          label={data.profile.formDetails.passwordRepeat}
           type="password"
           value={repeatPassword}
           setValue={setRepeatPassword}
         />
         {errorMessage && <p className="error-msg">{errorMessage}</p>}
         {loading ? (
-          <LoadingButton className="login" color="white" />
+          <LoadingButton className="form" color="white" />
         ) : (
-          <button type="submit" className="login-btn submit-btn">
-            {data.formDetails.signup}
+          <button type="submit" className="btn btn-submit">
+            {data.profile.formDetails.signup}
           </button>
         )}
       </form>
-      <p>{data.formDetails.haveAccountAlready}</p>
-      <Link to="/login" className="signup-btn">
-        <i>{data.formDetails.login}</i>
+      <p>{data.profile.formDetails.haveAccountAlready}</p>
+      <Link to="/login">
+        <i>{data.profile.formDetails.login}</i>
       </Link>
     </div>
   );

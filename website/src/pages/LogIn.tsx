@@ -57,15 +57,15 @@ export default function LogIn({
 
   return (
     <div className="flex-column">
-      <form className="login" onSubmit={handleLogin}>
+      <form className="form" onSubmit={handleLogin}>
         <InputBox
-          label={data.formDetails.email}
+          label={data.profile.formDetails.email}
           type="email"
           value={email}
           setValue={setEmail}
         />
         <InputBox
-          label={data.formDetails.password}
+          label={data.profile.formDetails.password}
           type="password"
           value={password}
           setValue={setPassword}
@@ -74,16 +74,16 @@ export default function LogIn({
           <p className="error-msg">{data.profile.invalidCredentials}</p>
         )}
         {loading ? (
-          <LoadingButton className="login" color="white" />
+          <LoadingButton className="form" color="white" />
         ) : (
-          <button type="submit" className="login-btn submit-btn">
-            {data.formDetails.login}
+          <button type="submit" className="btn btn-submit">
+            {data.profile.formDetails.login}
           </button>
         )}
       </form>
-      <p>{data.formDetails.or}</p>
-      <Link to="/signup" className="signup-btn">
-        <i>{data.formDetails.signup}</i>
+      <p>{data.profile.formDetails.or}</p>
+      <Link to="/signup">
+        <i>{data.profile.formDetails.signup}</i>
       </Link>
     </div>
   );

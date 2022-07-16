@@ -4,19 +4,19 @@
   align-items: center;
 }
 
-.login {
+.form {
   display: flex;
   flex-direction: column;
   width: 30%;
   margin: auto;
 }
 
-.login input {
+.form input {
   font-family: unset;
   height: 1.5rem;
 }
 
-.login-btn {
+.btn {
   all: unset;
   text-align: center;
   border-radius: 0;
@@ -29,22 +29,19 @@
   line-height: 2.5rem;
 }
 
-.signup-btn {
-  text-decoration: none;
-  color: white;
-}
-
 .input-box {
   display: flex;
   flex-direction: column;
   margin-bottom: 1rem;
 }
 
-.input-box > input {
+.input-box :is(input, select) {
   margin-top: 3px;
+  font-size: 1rem;
+  background-color: white;
 }
 
-.submit-btn {
+.btn-submit {
   margin-top: 1.5rem;
 }
 
@@ -54,12 +51,7 @@
   font-family: "Courier New", Courier, monospace;
 }
 
-.input-label select {
-  margin-top: 2px;
-  height: 1.75rem;
-  width: 200px;
-}
-
-.input-label select {
-  font-size: 0.9rem;
+.required-asterisk {
+  color: red;
+  font-weight: bolder;
 }
