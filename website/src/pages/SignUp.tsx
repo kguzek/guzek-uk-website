@@ -68,7 +68,7 @@ export default function SignUp({
   }
 
   return (
-    <div className="login-page">
+    <div className="flex-column">
       <form className="login" onSubmit={handleSignUp}>
         <InputBox
           label={data.formDetails.name}

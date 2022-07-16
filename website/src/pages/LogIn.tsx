@@ -50,11 +50,13 @@ export default function LogIn({
   }
 
   if (loading) {
-    return <LoadingScreen className="login-page" text={data.profile.loading} />;
+    return (
+      <LoadingScreen className="flex-column" text={data.profile.loading} />
+    );
   }
 
   return (
-    <div className="login-page">
+    <div className="flex-column">
       <form className="login" onSubmit={handleLogin}>
         <InputBox
           label={data.formDetails.email}

@@ -53,7 +53,7 @@ function Profile({
       </small>
       <br />
       <small>Account created on {userCreatedAt.toString()}</small>
-      <div className="login-page">
+      <div className="flex-column">
         <button className="login-btn submit-btn" onClick={handleLogOut}>
           {data.formDetails.logout}
         </button>

@@ -29,6 +29,7 @@ export interface Translation {
   };
   readonly contentManager: {
     title: string;
+    selectedPage: string;
   };
   readonly error: { [code in ErrorCode]: ErrorPageContent };
 }
@@ -73,6 +74,7 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
     },
     contentManager: {
       title: "Content Manager",
+      selectedPage: "Selected page",
     },
   },
   PL: {
@@ -114,6 +116,7 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
     },
     contentManager: {
       title: "Edytor Treści",
+      selectedPage: "Wybrana strona",
     },
   },
 };

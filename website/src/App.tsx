@@ -71,14 +71,15 @@ export default function App() {
     }
     // Retrieve the menu items from the API
     (async () => {
+      let newVal: MenuItem[];
       try {
         const res = await fetchCachedData("pages");
-        const body: MenuItem[] = await res.json();
-        setMenuItems(body);
+        newVal = await res.json();
       } catch (networkError) {
-        console.log("Could not fetch from API:", networkError);
-        setMenuItems([]);
+        console.error("Could not fetch from API:", networkError);
+        newVal = [];
       }
+      setMenuItems(newVal);
     })();
   }, [menuItems]);
 
@@ -155,7 +156,13 @@ export default function App() {
         />
         <Route
           path="content-manager"
-          element={<ContentManager data={pageContent} user={currentUser} />}
+          element={
+            <ContentManager
+              data={pageContent}
+              user={currentUser}
+              menuItems={menuItems}
+            />
+          }
         />
         <Route
           path="*"
