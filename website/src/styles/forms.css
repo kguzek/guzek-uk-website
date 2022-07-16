@@ -1,4 +1,4 @@
-.login-page {
+.flex-column {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -52,4 +52,14 @@
   margin: 0;
   color: red;
   font-family: "Courier New", Courier, monospace;
+}
+
+.input-label select {
+  margin-top: 2px;
+  height: 1.75rem;
+  width: 200px;
+}
+
+.input-label select {
+  font-size: 0.9rem;
 }
