@@ -7,6 +7,14 @@ CREATE TABLE `guzek_uk`.`pages` (
   `should_fetch` BOOLEAN NOT NULL,
   PRIMARY KEY (`id`)
 );
+CREATE TABLE `guzek_uk`.`page_content` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `page_id` INT NOT NULL,
+  `content_en` TEXT NULL,
+  `content_pl` TEXT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`page_id`) REFERENCES `pages`(`id`)
+);
 CREATE TABLE `guzek_uk`.`users` (
   `uuid` VARCHAR(36) NOT NULL,
   `name` VARCHAR(45) NOT NULL,
@@ -19,7 +27,7 @@ CREATE TABLE `guzek_uk`.`users` (
   `admin` BOOLEAN NULL,
   PRIMARY KEY (`uuid`)
 );
-CREATE TABLE `guzek_uk`.`tokens` (
+CREATE TABLE `guzek_uk `.`tokens` (
   `value` VARCHAR(512) NOT NULL,
   `created_at` DATETIME NOT NULL,
   PRIMARY KEY (`value`)

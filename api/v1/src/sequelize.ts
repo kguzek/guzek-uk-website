@@ -13,11 +13,17 @@ const sequelize = new Sequelize(
 );
 
 export class Page extends Model {}
+export class PageContent extends Model {}
 export class User extends Model {}
 export class Token extends Model {}
 
 Page.init(
   {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     title: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -42,6 +48,25 @@ Page.init(
     modelName: "Page",
     timestamps: false,
     tableName: "pages",
+  }
+);
+
+PageContent.init(
+  {
+    contentEN: {
+      type: DataTypes.TEXT,
+      field: "content_en",
+    },
+    contentPL: {
+      type: DataTypes.TEXT,
+      field: "content_pl",
+    },
+  },
+  {
+    sequelize,
+    timestamps: false,
+    modelName: "PageContent",
+    tableName: "page_content",
   }
 );
 
@@ -104,3 +129,12 @@ Token.init(
     updatedAt: false,
   }
 );
+
+Page.hasOne(PageContent, {
+  foreignKey: {
+    name: "pageID",
+    allowNull: false,
+    field: "page_id",
+  },
+});
+PageContent.belongsTo(Page);

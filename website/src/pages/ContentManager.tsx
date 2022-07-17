@@ -1,5 +1,6 @@
 import React, { FormEvent, useEffect, useState } from "react";
-import InputArea from "../components/Forms/InputArea";
+import { fetchFromAPI } from "../backend";
+import InputArea, { getEmptyMarkdown } from "../components/Forms/InputArea";
 import InputBox from "../components/Forms/InputBox";
 import { ErrorCode, MenuItem, User } from "../models";
 import { Translation } from "../translations";
@@ -40,11 +41,6 @@ export default function ContentManager({
 
   const selectedPage = menuItems.find((page) => page.id === selectedPageID);
 
-  function handleSubmit(evt: FormEvent) {
-    evt.preventDefault();
-    console.log("Submitted");
-  }
-
   return (
     <div className="text">
       <p>{data.contentManager.title}</p>
@@ -53,7 +49,7 @@ export default function ContentManager({
           {data.contentManager.addPage}
         </button>
       ) : (
-        <form className="form" onSubmit={handleSubmit}>
+        <form className="form">
           <InputBox
             type="dropdown"
             label={data.contentManager.selectedPage}
@@ -75,9 +71,11 @@ function PagesEditor({
   data: Translation;
   originalPage: MenuItem;
 }) {
-  const [page, setPage] = useState<MenuItem>();
+  const [page, setPage] = useState<MenuItem>(originalPage);
+  const [content, setContent] = useState(getEmptyMarkdown());
 
   useEffect(() => {
+    if (originalPage.id === page.id) return;
     setPage(originalPage);
   }, [originalPage]);
 
@@ -89,6 +87,16 @@ function PagesEditor({
     }));
   }
 
+  async function handleSubmit(evt: FormEvent) {
+    evt.preventDefault();
+    console.log("Submitted");
+    const url = "";
+    const res = await fetchFromAPI(url, "PUT", {
+      ...page,
+      content: content.toString("html"),
+    });
+  }
+
   return (
     <>
       {PAGE_PROPERTIES.text.map((property, idx) => (
@@ -96,7 +104,7 @@ function PagesEditor({
           key={idx}
           label={data.contentManager.formDetails[property]}
           setValue={(val: string) => handleUpdate(property, val)}
-          value={page?.[property] ?? ""}
+          value={page[property] ?? ""}
           required
         />
       ))}
@@ -106,11 +114,11 @@ function PagesEditor({
           type="checkbox"
           label={data.contentManager.formDetails[property]}
           setValue={(val: boolean) => handleUpdate(property, val)}
-          value={page?.[property] ?? false}
+          value={page[property] ?? false}
         />
       ))}
-      {page?.shouldFetch && <InputArea />}
-      <button type="submit" className="btn btn-submit">
+      {page.shouldFetch && <InputArea value={content} setValue={setContent} />}
+      <button type="submit" className="btn btn-submit" onClick={handleSubmit}>
         {data.contentManager.formDetails.update}
       </button>
     </>
