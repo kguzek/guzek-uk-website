@@ -226,10 +226,11 @@ router
       if (!success) return;
     } catch (e) {
       const err = e as Error;
-      if (err.message === "Password not provided.") {
-        return reject("Old password not provided.");
-      }
-      return reject(err.message);
+      return reject(
+        err.message === "Password not provided."
+          ? "Old password not provided."
+          : err.message
+      );
     }
     const credentials: { hash: string; salt: string } = await password.hash(
       req.body.newPassword
