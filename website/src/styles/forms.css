@@ -22,7 +22,7 @@
   border-radius: 0;
   color: white;
   border: 1px solid white;
-  background-color: #12a12a;
+  background-color: var(--hacker-green);
   padding-bottom: 0.25rem;
   cursor: pointer;
   height: 2.5rem;
@@ -39,6 +39,21 @@
   margin-top: 3px;
   font-size: 1rem;
   background-color: white;
+}
+
+.input-checkbox {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  gap: 0.25rem;
+  border: 1px solid white;
+  border-radius: 4px;
+  padding: 0px 0.5rem;
+}
+
+.input-checkbox input {
+  accent-color: var(--hacker-highlight);
 }
 
 .btn-submit {
