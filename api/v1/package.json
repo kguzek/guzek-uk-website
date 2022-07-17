@@ -7,6 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "NODE_ENV=development NODE_PORT=5017 nodemon --exec ts-node --files index.ts"
   },
+  "resolutions": {
+    "moment": ">=2.29.4",
+    "got": ">=11.8.5"
+  },
   "author": "Konrad Guzek",
   "license": "ISC",
   "dependencies": {
