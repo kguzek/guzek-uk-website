@@ -4,6 +4,7 @@ import { getLogger } from "./logger";
 import { sendError, UserObj } from "./util";
 
 const logger = getLogger(__filename);
+const DISABLE_AUTH = process.env.NODE_ENV === "development" && true;
 
 export function getTokenSecret(type: string) {
   const secret = process.env[`JWT_${type.toUpperCase()}_TOKEN_SECRET`];
@@ -38,7 +39,7 @@ export default function authenticateToken(
   }
 
   function reject(code: number, message: string) {
-    if (endpointAccessibleBy.anonymous) {
+    if (endpointAccessibleBy.anonymous || DISABLE_AUTH) {
       return void next();
     }
     sendError(res, code, { message });
