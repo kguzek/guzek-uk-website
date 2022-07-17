@@ -1,10 +1,15 @@
 import { Request, Response } from "express";
-import { Filterable, WhereOptions } from "sequelize";
-import { Where } from "sequelize/types/utils";
+import { WhereOptions } from "sequelize";
 import { getLogger } from "./logger";
-import { Page, Token, User } from "./sequelize";
+import { Page, PageContent, Token, User } from "./sequelize";
 
 const logger = getLogger(__filename);
+
+export type ModelType =
+  | typeof Page
+  | typeof PageContent
+  | typeof User
+  | typeof Token;
 
 export interface UserObj {
   uuid: string;
@@ -13,8 +18,6 @@ export interface UserObj {
   email: string;
   admin?: boolean;
 }
-
-export type ModelType = typeof Page | typeof User | typeof Token;
 
 interface StatusCodeMap {
   [code: number]: string;
@@ -118,11 +121,12 @@ export async function readDatabaseEntry(
 export async function updateDatabaseEntry(
   model: ModelType,
   req: Request,
-  res: Response
+  res: Response,
+  modelParams?: object
 ) {
   let result: number[];
   try {
-    result = await model.update(req.body, {
+    result = await model.update(modelParams ?? req.body, {
       where: req.params,
     });
   } catch (error) {
