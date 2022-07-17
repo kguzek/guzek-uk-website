@@ -9,7 +9,7 @@ export default function InputBox({
   options,
 }: {
   label: string;
-  value: string | number;
+  value: string | number | boolean;
   setValue: Function;
   type?: string;
   required?: boolean;
@@ -19,8 +19,11 @@ export default function InputBox({
     evt: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     predicate: Function
   ) {
-    const val = evt.target.value;
-    setValue(predicate(val));
+    const val =
+      type === "checkbox"
+        ? (evt.target as HTMLInputElement).checked
+        : predicate(evt.target.value);
+    setValue(val);
   }
 
   const isDropdown = type === "dropdown";
@@ -32,15 +35,18 @@ export default function InputBox({
   }
 
   return (
-    <label className="input-box">
+    <label className={`input-box input-${type}`}>
       <span>
-        {required && value == null && (
+        {required && value === "" && (
           <span className="required-asterisk">*</span>
         )}
         {label}
       </span>
       {isDropdown ? (
-        <select value={value} onChange={(evt) => handleChange(evt, parseInt)}>
+        <select
+          value={value as string | number}
+          onChange={(evt) => handleChange(evt, parseInt)}
+        >
           {[...(options?.entries() ?? [])].map(([key, value], idx) => (
             <option key={idx} value={key}>
               ID {key}: {value}
@@ -49,7 +55,7 @@ export default function InputBox({
         </select>
       ) : (
         <input
-          value={value}
+          value={value as string | number}
           type={type}
           onChange={(evt) => handleChange(evt, (val: string) => val)}
           required={required}

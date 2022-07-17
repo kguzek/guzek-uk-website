@@ -1,9 +1,18 @@
 import React, { FormEvent, useEffect, useState } from "react";
+import InputArea from "../components/Forms/InputArea";
 import InputBox from "../components/Forms/InputBox";
 import { ErrorCode, MenuItem, User } from "../models";
 import { Translation } from "../translations";
 import { setTitle } from "../util";
 import ErrorPage from "./ErrorPage";
+
+const PAGE_PROPERTIES: {
+  text: Array<"title" | "url">;
+  bool: Array<"adminOnly" | "shouldFetch">;
+} = {
+  text: ["title", "url"],
+  bool: ["adminOnly", "shouldFetch"],
+};
 
 export default function ContentManager({
   data,
@@ -72,9 +81,8 @@ function PagesEditor({
     setPage(originalPage);
   }, [originalPage]);
 
-  const PROPERTIES: Array<"title" | "url"> = ["title", "url"];
-
-  function handleUpdate(changedProperty: string, newValue: string) {
+  function handleUpdate(changedProperty: string, newValue: string | boolean) {
+    console.log("Set", changedProperty, "to", newValue);
     setPage((current) => ({
       ...(current ?? originalPage),
       [changedProperty]: newValue,
@@ -83,7 +91,7 @@ function PagesEditor({
 
   return (
     <>
-      {PROPERTIES.map((property, idx) => (
+      {PAGE_PROPERTIES.text.map((property, idx) => (
         <InputBox
           key={idx}
           label={data.contentManager.formDetails[property]}
@@ -92,6 +100,16 @@ function PagesEditor({
           required
         />
       ))}
+      {PAGE_PROPERTIES.bool.map((property, idx) => (
+        <InputBox
+          key={idx}
+          type="checkbox"
+          label={data.contentManager.formDetails[property]}
+          setValue={(val: boolean) => handleUpdate(property, val)}
+          value={page?.[property] ?? false}
+        />
+      ))}
+      {page?.shouldFetch && <InputArea />}
       <button type="submit" className="btn btn-submit">
         {data.contentManager.formDetails.update}
       </button>
