@@ -34,7 +34,8 @@ export interface Translation {
     readonly formDetails: {
       title: string;
       url: string;
-      hidden: string;
+      adminOnly: string;
+      shouldFetch: string;
       update: string;
     };
   };
@@ -86,7 +87,8 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
       formDetails: {
         title: "Title",
         url: "URL",
-        hidden: "Hidden?",
+        adminOnly: "Admin only",
+        shouldFetch: "Edit page contents",
         update: "Update",
       },
     },
@@ -135,7 +137,8 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
       formDetails: {
         title: "Tytuł",
         url: "URL",
-        hidden: "Ukryta?",
+        adminOnly: "Tylko dla administratorów",
+        shouldFetch: "Edytuj treść strony",
         update: "Zaktualizuj",
       },
     },
