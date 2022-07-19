@@ -74,7 +74,7 @@ html {
 }
 
 body {
-  background-color: rgb(255, 255, 255);
+  background-color: black;
   color: var(--hacker-green);
   font-family: "Roboto Slab", serif;
   font-size: 1.2rem;
