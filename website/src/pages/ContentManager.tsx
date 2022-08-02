@@ -1,5 +1,5 @@
 import React, { FormEvent, useEffect, useState } from "react";
-import { fetchFromAPI } from "../backend";
+import { fetchFromAPI, getRequest } from "../backend";
 import InputArea, { getEmptyMarkdown } from "../components/Forms/InputArea";
 import InputBox from "../components/Forms/InputBox";
 import { ErrorCode, MenuItem, User } from "../models";
@@ -91,10 +91,13 @@ function PagesEditor({
     evt.preventDefault();
     console.log("Submitted");
     const url = "";
-    const res = await fetchFromAPI(url, "PUT", {
-      ...page,
-      content: content.toString("html"),
+    const req = getRequest(url, "PUT", {
+      body: {
+        ...page,
+        content: content.toString("html"),
+      },
     });
+    const res = await fetchFromAPI(req);
   }
 
   return (

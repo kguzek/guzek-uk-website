@@ -1,6 +1,6 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { fetchFromAPI } from "../backend";
+import { fetchFromAPI, getRequest } from "../backend";
 import InputBox from "../components/Forms/InputBox";
 import { LoadingButton } from "../components/LoadingScreen";
 import { Translation } from "../translations";
@@ -50,13 +50,14 @@ export default function SignUp({
     // ]) {
     //   func("");
     // }
-    const fetchData = {
+    const body = {
       name,
       surname,
       email,
       password,
     };
-    const res = await fetchFromAPI("auth/users", "POST", fetchData);
+    const req = getRequest("auth/users", "POST", { body });
+    const res = await fetchFromAPI(req);
     const json = await res.json();
     setLoading(false);
     if (res.ok) {
