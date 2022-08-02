@@ -1,21 +1,34 @@
 import React, { useEffect, useState } from "react";
-import { fetchCachedData } from "../backend";
+import { useLocation } from "react-router-dom";
 import { MenuItem, PageContent } from "../models";
-import { setTitle } from "../util";
+import { setTitle, tryFetch } from "../util";
 
-function Home({ pageData, lang }: { pageData: MenuItem; lang: string }) {
+const DEFAULT_DATA: PageContent = {
+  content: "Oops! This page hasn't been implemented yet.",
+};
+
+function Home({
+  pageData,
+  reload,
+  lang,
+}: {
+  pageData: MenuItem;
+  reload: boolean;
+  lang: string;
+}) {
   const [pageContent, setPageContent] = useState<PageContent | null>(null);
 
+  const location = useLocation();
+
   async function fetchPageContent() {
-    const url = "pages" + pageData.url;
-    const res = await fetchCachedData(url, "GET", { lang });
-    const body: PageContent = await res.json();
+    const url = "pages/" + pageData.id;
+    const body = await tryFetch(url, { lang }, DEFAULT_DATA);
     setPageContent(body);
   }
 
   useEffect(() => {
     fetchPageContent();
-  }, [lang]);
+  }, [reload, lang, location]);
 
   useEffect(() => {
     setTitle(pageData.title);
@@ -23,7 +36,7 @@ function Home({ pageData, lang }: { pageData: MenuItem; lang: string }) {
 
   return (
     <div className="text">
-      <p>{pageContent?.body}</p>
+      <p>{pageContent?.content}</p>
     </div>
   );
 }

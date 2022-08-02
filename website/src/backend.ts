@@ -1,4 +1,4 @@
-const USE_EMULATOR_URL = false;
+const USE_EMULATOR_URL = 1;
 const LOG_ACCESS_TOKEN = false;
 const CACHE_NAME = "guzek-uk-cache";
 
@@ -16,59 +16,73 @@ export const API_BASE =
 /** Gets the application's root cache storage. */
 export const getCache = () => caches.open(CACHE_NAME);
 
+export function getRequest(
+  path: string,
+  method: string,
+  {
+    params = {},
+    body = {},
+  }: {
+    params?: Record<string, string> | URLSearchParams;
+    body?: Record<string, any>;
+  }
+) {
+  function getSearchParams() {
+    if (Object.keys(params).length === 0) return "";
+    const searchParams =
+      params instanceof URLSearchParams ? params : new URLSearchParams(params);
+    return `?${searchParams}`;
+  }
+
+  const url = API_BASE + path + getSearchParams();
+  const options: RequestOptions = {
+    method,
+    headers: {},
+  };
+  if (Object.keys(body).length > 0) {
+    options.headers["Content-Type"] = "application/json";
+    options.body = JSON.stringify(body);
+  }
+  return new Request(url, options);
+}
+
 /** Searches for the corresponding cache for the given request. If found, returns
  *  the cached response. Otherwise, performs the fetch request and adds the response
  *  to cache. Returns the HTTP response.
  */
-export async function fetchCachedData(
-  path: string,
-  method: string = "GET",
-  params?: Record<string, string>,
-  body?: BodyInit
-) {
-  // Add search parameters to URL
-  const search = params ? `?${new URLSearchParams(params)}` : "";
-  const relativeURL = path + search;
-  const fetchOptions = { method, body };
+export async function fetchCachedData(request: Request) {
+  const cache = await getCache();
 
-  const request = new Request(relativeURL, fetchOptions);
-  const cachedResponse = await caches.match(request);
-  const absoluteURL = API_BASE + relativeURL;
+  // Check if response is already cached
+  const cachedResponse = await cache.match(request);
   if (cachedResponse) {
-    console.debug("Using cached response for", absoluteURL);
+    console.debug("Using cached response for", request.url);
     return cachedResponse.clone();
   }
 
-  console.debug("Fetching", absoluteURL, "...");
-  const response = await fetchFromAPI(relativeURL, "GET");
-  response.headers.set("Date", new Date().getTime().toString());
-  if (response.ok && response.headers.get("Cache-Control") !== "no-store") {
-    const cache = await getCache();
-    await cache.put(request, response);
+  // Fetch new response
+  console.debug("Fetching", request.url, "...");
+  const response = await fetchFromAPI(request);
+  const responseDate = new Date().getTime().toString();
+  response.headers.set("Date", responseDate);
+
+  // Cache the new response
+  if (
+    response.ok /*&& response.clone().headers.get("Cache-Control") !== "no-store"*/
+  ) {
+    await cache.put(request, response.clone());
+    console.info("Cached response as", response.url);
   }
   return response.clone();
 }
 
 /** Performs a fetch from the API using the given values. */
-function fetchWithBody(
-  path: string,
-  method: string = "GET",
-  body?: object,
-  accessToken?: string
-) {
-  const options: RequestOptions = {
-    method,
-    headers: {},
-  };
+function fetchWithToken(request: Request, accessToken?: string) {
   if (accessToken) {
     LOG_ACCESS_TOKEN && console.info(accessToken);
-    options.headers.Authorization = `Bearer ${accessToken}`;
+    request.headers.set("Authorization", `Bearer ${accessToken}`);
   }
-  if (body) {
-    options.headers["Content-Type"] = "application/json";
-    options.body = JSON.stringify(body);
-  }
-  return fetch(API_BASE + path, options);
+  return fetch(request);
 }
 
 /** Sets the access token metadata (value and expiration date) in the local storage. */
@@ -82,11 +96,7 @@ export function updateAccessToken(accessToken: string) {
 /** Determines the API access token and generates a new one if it is out of date. Fetches from the API
  *  by substituting in the absolute URL and authorisation headers, as well as serialises the JSON payload.
  */
-export async function fetchFromAPI(
-  path: string,
-  method: string = "GET",
-  body?: object
-) {
+export async function fetchFromAPI(request: Request) {
   // Get the locally saved access token
   let accessToken;
   const accessTokenInfo = localStorage.getItem("accessTokenInfo");
@@ -95,8 +105,9 @@ export async function fetchFromAPI(
     // Check if it's expired
     if (new Date(tokenInfo.expiresAt) < new Date()) {
       // Generate a new access token
-      const token = localStorage.getItem("refreshToken");
-      const res = await fetchWithBody("auth/token", "POST", { token });
+      const token = localStorage.getItem("refreshToken") ?? "";
+      const req = getRequest("auth/token", "POST", { body: { token } });
+      const res = await fetchWithToken(req);
       if (res.ok) {
         ({ token: accessToken } = await res.json());
         updateAccessToken(accessToken);
@@ -105,5 +116,5 @@ export async function fetchFromAPI(
       accessToken = tokenInfo.accessToken;
     }
   }
-  return await fetchWithBody(path, method, body, accessToken);
+  return await fetchWithToken(request, accessToken);
 }

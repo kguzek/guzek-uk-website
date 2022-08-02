@@ -1,4 +1,47 @@
+import { fetchCachedData, fetchFromAPI, getRequest } from "./backend";
+
 export const PAGE_NAME = "Guzek UK";
 
 export const setTitle = (title: string) =>
   (document.title = `${title} | ${PAGE_NAME}`);
+
+/** Attempts to fetch the data from local cache or from the API.
+ *  On success, returns the consumed response's body.
+ *  On failure, returns `defaultData`.
+ */
+export async function tryFetch<T>(
+  path: string,
+  params: Record<string, string>,
+  defaultData: T,
+  useCache: boolean = true
+) {
+  let res;
+  const fetchFunc = useCache ? fetchCachedData : fetchFromAPI;
+  const request = getRequest(path, "GET", { params });
+  try {
+    res = await fetchFunc(request);
+  } catch (networkError) {
+    console.error("Could not fetch from API:", networkError);
+    return defaultData;
+  }
+  const json: T = await res.json();
+  if (res.ok) return json;
+  console.error("Invalid response from API:", json);
+  return defaultData;
+}
+
+const divmod = (dividend: number, divisor: number) => [
+  Math.floor(dividend / divisor),
+  dividend % divisor,
+];
+
+/** Converts a duration in milliseconds to duration object. */
+export function getDuration(milliseconds: number) {
+  let seconds, minutes, hours, days;
+  [seconds, milliseconds] = divmod(milliseconds, 1000);
+  [minutes, seconds] = divmod(seconds, 60);
+  [hours, minutes] = divmod(minutes, 60);
+  [days, hours] = divmod(hours, 24);
+  const formatted = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  return { formatted, days, hours, minutes, seconds, milliseconds };
+}

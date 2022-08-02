@@ -5,7 +5,7 @@ import NavigationBar from "./components/NavigationBar";
 import Footer from "./components/Footer";
 import PageTemplate from "./pages/PageTemplate";
 import ErrorPage from "./pages/ErrorPage";
-import { fetchCachedData } from "./backend";
+import { getCache } from "./backend";
 import Profile from "./pages/Profile";
 import PipeDesigner from "./pages/PipeDesigner";
 import LoadingScreen from "./components/LoadingScreen";
@@ -15,13 +15,17 @@ import LogIn from "./pages/LogIn";
 import SignUp from "./pages/SignUp";
 import { ErrorCode, Language, MenuItem, User } from "./models";
 import ContentManager from "./pages/ContentManager";
-import { PAGE_NAME } from "./util";
+import { getDuration, PAGE_NAME, tryFetch } from "./util";
+
+/** When set to `true`, doesn't remove caches whose creation date is unknown. */
+const IGNORE_INVALID_RESPONSE_DATES = false;
 
 export default function App() {
   const [userLanguage, setUserLanguage] = useState<Language>(Language.EN);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [menuItems, setMenuItems] = useState<MenuItem[] | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [reload, setReload] = useState(true);
 
   function setLanguage(langString: string) {
     if (!(langString in Language)) {
@@ -31,6 +35,78 @@ export default function App() {
     localStorage.setItem("userLanguage", langString);
     setUserLanguage(newLang);
   }
+
+  useEffect(() => {
+    setReload(false);
+    // Remove outdated caches
+    (async () => {
+      const defaultData: { [endpoint: string]: number } = {};
+      const updated = await tryFetch("updated", {}, defaultData, false);
+      const updatedEndpoints = new Set();
+      const cache = await getCache();
+      const cachedResponses = await cache.matchAll();
+      for (let i = 0; i < cachedResponses.length; i++) {
+        const res = cachedResponses[i];
+        console.info(
+          "Checking cached response",
+          i + 1,
+          "/",
+          cachedResponses.length,
+          res.url,
+          // Object.fromEntries(res.headers.entries()),
+          "..."
+        );
+        const resTimestamp = parseInt(res.headers.get("Pragma") ?? "0");
+        const url = new URL(res.url);
+        // Extract the base path (only first subdirectory of URL path)
+        const [_, endpoint] = /^\/([^\/]*)(?:\/.*)?$/.exec(url.pathname) ?? [];
+        if (!endpoint) continue;
+        console.debug(
+          "Cache date:",
+          resTimestamp,
+          `| Endpoint '${endpoint}' last updated:`,
+          updated[endpoint]
+        );
+        if (
+          resTimestamp > updated[endpoint] ||
+          (IGNORE_INVALID_RESPONSE_DATES && !resTimestamp)
+        ) {
+          const diff = getDuration(resTimestamp - updated[endpoint]);
+
+          console.log(
+            "Cache was created",
+            diff.formatted,
+            "after the last change on the server."
+          );
+          continue;
+        }
+        updatedEndpoints.add(endpoint);
+        const deleted = await cache.delete(res.url);
+        console.info(
+          "Deleted cache",
+          res.url,
+          (deleted ? "" : "UN") + "SUCCESSFULLY"
+        );
+      }
+      if (updatedEndpoints.size > 0) {
+        console.debug("Updated endpoints:", updatedEndpoints);
+        setReload(true);
+      } else {
+        console.debug("All cached responses are up-to-date.");
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (!reload) return;
+    console.debug("Reloading page content...", reload);
+
+    // Retrieve the menu items from the API
+    (async () => {
+      const data = await tryFetch("pages", {}, [] as MenuItem[]);
+      setMenuItems(data);
+    })();
+  }, [reload]);
 
   useEffect(() => {
     const localUser = localStorage.getItem("user");
@@ -65,24 +141,6 @@ export default function App() {
     }
   }, [searchParams]);
 
-  useEffect(() => {
-    if (menuItems) {
-      return;
-    }
-    // Retrieve the menu items from the API
-    (async () => {
-      let newVal: MenuItem[];
-      try {
-        const res = await fetchCachedData("pages");
-        newVal = await res.json();
-      } catch (networkError) {
-        console.error("Could not fetch from API:", networkError);
-        newVal = [];
-      }
-      setMenuItems(newVal);
-    })();
-  }, [menuItems]);
-
   /** Event handler for when the user selects one of the lanugage options. */
   function changeLang(evt: MouseEvent<HTMLButtonElement>) {
     evt.preventDefault();
@@ -108,16 +166,23 @@ export default function App() {
         data={pageContent}
         selectedLanguage={userLanguage}
         changeLang={changeLang}
-        menuItems={menuItems}
+        menuItems={menuItems.filter((item) => !item.adminOnly)}
         user={currentUser}
       />
       <Routes>
         {menuItems
           .filter((item) => item.shouldFetch)
-          .map((item) => (
+          .map((item, idx) => (
             <Route
+              key={idx}
               path={item.url}
-              element={<PageTemplate pageData={item} lang={userLanguage} />}
+              element={
+                <PageTemplate
+                  reload={reload}
+                  pageData={item}
+                  lang={userLanguage}
+                />
+              }
             />
           ))}
         <Route

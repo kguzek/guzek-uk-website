@@ -1,5 +1,5 @@
 export interface PageContent {
-  body: string;
+  content: string;
 }
 
 export interface MenuItem {

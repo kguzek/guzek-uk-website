@@ -22,13 +22,8 @@ function NavigationBar({
   const [menuOpen, setMenuOpen] = useState(false);
   const winDims = useWindowDimensions();
 
-  // Don't render items that are set as 'hidden' in the nav bar
-  const visibleItems = (menuItems || []).filter(
-    (item) => !item.adminOnly || user?.admin
-  );
-
   // Create the array of nav bar page elements
-  const menuItemElements = visibleItems.map((item, index) => (
+  const menuItemElements = menuItems.map((item, index) => (
     <li key={index}>
       <NavBarItem item={item} setMenuOpen={setMenuOpen} />
     </li>
