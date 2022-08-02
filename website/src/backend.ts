@@ -1,4 +1,4 @@
-const USE_EMULATOR_URL = 1;
+const USE_EMULATOR_URL = false;
 const LOG_ACCESS_TOKEN = false;
 const CACHE_NAME = "guzek-uk-cache";
 

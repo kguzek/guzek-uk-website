@@ -37,7 +37,6 @@ export default function App() {
   }
 
   useEffect(() => {
-    setReload(false);
     // Remove outdated caches
     (async () => {
       const defaultData: { [endpoint: string]: number } = {};
@@ -99,7 +98,8 @@ export default function App() {
 
   useEffect(() => {
     if (!reload) return;
-    console.debug("Reloading page content...", reload);
+
+    setReload(false);
 
     // Retrieve the menu items from the API
     (async () => {

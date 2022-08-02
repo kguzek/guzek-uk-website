@@ -27,6 +27,7 @@ function Home({
   }
 
   useEffect(() => {
+    if (!reload) return;
     fetchPageContent();
   }, [reload, lang, location]);
 
