@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { getLogger } from "./logger";
-import { sendError, UserObj } from "./util";
+import { getLogger } from "./logging";
+import { sendError, UserObj } from "../util";
 
 const logger = getLogger(__filename);
 const DISABLE_AUTH = process.env.NODE_ENV === "development" && true;
@@ -22,7 +22,7 @@ const ENDPOINTS: { [level: string]: { [method: string]: string[] } } = {
   },
 };
 
-export default function authenticateToken(
+export function authMiddleware(
   req: Request,
   res: Response,
   next: NextFunction

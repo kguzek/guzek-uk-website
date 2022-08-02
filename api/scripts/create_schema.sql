@@ -27,8 +27,14 @@ CREATE TABLE `guzek_uk`.`users` (
   `admin` BOOLEAN NULL,
   PRIMARY KEY (`uuid`)
 );
-CREATE TABLE `guzek_uk `.`tokens` (
+CREATE TABLE `guzek_uk`.`tokens` (
   `value` VARCHAR(512) NOT NULL,
   `created_at` DATETIME NOT NULL,
   PRIMARY KEY (`value`)
+);
+CREATE TABLE `guzek_uk`.`updated` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `endpoint` VARCHAR(32) NOT NULL,
+  `timestamp` BIGINT UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`)
 );

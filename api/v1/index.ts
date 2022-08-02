@@ -1,15 +1,15 @@
 // Initialise dependencies
 import cors from "cors";
 import express from "express";
-import dotenv from "dotenv";
-import { sendError } from "./src/util";
-import { getLogger, loggingMiddleware } from "./src/logger";
-import authMiddleware from "./src/authMiddleware";
 import path from "path";
-const password = require("s-salt-pepper");
-
+import dotenv from "dotenv";
 const dotEnvPath = path.resolve(__dirname, "../.env");
 dotenv.config({ path: dotEnvPath });
+const password = require("s-salt-pepper");
+
+import { sendError } from "./src/util";
+import getMiddleware from "./src/middleware";
+import { getLogger } from "./src/middleware/logging";
 
 const logger = getLogger(__filename);
 
@@ -20,7 +20,7 @@ const app = express();
 const PORT = process.env.NODE_PORT;
 
 // Define the endpoints
-const ENDPOINTS = ["pages", "auth"];
+const ENDPOINTS = ["pages", "auth", "updated"];
 
 console.log(); // Add newline before app output for readability
 
@@ -38,12 +38,14 @@ function initialise() {
   // Enable middleware
   app.use(cors());
   app.use(express.json());
-  app.use(loggingMiddleware);
-  app.use(authMiddleware);
+  app.use(getMiddleware());
 
   // Enable individual API routes
   for (const endpoint of ENDPOINTS) {
     const middleware = require("./routes/" + endpoint);
+    if (endpoint === "updated") {
+      middleware.init(ENDPOINTS);
+    }
     app.use("/" + endpoint, middleware.router);
   }
 

@@ -1,13 +1,21 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
-import { DATA_SOURCES } from "../config/vars.config";
+
+const SESSION_INFO = {
+  DB_HOST: process.env.MY_SQL_DB_HOST ?? "127.0.0.1",
+  DB_PORT: process.env.MY_SQL_DB_PORT ?? "3306",
+  DB_USER: process.env.MY_SQL_DB_USER ?? "root",
+  DB_PASSWORD: process.env.MY_SQL_DB_PASSWORD ?? "",
+  DB_NAME: process.env.MY_SQL_DB_NAME ?? "database",
+  DB_CONNECTION_LIMIT: parseInt(process.env.MY_SQL_DB_CONNECTION_LIMIT ?? "4"),
+};
 
 // Initialise Sequelize
 const sequelize = new Sequelize(
-  DATA_SOURCES.mySQL.DB_NAME,
-  DATA_SOURCES.mySQL.DB_USER,
-  DATA_SOURCES.mySQL.DB_PASSWORD,
+  SESSION_INFO.DB_NAME,
+  SESSION_INFO.DB_USER,
+  SESSION_INFO.DB_PASSWORD,
   {
-    host: DATA_SOURCES.mySQL.DB_HOST,
+    host: SESSION_INFO.DB_HOST,
     dialect: "mysql",
   }
 );
@@ -16,6 +24,7 @@ export class Page extends Model {}
 export class PageContent extends Model {}
 export class User extends Model {}
 export class Token extends Model {}
+export class Updated extends Model {}
 
 Page.init(
   {
@@ -130,11 +139,31 @@ Token.init(
   }
 );
 
-Page.hasOne(PageContent, {
+Updated.init(
+  {
+    endpoint: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    timestamp: {
+      type: DataTypes.BIGINT.UNSIGNED,
+      allowNull: false,
+    },
+  },
+  {
+    sequelize,
+    timestamps: false,
+    modelName: "Updated",
+    tableName: "updated",
+  }
+);
+
+const foreignKeyOptions = {
   foreignKey: {
     name: "pageID",
     allowNull: false,
     field: "page_id",
   },
-});
-PageContent.belongsTo(Page);
+};
+Page.hasOne(PageContent, foreignKeyOptions);
+PageContent.belongsTo(Page, foreignKeyOptions);

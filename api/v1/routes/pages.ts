@@ -1,15 +1,18 @@
 import express, { Request, Response } from "express";
-import { getLogger } from "../src/logger";
+import { getLogger } from "../src/middleware/logging";
 import { Page, PageContent } from "../src/sequelize";
 import {
   createDatabaseEntry,
   deleteDatabaseEntry,
   readAllDatabaseEntries,
   sendError,
+  sendOK,
   updateDatabaseEntry,
 } from "../src/util";
 
 export const router = express.Router();
+
+const logger = getLogger(__filename);
 
 enum CONTENT_LANGUAGES {
   EN = "contentEN",
@@ -21,15 +24,18 @@ const send404 = (req: Request, res: Response) =>
     message: `Could not find page with ID '${req.params.id}'.`,
   });
 
+/** Ensures the `lang` query parameter of the request is provided and a valid language option.
+ *  If so, returns the parameter value. If not, sends a 400 response. and returns `undefined`. */
 function validateLangParameter(req: Request, res: Response) {
   const reject = (message: string) => void sendError(res, 400, { message });
   if (!req.query.lang) {
     return reject("No content language specified in request query.");
   }
-  if (!(req.query.lang.toString() in CONTENT_LANGUAGES)) {
+  const lang = req.query.lang.toString().toUpperCase();
+  if (!(lang in CONTENT_LANGUAGES)) {
     return reject(`Invalid content language: '${req.query.lang}'.`);
   }
-  return req.query.lang as keyof typeof CONTENT_LANGUAGES;
+  return lang as keyof typeof CONTENT_LANGUAGES;
 }
 
 /** Consumes the request body, checking if the page content has been edited.
@@ -42,13 +48,7 @@ async function modifyPageContent(
   updateExistingPage: boolean
 ) {
   const { content, ...attributes } = req.body;
-  let pageID = req.params.id;
-  if (updateExistingPage) {
-    await updateDatabaseEntry(Page, req, res, attributes);
-  } else {
-    await createDatabaseEntry(Page, req, res, attributes);
-    console.log(pageID);
-  }
+  const pageID = req.params.id;
 
   if (content) {
     // Request validation
@@ -56,31 +56,64 @@ async function modifyPageContent(
     if (!lang) return;
     const newValues = { [CONTENT_LANGUAGES[lang]]: content };
     // Determine if the entry has to be created or modified
-    try {
-      await PageContent.update(newValues, { where: { pageID } });
-    } catch {
-      await PageContent.create(newValues);
+    const pageContent = await PageContent.findOne({ where: { pageID } });
+    if (pageContent) {
+      await pageContent.set(newValues).save();
+    } else {
+      if (!updateExistingPage && !attributes.shouldFetch) {
+        return sendError(res, 400, {
+          message:
+            "Page content specified but 'shouldFetch' not set to 'true'.",
+        });
+      }
+      await PageContent.create({ ...newValues, pageID });
     }
+  }
+
+  if (updateExistingPage) {
+    await updateDatabaseEntry(Page, req, res, attributes);
+  } else {
+    if (attributes.shouldFetch && !content) {
+      return sendError(res, 400, {
+        message: "'shouldFetch' set to 'true' but no page content specified.",
+      });
+    }
+    await createDatabaseEntry(Page, req, res, attributes);
   }
 }
 
 router
   // CREATE new page
-  .post("/", (req: Request, res: Response) => {
-    return modifyPageContent(req, res, false);
-  })
+  .post("/", (req: Request, res: Response) =>
+    modifyPageContent(req, res, false)
+  )
 
   // READ all pages
-  .get("/", (_req: Request, res: Response) => {
-    return readAllDatabaseEntries(Page, res);
+  .get("/", (__req: Request, res: Response) =>
+    readAllDatabaseEntries(Page, res)
+  )
+
+  // READ specific page
+  .get("/:id", async (req: Request, res: Response) => {
+    const pageContent = await PageContent.findByPk(req.params.id);
+    if (!pageContent) {
+      return send404(req, res);
+    }
+    const lang = validateLangParameter(req, res);
+    if (!lang) return;
+    // const pages = await readDatabaseEntry(Page, res, { id: req.params.id });
+    // if (!pages) return;
+    // const page = pages.shift() as Page;
+    // sendOK(res, { ...page.toJSON(), ...pageContent.toJSON() });
+    sendOK(res, { content: pageContent.get(CONTENT_LANGUAGES[lang]) });
   })
 
   // UPDATE single page
-  .put("/:id", (req: Request, res: Response) => {
-    return modifyPageContent(req, res, true);
-  })
+  .put("/:id", (req: Request, res: Response) =>
+    modifyPageContent(req, res, true)
+  )
 
   // DELETE single page
-  .delete("/:id", (req: Request, res: Response) => {
-    return deleteDatabaseEntry(Page, { id: req.params.id }, res);
-  });
+  .delete("/:id", (req: Request, res: Response) =>
+    deleteDatabaseEntry(Page, { id: req.params.id }, res)
+  );

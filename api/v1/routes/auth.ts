@@ -13,7 +13,7 @@ import {
   sendOK,
 } from "../src/util";
 import { Token, User } from "../src/sequelize";
-import { getTokenSecret } from "../src/authMiddleware";
+import { getTokenSecret } from "../src/middleware/auth";
 const password = require("s-salt-pepper");
 
 export const router = express.Router();

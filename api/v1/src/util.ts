@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { WhereOptions } from "sequelize";
-import { getLogger } from "./logger";
-import { Page, PageContent, Token, User } from "./sequelize";
+import { getLogger } from "./middleware/logging";
+import { Page, PageContent, Token, Updated, User } from "./sequelize";
 
 const logger = getLogger(__filename);
 
@@ -11,6 +11,8 @@ export type ModelType =
   | typeof User
   | typeof Token;
 
+type Model = Page | PageContent | User | Token;
+
 export interface UserObj {
   uuid: string;
   name: string;
@@ -19,11 +21,7 @@ export interface UserObj {
   admin?: boolean;
 }
 
-interface StatusCodeMap {
-  [code: number]: string;
-}
-
-const STATUS_CODES: StatusCodeMap = {
+const STATUS_CODES: { [code: number]: string } = {
   200: "OK",
   400: "Bad Request",
   401: "Unauthorised",
@@ -35,6 +33,19 @@ const STATUS_CODES: StatusCodeMap = {
 interface ServerError {
   name?: string;
   message: string;
+}
+
+/** Updates the 'timestamp' column for the given endpoint in the 'updated' table with the current Epoch time. */
+async function updateEndpoint(endpointClass: ModelType) {
+  const newValue = { timestamp: new Date().getTime() };
+  const endpoint = endpointClass.tableName;
+  const row = await Updated.findOne({ where: { endpoint } });
+  if (row) {
+    await row.set(newValue).save();
+  } else {
+    await Updated.create({ endpoint, ...newValue });
+  }
+  logger.debug(`Updated endpoint '${endpoint}'`);
 }
 
 /** Sends the response with a 200 status and JSON body containing the given data object. */
@@ -62,7 +73,9 @@ export function sendError(
   res.status(code).json(jsonRes);
 }
 
-/** Creates a new database entry in the database table model derivative provided. */
+/** Creates a new database entry in the database table model derivative provided.
+ *  Sends a response containing the created data, unless `sendMethod` is specified.
+ */
 export async function createDatabaseEntry(
   model: ModelType,
   req: Request,
@@ -76,14 +89,15 @@ export async function createDatabaseEntry(
   } catch (error) {
     return void sendError(res, 400, error as Error);
   }
+  await updateEndpoint(model);
   (sendMethod ?? sendOK)(res, obj, 201);
 }
 
 /** Retrieves all entries in the database table model derivative provided. */
-export async function readAllDatabaseEntries(
-  model: ModelType,
+export async function readAllDatabaseEntries<T extends ModelType>(
+  model: T,
   res: Response,
-  callback?: Function
+  callback?: (res: Response, data: InstanceType<T>[]) => void
 ) {
   let objs;
   try {
@@ -91,7 +105,7 @@ export async function readAllDatabaseEntries(
   } catch (error) {
     return void sendError(res, 500, error as Error);
   }
-  (callback ?? sendOK)(res, objs);
+  (callback ?? sendOK)(res, objs as InstanceType<T>[]);
 }
 
 /** Retrieves all entries in the database with the provided values and returns the array. */
@@ -117,7 +131,9 @@ export async function readDatabaseEntry(
   return objs;
 }
 
-/** Updates the entry with the request payload in the database table model derivative provided. */
+/** Updates the entry with the request payload in the database table model derivative provided.
+ *  Sends back a response containing the number of affected rows.
+ */
 export async function updateDatabaseEntry(
   model: ModelType,
   req: Request,
@@ -132,10 +148,13 @@ export async function updateDatabaseEntry(
   } catch (error) {
     return void sendError(res, 400, error as Error);
   }
+  await updateEndpoint(model);
   sendOK(res, { affectedRows: result.shift() });
 }
 
-/** Deletes the specified entry from the database table model derivative provided. */
+/** Deletes the specified entry from the database table model derivative provided.
+ *  Sends back a response containing the number of destroyed rows.
+ */
 export async function deleteDatabaseEntry(
   model: ModelType,
   where: WhereOptions,
@@ -147,5 +166,6 @@ export async function deleteDatabaseEntry(
   } catch (error) {
     return void sendError(res, 400, error as Error);
   }
+  await updateEndpoint(model);
   sendOK(res, { destroyedRows });
 }
