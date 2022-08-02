@@ -6,7 +6,7 @@ import { sendError, UserObj } from "../util";
 const logger = getLogger(__filename);
 
 // Allows all requests to go through, even if JWT authentication fails.
-const DISABLE_AUTH = process.env.NODE_ENV === "development" && false;
+const DISABLE_AUTH = process.env.NODE_ENV === "development" && 1;
 
 export function getTokenSecret(type: string) {
   const secret = process.env[`JWT_${type.toUpperCase()}_TOKEN_SECRET`];
