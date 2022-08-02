@@ -13,6 +13,9 @@ export const API_BASE =
     ? "http://localhost:5017/"
     : "https://api.guzek.uk/";
 
+/** Gets the application's root cache storage. */
+export const getCache = () => caches.open(CACHE_NAME);
+
 /** Searches for the corresponding cache for the given request. If found, returns
  *  the cached response. Otherwise, performs the fetch request and adds the response
  *  to cache. Returns the HTTP response.
@@ -38,11 +41,12 @@ export async function fetchCachedData(
 
   console.debug("Fetching", absoluteURL, "...");
   const response = await fetchFromAPI(relativeURL, "GET");
-  if (response.ok) {
-    const cache = await caches.open(CACHE_NAME);
-    await cache.put(request, response.clone());
+  response.headers.set("Date", new Date().getTime().toString());
+  if (response.ok && response.headers.get("Cache-Control") !== "no-store") {
+    const cache = await getCache();
+    await cache.put(request, response);
   }
-  return response;
+  return response.clone();
 }
 
 /** Performs a fetch from the API using the given values. */
