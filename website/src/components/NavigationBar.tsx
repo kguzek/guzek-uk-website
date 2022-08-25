@@ -73,14 +73,16 @@ function NavBarItem({
   const path = window.location.pathname;
   // Handle edge case for index page ("/")
   const isActive = item.url === "/" ? path === "/" : path.startsWith(item.url);
-  return (
-    <Link
-      to={item.url}
-      onClick={() => setMenuOpen(false)}
-      className={"clickable nav-link" + (isActive ? " active" : "")}
-    >
+  const onClick = () => setMenuOpen(false);
+  const className = "clickable nav-link" + (isActive ? " active" : "");
+  return item.localUrl ? (
+    <Link to={item.url} onClick={onClick} className={className}>
       {item.title}
     </Link>
+  ) : (
+    <a href={item.url} onClick={onClick} className={className}>
+      {item.title}
+    </a>
   );
 }
 

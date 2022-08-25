@@ -186,10 +186,6 @@ export default function App() {
             />
           ))}
         <Route
-          path="pipe-designer"
-          element={<PipeDesigner data={pageContent} />}
-        />
-        <Route
           path="profile"
           element={
             <Profile
