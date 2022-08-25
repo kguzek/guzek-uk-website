@@ -33,11 +33,9 @@ export function authMiddleware(
     anonymous: false,
     loggedInUser: false,
   };
-  for (const level of ["anonymous", "loggedInUser"]) {
-    const endpoints = ENDPOINTS[level]?.[req.method] ?? [];
-    if (endpoints.some((endpoint) => req.path.startsWith(endpoint))) {
-      endpointAccessibleBy[level] = true;
-    }
+  for (const [level, routes] of Object.entries(ENDPOINTS)) {
+    const endpoints = routes[req.method] ?? [];
+    endpointAccessibleBy[level] = endpoints.some((e) => req.path.startsWith(e));
   }
 
   function reject(code: number, message: string) {

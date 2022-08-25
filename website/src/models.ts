@@ -6,6 +6,7 @@ export interface MenuItem {
   id: number;
   title: string;
   url: string;
+  localUrl: boolean;
   adminOnly: boolean;
   shouldFetch: boolean;
 }

@@ -41,6 +41,11 @@ Page.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    localUrl: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      field: "local_url",
+    },
     adminOnly: {
       field: "admin_only",
       type: DataTypes.BOOLEAN,
