@@ -8,8 +8,9 @@
     "dev": "NODE_ENV=development NODE_PORT=5017 nodemon --exec ts-node --files index.ts"
   },
   "resolutions": {
+    "got": "^11.8.5",
     "moment": "^2.29.4",
-    "got": "^11.8.5"
+    "moment-timezone": "^0.5.35"
   },
   "author": "Konrad Guzek",
   "license": "ISC",
