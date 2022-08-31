@@ -1,16 +1,18 @@
 import { Response } from "express";
 import request from "request";
+import { getLogger } from "./middleware/logging";
+
+const logger = getLogger(__filename);
 
 type AuthCredentials = { user: string | undefined; pass: string | undefined };
 
 function getDefaultCallback(res: Response) {
   const callback: request.RequestCallback = (err, response, body) => {
     if (err) {
-      console.error("Request failed:", err);
+      logger.error(err);
       res.status(500).json(err);
     }
     const json = JSON.parse(body);
-    console.info("Received", response.statusCode, "response from external API");
     res.status(response.statusCode).json(json);
   };
   return callback;

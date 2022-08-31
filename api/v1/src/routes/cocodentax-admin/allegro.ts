@@ -26,8 +26,8 @@ router.get("/auth", (req, res) => {
     url,
     res,
     {
-      user: process.env.CLIENT_ID,
-      pass: process.env.CLIENT_SECRET,
+      user: process.env.ALLEGRO_CLIENT_ID,
+      pass: process.env.ALLEGRO_CLIENT_SECRET,
     },
     "POST"
   );
