@@ -13,9 +13,15 @@ const API_BASE = "https://api.allegro.pl/";
 router.get("/auth", (req, res) => {
   // Determine if this is a login request or a token refresh request,
   // depending on what query parameter is provided in the URL
-  const url = req.query.code
-    ? TOKEN_URL + req.query.code
-    : REFRESH_URL + req.query.token;
+  let url: string;
+  if (req.query.code) url = TOKEN_URL + req.query.code;
+  else if (req.query.token) url = REFRESH_URL + req.query.token;
+  else {
+    res
+      .status(400)
+      .json({ "400 Bad Request": "No JWT or authorisation code specified." });
+    return;
+  }
   fetchWithAuth(
     url,
     res,
