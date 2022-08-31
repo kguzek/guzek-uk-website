@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ErrorPageContent } from "../models";
-import { PAGE_NAME, setTitle } from "../util";
+import { ErrorPageContent } from "../misc/models";
+import { PAGE_NAME, setTitle } from "../misc/util";
 
 export default function ErrorPage({
   pageData,

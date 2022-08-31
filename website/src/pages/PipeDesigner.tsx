@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import LoadingScreen from "../components/LoadingScreen";
-import { Translation } from "../translations";
-import { setTitle } from "../util";
+import { Translation } from "../misc/translations";
+import { setTitle } from "../misc/util";
 
 export default function PipeDesigner({ data }: { data: Translation }) {
   const [attemptedRefresh, setAttemptedRefresh] = useState(false);

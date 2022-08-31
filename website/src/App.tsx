@@ -1,20 +1,20 @@
 import React, { useState, useEffect, MouseEvent } from "react";
 import { Routes, Route, useSearchParams } from "react-router-dom";
-import TRANSLATIONS from "./translations";
+import TRANSLATIONS from "./misc/translations";
 import NavigationBar from "./components/NavigationBar";
 import Footer from "./components/Footer";
 import PageTemplate from "./pages/PageTemplate";
 import ErrorPage from "./pages/ErrorPage";
-import { getCache } from "./backend";
+import { getCache } from "./misc/backend";
 import Profile from "./pages/Profile";
 import LoadingScreen from "./components/LoadingScreen";
 import "./styles/styles.css";
 import "./styles/forms.css";
 import LogIn from "./pages/LogIn";
 import SignUp from "./pages/SignUp";
-import { ErrorCode, Language, MenuItem, User } from "./models";
+import { ErrorCode, Language, MenuItem, User } from "./misc/models";
 import ContentManager from "./pages/ContentManager";
-import { getDuration, PAGE_NAME, tryFetch } from "./util";
+import { getDuration, PAGE_NAME, tryFetch } from "./misc/util";
 
 /** When set to `true`, doesn't remove caches whose creation date is unknown. */
 const IGNORE_INVALID_RESPONSE_DATES = false;

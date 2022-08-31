@@ -1,7 +1,7 @@
 import React from "react";
 import Logo from "../media/Logo";
 import "../styles/footer.css";
-import { Translation } from "../translations";
+import { Translation } from "../misc/translations";
 
 function Footer({ data }: { data: Translation }) {
   return (

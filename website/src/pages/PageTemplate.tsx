@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { MenuItem, PageContent } from "../models";
-import { fetchPageContent, setTitle } from "../util";
+import { MenuItem, PageContent } from "../misc/models";
+import { fetchPageContent, setTitle } from "../misc/util";
 
 export default function PageTemplate({
   pageData,

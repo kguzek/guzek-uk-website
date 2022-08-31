@@ -1,8 +1,8 @@
 import React, { MouseEvent, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { fetchFromAPI, getRequest } from "../backend";
-import { Translation } from "../translations";
-import { setTitle } from "../util";
+import { fetchFromAPI, getRequest } from "../misc/backend";
+import { Translation } from "../misc/translations";
+import { setTitle } from "../misc/util";
 
 function Profile({
   data,

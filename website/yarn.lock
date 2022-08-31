@@ -6641,6 +6641,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"guzek-uk-website@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "guzek-uk-website@workspace:."
+  dependencies:
+    "@testing-library/jest-dom": ^5.16.1
+    "@testing-library/react": ^12.1.2
+    "@testing-library/user-event": ^13.5.0
+    "@types/jest": ^27.5.1
+    "@types/node": ^17.0.35
+    "@types/react": ^18.0.9
+    "@types/react-dom": ^18.0.4
+    "@types/react-rte": ^0.16.3
+    react: 17.0.2
+    react-avatar: ^4.0.0
+    react-dom: ^17.0.2
+    react-is: ^18.1.0
+    react-loader-spinner: ^6.0.0-0
+    react-router-dom: ^6.2.1
+    react-rte: ^0.16.5
+    react-scripts: 5.0.0
+    typescript: ^4.7.4
+    web-vitals: ^2.1.2
+  languageName: unknown
+  linkType: soft
+
 "gzip-size@npm:^6.0.0":
   version: 6.0.0
   resolution: "gzip-size@npm:6.0.0"
@@ -12618,31 +12643,6 @@ __metadata:
   checksum: d1eff085eee1c67a68f7bf1d077ea202c1e68a0de0e0866274984769838c3f224fbc64e847e1a1bbc6eba9fb6a9965098809cc0be9292b573767bb5d8d2df96e
   languageName: node
   linkType: hard
-
-"website@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "website@workspace:."
-  dependencies:
-    "@testing-library/jest-dom": ^5.16.1
-    "@testing-library/react": ^12.1.2
-    "@testing-library/user-event": ^13.5.0
-    "@types/jest": ^27.5.1
-    "@types/node": ^17.0.35
-    "@types/react": ^18.0.9
-    "@types/react-dom": ^18.0.4
-    "@types/react-rte": ^0.16.3
-    react: 17.0.2
-    react-avatar: ^4.0.0
-    react-dom: ^17.0.2
-    react-is: ^18.1.0
-    react-loader-spinner: ^6.0.0-0
-    react-router-dom: ^6.2.1
-    react-rte: ^0.16.5
-    react-scripts: 5.0.0
-    typescript: ^4.7.4
-    web-vitals: ^2.1.2
-  languageName: unknown
-  linkType: soft
 
 "websocket-driver@npm:>=0.5.1, websocket-driver@npm:^0.7.4":
   version: 0.7.4
