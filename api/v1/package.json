@@ -1,5 +1,5 @@
 {
-  "name": "api",
+  "name": "guzek-uk-api",
   "version": "1.0.0",
   "description": "The API for the \"guzek.uk\" website.",
   "main": "index.ts",
