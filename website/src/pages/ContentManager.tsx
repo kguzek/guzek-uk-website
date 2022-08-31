@@ -1,15 +1,15 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { EditorValue } from "react-rte";
-import { fetchFromAPI, getRequest } from "../backend";
+import { fetchFromAPI, getRequest } from "../misc/backend";
 import InputArea, {
   getEmptyMarkdown,
   parseMarkdown,
 } from "../components/Forms/InputArea";
 import InputBox from "../components/Forms/InputBox";
 import { LoadingButton } from "../components/LoadingScreen";
-import { MenuItem } from "../models";
-import { Translation } from "../translations";
-import { fetchPageContent, setTitle } from "../util";
+import { MenuItem } from "../misc/models";
+import { Translation } from "../misc/translations";
+import { fetchPageContent, setTitle } from "../misc/util";
 
 type PropertyName = keyof (
   | MenuItem

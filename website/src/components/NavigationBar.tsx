@@ -1,10 +1,10 @@
 import React, { useState, useEffect, MouseEventHandler } from "react";
 import { Link } from "react-router-dom";
 import Logo from "../media/Logo";
-import TRANSLATIONS, { Translation } from "../translations";
+import TRANSLATIONS, { Translation } from "../misc/translations";
 import "../styles/navigation.css";
-import { Language, MenuItem, User } from "../models";
-import { PAGE_NAME } from "../util";
+import { Language, MenuItem, User } from "../misc/models";
+import { PAGE_NAME } from "../misc/util";
 
 function NavigationBar({
   data,
