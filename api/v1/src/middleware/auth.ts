@@ -17,6 +17,7 @@ const ENDPOINTS: { [level: string]: { [method: string]: string[] } } = {
   anonymous: {
     GET: [
       "/pages",
+      "/updated",
       "/cocodentax-admin/allegro/auth",
       "/cocodentax-admin/allegro/api",
     ],
