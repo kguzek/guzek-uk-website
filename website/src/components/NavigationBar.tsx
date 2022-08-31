@@ -32,10 +32,6 @@ function NavigationBar({
   const displayStyle =
     winDims.width > 980 ? "desktop" : winDims.width > 550 ? "medium" : "mobile";
 
-  useEffect(() => {
-    console.log(displayStyle, winDims);
-  }, [winDims]);
-
   const userWidget = (
     <UserWidget
       data={data}

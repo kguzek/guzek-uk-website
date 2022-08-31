@@ -165,7 +165,7 @@ export default function App() {
   }
 
   return (
-    <div className="App">
+    <>
       <NavigationBar
         data={pageContent}
         selectedLanguage={userLanguage}
@@ -245,6 +245,6 @@ export default function App() {
         />
       </Routes>
       <Footer data={pageContent} />
-    </div>
+    </>
   );
 }
