@@ -20,4 +20,4 @@ VALUES ('Home', '/', TRUE, FALSE, TRUE),
     TRUE,
     TRUE,
     FALSE
-  )
+  );
