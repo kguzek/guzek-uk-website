@@ -5,7 +5,7 @@
   font-size: 1.2rem;
   margin-left: auto;
   margin-right: auto;
-  max-width: 800px;
+  max-width: 980px;
 }
 
 .navigation {
@@ -136,7 +136,7 @@
 }
 
 /* Desktop devices */
-@media screen and (min-width: 801px) {
+@media screen and (min-width: 981px) {
   .hamburger {
     display: none;
   }
@@ -147,7 +147,7 @@
 }
 
 /* Smaller display devices */
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 980px) {
   .navigation {
     position: relative;
     width: 95%;
