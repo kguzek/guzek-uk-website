@@ -7,7 +7,6 @@ import PageTemplate from "./pages/PageTemplate";
 import ErrorPage from "./pages/ErrorPage";
 import { getCache } from "./backend";
 import Profile from "./pages/Profile";
-import PipeDesigner from "./pages/PipeDesigner";
 import LoadingScreen from "./components/LoadingScreen";
 import "./styles/styles.css";
 import "./styles/forms.css";
@@ -36,64 +35,69 @@ export default function App() {
     setUserLanguage(newLang);
   }
 
+  /** Checks if any of the saved caches is older than the version on the server.
+   *  If so, fetch the updated version and replace the cache.
+   */
+  async function removeOldCaches() {
+    const defaultData: { [endpoint: string]: number } = {};
+    const updated = await tryFetch("updated", {}, defaultData, false);
+    const updatedEndpoints = new Set();
+    const cache = await getCache();
+    const cachedResponses = await cache.matchAll();
+    for (let i = 0; i < cachedResponses.length; i++) {
+      const res = cachedResponses[i];
+      console.debug(
+        "Checking cached response",
+        i + 1,
+        "/",
+        cachedResponses.length,
+        res.url,
+        // Object.fromEntries(res.headers.entries()),
+        "..."
+      );
+      const resTimestamp = parseInt(res.headers.get("Pragma") ?? "0");
+      const url = new URL(res.url);
+      // Extract the base path (only first subdirectory of URL path)
+      const [_, endpoint] = /^\/([^\/]*)(?:\/.*)?$/.exec(url.pathname) ?? [];
+      if (!endpoint) continue;
+      console.debug(
+        "Cache date:",
+        resTimestamp,
+        `| Endpoint '${endpoint}' last updated:`,
+        updated[endpoint]
+      );
+      if (
+        resTimestamp > updated[endpoint] ||
+        (IGNORE_INVALID_RESPONSE_DATES && !resTimestamp)
+      ) {
+        const diff = getDuration(resTimestamp - updated[endpoint]);
+
+        console.debug(
+          "Cache was created",
+          diff.formatted,
+          "after the last change on the server."
+        );
+        continue;
+      }
+      updatedEndpoints.add(endpoint);
+      const deleted = await cache.delete(res.url);
+      console.info(
+        "Deleted cache",
+        res.url,
+        (deleted ? "" : "UN") + "SUCCESSFULLY"
+      );
+    }
+    if (updatedEndpoints.size > 0) {
+      console.debug("Updated endpoints:", updatedEndpoints);
+      setReload(true);
+    } else {
+      console.debug("All cached responses are up-to-date.");
+    }
+  }
+
   useEffect(() => {
     // Remove outdated caches
-    (async () => {
-      const defaultData: { [endpoint: string]: number } = {};
-      const updated = await tryFetch("updated", {}, defaultData, false);
-      const updatedEndpoints = new Set();
-      const cache = await getCache();
-      const cachedResponses = await cache.matchAll();
-      for (let i = 0; i < cachedResponses.length; i++) {
-        const res = cachedResponses[i];
-        console.info(
-          "Checking cached response",
-          i + 1,
-          "/",
-          cachedResponses.length,
-          res.url,
-          // Object.fromEntries(res.headers.entries()),
-          "..."
-        );
-        const resTimestamp = parseInt(res.headers.get("Pragma") ?? "0");
-        const url = new URL(res.url);
-        // Extract the base path (only first subdirectory of URL path)
-        const [_, endpoint] = /^\/([^\/]*)(?:\/.*)?$/.exec(url.pathname) ?? [];
-        if (!endpoint) continue;
-        console.debug(
-          "Cache date:",
-          resTimestamp,
-          `| Endpoint '${endpoint}' last updated:`,
-          updated[endpoint]
-        );
-        if (
-          resTimestamp > updated[endpoint] ||
-          (IGNORE_INVALID_RESPONSE_DATES && !resTimestamp)
-        ) {
-          const diff = getDuration(resTimestamp - updated[endpoint]);
-
-          console.log(
-            "Cache was created",
-            diff.formatted,
-            "after the last change on the server."
-          );
-          continue;
-        }
-        updatedEndpoints.add(endpoint);
-        const deleted = await cache.delete(res.url);
-        console.info(
-          "Deleted cache",
-          res.url,
-          (deleted ? "" : "UN") + "SUCCESSFULLY"
-        );
-      }
-      if (updatedEndpoints.size > 0) {
-        console.debug("Updated endpoints:", updatedEndpoints);
-        setReload(true);
-      } else {
-        console.debug("All cached responses are up-to-date.");
-      }
-    })();
+    removeOldCaches();
   }, []);
 
   useEffect(() => {
@@ -166,7 +170,9 @@ export default function App() {
         data={pageContent}
         selectedLanguage={userLanguage}
         changeLang={changeLang}
-        menuItems={menuItems.filter((item) => !item.adminOnly)}
+        menuItems={menuItems.filter(
+          (item) => !item.adminOnly || currentUser?.admin
+        )}
         user={currentUser}
       />
       <Routes>
@@ -218,13 +224,19 @@ export default function App() {
         <Route
           path="content-manager"
           element={
-            <ContentManager
-              data={pageContent}
-              user={currentUser}
-              menuItems={menuItems}
-            />
+            currentUser?.admin ? (
+              <ContentManager
+                data={pageContent}
+                lang={userLanguage}
+                menuItems={menuItems}
+                reloadSite={removeOldCaches}
+              />
+            ) : (
+              <ErrorPage pageData={pageContent.error["403"]} />
+            )
           }
         />
+
         <Route
           path="*"
           element={

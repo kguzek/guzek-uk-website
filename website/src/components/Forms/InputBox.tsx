@@ -15,18 +15,18 @@ export default function InputBox({
   required?: boolean;
   options?: Map<number | string, string>;
 }) {
+  const isDropdown = type === "dropdown";
+  const isCheckbox = type === "checkbox";
+
   function handleChange(
     evt: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     predicate: Function
   ) {
-    const val =
-      type === "checkbox"
-        ? (evt.target as HTMLInputElement).checked
-        : predicate(evt.target.value);
+    const val = isCheckbox
+      ? (evt.target as HTMLInputElement).checked
+      : predicate(evt.target.value);
     setValue(val);
   }
-
-  const isDropdown = type === "dropdown";
 
   if (isDropdown && !options) {
     throw Error(
@@ -53,6 +53,13 @@ export default function InputBox({
             </option>
           ))}
         </select>
+      ) : isCheckbox ? (
+        <input
+          checked={value as boolean}
+          type={type}
+          onChange={(evt) => handleChange(evt, (val: string) => val)}
+          required={required}
+        />
       ) : (
         <input
           value={value as string | number}

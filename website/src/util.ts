@@ -1,6 +1,11 @@
 import { fetchCachedData, fetchFromAPI, getRequest } from "./backend";
+import { PageContent } from "./models";
 
 export const PAGE_NAME = "Guzek UK";
+
+const DEFAULT_PAGE_DATA: PageContent = {
+  content: "Oops! This page hasn't been implemented yet.",
+};
 
 export const setTitle = (title: string) =>
   (document.title = `${title} | ${PAGE_NAME}`);
@@ -44,4 +49,14 @@ export function getDuration(milliseconds: number) {
   [days, hours] = divmod(hours, 24);
   const formatted = `${days}d ${hours}h ${minutes}m ${seconds}s`;
   return { formatted, days, hours, minutes, seconds, milliseconds };
+}
+
+export async function fetchPageContent(
+  id: number,
+  lang: string,
+  setContent: (arg0: PageContent) => void
+) {
+  const url = `pages/${id}`;
+  const body = await tryFetch(url, { lang }, DEFAULT_PAGE_DATA);
+  setContent(body);
 }

@@ -1,13 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { MenuItem, PageContent } from "../models";
-import { setTitle, tryFetch } from "../util";
+import { fetchPageContent, setTitle } from "../util";
 
-const DEFAULT_DATA: PageContent = {
-  content: "Oops! This page hasn't been implemented yet.",
-};
-
-function Home({
+export default function PageTemplate({
   pageData,
   reload,
   lang,
@@ -20,26 +16,25 @@ function Home({
 
   const location = useLocation();
 
-  async function fetchPageContent() {
-    const url = "pages/" + pageData.id;
-    const body = await tryFetch(url, { lang }, DEFAULT_DATA);
-    setPageContent(body);
-  }
+  const fetchContent = () =>
+    fetchPageContent(pageData.id, lang, setPageContent);
 
   useEffect(() => {
-    if (!reload) return;
-    fetchPageContent();
-  }, [reload, lang, location]);
+    if (reload) fetchContent();
+  }, [reload]);
+
+  useEffect(() => {
+    fetchContent();
+  }, [lang, location]);
 
   useEffect(() => {
     setTitle(pageData.title);
   }, [pageData]);
 
   return (
-    <div className="text">
-      <p>{pageContent?.content}</p>
-    </div>
+    <div
+      className="text"
+      dangerouslySetInnerHTML={{ __html: pageContent?.content ?? "" }}
+    ></div>
   );
 }
-
-export default Home;
