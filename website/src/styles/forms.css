@@ -29,6 +29,11 @@
   line-height: 2.5rem;
 }
 
+[disabled] {
+  filter: contrast(60%);
+  cursor: not-allowed;
+}
+
 .input-box {
   display: flex;
   flex-direction: column;

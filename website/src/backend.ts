@@ -1,4 +1,4 @@
-const USE_EMULATOR_URL = false;
+const USE_LOCAL_API_URL = true;
 const LOG_ACCESS_TOKEN = false;
 const CACHE_NAME = "guzek-uk-cache";
 
@@ -9,7 +9,7 @@ interface RequestOptions {
 }
 
 export const API_BASE =
-  process.env.NODE_ENV === "development" && USE_EMULATOR_URL
+  process.env.NODE_ENV === "development" && USE_LOCAL_API_URL
     ? "http://localhost:5017/"
     : "https://api.guzek.uk/";
 

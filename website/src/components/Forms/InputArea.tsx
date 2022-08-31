@@ -2,6 +2,7 @@ import React from "react";
 import RichTextEditor, { EditorValue } from "react-rte";
 
 export const getEmptyMarkdown = RichTextEditor.createEmptyValue;
+export const parseMarkdown = RichTextEditor.createValueFromString;
 
 export default function InputArea({
   value,
