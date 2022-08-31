@@ -25,6 +25,8 @@ npm-debug.log*
 
 logs
 .env
+orderDraft.json
+orderTemplate.json
 !.gitignore
 
 # Yarn

@@ -11,9 +11,9 @@ import {
   UserObj,
   sendError,
   sendOK,
-} from "../src/util";
-import { Token, User } from "../src/sequelize";
-import { getTokenSecret } from "../src/middleware/auth";
+} from "../util";
+import { Token, User } from "../sequelize";
+import { getTokenSecret } from "../middleware/auth";
 const password = require("s-salt-pepper");
 
 export const router = express.Router();

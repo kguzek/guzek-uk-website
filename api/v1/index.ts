@@ -20,7 +20,13 @@ const app = express();
 const PORT = process.env.NODE_PORT;
 
 // Define the endpoints
-const ENDPOINTS = ["pages", "auth", "updated"];
+const ENDPOINTS = [
+  "pages",
+  "auth",
+  "updated",
+  "cocodentax-admin/allegro",
+  "cocodentax-admin/pocztex",
+];
 
 console.log(); // Add newline before app output for readability
 
@@ -42,7 +48,7 @@ function initialise() {
 
   // Enable individual API routes
   for (const endpoint of ENDPOINTS) {
-    const middleware = require("./routes/" + endpoint);
+    const middleware = require("./src/routes/" + endpoint);
     if (endpoint === "updated") {
       middleware.init(ENDPOINTS);
     }

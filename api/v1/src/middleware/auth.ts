@@ -15,8 +15,17 @@ export function getTokenSecret(type: string) {
 
 const ENDPOINTS: { [level: string]: { [method: string]: string[] } } = {
   anonymous: {
-    GET: ["/pages"],
-    POST: ["/auth/user", "/auth/users"],
+    GET: [
+      "/pages",
+      "/cocodentax-admin/allegro/auth",
+      "/cocodentax-admin/allegro/api",
+    ],
+    POST: [
+      "/auth/user",
+      "/auth/users",
+      "/cocodentax-admin/pocztex/validate-orders",
+      "/cocodentax-admin/pocztex/process-orders",
+    ],
   },
   loggedInUser: {
     POST: ["/auth/token"],

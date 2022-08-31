@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
-import { getLogger } from "../src/middleware/logging";
-import { Page, PageContent } from "../src/sequelize";
+import { getLogger } from "../middleware/logging";
+import { Page, PageContent } from "../sequelize";
 import {
   createDatabaseEntry,
   deleteDatabaseEntry,
@@ -8,7 +8,7 @@ import {
   sendError,
   sendOK,
   updateDatabaseEntry,
-} from "../src/util";
+} from "../util";
 
 export const router = express.Router();
 

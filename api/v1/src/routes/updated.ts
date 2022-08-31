@@ -1,6 +1,6 @@
 import express from "express";
-import { Updated } from "../src/sequelize";
-import { readAllDatabaseEntries, sendOK } from "../src/util";
+import { Updated } from "../sequelize";
+import { readAllDatabaseEntries, sendOK } from "../util";
 export const router = express.Router();
 
 const ENDPOINTS: { [endpoint: string]: number } = {};
