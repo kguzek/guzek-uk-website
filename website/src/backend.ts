@@ -1,4 +1,4 @@
-const USE_LOCAL_API_URL = true;
+const USE_LOCAL_API_URL = false;
 const LOG_ACCESS_TOKEN = false;
 const CACHE_NAME = "guzek-uk-cache";
 
