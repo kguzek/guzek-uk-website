@@ -11,8 +11,6 @@ export type ModelType =
   | typeof User
   | typeof Token;
 
-type Model = Page | PageContent | User | Token;
-
 export interface UserObj {
   uuid: string;
   name: string;

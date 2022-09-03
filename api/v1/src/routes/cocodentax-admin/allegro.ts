@@ -11,7 +11,7 @@ function getURL(req: Request, forToken: boolean) {
   const redirectTo =
     req.headers.origin === "http://localhost:3001"
       ? "https://www.guzek.uk/cocodentax-admin"
-      : req.headers.origin;
+      : req.headers.origin + "/";
   return (
     ALLEGRO_BASE +
     redirectTo +
