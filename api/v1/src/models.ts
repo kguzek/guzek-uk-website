@@ -27,8 +27,3 @@ export const ORDER_ATTRIBUTES = [
   "cost",
   "recipientData",
 ] as (keyof Order)[];
-
-export interface InvalidOrder {
-  id: string;
-  fields: string[];
-}
