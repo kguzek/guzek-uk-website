@@ -14,9 +14,9 @@ export const API_BASE =
     : "https://api.guzek.uk/";
 
 /** Gets the application's root cache storage. If the operation fails, returns `null`. */
-export function getCache() {
+export async function getCache() {
   try {
-    return caches.open(CACHE_NAME);
+    return await caches.open(CACHE_NAME);
   } catch {
     return null;
   }
