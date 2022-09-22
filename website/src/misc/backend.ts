@@ -13,8 +13,14 @@ export const API_BASE =
     ? "http://localhost:5017/"
     : "https://api.guzek.uk/";
 
-/** Gets the application's root cache storage. */
-export const getCache = () => caches.open(CACHE_NAME);
+/** Gets the application's root cache storage. If the operation fails, returns `null`. */
+export function getCache() {
+  try {
+    return caches.open(CACHE_NAME);
+  } catch {
+    return null;
+  }
+}
 
 /** Determines the API access token and generates a new one if it is out of date. */
 async function getAccessToken() {
@@ -112,13 +118,8 @@ export async function fetchFromAPI(
  *  to cache. Returns the HTTP response.
  */
 async function fetchWithCache(request: Request) {
-  let cache;
-  try {
-    cache = await getCache();
-  } catch {
-    console.warn(
-      "Detected a browser that prohibits access to cache on the local disk."
-    );
+  const cache = await getCache();
+  if (!cache) {
     return await fetch(request);
   }
 

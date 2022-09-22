@@ -43,6 +43,12 @@ export default function App() {
     const updated = await tryFetch("updated", {}, defaultData, false);
     const updatedEndpoints = new Set();
     const cache = await getCache();
+    if (!cache) {
+      console.warn(
+        "Detected a browser that prohibits access to cache on the local disk."
+      );
+      return;
+    }
     const cachedResponses = await cache.matchAll();
     for (let i = 0; i < cachedResponses.length; i++) {
       const res = cachedResponses[i];
