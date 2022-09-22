@@ -16,7 +16,34 @@ export const API_BASE =
 /** Gets the application's root cache storage. */
 export const getCache = () => caches.open(CACHE_NAME);
 
-export function getRequest(
+/** Determines the API access token and generates a new one if it is out of date. */
+async function getAccessToken() {
+  const accessTokenInfo = localStorage.getItem("accessTokenInfo");
+  if (!accessTokenInfo) {
+    return null;
+  }
+  const tokenInfo = JSON.parse(accessTokenInfo);
+  // Check if it's expired
+  if (new Date(tokenInfo.expiresAt) > new Date()) {
+    return tokenInfo.accessToken as string;
+  }
+  // Generate a new access token
+  const token = localStorage.getItem("refreshToken") ?? "";
+  const req = await createRequest("auth/token", "POST", { body: { token } });
+  const res = await fetch(req);
+  if (!res.ok) {
+    return null;
+  }
+  const body = await res.json();
+  updateAccessToken(body.token);
+  return body.token as string;
+}
+
+/** Instantiates a `Request` object with the attributes provided.
+ *  Automatically applies the user access token to the `Authorization` header
+ *  as well as determining the `Content-Type` and URL search query parameters.
+ */
+async function createRequest(
   path: string,
   method: string,
   {
@@ -39,18 +66,44 @@ export function getRequest(
     method,
     headers: {},
   };
+  // Set the request payload (if present)
   if (Object.keys(body).length > 0) {
     options.headers["Content-Type"] = "application/json";
     options.body = JSON.stringify(body);
   }
+  // Set the authorisation headers
+  const accessToken = await getAccessToken();
+  if (accessToken) {
+    LOG_ACCESS_TOKEN && console.info(accessToken);
+    options.headers["Authorization"] = `Bearer ${accessToken}`;
+  }
   return new Request(url, options);
+}
+
+/** Performs an HTTPS request to the API using the provided values and the stored access token. */
+export async function fetchFromAPI(
+  path: string,
+  {
+    method = "GET",
+    params,
+    body,
+  }: {
+    method?: string;
+    params?: Record<string, string> | URLSearchParams;
+    body?: Record<string, any>;
+  },
+  useCache: boolean = false
+) {
+  const request = await createRequest(path, method, { params, body });
+  const func = useCache ? fetchWithCache : fetch;
+  return await func(request);
 }
 
 /** Searches for the corresponding cache for the given request. If found, returns
  *  the cached response. Otherwise, performs the fetch request and adds the response
  *  to cache. Returns the HTTP response.
  */
-export async function fetchCachedData(request: Request) {
+async function fetchWithCache(request: Request) {
   const cache = await getCache();
 
   // Check if response is already cached
@@ -62,9 +115,7 @@ export async function fetchCachedData(request: Request) {
 
   // Fetch new response
   console.debug("Fetching", request.url, "...");
-  const response = await fetchFromAPI(request);
-  const responseDate = new Date().getTime().toString();
-  response.headers.set("Date", responseDate);
+  const response = await fetch(request);
 
   // Cache the new response
   if (
@@ -76,45 +127,11 @@ export async function fetchCachedData(request: Request) {
   return response.clone();
 }
 
-/** Performs a fetch from the API using the given values. */
-function fetchWithToken(request: Request, accessToken?: string) {
-  if (accessToken) {
-    LOG_ACCESS_TOKEN && console.info(accessToken);
-    request.headers.set("Authorization", `Bearer ${accessToken}`);
-  }
-  return fetch(request);
-}
-
 /** Sets the access token metadata (value and expiration date) in the local storage. */
 export function updateAccessToken(accessToken: string) {
+  // Set the expiry date to 30 minutes from now
   const expiresAt = new Date();
   expiresAt.setMinutes(expiresAt.getMinutes() + 30);
   const accessTokenInfo = { accessToken, expiresAt };
   localStorage.setItem("accessTokenInfo", JSON.stringify(accessTokenInfo));
-}
-
-/** Determines the API access token and generates a new one if it is out of date. Fetches from the API
- *  by substituting in the absolute URL and authorisation headers, as well as serialises the JSON payload.
- */
-export async function fetchFromAPI(request: Request) {
-  // Get the locally saved access token
-  let accessToken;
-  const accessTokenInfo = localStorage.getItem("accessTokenInfo");
-  if (accessTokenInfo) {
-    const tokenInfo = JSON.parse(accessTokenInfo);
-    // Check if it's expired
-    if (new Date(tokenInfo.expiresAt) < new Date()) {
-      // Generate a new access token
-      const token = localStorage.getItem("refreshToken") ?? "";
-      const req = getRequest("auth/token", "POST", { body: { token } });
-      const res = await fetchWithToken(req);
-      if (res.ok) {
-        ({ token: accessToken } = await res.json());
-        updateAccessToken(accessToken);
-      }
-    } else {
-      accessToken = tokenInfo.accessToken;
-    }
-  }
-  return await fetchWithToken(request, accessToken);
 }

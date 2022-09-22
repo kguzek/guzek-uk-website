@@ -1,6 +1,6 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { fetchFromAPI, getRequest } from "../misc/backend";
+import { fetchFromAPI } from "../misc/backend";
 import InputBox from "../components/Forms/InputBox";
 import { LoadingButton } from "../components/LoadingScreen";
 import { Translation } from "../misc/translations";
@@ -56,8 +56,7 @@ export default function SignUp({
       email,
       password,
     };
-    const req = getRequest("auth/users", "POST", { body });
-    const res = await fetchFromAPI(req);
+    const res = await fetchFromAPI("auth/users", { method: "POST", body });
     const json = await res.json();
     setLoading(false);
     if (res.ok) {
