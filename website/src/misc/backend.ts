@@ -112,7 +112,15 @@ export async function fetchFromAPI(
  *  to cache. Returns the HTTP response.
  */
 async function fetchWithCache(request: Request) {
-  const cache = await getCache();
+  let cache;
+  try {
+    cache = await getCache();
+  } catch {
+    console.warn(
+      "Detected a browser that prohibits access to cache on the local disk."
+    );
+    return await fetch(request);
+  }
 
   // Check if response is already cached
   const cachedResponse = await cache.match(request);
