@@ -16,21 +16,25 @@ export function getTokenSecret(type: string) {
 const ENDPOINTS: { [level: string]: { [method: string]: string[] } } = {
   anonymous: {
     GET: [
-      "/pages",
-      "/updated",
-      "/cocodentax-admin/allegro/auth",
-      "/cocodentax-admin/allegro/api",
+      "/pages", // View all pages
+      "/updated", // View site updates
+      "/cocodentax-admin/allegro/auth", // Login to Allegro
+      "/cocodentax-admin/allegro/api", // Make Allegro API requests
     ],
     POST: [
-      "/auth/user",
-      "/auth/users",
-      "/cocodentax-admin/pocztex/validate-orders",
-      "/cocodentax-admin/pocztex/process-orders",
+      "/auth/user", // Log in
+      "/auth/users", // Sign up
+      "/auth/token", // Regenerate token
+      "/cocodentax-admin/pocztex/orders", // Submit Pocztex order
     ],
   },
   loggedInUser: {
-    POST: ["/auth/token"],
-    DELETE: ["/auth/token"],
+    POST: [
+      // ...
+    ],
+    DELETE: [
+      "/auth/token", // Log out
+    ],
   },
 };
 

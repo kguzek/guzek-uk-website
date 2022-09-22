@@ -43,8 +43,16 @@ function getOrderFromTemplate(details: Order, useDraftTemplate: boolean) {
   return order;
 }
 
-function parseOrders(req: Request, res: Response, useDraftTemplate: boolean) {
+/**
+ * This endpoint takes a payload which is an array of `Order` objects.
+ * If the payload format is incorrect or any of the elements doesn't contain every required
+ * `Order` interface property, a 400 response is sent.
+ * Otherwise, converts the orders to the form accepted by Pocztex's API and sends them back in an array.
+ */
+router.post("/orders", (req: Request, res: Response) => {
   if (!req.body) return rejectRequest(res, "No request payload.");
+
+  const useDraftTemplate = !req.query.submit;
 
   const parsedOrders = [];
 
@@ -67,14 +75,4 @@ function parseOrders(req: Request, res: Response, useDraftTemplate: boolean) {
     parsedOrders.push(getOrderFromTemplate(order, useDraftTemplate));
   }
   res.status(200).json(parsedOrders);
-}
-
-/**
- * This endpoint takes a payload which is an array of `Order` objects.
- * If the payload format is incorrect or any of the elements doesn't contain every required
- * `Order` interface property, a 400 response is sent.
- * Otherwise, converts the orders to the form accepted by Pocztex's API and sends them back in an array.
- */
-router.post("/validate-orders", (req, res) => parseOrders(req, res, true));
-
-router.post("/process-orders", (req, res) => parseOrders(req, res, false));
+});
