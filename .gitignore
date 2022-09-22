@@ -43,3 +43,6 @@ yarn-error.log*
 
 # development REST files
 *.rest
+
+# Visual Studio Code settings
+.vscode

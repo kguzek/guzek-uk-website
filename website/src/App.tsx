@@ -51,11 +51,14 @@ export default function App() {
         i + 1,
         "/",
         cachedResponses.length,
-        res.url,
+        `'${res.url}'`,
         // Object.fromEntries(res.headers.entries()),
         "..."
       );
       const resTimestamp = parseInt(res.headers.get("Pragma") ?? "0");
+      if (!res.url) {
+        continue;
+      }
       const url = new URL(res.url);
       // Extract the base path (only first subdirectory of URL path)
       const [_, endpoint] = /^\/([^\/]*)(?:\/.*)?$/.exec(url.pathname) ?? [];

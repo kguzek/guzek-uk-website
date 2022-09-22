@@ -1,6 +1,6 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { EditorValue } from "react-rte";
-import { fetchFromAPI, getRequest } from "../misc/backend";
+import { fetchFromAPI } from "../misc/backend";
 import InputArea, {
   getEmptyMarkdown,
   parseMarkdown,
@@ -112,14 +112,11 @@ function PagesEditor({
     evt.preventDefault();
     setClickedSubmit(true);
     const url = `pages/${page.id}?lang=${lang}`;
-    const req = getRequest(url, "PUT", {
-      body: {
-        ...page,
-        content: content.toString("html"),
-      },
-    });
     try {
-      const res = await fetchFromAPI(req);
+      const res = await fetchFromAPI(url, {
+        method: "PUT",
+        body: { ...page, content: content.toString("html") },
+      });
       if (res.ok) {
         reloadSite();
         setUnsavedChanges(false);

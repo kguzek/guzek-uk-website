@@ -1,4 +1,4 @@
-import { fetchCachedData, fetchFromAPI, getRequest } from "./backend";
+import { fetchFromAPI } from "./backend";
 import { PageContent } from "./models";
 
 export const PAGE_NAME = "Guzek UK";
@@ -21,10 +21,8 @@ export async function tryFetch<T>(
   useCache: boolean = true
 ) {
   let res;
-  const fetchFunc = useCache ? fetchCachedData : fetchFromAPI;
-  const request = getRequest(path, "GET", { params });
   try {
-    res = await fetchFunc(request);
+    res = await fetchFromAPI(path, { params }, useCache);
   } catch (networkError) {
     console.error("Could not fetch from API:", networkError);
     return defaultData;
