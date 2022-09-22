@@ -29,7 +29,12 @@ async function getAccessToken() {
   }
   // Generate a new access token
   const token = localStorage.getItem("refreshToken") ?? "";
-  const req = await createRequest("auth/token", "POST", { body: { token } });
+  const req = await createRequest(
+    "auth/token",
+    "POST",
+    { body: { token } },
+    false
+  );
   const res = await fetch(req);
   if (!res.ok) {
     return null;
@@ -52,7 +57,8 @@ async function createRequest(
   }: {
     params?: Record<string, string> | URLSearchParams;
     body?: Record<string, any>;
-  }
+  },
+  useAccessToken: boolean = true
 ) {
   function getSearchParams() {
     if (Object.keys(params).length === 0) return "";
@@ -72,10 +78,12 @@ async function createRequest(
     options.body = JSON.stringify(body);
   }
   // Set the authorisation headers
-  const accessToken = await getAccessToken();
-  if (accessToken) {
-    LOG_ACCESS_TOKEN && console.info(accessToken);
-    options.headers["Authorization"] = `Bearer ${accessToken}`;
+  if (useAccessToken) {
+    const accessToken = await getAccessToken();
+    if (accessToken) {
+      LOG_ACCESS_TOKEN && console.info(accessToken);
+      options.headers["Authorization"] = `Bearer ${accessToken}`;
+    }
   }
   return new Request(url, options);
 }
