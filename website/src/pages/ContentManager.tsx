@@ -97,7 +97,7 @@ function PagesEditor({
     }
     if (originalPage.id === page.id) return;
     setPage(originalPage);
-  }, [originalPage]);
+  }, [originalPage, lang]);
 
   function handleUpdate(changedProperty: string, newValue: string | boolean) {
     console.debug("Set", changedProperty, "to", newValue);
