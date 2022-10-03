@@ -51,21 +51,23 @@ export default function ContentManager({
           {data.contentManager.addPage}
         </button>
       ) : (
-        <form className="form">
-          <InputBox
-            type="dropdown"
-            label={data.contentManager.selectedPage}
-            value={selectedPageID}
-            setValue={setSelectedPageID}
-            options={pagesMap}
-          />
+	<>
+          <form className="form">
+            <InputBox
+              type="dropdown"
+              label={data.contentManager.selectedPage}
+              value={selectedPageID}
+              setValue={setSelectedPageID}
+              options={pagesMap}
+            />
+          </form>
           <PagesEditor
             data={data}
             lang={lang}
             originalPage={selectedPage as MenuItem}
             reloadSite={reloadSite}
           />
-        </form>
+	</>
       )}
     </div>
   );
