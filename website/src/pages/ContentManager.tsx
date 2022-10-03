@@ -51,7 +51,7 @@ export default function ContentManager({
           {data.contentManager.addPage}
         </button>
       ) : (
-	<>
+        <>
           <form className="form">
             <InputBox
               type="dropdown"
@@ -67,7 +67,7 @@ export default function ContentManager({
             originalPage={selectedPage as MenuItem}
             reloadSite={reloadSite}
           />
-	</>
+        </>
       )}
     </div>
   );

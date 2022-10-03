@@ -10,9 +10,9 @@
   0% {
     opacity: 0;
   }
-	50% {
-		opacity: 1;
-	}
+  50% {
+    opacity: 1;
+  }
   80% {
     opacity: 1;
   }
@@ -22,7 +22,7 @@
 }
 
 .loading-text {
-	animation-name: load;
-	animation-duration: 2.5s;
+  animation-name: load;
+  animation-duration: 2.5s;
   animation-iteration-count: infinite;
 }
