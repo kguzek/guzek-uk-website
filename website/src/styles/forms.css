@@ -8,7 +8,15 @@
   display: flex;
   flex-direction: column;
   width: 30%;
+  min-width: 300px;
   margin: auto;
+}
+
+@media screen and (max-width: 750px) {
+  .form {
+    width: 100%;
+    max-width: 300px;
+  }
 }
 
 .form input {
@@ -74,4 +82,5 @@
 .required-asterisk {
   color: red;
   font-weight: bolder;
+
 }

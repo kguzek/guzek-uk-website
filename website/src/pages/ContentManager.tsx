@@ -45,14 +45,14 @@ export default function ContentManager({
 
   return (
     <div className="text">
-      <p>{data.contentManager.title}</p>
+      <h2>{data.contentManager.title}</h2>
       {menuItems.length === 0 ? (
-        <button className="btn submit-btn">
+        <button className="btn btn-submit">
           {data.contentManager.addPage}
         </button>
       ) : (
         <>
-          <form className="form">
+          <form>
             <InputBox
               type="dropdown"
               label={data.contentManager.selectedPage}
@@ -60,13 +60,13 @@ export default function ContentManager({
               setValue={setSelectedPageID}
               options={pagesMap}
             />
-          </form>
           <PagesEditor
             data={data}
             lang={lang}
             originalPage={selectedPage as MenuItem}
             reloadSite={reloadSite}
           />
+          </form>
         </>
       )}
     </div>
