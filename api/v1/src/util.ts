@@ -112,17 +112,18 @@ export async function readDatabaseEntry(
   model: ModelType,
   res: Response,
   filter: WhereOptions,
-  onError?: Function
+  onError?: (error: Error) => void,
+  allowEmptyResults: boolean = false
 ) {
   let objs;
   try {
     objs = await model.findAll({ where: filter });
-    if (objs.length === 0) {
+    if (objs.length === 0 && !allowEmptyResults) {
       throw Error("The database query returned no results.");
     }
   } catch (error) {
     if (onError) {
-      return void onError(error);
+      return void onError(error as Error);
     } else {
       return void sendError(res, 400, error as Error);
     }

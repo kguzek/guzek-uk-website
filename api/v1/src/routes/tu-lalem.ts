@@ -23,9 +23,15 @@ router
     const timespan = req.query.timespan ?? "10"; // minutes
     const fromTimestamp = new Date().getTime() - +timespan * 60_000;
 
-    const entries = await readDatabaseEntry(TuLalem, res, {
-      userUUID: user,
-      timestamp: { [Op.gte]: fromTimestamp },
-    });
+    const entries = await readDatabaseEntry(
+      TuLalem,
+      res,
+      {
+        userUUID: user,
+        timestamp: { [Op.gte]: fromTimestamp },
+      },
+      undefined,
+      true
+    );
     if (entries) sendOK(res, entries);
   });
