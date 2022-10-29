@@ -24,6 +24,7 @@ const ENDPOINTS = [
   "pages",
   "auth",
   "updated",
+  "tu-lalem",
   "cocodentax-admin/allegro",
   "cocodentax-admin/pocztex",
 ];

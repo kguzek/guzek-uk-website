@@ -25,6 +25,7 @@ export class PageContent extends Model {}
 export class User extends Model {}
 export class Token extends Model {}
 export class Updated extends Model {}
+export class TuLalem extends Model {}
 
 Page.init(
   {
@@ -163,12 +164,34 @@ Updated.init(
   }
 );
 
-const foreignKeyOptions = {
+TuLalem.init(
+  {
+    coordinates: {
+      type: DataTypes.GEOMETRY("POINT"),
+      allowNull: false,
+    },
+  },
+  {
+    sequelize,
+    modelName: "TuLalem",
+    tableName: "tu_lalem",
+    createdAt: "timestamp",
+    updatedAt: false,
+  }
+);
+
+PageContent.belongsTo(Page, {
   foreignKey: {
     name: "pageID",
     allowNull: false,
     field: "page_id",
   },
-};
-Page.hasOne(PageContent, foreignKeyOptions);
-PageContent.belongsTo(Page, foreignKeyOptions);
+});
+
+User.hasMany(TuLalem, {
+  foreignKey: {
+    name: "userUUID",
+    allowNull: false,
+    field: "user_uuid",
+  },
+});

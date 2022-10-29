@@ -6,7 +6,7 @@ import { sendError, UserObj } from "../util";
 const logger = getLogger(__filename);
 
 // Allows all requests to go through, even if JWT authentication fails.
-const DISABLE_AUTH = process.env.NODE_ENV === "development" && 1;
+const DISABLE_AUTH = process.env.NODE_ENV === "development" && false;
 
 export function getTokenSecret(type: string) {
   const secret = process.env[`JWT_${type.toUpperCase()}_TOKEN_SECRET`];
@@ -29,8 +29,11 @@ const ENDPOINTS: { [level: string]: { [method: string]: string[] } } = {
     ],
   },
   loggedInUser: {
+    GET: [
+      "/tu-lalem", // View all app coordinates
+    ],
     POST: [
-      // ...
+      "/tu-lalem", // Submit app coordinates
     ],
     DELETE: [
       "/auth/token", // Log out
