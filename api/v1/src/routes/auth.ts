@@ -19,6 +19,8 @@ const password = require("s-salt-pepper");
 export const router = express.Router();
 
 const MODIFIABLE_USER_PROPERTIES = ["name", "surname", "email"];
+/** The number of minutes a newly generated access token should be valid for. */
+const TOKEN_VALID_FOR = 30;
 
 /** Authenticate given password against the stored credentials in the database. */
 async function authenticateUser(
@@ -42,16 +44,18 @@ async function authenticateUser(
   return userDetails;
 }
 
-const generateAccessToken = (user: UserObj) =>
-  jwt.sign(user, getTokenSecret("access"), {
-    expiresIn: "30m",
-  });
+const generateAccessToken = (user: UserObj) => ({
+  accessToken: jwt.sign(user, getTokenSecret("access"), {
+    expiresIn: `${TOKEN_VALID_FOR}m`,
+  }),
+  expiresAt: new Date().getTime() + TOKEN_VALID_FOR * 60000,
+});
 
 function sendNewTokens(res: Response, user: UserObj) {
   const accessToken = generateAccessToken(user);
   const refreshToken = jwt.sign({ uuid: user.uuid }, getTokenSecret("refresh"));
   Token.create({ value: refreshToken }).then();
-  sendOK(res, { ...user, accessToken, refreshToken }, 201);
+  sendOK(res, { ...user, ...accessToken, refreshToken }, 201);
 }
 
 router
@@ -146,7 +150,7 @@ router
           return reject("Invalid or expired refresh token.");
         }
         const accessToken = generateAccessToken(user as UserObj);
-        sendOK(res, { accessToken }, 201);
+        sendOK(res, accessToken, 201);
       }
     );
   })
