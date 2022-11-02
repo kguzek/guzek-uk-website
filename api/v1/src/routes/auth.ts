@@ -126,13 +126,10 @@ router
 
   // CREATE new access JWT
   .post("/token", async (req: Request, res: Response) => {
-    function reject(message: string) {
-      sendError(res, 400, { message });
-    }
+    const reject = (message: string) => sendError(res, 400, { message });
+
     const refreshToken = req.body.token;
-    if (!refreshToken) {
-      return void reject("No refresh token provided.");
-    }
+    if (!refreshToken) return reject("No refresh token provided.");
     const tokens = await readDatabaseEntry(
       Token,
       res,
@@ -146,9 +143,8 @@ router
       refreshToken as string,
       getTokenSecret("refresh"),
       (err, user) => {
-        if (err) {
-          return reject("Invalid or expired refresh token.");
-        }
+        if (err) return reject("Invalid or expired refresh token.");
+ 
         const accessToken = generateAccessToken(user as UserObj);
         sendOK(res, accessToken, 201);
       }
@@ -245,3 +241,4 @@ router
       res
     );
   });
+
