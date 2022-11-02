@@ -37,7 +37,7 @@ interface ServerError {
 /** Updates the 'timestamp' column for the given endpoint in the 'updated' table with the current Epoch time. */
 async function updateEndpoint(endpointClass: ModelType) {
   const newValue = { timestamp: new Date().getTime() };
-  const endpoint = endpointClass.tableName;
+  const endpoint = endpointClass.tableName.replace(/-/, "-");
   const row = await Updated.findOne({ where: { endpoint } });
   if (row) {
     await row.set(newValue).save();
