@@ -13,7 +13,7 @@ export const router = express.Router();
 /** Ensures that the coordinates are not to close to any previous entries.
  *  Returns an error message or `null` if the coordinates are valid.
  */
-async function validateCoordinates(coords?: number[]): string | null {
+async function validateCoordinates(coords?: number[]) {
 	if (!coords) return "Coordinates not provided.";
 	if (coords.length < 2) return "Coordinates must have a latitude and longitude.";
 	// TODO: implement actual validation

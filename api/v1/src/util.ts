@@ -80,7 +80,7 @@ export async function createDatabaseEntry(
   req: Request,
   res: Response,
   modelParams?: object,
-  sendMethod?: Function
+  sendMethod?: (resp: Response, data: any, code: number) => void
 ) {
   let obj;
   try {
