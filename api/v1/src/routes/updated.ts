@@ -20,7 +20,7 @@ const processData = (data: Updated[]) => ({
 });
 
 router.get("/", (_req, res) =>
-  readAllDatabaseEntries(Updated, res, (_, data) => {
+  readAllDatabaseEntries(Updated, res, (data) => {
     res.setHeader("Cache-Control", "no-store");
     sendOK(res, processData(data));
   })

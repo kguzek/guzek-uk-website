@@ -153,7 +153,7 @@ router
 
   // READ all users
   .get("/users", async (_req: Request, res: Response) => {
-    function callback(_sameResAsBefore: Response, users: User[]) {
+    await readAllDatabaseEntries(User, res, (users) => {
       sendOK(
         res,
         users.map((user: User) => {
@@ -161,8 +161,7 @@ router
           return publicProperties;
         })
       );
-    }
-    await readAllDatabaseEntries(User, res, callback);
+    });
   })
 
   // READ specific user

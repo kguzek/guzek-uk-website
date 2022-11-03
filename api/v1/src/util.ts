@@ -29,11 +29,6 @@ const STATUS_CODES: { [code: number]: string } = {
   500: "Internal Server Error",
 };
 
-interface ServerError {
-  name?: string;
-  message: string;
-}
-
 /** Updates the 'timestamp' column for the given endpoint in the 'updated' table with the current Epoch time. */
 async function updateEndpoint(endpointClass: ModelType) {
   const newValue = { timestamp: new Date().getTime() };
@@ -50,7 +45,7 @@ async function updateEndpoint(endpointClass: ModelType) {
 /** Sends the response with a 200 status and JSON body containing the given data object. */
 export function sendOK(
   res: Response,
-  data: object | object[],
+  data: object | object[] | null,
   code: number = 200
 ) {
   logger.response(`${code} ${STATUS_CODES[code] ?? STATUS_CODES[200]}`);
@@ -64,7 +59,7 @@ export function sendOK(
 export function sendError(
   res: Response,
   code: number,
-  error: ServerError = { message: "Unknown error." }
+  error: { message: string } = { message: "Unknown error." }
 ) {
   const codeDescription = `${code} ${STATUS_CODES[code] ?? STATUS_CODES[500]}`;
   const jsonRes = { [codeDescription]: error.message };
@@ -96,15 +91,19 @@ export async function createDatabaseEntry(
 export async function readAllDatabaseEntries<T extends ModelType>(
   model: T,
   res: Response,
-  callback?: (res: Response, data: InstanceType<T>[]) => void
+  callback?: (data: InstanceType<T>[]) => void
 ) {
   let objs;
   try {
-    objs = await model.findAll();
+    objs = (await model.findAll()) as InstanceType<T>[];
   } catch (error) {
     return void sendError(res, 500, error as Error);
   }
-  (callback ?? sendOK)(res, objs as InstanceType<T>[]);
+  if (callback) {
+    callback(objs);
+  } else {
+    sendOK(res, objs);
+  }
 }
 
 /** Retrieves all entries in the database with the provided values and returns the array. */
