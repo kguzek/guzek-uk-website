@@ -15,7 +15,7 @@ export function init(endpoints: string[]) {
 const processData = (data: Updated[]) => ({
   ...ENDPOINTS,
   ...Object.fromEntries(
-    data.map((model) => [model.get("endpoint"), model.get("timestamp")])
+    data.map((model) => [model.get("endpoint").replace(/_/, "-"), model.get("timestamp")])
   ),
 });
 
