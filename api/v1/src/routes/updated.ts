@@ -15,7 +15,10 @@ export function init(endpoints: string[]) {
 const processData = (data: Updated[]) => ({
   ...ENDPOINTS,
   ...Object.fromEntries(
-    data.map((model) => [model.get("endpoint").replace(/_/, "-"), model.get("timestamp")])
+    data.map((model) => [
+			(model.get("endpoint") as string).replace(/_/, "-"),
+			model.get("timestamp"),
+		])
   ),
 });
 
@@ -25,3 +28,4 @@ router.get("/", (_req, res) =>
     sendOK(res, processData(data));
   })
 );
+
