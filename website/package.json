@@ -15,8 +15,9 @@
     "web-vitals": "^2.1.2"
   },
   "resolutions": {
-    "nth-check": "^2.0.1",
     "css-select": "^4.1.3",
+    "loader-utils": "^2.0.3",
+    "nth-check": "^2.0.1",
     "minimatch": "^3.0.5",
     "terser": "^5.14.2"
   },
