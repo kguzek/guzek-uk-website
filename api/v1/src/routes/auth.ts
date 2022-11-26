@@ -19,8 +19,8 @@ const password = require("s-salt-pepper");
 export const router = express.Router();
 
 const MODIFIABLE_USER_PROPERTIES = ["name", "surname", "email"];
-/** The number of minutes a newly generated access token should be valid for. */
-const TOKEN_VALID_FOR = 30;
+/** The number of milliseconds a newly-generated access token should be valid for. */
+const TOKEN_VALID_FOR_MS = 30 * 60 * 1000; // 30 mins
 
 /** Authenticate given password against the stored credentials in the database. */
 async function authenticateUser(
@@ -44,12 +44,13 @@ async function authenticateUser(
   return userDetails;
 }
 
-const generateAccessToken = (user: UserObj) => ({
-  accessToken: jwt.sign(user, getTokenSecret("access"), {
-    expiresIn: `${TOKEN_VALID_FOR}m`,
-  }),
-  expiresAt: new Date().getTime() + TOKEN_VALID_FOR * 60000,
-});
+function generateAccessToken(user: UserObj) {
+  const payload = { ...user, iat: new Date().getTime() };
+  const signOptions = { expiresIn: TOKEN_VALID_FOR_MS };
+  const accessToken = jwt.sign(payload, getTokenSecret("access"), signOptions);
+  const tokenInfo = jwt.decode(accessToken) as jwt.JwtPayload;
+  return { accessToken, expiresAt: tokenInfo.exp };
+}
 
 function sendNewTokens(res: Response, user: UserObj) {
   const accessToken = generateAccessToken(user);
@@ -135,7 +136,7 @@ router
       res,
       { value: refreshToken },
       () => {
-        reject("Invalid or corrupt refresh token.");
+        reject("The provided refresh token was not issued by this server.");
       }
     );
     if (!tokens) return;
@@ -144,9 +145,8 @@ router
       getTokenSecret("refresh"),
       (err, user) => {
         if (err) return reject("Invalid or expired refresh token.");
- 
-        const accessToken = generateAccessToken(user as UserObj);
-        sendOK(res, accessToken, 201);
+
+        sendOK(res, generateAccessToken(user as UserObj), 201);
       }
     );
   })
@@ -240,4 +240,3 @@ router
       res
     );
   });
-

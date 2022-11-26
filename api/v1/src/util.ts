@@ -81,7 +81,7 @@ export async function createDatabaseEntry(
   try {
     obj = await model.create(modelParams ?? req.body);
   } catch (error) {
-    return void sendError(res, 400, error as Error);
+    return void sendError(res, 500, error as Error);
   }
   await updateEndpoint(model);
   (sendMethod ?? sendOK)(res, obj, 201);
@@ -124,7 +124,7 @@ export async function readDatabaseEntry(
     if (onError) {
       return void onError(error as Error);
     } else {
-      return void sendError(res, 400, error as Error);
+      return void sendError(res, 500, error as Error);
     }
   }
   return objs;
@@ -145,7 +145,7 @@ export async function updateDatabaseEntry(
       where: req.params,
     });
   } catch (error) {
-    return void sendError(res, 400, error as Error);
+    return void sendError(res, 500, error as Error);
   }
   await updateEndpoint(model);
   sendOK(res, { affectedRows: result.shift() });
@@ -163,7 +163,7 @@ export async function deleteDatabaseEntry(
   try {
     destroyedRows = await model.destroy({ where });
   } catch (error) {
-    return void sendError(res, 400, error as Error);
+    return void sendError(res, 500, error as Error);
   }
   await updateEndpoint(model);
   sendOK(res, { destroyedRows });
