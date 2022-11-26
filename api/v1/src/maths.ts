@@ -1,28 +1,33 @@
-export type LatLng = {
-  lat: number;
-  lng: number;
-};
+import { LatLng } from "./models";
+
+const EARTH_RADIUS = 6371;
 
 const toRad = (degrees: number) => (Math.PI * degrees) / 180;
 const toDeg = (radians: number) => (180 * radians) / Math.PI;
 
-function getDistanceBetweenTwoPoints(pointA: LatLng, pointB: LatLng) {
-  if (pointA.lat == pointB.lat && pointA.lng == pointB.lng) {
+const fixLatLngType = (point: LatLng) =>
+  Array.isArray(point) ? point : [point.lat, point.lng];
+
+export function getDistanceBetweenTwoPoints(pointA: LatLng, pointB: LatLng) {
+  let [latA, lngA] = fixLatLngType(pointA);
+  let [latB, lngB] = fixLatLngType(pointB);
+
+  if (latA === latB && lngA === lngB) {
     return 0;
   }
 
-  const latA = toRad(pointA.lat);
-  const latB = toRad(pointB.lat);
+  latA = toRad(latA);
+  latB = toRad(latB);
 
-  const theta = pointA.lng - pointB.lng;
-  const radtheta = (Math.PI * theta) / 180;
+  const deltaLatitude = latB - latA;
+  const deltaLongitude = toRad(lngB - lngA);
 
-  let dist =
-    Math.sin(latA) * Math.sin(latB) +
-    Math.cos(latA) * Math.cos(latB) * Math.cos(radtheta);
+  const a =
+    Math.sin(deltaLatitude / 2) ** 2 +
+    Math.cos(latA) * Math.cos(latB) * Math.sin(deltaLongitude / 2) ** 2;
+  const b = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance_km = EARTH_RADIUS * b;
 
-  dist = toDeg(Math.acos(Math.min(dist, 1))) * 60;
-  dist = dist * 1.1515;
-
-  return dist * 1.609344; // Convert miles to km
+  // console.log("Distance from", pointA, "to", pointB, "is", distance_km, "km");
+  return distance_km;
 }

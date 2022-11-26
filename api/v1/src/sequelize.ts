@@ -169,6 +169,11 @@ TuLalem.init(
     coordinates: {
       type: DataTypes.GEOMETRY("POINT"),
       allowNull: false,
+      get() {
+        const coords = this.getDataValue("coordinates").coordinates;
+        const [lng, lat] = coords;
+        return [lat, lng];
+      },
     },
   },
   {

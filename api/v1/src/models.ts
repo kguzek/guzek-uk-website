@@ -27,3 +27,7 @@ export const ORDER_ATTRIBUTES = [
   "cost",
   "recipientData",
 ] as (keyof Order)[];
+
+export type LatLngObj = { lat: number; lng: number };
+export type LatLngArr = [number, number];
+export type LatLng = LatLngObj | LatLngArr;
