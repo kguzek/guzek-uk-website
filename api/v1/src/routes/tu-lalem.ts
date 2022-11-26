@@ -38,6 +38,7 @@ router
         type: "Point",
         coordinates: req.body.coordinates,
       },
+      userUUID: req.user?.uuid,
     };
     await createDatabaseEntry(TuLalem, req, res, modelParams);
   })
@@ -62,7 +63,7 @@ router
           userUUID: user,
           timestamp: { [Op.gte]: fromTimestamp },
         },
-        order: ["timestamp", "DESC"],
+        order: [["timestamp", "DESC"]],
       });
     } catch (error) {
       return sendError(res, 500, error as Error);
