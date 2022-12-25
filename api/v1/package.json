@@ -18,8 +18,8 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
-    "express": "^4.17.2",
-    "jsonwebtoken": "^8.5.1",
+    "express": "^4.17.3",
+    "jsonwebtoken": "^9.0.0",
     "mysql2": "^2.3.3",
     "request": "^2.88.2",
     "s-salt-pepper": "^3.0.4",
