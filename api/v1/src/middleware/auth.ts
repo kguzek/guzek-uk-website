@@ -31,6 +31,7 @@ const ENDPOINTS: { [level: string]: { [method: string]: string[] } } = {
   loggedInUser: {
     GET: [
       "/tu-lalem", // View all app coordinates
+      "/auth/usernames", // View all usernames
     ],
     POST: [
       "/tu-lalem", // Submit app coordinates

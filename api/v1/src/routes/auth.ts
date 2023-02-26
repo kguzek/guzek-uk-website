@@ -59,6 +59,24 @@ function sendNewTokens(res: Response, user: UserObj) {
   sendOK(res, { ...user, ...accessToken, refreshToken }, 201);
 }
 
+const sendUsers = (res: Response, returnOnlyUsernames: boolean) =>
+  readAllDatabaseEntries(User, res, (users) => {
+    sendOK(
+      res,
+      returnOnlyUsernames
+        ? Object.fromEntries(
+            users.map((user: User) => [
+              user.get("uuid"),
+              `${user.get("name")} ${user.get("surname")}`,
+            ])
+          )
+        : users.map((user: User) => {
+            const { hash, salt, ...publicProperties } = user.get();
+            return publicProperties;
+          })
+    );
+  });
+
 router
   // CREATE new account
   .post("/users", async (req: Request, res: Response) => {
@@ -152,16 +170,13 @@ router
   })
 
   // READ all users
-  .get("/users", async (_req: Request, res: Response) => {
-    await readAllDatabaseEntries(User, res, (users) => {
-      sendOK(
-        res,
-        users.map((user: User) => {
-          const { hash, salt, ...publicProperties } = user.get();
-          return publicProperties;
-        })
-      );
-    });
+  .get("/users", (_req: Request, res: Response) => {
+    sendUsers(res, false);
+  })
+
+  // READ all usernames
+  .get("/usernames", (_req: Request, res: Response) => {
+    sendUsers(res, true);
   })
 
   // READ specific user
