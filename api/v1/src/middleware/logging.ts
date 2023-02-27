@@ -138,7 +138,11 @@ export async function loggingMiddleware(
   next: NextFunction
 ) {
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
-  const metadata = { ip, ...req.body };
+  const metadata = { ip, body: req.body };
+  if (metadata.body?.password) {
+    // Ensure passwords are not logged in plaintext
+    metadata.body.password = "********";
+  }
   logger.request(`${req.method} ${req.originalUrl}`, metadata);
   next();
 }
