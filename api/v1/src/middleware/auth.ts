@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { getLogger } from "./logging";
-import { sendError, UserObj } from "../util";
+import { sendError } from "../util";
+import { UserObj } from "../models";
 
 const logger = getLogger(__filename);
 
@@ -75,6 +76,7 @@ export function authMiddleware(
       return reject(401, "Invalid authorisation token.");
     }
     req.user = user as UserObj;
+    console.log(req.user);
     if (
       endpointAccessibleBy.anonymous ||
       endpointAccessibleBy.loggedInUser ||
@@ -84,7 +86,7 @@ export function authMiddleware(
     }
     // Allow user to edit own details
     if (req.path.startsWith("/auth/user/" + req.user?.uuid)) {
-      if (["GET", "PUT"].includes(req.method)) {
+      if (["GET", "PUT", "PATCH"].includes(req.method)) {
         return void next();
       }
     }

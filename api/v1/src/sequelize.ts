@@ -92,12 +92,8 @@ User.init(
       allowNull: false,
       primaryKey: true,
     },
-    name: {
-      type: DataTypes.STRING(36),
-      allowNull: false,
-    },
-    surname: {
-      type: DataTypes.STRING,
+    username: {
+      type: DataTypes.STRING(64),
       allowNull: false,
     },
     email: {

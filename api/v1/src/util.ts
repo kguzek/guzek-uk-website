@@ -1,24 +1,10 @@
 import { Request, Response } from "express";
 import { WhereOptions } from "sequelize";
 import { getLogger } from "./middleware/logging";
-import { Page, PageContent, Token, TuLalem, Updated, User } from "./sequelize";
+import { ModelType } from "./models";
+import { Updated } from "./sequelize";
 
 const logger = getLogger(__filename);
-
-export type ModelType =
-  | typeof Page
-  | typeof PageContent
-  | typeof User
-  | typeof Token
-  | typeof TuLalem;
-
-export interface UserObj {
-  uuid: string;
-  name: string;
-  surname: string;
-  email: string;
-  admin?: boolean;
-}
 
 const STATUS_CODES: { [code: number]: string } = {
   200: "OK",

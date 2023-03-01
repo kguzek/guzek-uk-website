@@ -18,8 +18,7 @@ CREATE TABLE `guzek_uk`.`page_content` (
 );
 CREATE TABLE `guzek_uk`.`users` (
 	`uuid` VARCHAR(36) NOT NULL,
-	`name` VARCHAR(45) NOT NULL,
-	`surname` VARCHAR(45) NOT NULL,
+	`username` VARCHAR(64) NOT NULL,
 	`email` VARCHAR(255) NOT NULL,
 	`created_at` DATETIME NOT NULL,
 	`modified_at` DATETIME NOT NULL,

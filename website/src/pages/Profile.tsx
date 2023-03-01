@@ -1,6 +1,7 @@
 import React, { MouseEvent, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { fetchFromAPI } from "../misc/backend";
+import { User } from "../misc/models";
 import { Translation } from "../misc/translations";
 import { setTitle } from "../misc/util";
 
@@ -10,7 +11,7 @@ function Profile({
   setUser,
 }: {
   data: Translation;
-  user: any;
+  user: User | null;
   setUser: Function;
 }) {
   async function handleLogOut(_evt: MouseEvent<HTMLButtonElement>) {
@@ -44,9 +45,7 @@ function Profile({
       <p>{data.profile.body}</p>
       <p>Administrator: {user.admin.toString()}</p>
       <p>
-        {data.profile.formDetails.name}: {user.name}
-        <br />
-        {data.profile.formDetails.surname}: {user.surname}
+        {data.profile.formDetails.username}: {user.username}
       </p>
       <p>
         {data.profile.formDetails.email}: {user.email}

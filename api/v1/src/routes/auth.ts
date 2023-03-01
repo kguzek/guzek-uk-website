@@ -8,17 +8,17 @@ import {
   readAllDatabaseEntries,
   updateDatabaseEntry,
   deleteDatabaseEntry,
-  UserObj,
   sendError,
   sendOK,
 } from "../util";
 import { Token, User } from "../sequelize";
 import { getTokenSecret } from "../middleware/auth";
+import { UserObj } from "../models";
 const password = require("s-salt-pepper");
 
 export const router = express.Router();
 
-const MODIFIABLE_USER_PROPERTIES = ["name", "surname", "email"];
+const MODIFIABLE_USER_PROPERTIES = ["username", "email"];
 /** The number of milliseconds a newly-generated access token should be valid for. */
 const TOKEN_VALID_FOR_MS = 30 * 60 * 1000; // 30 mins
 
@@ -65,10 +65,7 @@ const sendUsers = (res: Response, returnOnlyUsernames: boolean) =>
       res,
       returnOnlyUsernames
         ? Object.fromEntries(
-            users.map((user: User) => [
-              user.get("uuid"),
-              `${user.get("name")} ${user.get("surname")}`,
-            ])
+            users.map((user: User) => [user.get("uuid"), user.get("username")])
           )
         : users.map((user: User) => {
             const { hash, salt, ...publicProperties } = user.get();
@@ -80,7 +77,7 @@ const sendUsers = (res: Response, returnOnlyUsernames: boolean) =>
 router
   // CREATE new account
   .post("/users", async (req: Request, res: Response) => {
-    for (const requiredProperty of ["name", "surname", "email", "password"]) {
+    for (const requiredProperty of ["username", "email", "password"]) {
       if (!req.body[requiredProperty]) {
         return sendError(res, 400, {
           message: `Invalid account details. No ${requiredProperty} specified.`,
@@ -111,8 +108,7 @@ router
       res,
       {
         uuid: uuidv4(),
-        name: req.body.name,
-        surname: req.body.surname,
+        username: req.body.username,
         email: req.body.email,
         ...credentials,
       },

@@ -18,8 +18,7 @@ export default function SignUp({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
-  const [name, setName] = useState("");
-  const [surname, setSurname] = useState("");
+  const [username, setUsername] = useState("");
 
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -41,18 +40,9 @@ export default function SignUp({
     }
     setErrorMessage("");
     setLoading(true);
-    // for (const func of [
-    //   setName,
-    //   setSurname,
-    //   setEmail,
-    //   setPassword,
-    //   setRepeatPassword,
-    // ]) {
-    //   func("");
-    // }
+
     const body = {
-      name,
-      surname,
+      username,
       email,
       password,
     };
@@ -71,16 +61,10 @@ export default function SignUp({
     <div className="flex-column">
       <form className="form" onSubmit={handleSignUp}>
         <InputBox
-          label={data.profile.formDetails.name}
+          label={data.profile.formDetails.username}
           type="text"
-          value={name}
-          setValue={setName}
-        />
-        <InputBox
-          label={data.profile.formDetails.surname}
-          type="text"
-          value={surname}
-          setValue={setSurname}
+          value={username}
+          setValue={setUsername}
         />
         <InputBox
           label={data.profile.formDetails.email}

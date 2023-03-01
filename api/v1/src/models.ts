@@ -1,3 +1,5 @@
+import { Page, PageContent, Token, TuLalem, User } from "./sequelize";
+
 export interface RecipientData {
   name: string;
   firstName?: string;
@@ -31,3 +33,17 @@ export const ORDER_ATTRIBUTES = [
 export type LatLngObj = { lat: number; lng: number };
 export type LatLngArr = [number, number];
 export type LatLng = LatLngObj | LatLngArr;
+
+export type ModelType =
+  | typeof Page
+  | typeof PageContent
+  | typeof User
+  | typeof Token
+  | typeof TuLalem;
+
+export interface UserObj {
+  uuid: string;
+  username: string;
+  email: string;
+  admin?: boolean;
+}

@@ -1,11 +1,6 @@
 declare namespace Express {
+  import { UserObj } from "../src/models";
   export interface Request {
-    user?: {
-      uuid: string;
-      name: string;
-      surname: string;
-      email: string;
-      admin?: boolean;
-    };
+    user?: UserObj;
   }
 }
