@@ -135,7 +135,7 @@ function UserWidget({
       onClick={() => setMenuOpen(false)}
     >
       <img alt="User avatar" className="user-avatar" src={imgUrl} />
-      <b className={"user-name"}>{(user && user.name) || data.guest}</b>
+      <b className={"user-name"}>{user?.username || data.guest}</b>
     </Link>
   );
 }

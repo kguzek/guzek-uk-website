@@ -12,11 +12,12 @@ export interface MenuItem {
 }
 
 export interface User {
-  name: string;
-  surname: string;
+  uuid: string;
+  username: string;
   email: string;
   admin: boolean;
-  token: string;
+  created_at: string;
+  modified_at: string;
 }
 
 export enum ErrorCode {

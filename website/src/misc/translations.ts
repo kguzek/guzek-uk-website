@@ -15,8 +15,7 @@ export interface Translation {
     loading: string;
     invalidCredentials: string;
     readonly formDetails: {
-      name: string;
-      surname: string;
+      username: string;
       email: string;
       password: string;
       passwordRepeat: string;
@@ -58,8 +57,7 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
       loading: "Validating",
       invalidCredentials: "Invalid credentials.",
       formDetails: {
-        name: "Name",
-        surname: "Surname",
+        username: "Username",
         email: "Email",
         password: "Password",
         passwordRepeat: "Repeat password",
@@ -108,8 +106,7 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
       loading: "Trwa walidacja",
       invalidCredentials: "Niepoprawne dane loginowe.",
       formDetails: {
-        name: "Imię",
-        surname: "Nazwisko",
+        username: "Nazwa użytkownika",
         email: "Email",
         password: "Hasło",
         passwordRepeat: "Hasło (ponownie)",
