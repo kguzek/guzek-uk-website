@@ -138,7 +138,7 @@ export default function App() {
       const oldValue = searchParams.get(param);
       const newSearchParams = new URLSearchParams(searchParams);
       newSearchParams.delete(param);
-      setSearchParams(newSearchParams);
+      setSearchParams(newSearchParams, { replace: true });
       return oldValue || "";
     }
     // If the URL contains the lang parameter, clear it
