@@ -2,6 +2,8 @@ import React from "react";
 import { ThreeDots } from "react-loader-spinner";
 import "../styles/loadingScreen.css";
 
+const COLOR_PRIMARY = "#bbb";
+
 export default function LoadingScreen({
   text,
   className = "loading-screen",
@@ -12,7 +14,7 @@ export default function LoadingScreen({
   return (
     <div className={className}>
       <h2 className="loading-text">{text}</h2>
-      <ThreeDots height={15} />
+      <ThreeDots height={15} color={COLOR_PRIMARY} />
     </div>
   );
 }
@@ -26,7 +28,7 @@ export function LoadingButton({
 }) {
   return (
     <div className={className}>
-      <ThreeDots color={color} />
+      <ThreeDots color={color || COLOR_PRIMARY} />
     </div>
   );
 }

@@ -4,7 +4,7 @@ export interface Translation {
   readonly footer: string;
   readonly loading: string;
   readonly language: string;
-  readonly guest: string;
+  readonly loginShort: string;
   readonly pipeDesigner: {
     title: string;
     body: string;
@@ -17,6 +17,10 @@ export interface Translation {
     readonly formDetails: {
       username: string;
       email: string;
+      creationDate: string;
+      type: string;
+      administrator: string;
+      regularUser: string;
       password: string;
       passwordRepeat: string;
       login: string;
@@ -46,7 +50,7 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
     footer: "{YEAR} \u00a9 Konrad Guzek",
     loading: "Loading",
     language: "Language",
-    guest: "Guest",
+    loginShort: "Log in",
     pipeDesigner: {
       title: "Pipe Designer",
       body: "Redirecting to the pipe designer failed. Please try again later, or refresh your page manually.",
@@ -59,6 +63,10 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
       formDetails: {
         username: "Username",
         email: "Email",
+        creationDate: "Account creation date",
+        type: "Account type",
+        administrator: "administrator",
+        regularUser: "regular user",
         password: "Password",
         passwordRepeat: "Repeat password",
         login: "Log In",
@@ -70,12 +78,12 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
     },
     error: {
       403: {
-        title: "403 Forbidden",
-        body: "403: You do not have permission to view this resource.",
+        title: "Forbidden",
+        body: "You do not have permission to view this resource.",
       },
       404: {
-        title: "404 Not Found",
-        body: "404: The requested resource was not found.",
+        title: "Not Found",
+        body: "The requested resource was not found.",
       },
     },
     contentManager: {
@@ -95,7 +103,7 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
     footer: "{YEAR} \u00a9 Konrad Guzek",
     loading: "Trwa ładowanie strony",
     language: "Język",
-    guest: "Gość",
+    loginShort: "Zaloguj",
     pipeDesigner: {
       title: "Kreator Rur",
       body: "Przekierowywanie do kreatora rur nie powiodło się. Spróbuj ponownie wkrótce lub odśwież stronę ręcznie.",
@@ -108,6 +116,10 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
       formDetails: {
         username: "Nazwa użytkownika",
         email: "Email",
+        creationDate: "Data utworzenia konta",
+        type: "Typ konta",
+        administrator: "administrator",
+        regularUser: "zwykły",
         password: "Hasło",
         passwordRepeat: "Hasło (ponownie)",
         login: "Zaloguj się",
@@ -119,12 +131,12 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
     },
     error: {
       403: {
-        title: "403 Zabroniono",
-        body: "403: Nie masz uprawnień do wyświetlania tego zasobu.",
+        title: "Zabroniono",
+        body: "Nie masz uprawnień do wyświetlania tego zasobu.",
       },
       404: {
-        title: "404 Nie Znaleziono",
-        body: "404: Nie znaleziono zasobu, którego szukasz.",
+        title: "Nie Znaleziono",
+        body: "Nie znaleziono zasobu, którego szukasz.",
       },
     },
     contentManager: {

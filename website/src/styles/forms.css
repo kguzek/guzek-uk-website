@@ -4,37 +4,93 @@
   align-items: center;
 }
 
-.form {
+.form-login {
   display: flex;
   flex-direction: column;
   width: 30%;
   min-width: 300px;
   margin: auto;
+  align-items: stretch;
+}
+
+.form-login > div {
+  display: flex;
+  align-items: center;
 }
 
 @media screen and (max-width: 750px) {
-  .form {
+  .form-login {
     width: 100%;
     max-width: 300px;
   }
 }
 
-.form input {
+.form-login input {
   font-family: unset;
   height: 1.5rem;
 }
 
+.form-editor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-editor > label,
+.form-checkboxes {
+  width: 60%;
+}
+
+@media screen and (max-width: 750px) {
+  .form-editor > label,
+  .form-checkboxes {
+    width: 100%;
+  }
+}
+
+.form-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0px 15px;
+}
+
+.form-checkboxes label {
+  white-space: nowrap;
+}
+
+.form-checkboxes label:has(input:checked) {
+  color: var(--color-primary-strong);
+}
+
+.text-editor {
+  color: var(--color-primary);
+}
+
+.text-editor a {
+  color: var(--color-primary-strong);
+}
+
+.text-editor > div {
+  background-color: var(--color-background-strong);
+}
+
+.text-editor > div > div:first-child {
+  background-color: var(--color-primary);
+  color: var(--color-background-strong);
+  margin: 0;
+  padding: 10px 10px 5px;
+}
+
 .btn {
   all: unset;
+  min-width: 250px;
   text-align: center;
   border-radius: 0;
-  color: white;
-  border: 1px solid white;
-  background-color: var(--hacker-green);
-  padding-bottom: 0.25rem;
+  color: var(--color-primary-strong);
+  border: 1px solid var(--color-primary-strong);
+  background-color: var(--color-accent);
   cursor: pointer;
-  height: 2.5rem;
-  line-height: 2.5rem;
+  padding: 10px;
 }
 
 [disabled] {
@@ -51,7 +107,7 @@
 .input-box :is(input, select) {
   margin-top: 3px;
   font-size: 1rem;
-  background-color: white;
+  background-color: var(--color-primary-strong);
 }
 
 .input-checkbox {
@@ -60,13 +116,13 @@
   justify-content: space-between;
   user-select: none;
   gap: 0.25rem;
-  border: 1px solid white;
+  border: 1px solid var(--color-primary-strong);
   border-radius: 4px;
   padding: 0px 0.5rem;
 }
 
 .input-checkbox input {
-  accent-color: var(--hacker-highlight);
+  accent-color: var(--color-accent);
 }
 
 .btn-submit {
@@ -82,5 +138,4 @@
 .required-asterisk {
   color: red;
   font-weight: bolder;
-
 }

@@ -30,7 +30,8 @@ async function getAccessToken() {
   }
   const tokenInfo = JSON.parse(accessTokenInfo);
   // Check if it's expired
-  if (new Date(tokenInfo.expiresAt) > new Date()) {
+  const tokenNotExpired = new Date(tokenInfo.expiresAt) > new Date();
+  if (tokenNotExpired && tokenInfo.accessToken) {
     return tokenInfo.accessToken as string;
   }
   // Generate a new access token
@@ -46,8 +47,8 @@ async function getAccessToken() {
     return null;
   }
   const body = await res.json();
-  updateAccessToken(body.token);
-  return body.token as string;
+  updateAccessToken(body.accessToken);
+  return body.accessToken as string;
 }
 
 /** Instantiates a `Request` object with the attributes provided.

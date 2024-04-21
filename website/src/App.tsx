@@ -250,7 +250,10 @@ export default function App() {
                 reloadSite={removeOldCaches}
               />
             ) : (
-              <ErrorPage pageData={pageContent.error["403"]} />
+              <ErrorPage
+                pageContent={pageContent}
+                errorCode={ErrorCode.Forbidden}
+              />
             )
           }
         />
@@ -258,7 +261,10 @@ export default function App() {
         <Route
           path="*"
           element={
-            <ErrorPage pageData={pageContent.error[ErrorCode.NotFound]} />
+            <ErrorPage
+              pageContent={pageContent}
+              errorCode={ErrorCode.NotFound}
+            />
           }
         />
       </Routes>

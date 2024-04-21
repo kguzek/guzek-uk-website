@@ -125,7 +125,7 @@ function UserWidget({
   const imgUrl =
     (user && user.url) ||
     "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/default-avatar.png";
-  const active = window.location.pathname.startsWith("/profile")
+  const active = ["/profile", "/login"].includes(window.location.pathname)
     ? "active"
     : "";
   return (
@@ -135,7 +135,7 @@ function UserWidget({
       onClick={() => setMenuOpen(false)}
     >
       <img alt="User avatar" className="user-avatar" src={imgUrl} />
-      <b className={"user-name"}>{user?.username || data.guest}</b>
+      <b className={"user-name"}>{user?.username || data.loginShort}</b>
     </Link>
   );
 }
