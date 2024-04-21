@@ -24,7 +24,7 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [menuItems, setMenuItems] = useState<MenuItem[] | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [reload, setReload] = useState(true);
+  const [reload, setReload] = useState(false);
 
   function setLanguage(langString: string) {
     if (!(langString in Language)) {
@@ -113,13 +113,12 @@ export default function App() {
     if (!reload) return;
 
     setReload(false);
-
-    // Retrieve the menu items from the API
-    (async () => {
-      const data = await tryFetch("pages", {}, [] as MenuItem[]);
-      setMenuItems(data);
-    })();
+    fetchPages();
   }, [reload]);
+
+  useEffect(() => {
+    fetchPages();
+  }, [userLanguage]);
 
   useEffect(() => {
     const localUser = localStorage.getItem("user");
@@ -153,6 +152,16 @@ export default function App() {
       setLanguage(prevLang);
     }
   }, [searchParams]);
+
+  /** Retrieve the menu items from the API */
+  async function fetchPages() {
+    const data = await tryFetch(
+      "pages",
+      { lang: userLanguage },
+      [] as MenuItem[]
+    );
+    setMenuItems(data);
+  }
 
   /** Event handler for when the user selects one of the lanugage options. */
   function changeLang(evt: MouseEvent<HTMLButtonElement>) {

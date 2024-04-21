@@ -60,12 +60,12 @@ export default function ContentManager({
               setValue={setSelectedPageID}
               options={pagesMap}
             />
-          <PagesEditor
-            data={data}
-            lang={lang}
-            originalPage={selectedPage as MenuItem}
-            reloadSite={reloadSite}
-          />
+            <PagesEditor
+              data={data}
+              lang={lang}
+              originalPage={selectedPage as MenuItem}
+              reloadSite={reloadSite}
+            />
           </form>
         </>
       )}
@@ -97,7 +97,8 @@ function PagesEditor({
     } else {
       setContent(getEmptyMarkdown());
     }
-    if (originalPage.id === page.id) return;
+    if (originalPage.id === page.id && originalPage.title === page.title)
+      return;
     setPage(originalPage);
   }, [originalPage, lang]);
 
