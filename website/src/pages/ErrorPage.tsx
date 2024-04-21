@@ -1,24 +1,30 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ErrorPageContent } from "../misc/models";
+import { ErrorCode } from "../misc/models";
+import { Translation } from "../misc/translations";
 import { PAGE_NAME, setTitle } from "../misc/util";
 
 export default function ErrorPage({
-  pageData,
+  pageContent,
+  errorCode,
 }: {
-  pageData: ErrorPageContent;
+  pageContent: Translation;
+  errorCode: ErrorCode;
 }) {
   useEffect(() => {
-    setTitle(pageData.title);
-  }, [pageData]);
+    setTitle(`${errorCode} ${pageContent.error[errorCode].title}`);
+  }, [pageContent]);
 
   return (
     <div className="text">
-      <p>{pageData.body}</p>
-      <div className="form">
-        <Link to="/" className="btn">
-          {PAGE_NAME}
-        </Link>
+      <h1>{errorCode}</h1>
+      <p>{pageContent.error[errorCode].body}</p>
+      <div className="flex-column">
+        <div className="link-container">
+          <Link to="/" className="btn">
+            {PAGE_NAME}
+          </Link>
+        </div>
       </div>
     </div>
   );

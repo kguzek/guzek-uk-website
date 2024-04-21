@@ -1,5 +1,5 @@
 import React, { MouseEvent, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { fetchFromAPI } from "../misc/backend";
 import { User } from "../misc/models";
 import { Translation } from "../misc/translations";
@@ -31,31 +31,31 @@ function Profile({
   }, [data]);
 
   if (!user) {
-    return (
-      <div className="form">
-        <Link to="/login" className="btn">
-          {data.profile.formDetails.login}
-        </Link>
-      </div>
-    );
+    return <Navigate to="/login" replace={true} />;
   }
   const userCreatedAt = new Date(user.created_at);
   return (
     <div className="text">
-      <p>{data.profile.body}</p>
-      <p>Administrator: {user.admin.toString()}</p>
+      <h3>{data.profile.body}</h3>
       <p>
-        {data.profile.formDetails.username}: {user.username}
+        {data.profile.formDetails.type}:{" "}
+        {data.profile.formDetails[user.admin ? "administrator" : "regularUser"]}
       </p>
       <p>
-        {data.profile.formDetails.email}: {user.email}
+        {data.profile.formDetails.username}: "{user.username}"
+      </p>
+      <p>
+        {data.profile.formDetails.email}: "{user.email}"
       </p>
       <small>
-        Unique user ID: <span>{user.uuid}</span>
+        UUID: <code>{user.uuid}</code>
       </small>
       <br />
-      <small>Account created on {userCreatedAt.toString()}</small>
-      <div className="form">
+      <small>
+        {data.profile.formDetails.creationDate}:{" "}
+        <code>{userCreatedAt.toLocaleString()}</code>
+      </small>
+      <div className="centred">
         <button className="btn btn-submit" onClick={handleLogOut}>
           {data.profile.formDetails.logout}
         </button>

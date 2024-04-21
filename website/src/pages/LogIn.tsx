@@ -56,8 +56,8 @@ export default function LogIn({
   }
 
   return (
-    <div className="flex-column">
-      <form className="form" onSubmit={handleLogin}>
+    <>
+      <form className="form-login" onSubmit={handleLogin}>
         <InputBox
           label={data.profile.formDetails.email}
           type="email"
@@ -81,10 +81,12 @@ export default function LogIn({
           </button>
         )}
       </form>
-      <p>{data.profile.formDetails.or}</p>
-      <Link to="/signup">
-        <i>{data.profile.formDetails.signup}</i>
-      </Link>
-    </div>
+      <div className="centred">
+        <p>{data.profile.formDetails.or}</p>
+        <Link to="/signup">
+          <i>{data.profile.formDetails.signup}</i>
+        </Link>
+      </div>
+    </>
   );
 }

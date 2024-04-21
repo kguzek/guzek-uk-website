@@ -52,7 +52,7 @@ export default function ContentManager({
         </button>
       ) : (
         <>
-          <form>
+          <form className="form-editor">
             <InputBox
               type="dropdown"
               label={data.contentManager.selectedPage}
@@ -139,23 +139,27 @@ function PagesEditor({
           required
         />
       ))}
-      {BOOL_PAGE_PROPERTIES.map((property, idx) => (
-        <InputBox
-          key={idx}
-          type="checkbox"
-          label={data.contentManager.formDetails[property]}
-          setValue={(val: boolean) => handleUpdate(property, val)}
-          value={page[property]}
-        />
-      ))}
+      <div className="form-checkboxes">
+        {BOOL_PAGE_PROPERTIES.map((property, idx) => (
+          <InputBox
+            key={idx}
+            type="checkbox"
+            label={data.contentManager.formDetails[property]}
+            setValue={(val: boolean) => handleUpdate(property, val)}
+            value={page[property]}
+          />
+        ))}
+      </div>
       {page.shouldFetch && (
-        <InputArea
-          value={content}
-          setValue={(html: EditorValue) => {
-            if (!unsavedChanges) setUnsavedChanges(true);
-            setContent(html);
-          }}
-        />
+        <div className="text-editor">
+          <InputArea
+            value={content}
+            setValue={(html: EditorValue) => {
+              if (!unsavedChanges) setUnsavedChanges(true);
+              setContent(html);
+            }}
+          />
+        </div>
       )}
       {clickedSubmit ? (
         <LoadingButton className="flex-column" />
