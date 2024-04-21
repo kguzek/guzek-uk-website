@@ -34,8 +34,14 @@ Page.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    title: {
+    titleEN: {
       type: DataTypes.STRING,
+      field: "title_en",
+      allowNull: false,
+    },
+    titlePL: {
+      type: DataTypes.STRING,
+      field: "title_pl",
       allowNull: false,
     },
     url: {

@@ -19,6 +19,11 @@ enum CONTENT_LANGUAGES {
   PL = "contentPL",
 }
 
+enum TITLE_LANGUAGES {
+  EN = "titleEN",
+  PL = "titlePL",
+}
+
 const send404 = (req: Request, res: Response) =>
   void sendError(res, 404, {
     message: `Could not find page with ID '${req.params.id}'.`,
@@ -50,10 +55,11 @@ async function modifyPageContent(
   const { content, ...attributes } = req.body;
   const pageID = req.params.id;
 
+  // Request validation
+  const lang = validateLangParameter(req, res);
+  if (!lang) return;
+
   if (content) {
-    // Request validation
-    const lang = validateLangParameter(req, res);
-    if (!lang) return;
     const newValues = { [CONTENT_LANGUAGES[lang]]: content };
     // Determine if the entry has to be created or modified
     const pageContent = await PageContent.findOne({ where: { pageID } });
@@ -70,7 +76,13 @@ async function modifyPageContent(
     }
   }
 
+  const localiseTitleProperty = () => {
+    attributes[TITLE_LANGUAGES[lang]] = attributes.title;
+    delete attributes.title;
+  };
+
   if (updateExistingPage) {
+    localiseTitleProperty();
     await updateDatabaseEntry(Page, req, res, attributes);
   } else {
     if (attributes.shouldFetch && !content) {
@@ -78,6 +90,8 @@ async function modifyPageContent(
         message: "'shouldFetch' set to 'true' but no page content specified.",
       });
     }
+    attributes.titleEN = attributes.titlePL = "";
+    localiseTitleProperty();
     await createDatabaseEntry(Page, req, res, attributes);
   }
 }
@@ -89,8 +103,19 @@ router
   )
 
   // READ all pages
-  .get("/", (__req: Request, res: Response) =>
-    readAllDatabaseEntries(Page, res)
+  .get("/", (req: Request, res: Response) =>
+    readAllDatabaseEntries(Page, res, async (pages) => {
+      const lang = validateLangParameter(req, res);
+      if (!lang) return;
+
+      sendOK(
+        res,
+        pages.map((rawPage) => {
+          const { titleEN, titlePL, ...page } = rawPage.get();
+          return { ...page, title: lang === "EN" ? titleEN : titlePL };
+        })
+      );
+    })
   )
 
   // READ specific page
