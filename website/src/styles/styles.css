@@ -16,6 +16,7 @@
 .text img {
   object-fit: contain;
   max-width: 100%;
+  width: unset;
   height: unset;
 }
 
