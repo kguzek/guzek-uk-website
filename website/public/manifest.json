@@ -1,9 +1,9 @@
 {
   "name": "Guzek UK",
   "short_name": "Guzek UK",
-	"description": "The Guzek UK Website created by Konrad Guzek.",
-  "theme_color": "#12a12a",
-  "background_color": "#000000",
+  "description": "The Guzek UK Website created by Konrad Guzek.",
+  "theme_color": "#2596be",
+  "background_color": "#262322",
   "display": "standalone",
   "start_url": ".",
   "icons": [
