@@ -1,0 +1,68 @@
+.modal {
+  position: fixed;
+  top: 30px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: 50%;
+  background: var(--color-accent-soft);
+  padding: 10px 20px;
+  border-radius: 15px;
+  color: var(--color-background);
+  z-index: 20;
+  transform: translateY(calc(-100% - 30px));
+  opacity: 0;
+  transition: all 200ms ease;
+}
+
+.modal.error {
+  background-color: var(--color-error);
+  color: var(--color-primary-strong);
+}
+
+.modal.error .modal-buttons button {
+  background-color: var(--color-primary-strong);
+  color: var(--color-background-soft);
+}
+
+.modal p {
+  margin: 10px 0 0;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: end;
+  font-size: medium;
+  font-weight: bold;
+}
+
+.modal-buttons button {
+  text-transform: uppercase;
+  border: none;
+  border-radius: 10px;
+  padding: 5px 10px;
+  color: var(--color-primary-strong);
+  min-width: 100px;
+  background-color: var(--color-background-soft);
+  opacity: 0.75;
+  transition: opacity 200ms ease;
+}
+
+.modal-buttons button:hover {
+  opacity: 1;
+}
+
+button.btn-primary {
+  background-color: var(--color-success);
+}
+
+button.btn-secondary {
+  background-color: var(--color-error);
+}
+
+.modal.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+

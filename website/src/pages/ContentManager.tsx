@@ -10,6 +10,7 @@ import { LoadingButton } from "../components/LoadingScreen";
 import { MenuItem } from "../misc/models";
 import { Translation } from "../misc/translations";
 import { fetchPageContent, setTitle } from "../misc/util";
+import Modal from "../components/Modal";
 
 type PropertyName = keyof (
   | MenuItem
@@ -88,6 +89,8 @@ function PagesEditor({
   const [content, setContent] = useState(getEmptyMarkdown());
   const [clickedSubmit, setClickedSubmit] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
   useEffect(() => {
     if (originalPage.shouldFetch) {
@@ -103,12 +106,16 @@ function PagesEditor({
   }, [originalPage, lang]);
 
   function handleUpdate(changedProperty: string, newValue: string | boolean) {
-    console.debug("Set", changedProperty, "to", newValue);
+    // console.debug("Set", changedProperty, "to", newValue);
     if (!unsavedChanges) setUnsavedChanges(true);
     setPage((current) => ({
       ...(current ?? originalPage),
       [changedProperty]: newValue,
     }));
+  }
+
+  function onClickModalButton(primary: boolean) {
+    setModalVisible(false);
   }
 
   async function handleSubmit(evt: FormEvent) {
@@ -123,13 +130,29 @@ function PagesEditor({
       if (res.ok) {
         reloadSite();
         setUnsavedChanges(false);
+      } else {
+        setModalVisible(true);
+        const errorObject = await res.json();
+        const [code, description] = Object.entries(errorObject)[0];
+        setModalMessage(`Error: ${description} (${code})`);
       }
-    } catch {}
+    } catch {
+      setModalVisible(true);
+      setModalMessage(
+        "A network error occurred when performing this action. Please check the developer console for more details."
+      );
+    }
     setClickedSubmit(false);
   }
 
   return (
     <>
+      <Modal
+        message={modalMessage}
+        className="error"
+        visible={modalVisible}
+        onClick={onClickModalButton}
+      ></Modal>
       {TEXT_PAGE_PROPERTIES.map((property, idx) => (
         <InputBox
           key={idx}

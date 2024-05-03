@@ -1,6 +1,7 @@
 .navigation {
+  display: flex;
+  gap: 20px;
   height: 80px;
-  justify-content: center;
   align-items: center;
   font-size: 1.2rem;
   margin-left: auto;
@@ -8,12 +9,7 @@
   max-width: 980px;
 }
 
-.navigation {
-  display: flex;
-}
-
 .navigation a img {
-  margin: 0px 20px auto 20px;
   padding-top: 10px;
 }
 
@@ -29,6 +25,7 @@
   text-align: center;
   gap: 15px;
   justify-content: space-between;
+  padding: 0;
 }
 
 .nav-items li {
@@ -57,7 +54,6 @@
 
 .user-widget {
   display: flex;
-  float: right;
   align-items: center;
   flex-direction: column;
   margin-bottom: 10px;
@@ -104,6 +100,7 @@
 }
 
 .lang-selector button {
+  font-size: small;
   font-weight: bold;
   color: white;
   background: none;
