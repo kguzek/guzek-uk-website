@@ -5,7 +5,11 @@
   --color-primary-strong: #fff;
   --color-background: #262322;
   --color-background-strong: #0b0a09;
+  --color-background-soft: #5e5954;
   --color-accent: #2596be;
+  --color-accent-soft: #c9dae0;
+  --color-success: #3dc983;
+  --color-error: #b64949;
 }
 
 .text {
@@ -36,6 +40,13 @@
 a {
   text-decoration: none;
   color: var(--color-primary-strong);
+}
+
+button {
+  font-size: unset;
+  font-family: unset;
+  font-weight: unset;
+  cursor: pointer;
 }
 
 html {

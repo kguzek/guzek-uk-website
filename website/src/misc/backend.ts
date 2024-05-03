@@ -42,8 +42,10 @@ async function getAccessToken() {
     { body: { token } },
     false
   );
+  console.info("Refreshing expired access token...");
   const res = await fetch(req);
   if (!res.ok) {
+    console.error("Failed to refresh the access token.");
     return null;
   }
   const body = await res.json();
@@ -140,7 +142,7 @@ async function fetchWithCache(request: Request) {
     response.ok /*&& response.clone().headers.get("Cache-Control") !== "no-store"*/
   ) {
     await cache.put(request, response.clone());
-    console.info("Cached response as", response.url);
+    console.debug("Cached response as", response.url);
   }
   return response.clone();
 }

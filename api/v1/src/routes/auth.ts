@@ -54,7 +54,7 @@ function generateAccessToken(user: UserObj) {
 
 function sendNewTokens(res: Response, user: UserObj) {
   const accessToken = generateAccessToken(user);
-  const refreshToken = jwt.sign({ uuid: user.uuid }, getTokenSecret("refresh"));
+  const refreshToken = jwt.sign(user, getTokenSecret("refresh"));
   Token.create({ value: refreshToken }).then();
   sendOK(res, { ...user, ...accessToken, refreshToken }, 201);
 }

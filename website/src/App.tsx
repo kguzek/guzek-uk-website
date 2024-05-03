@@ -52,15 +52,15 @@ export default function App() {
     const cachedResponses = await cache.matchAll();
     for (let i = 0; i < cachedResponses.length; i++) {
       const res = cachedResponses[i];
-      console.debug(
-        "Checking cached response",
-        i + 1,
-        "/",
-        cachedResponses.length,
-        `'${res.url}'`,
-        // Object.fromEntries(res.headers.entries()),
-        "..."
-      );
+      // console.debug(
+      //   "Checking cached response",
+      //   i + 1,
+      //   "/",
+      //   cachedResponses.length,
+      //   `'${res.url}'`,
+      //   // Object.fromEntries(res.headers.entries()),
+      //   "..."
+      // );
       const resTimestamp = parseInt(res.headers.get("Pragma") ?? "0");
       if (!res.url) {
         continue;
@@ -69,23 +69,23 @@ export default function App() {
       // Extract the base path (only first subdirectory of URL path)
       const [_, endpoint] = /^\/([^\/]*)(?:\/.*)?$/.exec(url.pathname) ?? [];
       if (!endpoint) continue;
-      console.debug(
-        "Cache date:",
-        resTimestamp,
-        `| Endpoint '${endpoint}' last updated:`,
-        updated[endpoint]
-      );
+      // console.debug(
+      //   "Cache date:",
+      //   resTimestamp,
+      //   `| Endpoint '${endpoint}' last updated:`,
+      //   updated[endpoint]
+      // );
       if (
         resTimestamp > updated[endpoint] ||
         (IGNORE_INVALID_RESPONSE_DATES && !resTimestamp)
       ) {
-        const diff = getDuration(resTimestamp - updated[endpoint]);
+        // const diff = getDuration(resTimestamp - updated[endpoint]);
 
-        console.debug(
-          "Cache was created",
-          diff.formatted,
-          "after the last change on the server."
-        );
+        // console.debug(
+        //   "Cache was created",
+        //   diff.formatted,
+        //   "after the last change on the server."
+        // );
         continue;
       }
       updatedEndpoints.add(endpoint);
@@ -97,10 +97,10 @@ export default function App() {
       );
     }
     if (updatedEndpoints.size > 0) {
-      console.debug("Updated endpoints:", updatedEndpoints);
+      console.info("Updated endpoints:", updatedEndpoints);
       setReload(true);
     } else {
-      console.debug("All cached responses are up-to-date.");
+      // console.debug("All cached responses are up-to-date.");
     }
   }
 

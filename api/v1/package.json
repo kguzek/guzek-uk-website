@@ -7,7 +7,6 @@
   "description": "The API for the \"guzek.uk\" website.",
   "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "NODE_ENV=development NODE_PORT=5017 nodemon --exec ts-node --files index.ts"
   },
   "resolutions": {
