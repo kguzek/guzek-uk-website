@@ -45,6 +45,31 @@ export interface Translation {
   };
   readonly liveSeries: {
     title: "LiveSeries";
+    tvShowList: {
+      showing: string;
+      of: string;
+      page: string;
+    };
+    tvShow: {
+      title: string;
+      unknown: string;
+      present: string;
+    };
+    search: {
+      title: string;
+      label: string;
+      prompt: string;
+      search: string;
+      searching: string;
+      cancel: string;
+      results: string;
+    };
+    home: {
+      title: string;
+    };
+    mostPopular: {
+      title: string;
+    };
   };
   readonly error: { [code in ErrorCode]: ErrorPageContent };
 }
@@ -81,6 +106,10 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
       },
     },
     error: {
+      401: {
+        title: "Unauthorized",
+        body: "This page is only available to logged in users.",
+      },
       403: {
         title: "Forbidden",
         body: "You do not have permission to view this resource.",
@@ -105,6 +134,31 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
     },
     liveSeries: {
       title: "LiveSeries",
+      tvShowList: {
+        showing: "Showing",
+        of: "of",
+        page: "Page",
+      },
+      tvShow: {
+        title: "Show Details",
+        unknown: "Unknown",
+        present: "Present",
+      },
+      search: {
+        title: "Search",
+        label: "Search TV Shows",
+        prompt: "What would you like to watch?",
+        search: "Search",
+        searching: "Searching",
+        cancel: "Cancel",
+        results: "Results for",
+      },
+      home: {
+        title: "Home",
+      },
+      mostPopular: {
+        title: "Most Popular",
+      },
     },
   },
   PL: {
@@ -138,6 +192,10 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
       },
     },
     error: {
+      401: {
+        title: "Nieautoryzowano",
+        body: "Ta strona jest dostępna tylko dla zalogowanych użytkowników.",
+      },
       403: {
         title: "Zabroniono",
         body: "Nie masz uprawnień do wyświetlania tego zasobu.",
@@ -162,6 +220,31 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
     },
     liveSeries: {
       title: "LiveSeries",
+      tvShowList: {
+        showing: "Wynik",
+        of: "z",
+        page: "Strona",
+      },
+      tvShow: {
+        title: "Dane Serialu",
+        unknown: "Nieznane",
+        present: "Obecnie",
+      },
+      search: {
+        title: "Wyszukiwarka",
+        label: "Wyszukaj serial",
+        prompt: "Co chciałbyś obejrzeć?",
+        search: "Wyszkuaj",
+        searching: "Szukam",
+        cancel: "Anuluj",
+        results: "Wyniki wyszukania",
+      },
+      home: {
+        title: "Główna",
+      },
+      mostPopular: {
+        title: "Najpopularniejsze",
+      },
     },
   },
 };

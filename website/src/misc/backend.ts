@@ -22,6 +22,15 @@ export async function getCache() {
   }
 }
 
+export function getSearchParams(
+  params: Record<string, string> | URLSearchParams = {}
+) {
+  if (Object.keys(params).length === 0) return "";
+  const searchParams =
+    params instanceof URLSearchParams ? params : new URLSearchParams(params);
+  return `?${searchParams}`;
+}
+
 /** Determines the API access token and generates a new one if it is out of date. */
 async function getAccessToken() {
   const accessTokenInfo = localStorage.getItem("accessTokenInfo");
@@ -61,7 +70,7 @@ async function createRequest(
   path: string,
   method: string,
   {
-    params = {},
+    params,
     body = {},
   }: {
     params?: Record<string, string> | URLSearchParams;
@@ -69,14 +78,7 @@ async function createRequest(
   },
   useAccessToken: boolean = true
 ) {
-  function getSearchParams() {
-    if (Object.keys(params).length === 0) return "";
-    const searchParams =
-      params instanceof URLSearchParams ? params : new URLSearchParams(params);
-    return `?${searchParams}`;
-  }
-
-  const url = API_BASE + path + getSearchParams();
+  const url = API_BASE + path + getSearchParams(params);
   const options: RequestOptions = {
     method,
     headers: {},
@@ -120,7 +122,7 @@ export async function fetchFromAPI(
  *  the cached response. Otherwise, performs the fetch request and adds the response
  *  to cache. Returns the HTTP response.
  */
-async function fetchWithCache(request: Request) {
+export async function fetchWithCache(request: Request) {
   const cache = await getCache();
   if (!cache) {
     return await fetch(request);

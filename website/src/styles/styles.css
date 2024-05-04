@@ -12,6 +12,10 @@
   --color-error: #b64949;
 }
 
+.serif {
+  font-family: "Roboto Slab", serif;
+}
+
 .text {
   font-family: "Raleway", sans-serif;
   font-weight: 500;
@@ -35,6 +39,14 @@
 .clickable:hover {
   opacity: 85%;
   cursor: pointer;
+}
+
+.regular {
+  font-weight: normal;
+}
+
+.nowrap {
+  white-space: nowrap;
 }
 
 a {

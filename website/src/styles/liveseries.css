@@ -1,0 +1,70 @@
+.liveseries .loading-screen {
+  justify-content: center;
+}
+
+.liveseries-links a::after {
+  content: "|";
+  margin-left: 20px;
+  opacity: 1 !important;
+}
+
+.liveseries-links a:last-child::after {
+  content: "";
+}
+
+.liveseries .preview {
+  background-color: var(--color-accent-soft);
+  padding: 20px 0;
+  color: var(--color-background-soft);
+  border-radius: 20px;
+  width: 240px;
+}
+
+.tvshows-list {
+  gap: 10px;
+}
+
+.showing {
+  align-self: start;
+}
+
+.previews {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+}
+
+.preview .title {
+  margin-top: 0;
+  padding: 0 20px;
+  font-size: medium;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.liveseries .thumbnail {
+  width: 100%;
+  height: 300px;
+  background-size: cover;
+  background-position: center;
+}
+
+@media screen and (max-width: 750px) {
+  .liveseries-links {
+    display: flex;
+    justify-content: center;
+  }
+
+  .liveseries-links a::after {
+    content: "";
+    margin-left: 0;
+  }
+}
+
+@media screen and (max-width: 550px) {
+  .liveseries-links {
+    font-size: medium;
+  }
+}
+

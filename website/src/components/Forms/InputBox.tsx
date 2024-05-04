@@ -7,6 +7,7 @@ export default function InputBox({
   type = "text",
   required = true,
   options,
+  placeholder,
 }: {
   label: string;
   value: string | number | boolean;
@@ -14,6 +15,7 @@ export default function InputBox({
   type?: string;
   required?: boolean;
   options?: Map<number | string, string>;
+  placeholder?: string;
 }) {
   const isDropdown = type === "dropdown";
   const isCheckbox = type === "checkbox";
@@ -35,7 +37,7 @@ export default function InputBox({
   }
 
   return (
-    <label className={`input-box input-${type}`}>
+    <label className={`input-box input-${type} ${isCheckbox ? "nowrap" : ""}`}>
       <span>
         {required && value === "" && (
           <span className="required-asterisk">*</span>
@@ -66,6 +68,7 @@ export default function InputBox({
           type={type}
           onChange={(evt) => handleChange(evt, (val: string) => val)}
           required={required}
+          placeholder={placeholder}
         />
       )}
     </label>
