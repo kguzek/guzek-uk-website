@@ -39,8 +39,12 @@ export interface Translation {
       url: string;
       adminOnly: string;
       shouldFetch: string;
+      localUrl: string;
       update: string;
     };
+  };
+  readonly liveSeries: {
+    title: "LiveSeries";
   };
   readonly error: { [code in ErrorCode]: ErrorPageContent };
 }
@@ -94,9 +98,13 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
         title: "Title",
         url: "URL",
         adminOnly: "Admin only",
-        shouldFetch: "Edit page contents",
+        localUrl: "Dynamic",
+        shouldFetch: "Custom contents",
         update: "Update",
       },
+    },
+    liveSeries: {
+      title: "LiveSeries",
     },
   },
   PL: {
@@ -146,10 +154,14 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
       formDetails: {
         title: "Tytuł",
         url: "URL",
-        adminOnly: "Tylko dla administratorów",
-        shouldFetch: "Edytuj treść strony",
+        adminOnly: "Ukryta",
+        localUrl: "Dynamiczna",
+        shouldFetch: "Edytuj treść",
         update: "Zaktualizuj",
       },
+    },
+    liveSeries: {
+      title: "LiveSeries",
     },
   },
 };
