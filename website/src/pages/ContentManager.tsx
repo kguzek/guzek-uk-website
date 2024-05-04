@@ -18,7 +18,11 @@ type PropertyName = keyof (
 );
 
 const TEXT_PAGE_PROPERTIES: PropertyName[] = ["title", "url"];
-const BOOL_PAGE_PROPERTIES: PropertyName[] = ["adminOnly", "shouldFetch"];
+const BOOL_PAGE_PROPERTIES: PropertyName[] = [
+  "adminOnly",
+  "localUrl",
+  "shouldFetch",
+];
 
 export default function ContentManager({
   data,

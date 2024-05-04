@@ -14,7 +14,8 @@ import LogIn from "./pages/LogIn";
 import SignUp from "./pages/SignUp";
 import { ErrorCode, Language, MenuItem, User } from "./misc/models";
 import ContentManager from "./pages/ContentManager";
-import { getDuration, PAGE_NAME, tryFetch } from "./misc/util";
+import { PAGE_NAME, tryFetch } from "./misc/util";
+import LiveSeries from "./pages/LiveSeries";
 
 /** When set to `true`, doesn't remove caches whose creation date is unknown. */
 const IGNORE_INVALID_RESPONSE_DATES = false;
@@ -182,6 +183,10 @@ export default function App() {
     return <LoadingScreen text={`${pageContent.loading} ${PAGE_NAME}`} />;
   }
 
+  const forbiddenErrorPage = (
+    <ErrorPage data={pageContent} errorCode={ErrorCode.Forbidden} />
+  );
+
   return (
     <>
       <NavigationBar
@@ -250,21 +255,24 @@ export default function App() {
                 reloadSite={removeOldCaches}
               />
             ) : (
-              <ErrorPage
-                pageContent={pageContent}
-                errorCode={ErrorCode.Forbidden}
-              />
+              forbiddenErrorPage
             )
           }
         />
-
+        <Route
+          path="liveseries"
+          element={
+            currentUser?.admin ? (
+              <LiveSeries data={pageContent}></LiveSeries>
+            ) : (
+              forbiddenErrorPage
+            )
+          }
+        />
         <Route
           path="*"
           element={
-            <ErrorPage
-              pageContent={pageContent}
-              errorCode={ErrorCode.NotFound}
-            />
+            <ErrorPage data={pageContent} errorCode={ErrorCode.NotFound} />
           }
         />
       </Routes>
