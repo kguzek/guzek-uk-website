@@ -39,7 +39,7 @@ export default function ContentManager({
 
   useEffect(() => {
     setTitle(data.contentManager.title);
-  }, []);
+  }, [data]);
 
   const pagesMap = new Map<number, string>();
   menuItems.forEach((page) =>
@@ -118,10 +118,6 @@ function PagesEditor({
     }));
   }
 
-  function onClickModalButton(primary: boolean) {
-    setModalVisible(false);
-  }
-
   async function handleSubmit(evt: FormEvent) {
     evt.preventDefault();
     setClickedSubmit(true);
@@ -152,10 +148,10 @@ function PagesEditor({
   return (
     <>
       <Modal
-        message={modalMessage}
         className="error"
+        message={modalMessage}
         visible={modalVisible}
-        onClick={onClickModalButton}
+        onClick={() => setModalVisible(false)}
       ></Modal>
       {TEXT_PAGE_PROPERTIES.map((property, idx) => (
         <InputBox

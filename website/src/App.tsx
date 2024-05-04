@@ -15,7 +15,11 @@ import SignUp from "./pages/SignUp";
 import { ErrorCode, Language, MenuItem, User } from "./misc/models";
 import ContentManager from "./pages/ContentManager";
 import { PAGE_NAME, tryFetch } from "./misc/util";
-import LiveSeries from "./pages/LiveSeries";
+import Base from "./pages/LiveSeries/Base";
+import MostPopular from "./pages/LiveSeries/MostPopular";
+import Home from "./pages/LiveSeries/Home";
+import Search from "./pages/LiveSeries/Search";
+import TvShow from "./pages/LiveSeries/TvShow";
 
 /** When set to `true`, doesn't remove caches whose creation date is unknown. */
 const IGNORE_INVALID_RESPONSE_DATES = false;
@@ -186,6 +190,12 @@ export default function App() {
   const forbiddenErrorPage = (
     <ErrorPage data={pageContent} errorCode={ErrorCode.Forbidden} />
   );
+  const notFoundErrorPage = (
+    <ErrorPage data={pageContent} errorCode={ErrorCode.NotFound} />
+  );
+  const unauthorizedErrorPage = (
+    <ErrorPage data={pageContent} errorCode={ErrorCode.Unauthorized} />
+  );
 
   return (
     <>
@@ -262,19 +272,26 @@ export default function App() {
         <Route
           path="liveseries"
           element={
-            currentUser?.admin ? (
-              <LiveSeries data={pageContent}></LiveSeries>
+            currentUser ? (
+              <Base data={pageContent}></Base>
             ) : (
-              forbiddenErrorPage
+              unauthorizedErrorPage
             )
           }
-        />
-        <Route
-          path="*"
-          element={
-            <ErrorPage data={pageContent} errorCode={ErrorCode.NotFound} />
-          }
-        />
+        >
+          <Route index element={<Home data={pageContent} />} />
+          <Route
+            path="most-popular"
+            element={<MostPopular data={pageContent} />}
+          />
+          <Route path="search" element={<Search data={pageContent} />} />
+          <Route path="tv-show">
+            <Route index element={notFoundErrorPage} />
+            <Route path=":tvShowId" element={<TvShow data={pageContent} />} />
+          </Route>
+          <Route path="*" element={notFoundErrorPage} />
+        </Route>
+        <Route path="*" element={notFoundErrorPage} />
       </Routes>
       <Footer data={pageContent} />
     </>

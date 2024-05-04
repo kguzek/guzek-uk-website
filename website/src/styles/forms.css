@@ -54,10 +54,6 @@
   gap: 0px 15px;
 }
 
-.form-checkboxes label {
-  white-space: nowrap;
-}
-
 .form-checkboxes label:has(input:checked) {
   color: var(--color-primary-strong);
 }

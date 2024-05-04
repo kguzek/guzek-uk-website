@@ -1,0 +1,27 @@
+.page-indicator {
+  border: 1px solid var(--color-background-strong);
+  background-color: var(--color-primary);
+  color: var(--color-primary-strong);
+  padding: 10px;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+}
+
+.page-indicator.current-page {
+  background-color: var(--color-primary-strong);
+}
+
+.page-indicator.current-page {
+  color: var(--color-background);
+}
+
+.paginator {
+  display: flex;
+}
+
+.page-indicator.disabled {
+  cursor: default;
+  background-color: var(--color-background-soft);
+}
+

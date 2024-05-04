@@ -21,9 +21,15 @@ export default function ErrorPage({
       <p>{data.error[errorCode].body}</p>
       <div className="flex-column">
         <div className="link-container">
-          <Link to="/" className="btn">
-            {PAGE_NAME}
-          </Link>
+          {errorCode === ErrorCode.Unauthorized ? (
+            <Link to="/login" className="btn">
+              {data.profile.formDetails.login}
+            </Link>
+          ) : (
+            <Link to="/" className="btn">
+              {PAGE_NAME}
+            </Link>
+          )}
         </div>
       </div>
     </div>
