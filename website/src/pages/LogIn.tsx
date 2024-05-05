@@ -5,6 +5,7 @@ import InputBox from "../components/Forms/InputBox";
 import LoadingScreen, { LoadingButton } from "../components/LoadingScreen";
 import { Translation } from "../misc/translations";
 import { User } from "../misc/models";
+import Modal from "../components/Modal";
 
 export default function LogIn({
   data,
@@ -18,7 +19,7 @@ export default function LogIn({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [invalidCredentials, setInvalidCredentials] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,7 +28,7 @@ export default function LogIn({
 
   async function handleLogin(evt: FormEvent<HTMLFormElement>) {
     evt.preventDefault();
-    setInvalidCredentials(false);
+    setModalVisible(false);
     setLoading(true);
     for (const func of [setEmail, setPassword]) {
       func("");
@@ -45,11 +46,11 @@ export default function LogIn({
       updateAccessToken(accessToken);
       localStorage.setItem("refreshToken", refreshToken);
     } else {
-      setInvalidCredentials(true);
+      setModalVisible(true);
     }
   }
 
-  if (loading) {
+  if (loading || user) {
     return (
       <LoadingScreen className="flex-column" text={data.profile.loading} />
     );
@@ -57,22 +58,27 @@ export default function LogIn({
 
   return (
     <>
+      <Modal
+        className="error"
+        message={data.profile.invalidCredentials}
+        visible={modalVisible}
+        onClick={() => setModalVisible(false)}
+      />
       <form className="form-login" onSubmit={handleLogin}>
         <InputBox
           label={data.profile.formDetails.email}
           type="email"
           value={email}
+          name="email"
           setValue={setEmail}
         />
         <InputBox
           label={data.profile.formDetails.password}
           type="password"
           value={password}
+          name="password"
           setValue={setPassword}
         />
-        {invalidCredentials && (
-          <p className="error-msg">{data.profile.invalidCredentials}</p>
-        )}
         {loading ? (
           <LoadingButton className="form" color="white" />
         ) : (

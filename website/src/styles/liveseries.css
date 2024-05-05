@@ -2,21 +2,15 @@
   justify-content: center;
 }
 
-.liveseries-links a::after {
-  content: "|";
-  margin-left: 20px;
-  opacity: 1 !important;
-}
-
 .liveseries-links a:last-child::after {
   content: "";
 }
 
 .liveseries .preview {
-  background-color: var(--color-accent-soft);
+  background-color: var(--color-primary);
+  border-radius: 5px;
   padding: 20px 0;
-  color: var(--color-background-soft);
-  border-radius: 20px;
+  color: var(--color-background);
   width: 240px;
 }
 
@@ -35,12 +29,48 @@
   justify-content: center;
 }
 
+.embed {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.embed iframe {
+  width: 50%;
+  height: auto;
+  aspect-ratio: 16/9;
+}
+
+.genre {
+  padding: 3px 5px;
+  border-radius: 5px;
+  background-color: var(--color-primary);
+  color: var(--color-background);
+  border: 1px solid var(--color-background-strong);
+}
+
+.stars {
+  position: relative;
+}
+
+.stars .fa-star.fa-regular {
+  color: var(--color-primary);
+}
+
+.stars .fa-star.fa-solid {
+  color: #c9b86e;
+}
+
+.stars-filled {
+  position: absolute;
+  overflow: hidden;
+}
+
 .preview .title {
   margin-top: 0;
   padding: 0 20px;
   font-size: medium;
-  text-overflow: ellipsis;
-  overflow: hidden;
 }
 
 .liveseries .thumbnail {
@@ -50,9 +80,95 @@
   background-position: center;
 }
 
+.carousel {
+  display: flex;
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel img {
+  flex: 1 0 100%;
+  width: 100%;
+  object-fit: contain;
+  scroll-snap-align: start;
+}
+
+.gallery {
+  width: 60%;
+}
+
+.episodes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  /* width: calc((480px + 5px * 2) * 2 + 10px); */
+  width: 100%;
+}
+
+.episode {
+  display: flex;
+  justify-content: space-between;
+  background-color: var(--color-background-soft);
+  color: var(--color-primary-strong);
+  padding: 5px;
+  border-radius: 5px;
+  width: calc(50% - 15px);
+}
+
+.episode-details {
+  width: calc(100% - 2em);
+}
+
+.watched {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+}
+
+.fa-eye {
+  color: var(--color-primary-strong);
+}
+
+.fa-eye-slash {
+  color: var(--color-accent-soft);
+  opacity: 0.8;
+}
+
+.season {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.liveseries-links {
+  gap: 20px;
+}
+
+@media screen and (max-width: 980px) {
+  .episodes {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .episode {
+    width: 70%;
+  }
+
+  .embed iframe {
+    width: 80%;
+  }
+}
+
 @media screen and (max-width: 750px) {
   .liveseries-links {
-    display: flex;
     justify-content: center;
   }
 
@@ -60,11 +176,27 @@
     content: "";
     margin-left: 0;
   }
+
+  .gallery {
+    width: 70%;
+  }
+
+  .episode {
+    width: 100%;
+  }
+
+  .embed iframe {
+    width: 100%;
+  }
 }
 
 @media screen and (max-width: 550px) {
   .liveseries-links {
     font-size: medium;
+  }
+
+  .gallery {
+    width: 100%;
   }
 }
 

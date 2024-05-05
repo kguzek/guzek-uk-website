@@ -38,7 +38,7 @@
   color: lightgray;
   text-decoration: none;
   font-weight: 500;
-  padding: 4px 10px;
+  padding: 4px 0;
   background-size: 0% 3px;
   background-position: left bottom;
   transition: color 0.1s ease-out;

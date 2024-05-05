@@ -8,6 +8,8 @@ export default function InputBox({
   required = true,
   options,
   placeholder,
+  name,
+  autofocus = false,
 }: {
   label: string;
   value: string | number | boolean;
@@ -16,6 +18,8 @@ export default function InputBox({
   required?: boolean;
   options?: Map<number | string, string>;
   placeholder?: string;
+  name?: string;
+  autofocus?: boolean;
 }) {
   const isDropdown = type === "dropdown";
   const isCheckbox = type === "checkbox";
@@ -61,6 +65,7 @@ export default function InputBox({
           type={type}
           onChange={(evt) => handleChange(evt, (val: string) => val)}
           required={required}
+          autoFocus={autofocus}
         />
       ) : (
         <input
@@ -69,6 +74,8 @@ export default function InputBox({
           onChange={(evt) => handleChange(evt, (val: string) => val)}
           required={required}
           placeholder={placeholder}
+          name={name}
+          autoFocus={autofocus}
         />
       )}
     </label>

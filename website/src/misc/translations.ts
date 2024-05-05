@@ -1,20 +1,31 @@
 import { ErrorCode, ErrorPageContent, Language } from "./models";
 
-export interface Translation {
-  readonly footer: string;
-  readonly loading: string;
-  readonly language: string;
-  readonly loginShort: string;
-  readonly pipeDesigner: {
-    title: string;
-    body: string;
-  };
-  readonly profile: {
+const LONG_DATE_FORMAT = {
+  day: "2-digit",
+  month: "long",
+  year: "numeric",
+} as const;
+
+const LONG_TIME_FORMAT = {
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+} as const;
+
+export type Translation = Readonly<{
+  footer: string;
+  loading: string;
+  language: string;
+  loginShort: string;
+  dateFormat: Intl.DateTimeFormat;
+  dateTimeFormat: Intl.DateTimeFormat;
+  numberFormat: Intl.NumberFormat;
+  profile: {
     title: string;
     body: string;
     loading: string;
     invalidCredentials: string;
-    readonly formDetails: {
+    formDetails: {
       username: string;
       email: string;
       creationDate: string;
@@ -30,11 +41,11 @@ export interface Translation {
       logout: string;
     };
   };
-  readonly contentManager: {
+  contentManager: {
     title: string;
     selectedPage: string;
     addPage: string;
-    readonly formDetails: {
+    formDetails: {
       title: string;
       url: string;
       adminOnly: string;
@@ -43,7 +54,7 @@ export interface Translation {
       update: string;
     };
   };
-  readonly liveSeries: {
+  liveSeries: {
     title: "LiveSeries";
     tvShowList: {
       showing: string;
@@ -54,6 +65,11 @@ export interface Translation {
       title: string;
       unknown: string;
       present: string;
+      source: string;
+      images: string;
+      episodes: string;
+      episode: string;
+      season: string;
     };
     search: {
       title: string;
@@ -66,13 +82,16 @@ export interface Translation {
     };
     home: {
       title: string;
+      noLikes: string;
+      explore: string;
+      shows: string;
     };
     mostPopular: {
       title: string;
     };
   };
-  readonly error: { [code in ErrorCode]: ErrorPageContent };
-}
+  error: { [code in ErrorCode]: ErrorPageContent };
+}>;
 
 const TRANSLATIONS: { [lang in Language]: Translation } = {
   EN: {
@@ -80,10 +99,12 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
     loading: "Loading",
     language: "Language",
     loginShort: "Log in",
-    pipeDesigner: {
-      title: "Pipe Designer",
-      body: "Redirecting to the pipe designer failed. Please try again later, or refresh your page manually.",
-    },
+    dateFormat: new Intl.DateTimeFormat("en-GB", LONG_DATE_FORMAT),
+    dateTimeFormat: new Intl.DateTimeFormat("en-GB", {
+      ...LONG_DATE_FORMAT,
+      ...LONG_TIME_FORMAT,
+    }),
+    numberFormat: new Intl.NumberFormat("en-GB"),
     profile: {
       title: "Profile",
       body: "Welcome to your profile!",
@@ -143,6 +164,11 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
         title: "Show Details",
         unknown: "Unknown",
         present: "Present",
+        source: "Source",
+        images: "Gallery",
+        episodes: "Episodes",
+        episode: "Episode",
+        season: "Season",
       },
       search: {
         title: "Search",
@@ -155,6 +181,9 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
       },
       home: {
         title: "Home",
+        noLikes: "You have no liked shows.",
+        explore: "Explore",
+        shows: "Shows",
       },
       mostPopular: {
         title: "Most Popular",
@@ -166,10 +195,12 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
     loading: "Trwa ładowanie strony",
     language: "Język",
     loginShort: "Zaloguj",
-    pipeDesigner: {
-      title: "Kreator Rur",
-      body: "Przekierowywanie do kreatora rur nie powiodło się. Spróbuj ponownie wkrótce lub odśwież stronę ręcznie.",
-    },
+    dateFormat: new Intl.DateTimeFormat("pl-PL", LONG_DATE_FORMAT),
+    dateTimeFormat: new Intl.DateTimeFormat("pl-PL", {
+      ...LONG_DATE_FORMAT,
+      ...LONG_TIME_FORMAT,
+    }),
+    numberFormat: new Intl.NumberFormat("pl-PL"),
     profile: {
       title: "Profil",
       body: "Witamy na Twoim profilu!",
@@ -229,10 +260,15 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
         title: "Dane Serialu",
         unknown: "Nieznane",
         present: "Obecnie",
+        source: "Źródło",
+        images: "Galeria",
+        episodes: "Odcinki",
+        episode: "Odcinek",
+        season: "Sezon",
       },
       search: {
         title: "Wyszukiwarka",
-        label: "Wyszukaj serial",
+        label: "Wyszukaj Serial",
         prompt: "Co chciałbyś obejrzeć?",
         search: "Wyszkuaj",
         searching: "Szukam",
@@ -241,6 +277,9 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
       },
       home: {
         title: "Główna",
+        noLikes: "Nie masz żadnych polubionych seriali.",
+        explore: "Przeglądaj",
+        shows: "Seriale",
       },
       mostPopular: {
         title: "Najpopularniejsze",

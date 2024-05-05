@@ -61,6 +61,13 @@ button {
   cursor: pointer;
 }
 
+blockquote {
+  margin-left: 0;
+  padding-left: 10px;
+  border-left: 5px solid var(--color-background-soft);
+  border-radius: 3px;
+}
+
 html {
   background-color: var(--color-background-strong);
   height: 95%;
@@ -80,6 +87,23 @@ body {
   display: flex;
   justify-content: stretch;
   width: 250px;
+}
+
+.cutoff {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
 }
 
 ::selection {

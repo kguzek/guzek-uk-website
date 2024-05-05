@@ -53,7 +53,7 @@ function Profile({
       <br />
       <small>
         {data.profile.formDetails.creationDate}:{" "}
-        <code>{userCreatedAt.toLocaleString()}</code>
+        <code>{data.dateTimeFormat.format(userCreatedAt)}</code>
       </small>
       <div className="centred">
         <button className="btn btn-submit" onClick={handleLogOut}>
