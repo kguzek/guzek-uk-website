@@ -13,6 +13,10 @@ export default function TvShowPreviewList({
   data: Translation;
   tvShows: TvShowList;
 }) {
+  const NumericValue = ({ value }: { value: number | string }) => (
+    <span className="serif">{data.numberFormat.format(+value)}</span>
+  );
+
   const startIdx = 1 + (tvShows.page - 1) * RESULTS_PER_PAGE;
   const endIdx = Math.min(+tvShows.total, startIdx + RESULTS_PER_PAGE - 1);
 
@@ -20,10 +24,15 @@ export default function TvShowPreviewList({
   return (
     <div className="tvshows-list flex-column">
       <small className="showing">
-        {data.liveSeries.tvShowList.showing} {startIdx}-{endIdx}{" "}
-        {data.liveSeries.tvShowList.of} {tvShows.total}
+        {data.liveSeries.tvShowList.showing} <NumericValue value={startIdx} />-
+        <NumericValue value={endIdx} /> {data.liveSeries.tvShowList.of}{" "}
+        <NumericValue value={tvShows.total} />
       </small>
-      <Paginator currentPage={tvShows.page} numPages={tvShows.pages} />
+      <Paginator
+        data={data}
+        currentPage={tvShows.page}
+        numPages={tvShows.pages}
+      />
       <div className="previews">
         {tvShows.tv_shows.map((showDetails) => (
           <TvShowPreview
@@ -33,7 +42,11 @@ export default function TvShowPreviewList({
           />
         ))}
       </div>
-      <Paginator currentPage={tvShows.page} numPages={tvShows.pages} />
+      <Paginator
+        data={data}
+        currentPage={tvShows.page}
+        numPages={tvShows.pages}
+      />
     </div>
   );
 }

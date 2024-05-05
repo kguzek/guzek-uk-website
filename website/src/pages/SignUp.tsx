@@ -5,6 +5,7 @@ import InputBox from "../components/Forms/InputBox";
 import { LoadingButton } from "../components/LoadingScreen";
 import { Translation } from "../misc/translations";
 import { User } from "../misc/models";
+import Modal from "../components/Modal";
 
 export default function SignUp({
   data,
@@ -59,32 +60,41 @@ export default function SignUp({
 
   return (
     <div className="flex-column">
+      <Modal
+        className="error"
+        message={errorMessage}
+        visible={!!errorMessage}
+        onClick={() => setErrorMessage("")}
+      />
       <form className="form-login" onSubmit={handleSignUp}>
         <InputBox
           label={data.profile.formDetails.username}
           type="text"
           value={username}
+          name="username"
           setValue={setUsername}
         />
         <InputBox
           label={data.profile.formDetails.email}
           type="email"
           value={email}
+          name="email"
           setValue={setEmail}
         />
         <InputBox
           label={data.profile.formDetails.password}
           type="password"
           value={password}
+          name="password"
           setValue={setPassword}
         />
         <InputBox
           label={data.profile.formDetails.passwordRepeat}
           type="password"
           value={repeatPassword}
+          name="password2"
           setValue={setRepeatPassword}
         />
-        {errorMessage && <p className="error-msg">{errorMessage}</p>}
         {loading ? (
           <LoadingButton className="form" color="white" />
         ) : (

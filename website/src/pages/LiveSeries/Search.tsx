@@ -24,11 +24,16 @@ export default function Search({ data }: { data: Translation }) {
   const resultsLabel = `${data.liveSeries.search.results} "${searchQuery}"`;
 
   useEffect(() => {
-    setTitle(loading ? searchingLabel : searchQuery ? resultsLabel : title);
+    const newTitle = loading
+      ? searchingLabel
+      : searchQuery
+      ? resultsLabel
+      : title;
+    setTitle(newTitle);
   }, [data, searchParams, loading]);
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || !searchQuery) return;
 
     fetchResults();
   }, [searchParams]);
@@ -97,6 +102,7 @@ export default function Search({ data }: { data: Translation }) {
             setValue={setInputValue}
             required={true}
             placeholder={data.liveSeries.search.prompt}
+            autofocus
           />
           <button className="btn" role="submit">
             {data.liveSeries.search.search}

@@ -1,11 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Translation } from "../../misc/translations";
 
 export default function PageIndicator({
+  data,
   page,
   currentPage,
 }: {
-  page: number | string;
+  data: Translation;
+  page?: number;
   currentPage: number;
 }) {
   function getLinkLocation() {
@@ -18,16 +21,18 @@ export default function PageIndicator({
     return search + "&" + newFragment;
   }
 
-  if (typeof page === "string") {
-    return <div className="page-indicator disabled">{page}</div>;
+  if (null == page) {
+    return <div className="page-indicator disabled">...</div>;
   }
 
   return (
     <Link
-      className={`page-indicator ${page === currentPage ? "current-page" : ""}`}
+      className={`page-indicator serif ${
+        page === currentPage ? "current-page" : ""
+      }`}
       to={getLinkLocation()}
     >
-      {page}
+      {data.numberFormat.format(page)}
     </Link>
   );
 }

@@ -10,26 +10,13 @@ export default function TvShowPreview({
   data: Translation;
   showDetails: TvShowDetailsShort;
 }) {
-  function formatDate(which: "start" | "end") {
-    const dateString = showDetails[`${which}_date`];
-    if (!dateString)
-      return data.liveSeries.tvShow[
-        which === "end" && showDetails.status === "Running"
-          ? "present"
-          : "unknown"
-      ];
-    const date = new Date(dateString);
-    if (date.toString() === "Invalid Date") return dateString;
-    return date.toLocaleDateString();
-  }
-
   return (
     <Link
-      to={`../tv-show/${showDetails.id}`}
+      to={`../tv-show/${showDetails.permalink}`}
       title={showDetails.name}
       className="preview"
     >
-      <p className="title serif nowrap">{showDetails.name}</p>
+      <p className="title serif cutoff">{showDetails.name}</p>
       <div
         className="thumbnail"
         style={{
