@@ -1,21 +1,31 @@
 INSERT INTO `guzek_uk`.`pages` (
-    `title`,
+    `title_en`,
+    `title_pl`,
     `url`,
     `local_url`,
     `admin_only`,
     `should_fetch`
   )
-VALUES ('Home', '/', TRUE, FALSE, TRUE),
-  ('Konrad', '/konrad', TRUE, FALSE, TRUE),
+VALUES ('Home', 'Główna', '/', TRUE, FALSE, TRUE),
   (
-    'Pipe Designer',
-    '/pipe-designer',
+    'Projects',
+    'Projekty',
+    '/projects',
+    TRUE,
     FALSE,
+    TRUE
+  ),
+  (
+    'LiveSeries',
+    'LiveSeries',
+    '/liveseries',
+    TRUE,
     FALSE,
     FALSE
   ),
   (
-    'Content Manager',
+    'Admin',
+    'Administracja',
     '/content-manager',
     TRUE,
     TRUE,

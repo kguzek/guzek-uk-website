@@ -2,19 +2,19 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { getLogger } from "./logging";
 import { sendError } from "../util";
-import { UserObj } from "../models";
+import { RequestMethod, UserObj } from "../models";
 
 const logger = getLogger(__filename);
 
 // Allows all requests to go through, even if JWT authentication fails.
 const DISABLE_AUTH = process.env.NODE_ENV === "development" && false;
 
-export function getTokenSecret(type: string) {
+export function getTokenSecret(type: "access" | "refresh") {
   const secret = process.env[`JWT_${type.toUpperCase()}_TOKEN_SECRET`];
   return (secret ?? "") as jwt.Secret;
 }
 
-const ENDPOINTS: { [level: string]: { [method: string]: string[] } } = {
+const ENDPOINTS = {
   anonymous: {
     GET: [
       "/pages", // View all pages
@@ -28,33 +28,45 @@ const ENDPOINTS: { [level: string]: { [method: string]: string[] } } = {
       "/auth/token", // Regenerate token
       "/cocodentax-admin/pocztex/orders", // Submit Pocztex order
     ],
+    PUT: [],
+    DELETE: [],
+    PATCH: [],
   },
   loggedInUser: {
     GET: [
       "/tu-lalem", // View all app coordinates
       "/auth/usernames", // View all usernames
+      "/liveseries/liked/personal", // View own liked shows
+      "/liveseries/watched/personal", // View own watched episodes
     ],
     POST: [
       "/tu-lalem", // Submit app coordinates
+      "/liveseries/liked/personal", // Add show to liked list
     ],
+    PUT: [],
     DELETE: [
       "/auth/token", // Log out
+      "/liveseries/liked/personal", // Remove show from liked list
     ],
+    PATCH: ["/liveseries/watched/personal"], // Modify own watched episodes
   },
-};
+} as const;
 
 export function authMiddleware(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const endpointAccessibleBy: { [level: string]: boolean } = {
+  const endpointAccessibleBy = {
     anonymous: false,
     loggedInUser: false,
   };
+  // Check if the current endpoint is accessible using the request method to anonymous or logged in users
   for (const [level, routes] of Object.entries(ENDPOINTS)) {
-    const endpoints = routes[req.method] ?? [];
-    endpointAccessibleBy[level] = endpoints.some((e) => req.path.startsWith(e));
+    const endpoints = routes[req.method as RequestMethod] ?? [];
+    endpointAccessibleBy[level as keyof typeof ENDPOINTS] = endpoints.some(
+      (endpoint) => req.path.startsWith(endpoint)
+    );
   }
 
   function reject(code: number, message: string) {
@@ -77,11 +89,7 @@ export function authMiddleware(
     }
     req.user = user as UserObj;
     console.log(req.user);
-    if (
-      endpointAccessibleBy.anonymous ||
-      endpointAccessibleBy.loggedInUser ||
-      req.user?.admin
-    ) {
+    if (endpointAccessibleBy.loggedInUser || req.user?.admin) {
       return void next();
     }
     // Allow user to edit own details

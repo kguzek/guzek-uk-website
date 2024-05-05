@@ -1,4 +1,4 @@
-CREATE DATABASE guzek_uk;
+CREATE DATABASE guzek_uk CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE TABLE `guzek_uk`.`pages` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `title_en` VARCHAR(45) NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE `guzek_uk`.`page_content` (
   FOREIGN KEY (`page_id`) REFERENCES `pages`(`id`)
 );
 CREATE TABLE `guzek_uk`.`users` (
-  `uuid` VARCHAR(36) NOT NULL,
+  `uuid` VARCHAR(36) NOT NULL UNIQUE,
   `username` VARCHAR(64) NOT NULL,
   `email` VARCHAR(255) NOT NULL,
   `created_at` DATETIME NOT NULL,
@@ -45,5 +45,15 @@ CREATE TABLE `guzek_uk`.`tu_lalem` (
   `coordinates` POINT NOT NULL,
   `timestamp` DATETIME NOT NULL,
   PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_uuid`) REFERENCES `users`(`uuid`)
+);
+CREATE TABLE `guzek_uk`.`liked_shows` (
+  `user_uuid` VARCHAR(36) NOT NULL UNIQUE PRIMARY KEY,
+  `liked_shows` JSON NOT NULL,
+  FOREIGN KEY (`user_uuid`) REFERENCES `users`(`uuid`)
+);
+CREATE TABLE `guzek_uk`.`watched_episodes` (
+  `user_uuid` VARCHAR(36) NOT NULL UNIQUE PRIMARY KEY,
+  `watched_episodes` JSON NOT NULL,
   FOREIGN KEY (`user_uuid`) REFERENCES `users`(`uuid`)
 );

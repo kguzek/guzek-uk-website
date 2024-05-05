@@ -26,6 +26,8 @@ export class User extends Model {}
 export class Token extends Model {}
 export class Updated extends Model {}
 export class TuLalem extends Model {}
+export class LikedShows extends Model {}
+export class WatchedEpisodes extends Model {}
 
 Page.init(
   {
@@ -96,6 +98,7 @@ User.init(
     uuid: {
       type: DataTypes.STRING(36),
       allowNull: false,
+      unique: true,
       primaryKey: true,
     },
     username: {
@@ -187,6 +190,54 @@ TuLalem.init(
   }
 );
 
+LikedShows.init(
+  {
+    userUUID: {
+      type: DataTypes.STRING(36),
+      allowNull: false,
+      unique: true,
+      field: "user_uuid",
+      primaryKey: true,
+      references: { model: User, key: "uuid" },
+    },
+    likedShows: {
+      type: DataTypes.JSON(),
+      allowNull: false,
+      field: "liked_shows",
+    },
+  },
+  {
+    sequelize,
+    timestamps: false,
+    modelName: "LikedShows",
+    tableName: "liked_shows",
+  }
+);
+
+WatchedEpisodes.init(
+  {
+    userUUID: {
+      type: DataTypes.STRING(36),
+      allowNull: false,
+      unique: true,
+      field: "user_uuid",
+      primaryKey: true,
+      references: { model: User, key: "uuid" },
+    },
+    watchedEpisodes: {
+      type: DataTypes.JSON(),
+      allowNull: false,
+      field: "watched_episodes",
+    },
+  },
+  {
+    sequelize,
+    timestamps: false,
+    modelName: "WatchedEpisodes",
+    tableName: "watched_episodes",
+  }
+);
+
 PageContent.belongsTo(Page, {
   foreignKey: {
     name: "pageID",
@@ -202,3 +253,7 @@ User.hasMany(TuLalem, {
     field: "user_uuid",
   },
 });
+
+User.hasOne(LikedShows, { foreignKey: "userUUID" });
+
+User.hasOne(WatchedEpisodes, { foreignKey: "userUUID" });

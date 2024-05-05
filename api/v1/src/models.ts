@@ -1,5 +1,7 @@
 import { Page, PageContent, Token, TuLalem, User } from "./sequelize";
 
+export type RequestMethod = "GET" | "PUT" | "POST" | "DELETE" | "PATCH";
+
 export interface RecipientData {
   name: string;
   firstName?: string;

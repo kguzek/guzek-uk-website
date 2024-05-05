@@ -8,6 +8,7 @@ const logger = getLogger(__filename);
 
 const STATUS_CODES: { [code: number]: string } = {
   200: "OK",
+  201: "Created",
   400: "Bad Request",
   401: "Unauthorised",
   403: "Forbidden",
@@ -60,14 +61,19 @@ export async function createDatabaseEntry(
   model: ModelType,
   req: Request,
   res: Response,
-  modelParams?: object,
+  modelParams?: Record<string, any>,
   sendMethod?: (resp: Response, data: any, code: number) => void
 ) {
   let obj;
   try {
     obj = await model.create(modelParams ?? req.body);
   } catch (error) {
-    return void sendError(res, 500, error as Error);
+    if ((error as Error).name === "SequelizeUniqueConstraintError")
+      return sendError(res, 400, {
+        message: "Cannot create duplicate entries.",
+      });
+    logger.error("Error while creating database entry: " + error);
+    return sendError(res, 500, error as Error);
   }
   await updateEndpoint(model);
   (sendMethod ?? sendOK)(res, obj, 201);
@@ -93,25 +99,23 @@ export async function readAllDatabaseEntries<T extends ModelType>(
 }
 
 /** Retrieves all entries in the database with the provided values and returns the array. */
-export async function readDatabaseEntry(
-  model: ModelType,
+export async function readDatabaseEntry<T extends ModelType>(
+  model: T,
   res: Response,
-  filter: WhereOptions,
+  where: WhereOptions,
   onError?: (error: Error) => void,
   allowEmptyResults: boolean = false
 ) {
   let objs;
   try {
-    objs = await model.findAll({ where: filter });
+    objs = (await model.findAll({ where })) as InstanceType<T>[];
     if (objs.length === 0 && !allowEmptyResults) {
       throw Error("The database query returned no results.");
     }
   } catch (error) {
-    if (onError) {
-      return void onError(error as Error);
-    } else {
-      return void sendError(res, 500, error as Error);
-    }
+    return void (onError
+      ? onError(error as Error)
+      : sendError(res, 500, error as Error));
   }
   return objs;
 }
@@ -123,18 +127,24 @@ export async function updateDatabaseEntry(
   model: ModelType,
   req: Request,
   res: Response,
-  modelParams?: object
+  modelParams?: Record<string, any>,
+  where?: WhereOptions
 ) {
-  let result: number[];
-  try {
-    result = await model.update(modelParams ?? req.body, {
-      where: req.params,
+  let result: [affectedCount: number];
+  where ??= req.params;
+  modelParams ??= req.body;
+  if (!modelParams)
+    return void sendError(res, 400, {
+      message: "Model parameters must be specified in request body.",
     });
+  try {
+    result = await model.update(modelParams, { where });
   } catch (error) {
     return void sendError(res, 500, error as Error);
   }
+  const affectedRows = result[0];
   await updateEndpoint(model);
-  sendOK(res, { affectedRows: result.shift() });
+  return sendOK(res, { affectedRows });
 }
 
 /** Deletes the specified entry from the database table model derivative provided.

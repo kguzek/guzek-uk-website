@@ -37,7 +37,7 @@ async function authenticateUser(
     sendError(res, 400, { message: `Invalid ${property}.` });
   });
   if (!records) return;
-  const userRecord = records.shift() as User;
+  const userRecord = records[0];
   const { hash, salt, ...userDetails } = userRecord.get();
   const isValid = await password.compare(pw, { hash, salt });
   if (!isValid) throw Error("Invalid password.");
@@ -121,9 +121,7 @@ router
 
   // POST login details
   .post("/user", async (req: Request, res: Response) => {
-    function reject(message: string) {
-      sendError(res, 400, { message });
-    }
+    const reject = (message: string) => sendError(res, 400, { message });
 
     const { password: pw, email } = req.body;
 
@@ -175,12 +173,16 @@ router
     sendUsers(res, true);
   })
 
-  // READ specific user
+  // READ specific user by search query
   .get("/user", async (req: Request, res: Response) => {
     const results = await readDatabaseEntry(User, res, req.query);
-    if (results) {
-      sendOK(res, results);
-    }
+    if (results) sendOK(res, results);
+  })
+
+  // READ specific user by uuid
+  .get("/user/:uuid", async (req: Request, res: Response) => {
+    const results = await readDatabaseEntry(User, res, req.params);
+    if (results) sendOK(res, results);
   })
 
   // DELETE existing user
@@ -190,13 +192,9 @@ router
 
   // DELETE user token
   .delete("/token", async (req: Request, res: Response) => {
-    function reject(message: string) {
-      sendError(res, 400, { message });
-    }
+    const reject = (message: string) => sendError(res, 400, { message });
     const refreshToken = req.body.token;
-    if (!refreshToken) {
-      return void reject("No refresh token provided.");
-    }
+    if (!refreshToken) return void reject("No refresh token provided.");
 
     await deleteDatabaseEntry(Token, { value: refreshToken }, res);
   })
@@ -204,12 +202,9 @@ router
   // UPDATE existing user details
   .put("/user/:uuid/details", async (req: Request, res: Response) => {
     for (const property in req.body) {
-      if (MODIFIABLE_USER_PROPERTIES.includes(property)) {
-        continue;
-      }
-      if (req.user?.admin) {
-        continue;
-      }
+      if (MODIFIABLE_USER_PROPERTIES.includes(property)) continue;
+      if (req.user?.admin) continue;
+
       return sendError(res, 403, {
         message: `Protected user property '${property}'.`,
       });
@@ -220,13 +215,10 @@ router
 
   // UPDATE existing user password
   .put("/user/:uuid/password", async (req: Request, res: Response) => {
-    function reject(message: string) {
-      sendError(res, 400, { message });
-    }
+    const reject = (message: string) => sendError(res, 400, { message });
 
-    if (!req.body.oldPassword) {
-      return reject("Old password not provided.");
-    }
+    if (!req.body.oldPassword) return reject("Old password not provided.");
+
     try {
       const success = await authenticateUser(
         res,
