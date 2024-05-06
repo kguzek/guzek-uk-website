@@ -20,12 +20,14 @@ import MostPopular from "./pages/LiveSeries/MostPopular";
 import Home from "./pages/LiveSeries/Home";
 import Search from "./pages/LiveSeries/Search";
 import TvShow from "./pages/LiveSeries/TvShow";
+import Modal from "./components/Modal";
 
 /** When set to `true`, doesn't remove caches whose creation date is unknown. */
 const IGNORE_INVALID_RESPONSE_DATES = false;
 
 export default function App() {
   const [userLanguage, setUserLanguage] = useState<Language>(Language.EN);
+  const [modalVisible, setModalVisible] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [menuItems, setMenuItems] = useState<MenuItem[] | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -40,18 +42,17 @@ export default function App() {
     setUserLanguage(newLang);
   }
 
+  function logout() {
+    setCurrentUser(null);
+    setModalVisible(true);
+  }
+
   /** Checks if any of the saved caches is older than the version on the server.
    *  If so, fetch the updated version and replace the cache.
    */
   async function removeOldCaches() {
     const defaultData: { [endpoint: string]: number } = {};
-    const updated = await tryFetch(
-      "updated",
-      {},
-      defaultData,
-      setCurrentUser,
-      false
-    );
+    const updated = await tryFetch("updated", {}, defaultData, logout, false);
     const updatedEndpoints = new Set();
     const cache = await getCache();
     if (!cache) {
@@ -171,7 +172,7 @@ export default function App() {
       "pages",
       { lang: userLanguage },
       [] as MenuItem[],
-      setCurrentUser
+      logout
     );
     setMenuItems(data);
   }
@@ -207,6 +208,11 @@ export default function App() {
 
   return (
     <>
+      <Modal
+        message={pageContent.loggedOut}
+        visible={modalVisible}
+        onClick={() => setModalVisible(false)}
+      />
       <NavigationBar
         data={pageContent}
         selectedLanguage={userLanguage}
@@ -228,7 +234,7 @@ export default function App() {
                   reload={reload}
                   pageData={item}
                   lang={userLanguage}
-                  setUser={setCurrentUser}
+                  logout={logout}
                 />
               }
             />
@@ -236,11 +242,7 @@ export default function App() {
         <Route
           path="profile"
           element={
-            <Profile
-              data={pageContent}
-              user={currentUser}
-              setUser={setCurrentUser}
-            />
+            <Profile data={pageContent} user={currentUser} logout={logout} />
           }
         />
         <Route
@@ -250,6 +252,7 @@ export default function App() {
               data={pageContent}
               user={currentUser}
               setUser={setCurrentUser}
+              logout={logout}
             />
           }
         />
@@ -260,6 +263,7 @@ export default function App() {
               data={pageContent}
               user={currentUser}
               setUser={setCurrentUser}
+              logout={logout}
             />
           }
         />
@@ -273,6 +277,7 @@ export default function App() {
                 menuItems={menuItems}
                 reloadSite={removeOldCaches}
                 setUser={setCurrentUser}
+                logout={logout}
               />
             ) : (
               forbiddenErrorPage
@@ -285,7 +290,7 @@ export default function App() {
             currentUser ? (
               <Base
                 data={pageContent}
-                setUser={setCurrentUser}
+                logout={logout}
                 reloadSite={removeOldCaches}
               ></Base>
             ) : (

@@ -7,19 +7,19 @@ export default function PageTemplate({
   pageData,
   reload,
   lang,
-  setUser,
+  logout,
 }: {
   pageData: MenuItem;
   reload: boolean;
   lang: string;
-  setUser: StateSetter<User | null>;
+  logout: () => void;
 }) {
   const [pageContent, setPageContent] = useState<PageContent | null>(null);
 
   const location = useLocation();
 
   const fetchContent = () =>
-    fetchPageContent(pageData.id, lang, setPageContent, setUser);
+    fetchPageContent(pageData.id, lang, setPageContent, logout);
 
   useEffect(() => {
     if (reload) fetchContent();

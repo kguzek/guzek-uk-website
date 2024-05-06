@@ -95,10 +95,12 @@ const getLikedShowsList = (likedShows: LikedShows[]) =>
   (likedShows[0]?.get("likedShows") as number[]) ?? [];
 
 // GET all users' liked TV shows
-router.get("/liked", (_req, res) => readAllDatabaseEntries(LikedShows, res));
+router.get("/liked-shows", (_req, res) =>
+  readAllDatabaseEntries(LikedShows, res)
+);
 
 // GET own liked TV shows
-router.get("/liked/personal", async (req, res) => {
+router.get("/liked-shows/personal", async (req, res) => {
   const likedShows = await getLikedShows(req, res);
   if (!likedShows) return;
   sendOK(res, getLikedShowsList(likedShows));
@@ -125,12 +127,12 @@ router.get("/watched/personal", async (req, res) => {
 });
 
 // ADD liked TV show
-router.post("/liked/personal/:showId", (req, res) =>
+router.post("/liked-shows/personal/:showId", (req, res) =>
   modifyLikedShows(req, res, true)
 );
 
 // DELETE liked TV show
-router.delete("/liked/personal/:showId", (req, res) =>
+router.delete("/liked-shows/personal/:showId", (req, res) =>
   modifyLikedShows(req, res, false)
 );
 

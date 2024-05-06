@@ -18,12 +18,12 @@ export async function tryFetch<T>(
   path: string,
   params: Record<string, string>,
   defaultData: T,
-  setUser: StateSetter<User | null>,
+  logout: () => void,
   useCache: boolean = true
 ) {
   let res;
   try {
-    res = await fetchFromAPI(path, { params }, setUser, useCache);
+    res = await fetchFromAPI(path, { params }, logout, useCache);
   } catch (networkError) {
     console.error("Could not fetch from API:", networkError);
     return defaultData;
@@ -54,9 +54,9 @@ export async function fetchPageContent(
   id: number,
   lang: string,
   setContent: (pageContent: PageContent) => void,
-  setUser: StateSetter<User | null>
+  logout: () => void
 ) {
   const url = `pages/${id}`;
-  const body = await tryFetch(url, { lang }, DEFAULT_PAGE_DATA, setUser);
+  const body = await tryFetch(url, { lang }, DEFAULT_PAGE_DATA, logout);
   setContent(body);
 }

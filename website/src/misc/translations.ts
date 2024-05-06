@@ -21,6 +21,7 @@ export type Translation = Readonly<{
   dateTimeFormat: Intl.DateTimeFormat;
   numberFormat: Intl.NumberFormat;
   networkError: string;
+  loggedOut: string;
   profile: {
     title: string;
     body: string;
@@ -110,6 +111,7 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
     numberFormat: new Intl.NumberFormat("en-GB"),
     networkError:
       "A network error occurred while performing this action. Please try again later.",
+    loggedOut: "You have been logged out.",
     profile: {
       title: "Profile",
       body: "Welcome to your profile!",
@@ -210,6 +212,7 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
     numberFormat: new Intl.NumberFormat("pl-PL"),
     networkError:
       "Nastąpił błąd sieciowy podczas wykonywania tej czynności. Spróbuj ponownie wkrótce.",
+    loggedOut: "Wylogowano z konta.",
     profile: {
       title: "Profil",
       body: "Witamy na Twoim profilu!",

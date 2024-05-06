@@ -36,19 +36,19 @@ const ENDPOINTS = {
     GET: [
       "/tu-lalem", // View all app coordinates
       "/auth/usernames", // View all usernames
-      "/liveseries/liked/personal", // View own liked shows
-      "/liveseries/watched/personal", // View own watched episodes
+      "/liveseries/liked-shows/personal", // View own liked shows
+      "/liveseries/watched-episodes/personal", // View own watched episodes
     ],
     POST: [
       "/tu-lalem", // Submit app coordinates
-      "/liveseries/liked/personal", // Add show to liked list
+      "/liveseries/liked-shows/personal", // Add show to liked list
     ],
     PUT: [],
     DELETE: [
       "/auth/token", // Log out
-      "/liveseries/liked/personal", // Remove show from liked list
+      "/liveseries/liked-shows/personal", // Remove show from liked list
     ],
-    PATCH: ["/liveseries/watched/personal"], // Modify own watched episodes
+    PATCH: ["/liveseries/watched-episodes/personal"], // Modify own watched episodes
   },
 } as const;
 
