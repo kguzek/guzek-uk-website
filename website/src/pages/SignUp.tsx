@@ -102,7 +102,7 @@ export default function SignUp({
           setValue={setRepeatPassword}
         />
         {loading ? (
-          <LoadingButton className="form" color="white" />
+          <LoadingButton />
         ) : (
           <button type="submit" className="btn btn-submit">
             {data.profile.formDetails.signup}

@@ -32,9 +32,6 @@ export default function LogIn({
     evt.preventDefault();
     setModalVisible(false);
     setLoading(true);
-    for (const func of [setEmail, setPassword]) {
-      func("");
-    }
     const body = {
       email,
       password,
@@ -56,12 +53,6 @@ export default function LogIn({
     }
   }
 
-  if (loading || user) {
-    return (
-      <LoadingScreen className="flex-column" text={data.profile.loading} />
-    );
-  }
-
   return (
     <>
       <Modal
@@ -70,35 +61,41 @@ export default function LogIn({
         visible={modalVisible}
         onClick={() => setModalVisible(false)}
       />
-      <form className="form-login" onSubmit={handleLogin}>
-        <InputBox
-          label={data.profile.formDetails.email}
-          type="email"
-          value={email}
-          name="email"
-          setValue={setEmail}
-        />
-        <InputBox
-          label={data.profile.formDetails.password}
-          type="password"
-          value={password}
-          name="password"
-          setValue={setPassword}
-        />
-        {loading ? (
-          <LoadingButton className="form" color="white" />
-        ) : (
-          <button type="submit" className="btn btn-submit">
-            {data.profile.formDetails.login}
-          </button>
-        )}
-      </form>
-      <div className="centred">
-        <p>{data.profile.formDetails.or}</p>
-        <Link to="/signup">
-          <i>{data.profile.formDetails.signup}</i>
-        </Link>
-      </div>
+      {user ? (
+        <LoadingScreen className="flex-column" text={data.profile.loading} />
+      ) : (
+        <>
+          <form className="form-login" onSubmit={handleLogin}>
+            <InputBox
+              label={data.profile.formDetails.email}
+              type="email"
+              value={email}
+              name="email"
+              setValue={setEmail}
+            />
+            <InputBox
+              label={data.profile.formDetails.password}
+              type="password"
+              value={password}
+              name="password"
+              setValue={setPassword}
+            />
+            {loading ? (
+              <LoadingButton />
+            ) : (
+              <button type="submit" className="btn btn-submit">
+                {data.profile.formDetails.login}
+              </button>
+            )}
+          </form>
+          <div className="centred">
+            <p>{data.profile.formDetails.or}</p>
+            <Link to="/signup">
+              <i>{data.profile.formDetails.signup}</i>
+            </Link>
+          </div>
+        </>
+      )}
     </>
   );
 }
