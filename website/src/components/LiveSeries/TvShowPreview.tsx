@@ -26,6 +26,7 @@ export default function TvShowPreview({
     await fetchResource("liked/personal/" + showDetails.id, {
       method: isLiked ? "DELETE" : "POST",
       onSuccess: () => reloadSite(),
+      onError: () => setFlipped((old) => !old),
       useEpisodate: false,
     });
   }
