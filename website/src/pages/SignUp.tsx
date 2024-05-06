@@ -4,7 +4,7 @@ import { fetchFromAPI } from "../misc/backend";
 import InputBox from "../components/Forms/InputBox";
 import { LoadingButton } from "../components/LoadingScreen";
 import { Translation } from "../misc/translations";
-import { User } from "../misc/models";
+import { StateSetter, User } from "../misc/models";
 import Modal from "../components/Modal";
 
 export default function SignUp({
@@ -14,7 +14,7 @@ export default function SignUp({
 }: {
   data: Translation;
   user: any;
-  setUser: Function;
+  setUser: StateSetter<User | null>;
 }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -47,7 +47,11 @@ export default function SignUp({
       email,
       password,
     };
-    const res = await fetchFromAPI("auth/users", { method: "POST", body });
+    const res = await fetchFromAPI(
+      "auth/users",
+      { method: "POST", body },
+      setUser
+    );
     const json = await res.json();
     setLoading(false);
     if (res.ok) {

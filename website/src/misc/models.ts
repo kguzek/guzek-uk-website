@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react";
+
 export interface PageContent {
   content: string;
 }
@@ -76,3 +78,5 @@ export type Episode = {
   name: string;
   air_date: string;
 };
+
+export type StateSetter<T> = Dispatch<SetStateAction<T>>;

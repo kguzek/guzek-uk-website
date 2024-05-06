@@ -88,7 +88,7 @@ export function authMiddleware(
       return reject(401, "Invalid authorisation token.");
     }
     req.user = user as UserObj;
-    console.log(req.user);
+    // console.log(req.user);
     if (endpointAccessibleBy.loggedInUser || req.user?.admin) {
       return void next();
     }

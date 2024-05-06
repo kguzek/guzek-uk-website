@@ -59,6 +59,12 @@ function sendNewTokens(res: Response, user: UserObj) {
   sendOK(res, { ...user, ...accessToken, refreshToken }, 201);
 }
 
+const removeSensitiveData = (users: User[]) =>
+  users.map((user) => {
+    const { hash, salt, ...publicProperties } = user.get();
+    return publicProperties;
+  });
+
 const sendUsers = (res: Response, returnOnlyUsernames: boolean) =>
   readAllDatabaseEntries(User, res, (users) => {
     sendOK(
@@ -67,10 +73,7 @@ const sendUsers = (res: Response, returnOnlyUsernames: boolean) =>
         ? Object.fromEntries(
             users.map((user: User) => [user.get("uuid"), user.get("username")])
           )
-        : users.map((user: User) => {
-            const { hash, salt, ...publicProperties } = user.get();
-            return publicProperties;
-          })
+        : removeSensitiveData(users)
     );
   });
 
@@ -176,13 +179,13 @@ router
   // READ specific user by search query
   .get("/user", async (req: Request, res: Response) => {
     const results = await readDatabaseEntry(User, res, req.query);
-    if (results) sendOK(res, results);
+    if (results) sendOK(res, removeSensitiveData(results)[0]);
   })
 
   // READ specific user by uuid
   .get("/user/:uuid", async (req: Request, res: Response) => {
     const results = await readDatabaseEntry(User, res, req.params);
-    if (results) sendOK(res, results);
+    if (results) sendOK(res, removeSensitiveData(results));
   })
 
   // DELETE existing user

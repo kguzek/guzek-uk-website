@@ -7,7 +7,7 @@ import InputArea, {
 } from "../components/Forms/InputArea";
 import InputBox from "../components/Forms/InputBox";
 import { LoadingButton } from "../components/LoadingScreen";
-import { MenuItem } from "../misc/models";
+import { MenuItem, StateSetter, User } from "../misc/models";
 import { Translation } from "../misc/translations";
 import { fetchPageContent, setTitle } from "../misc/util";
 import Modal from "../components/Modal";
@@ -29,11 +29,13 @@ export default function ContentManager({
   lang,
   menuItems,
   reloadSite,
+  setUser,
 }: {
   data: Translation;
   lang: string;
   menuItems: MenuItem[];
   reloadSite: () => void;
+  setUser: StateSetter<User | null>;
 }) {
   const [selectedPageID, setSelectedPageID] = useState(menuItems[0]?.id ?? 0);
 
@@ -70,6 +72,7 @@ export default function ContentManager({
               lang={lang}
               originalPage={selectedPage as MenuItem}
               reloadSite={reloadSite}
+              setUser={setUser}
             />
           </form>
         </>
@@ -83,11 +86,13 @@ function PagesEditor({
   lang,
   originalPage,
   reloadSite,
+  setUser,
 }: {
   data: Translation;
   lang: string;
   originalPage: MenuItem;
   reloadSite: () => void;
+  setUser: StateSetter<User | null>;
 }) {
   const [page, setPage] = useState<MenuItem>(originalPage);
   const [content, setContent] = useState(getEmptyMarkdown());
@@ -98,8 +103,11 @@ function PagesEditor({
 
   useEffect(() => {
     if (originalPage.shouldFetch) {
-      fetchPageContent(originalPage.id, lang, (val) =>
-        setContent(parseMarkdown(val.content, "html"))
+      fetchPageContent(
+        originalPage.id,
+        lang,
+        (val) => setContent(parseMarkdown(val.content, "html")),
+        setUser
       );
     } else {
       setContent(getEmptyMarkdown());
@@ -123,10 +131,14 @@ function PagesEditor({
     setClickedSubmit(true);
     const url = `pages/${page.id}?lang=${lang}`;
     try {
-      const res = await fetchFromAPI(url, {
-        method: "PUT",
-        body: { ...page, content: content.toString("html") },
-      });
+      const res = await fetchFromAPI(
+        url,
+        {
+          method: "PUT",
+          body: { ...page, content: content.toString("html") },
+        },
+        setUser
+      );
       if (res.ok) {
         reloadSite();
         setUnsavedChanges(false);
@@ -138,9 +150,7 @@ function PagesEditor({
       }
     } catch {
       setModalVisible(true);
-      setModalMessage(
-        "A network error occurred when performing this action. Please check the developer console for more details."
-      );
+      setModalMessage(data.networkError);
     }
     setClickedSubmit(false);
   }

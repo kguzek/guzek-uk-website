@@ -4,7 +4,7 @@ import { fetchFromAPI, updateAccessToken } from "../misc/backend";
 import InputBox from "../components/Forms/InputBox";
 import LoadingScreen, { LoadingButton } from "../components/LoadingScreen";
 import { Translation } from "../misc/translations";
-import { User } from "../misc/models";
+import { StateSetter, User } from "../misc/models";
 import Modal from "../components/Modal";
 
 export default function LogIn({
@@ -14,7 +14,7 @@ export default function LogIn({
 }: {
   data: Translation;
   user: any;
-  setUser: Function;
+  setUser: StateSetter<User | null>;
 }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,7 +37,11 @@ export default function LogIn({
       email,
       password,
     };
-    const res = await fetchFromAPI("auth/user", { method: "POST", body });
+    const res = await fetchFromAPI(
+      "auth/user",
+      { method: "POST", body },
+      setUser
+    );
     const json = await res.json();
     setLoading(false);
     if (res.ok) {

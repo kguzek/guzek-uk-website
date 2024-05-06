@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useOutletContext, useParams } from "react-router-dom";
 import Carousel from "../../components/Carousel";
 import LoadingScreen from "../../components/LoadingScreen";
 import Episode from "./Episode";
@@ -12,6 +12,7 @@ import {
 import { Translation } from "../../misc/translations";
 import { setTitle } from "../../misc/util";
 import ErrorPage from "../ErrorPage";
+import { OutletContext } from "./Base";
 
 export interface WatchedEpisodes {
   [season: number]: number[];
@@ -19,11 +20,14 @@ export interface WatchedEpisodes {
 
 export default function TvShow({ data }: { data: Translation }) {
   const [loading, setLoading] = useState(false);
+  const [flipped, setFlipped] = useState(false);
   const [tvShowDetails, setTvShowDetails] = useState<null | TvShowDetails>(
     null
   );
   const [watchedEpisodes, setWatchedEpisodes] = useState<WatchedEpisodes>({});
   const { tvShowId } = useParams();
+  const { likedShows, reloadSite, fetchResource } =
+    useOutletContext<OutletContext>();
 
   useEffect(() => {
     if (loading || !tvShowId) return;
@@ -82,9 +86,27 @@ export default function TvShow({ data }: { data: Translation }) {
     return date.toLocaleDateString();
   }
 
+  const isLikedOld = tvShowDetails && likedShows?.includes(tvShowDetails.id);
+  const isLiked = flipped ? !isLikedOld : isLikedOld;
+
+  async function handleHeart() {
+    setFlipped(!flipped);
+
+    await fetchResource("liked/personal/" + tvShowDetails?.id, {
+      method: isLiked ? "DELETE" : "POST",
+      onSuccess: () => reloadSite(),
+      useEpisodate: false,
+    });
+  }
+
   return tvShowDetails ? (
     <div className="details">
       <h2>
+        <i
+          className={`fa-${isLiked ? "solid" : "regular"} fa-heart`}
+          title={data.liveSeries.tvShow[isLiked ? "unlike" : "like"]}
+          onClick={handleHeart}
+        ></i>{" "}
         {tvShowDetails.name}{" "}
         <small className="regular">
           ({formatDate("start")}-{formatDate("end")})

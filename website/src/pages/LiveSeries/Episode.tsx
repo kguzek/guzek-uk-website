@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Episode as EpisodeData } from "../../misc/models";
+import { Episode as EpisodeData, StateSetter } from "../../misc/models";
 import { Translation } from "../../misc/translations";
 import { WatchedEpisodes } from "./TvShow";
 
@@ -12,7 +12,7 @@ export default function Episode({
   data: Translation;
   episode: EpisodeData;
   watchedEpisodes: WatchedEpisodes;
-  setWatchedEpisodes: Dispatch<SetStateAction<WatchedEpisodes>>;
+  setWatchedEpisodes: StateSetter<WatchedEpisodes>;
 }) {
   const airDate = data.dateFormat.format(new Date(episode.air_date));
 
