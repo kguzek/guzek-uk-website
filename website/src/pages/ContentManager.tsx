@@ -200,7 +200,7 @@ function PagesEditor({
         </div>
       )}
       {clickedSubmit ? (
-        <LoadingButton className="flex-column" />
+        <LoadingButton />
       ) : (
         <button
           type="submit"

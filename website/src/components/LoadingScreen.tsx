@@ -2,7 +2,7 @@ import React from "react";
 import { ThreeDots } from "react-loader-spinner";
 import "../styles/loadingScreen.css";
 
-const COLOR_PRIMARY = "#bbb";
+const COLOR_PRIMARY = "var(--color-primary)";
 
 export default function LoadingScreen({
   text,
@@ -19,16 +19,10 @@ export default function LoadingScreen({
   );
 }
 
-export function LoadingButton({
-  className,
-  color,
-}: {
-  className: string;
-  color?: string;
-}) {
+export function LoadingButton() {
   return (
-    <div className={className}>
-      <ThreeDots color={color || COLOR_PRIMARY} />
+    <div className={"flex-column"}>
+      <ThreeDots color={COLOR_PRIMARY} />
     </div>
   );
 }
