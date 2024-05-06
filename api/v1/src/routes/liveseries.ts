@@ -57,27 +57,35 @@ const getLikedShows = (req: Request, res: Response) =>
     true
   );
 
-async function modifyLikedShows(
-  req: Request,
-  res: Response,
-  generator: (old: number[]) => number[]
-) {
-  const errorMessage = validateNaturalNumber(+req.params.showId);
+async function modifyLikedShows(req: Request, res: Response, add: boolean) {
+  const showId = +req.params.showId;
+  const errorMessage = validateNaturalNumber(showId);
   if (errorMessage) return sendError(res, 400, { message: errorMessage });
   const likedShows = await getLikedShows(req, res);
   if (!likedShows) return;
   if (likedShows.length === 0) {
     await createDatabaseEntry(LikedShows, req, res, {
-      likedShows: [req.params.showId],
+      userUUID: req.user.uuid,
+      likedShows: add ? [showId] : [],
     });
     return;
+  }
+  const likedShowsList = getLikedShowsList(likedShows);
+  if (add) {
+    if (likedShowsList.includes(showId)) {
+      return sendError(res, 400, {
+        message: `Show with id '${showId}' is already liked.`,
+      });
+    }
   }
   await updateDatabaseEntry(
     LikedShows,
     req,
     res,
     {
-      likedShows: generator(getLikedShowsList(likedShows)),
+      likedShows: add
+        ? [...likedShowsList, showId]
+        : likedShowsList.filter((id) => id !== showId),
     },
     { userUUID: req.user.uuid }
   );
@@ -118,14 +126,12 @@ router.get("/watched/personal", async (req, res) => {
 
 // ADD liked TV show
 router.post("/liked/personal/:showId", (req, res) =>
-  modifyLikedShows(req, res, (oldValue) => [...oldValue, +req.params.showId])
+  modifyLikedShows(req, res, true)
 );
 
 // DELETE liked TV show
 router.delete("/liked/personal/:showId", (req, res) =>
-  modifyLikedShows(req, res, (oldValue) =>
-    oldValue.filter((value) => value !== +req.params.showId)
-  )
+  modifyLikedShows(req, res, false)
 );
 
 // UPDATE own watched episodes

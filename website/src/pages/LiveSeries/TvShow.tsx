@@ -95,6 +95,7 @@ export default function TvShow({ data }: { data: Translation }) {
     await fetchResource("liked/personal/" + tvShowDetails?.id, {
       method: isLiked ? "DELETE" : "POST",
       onSuccess: () => reloadSite(),
+      onError: () => setFlipped((old) => !old),
       useEpisodate: false,
     });
   }
