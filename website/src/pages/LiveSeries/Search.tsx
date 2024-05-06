@@ -2,7 +2,6 @@ import React, { FormEvent, useEffect, useState } from "react";
 import { useOutletContext, useSearchParams } from "react-router-dom";
 import InputBox from "../../components/Forms/InputBox";
 import TvShowPreviewList from "../../components/LiveSeries/TvShowPreviewList";
-import LoadingScreen from "../../components/LoadingScreen";
 import { TvShowList } from "../../misc/models";
 import { Translation } from "../../misc/translations";
 import { setTitle } from "../../misc/util";
@@ -15,49 +14,38 @@ export default function Search({ data }: { data: Translation }) {
 
   const searchQuery = searchParams.get("q");
   const title = getLiveSeriesTitle(data, "search");
-  const searchingLabel = `${data.liveSeries.search.searching} "${searchQuery}"`;
   const resultsLabel = `${data.liveSeries.search.results} "${searchQuery}"`;
   const { loading, fetchResource } = useOutletContext<OutletContext>();
 
   useEffect(() => {
-    const newTitle = loading
-      ? searchingLabel
-      : searchQuery
-      ? resultsLabel
-      : title;
+    const newTitle = searchQuery ? resultsLabel : title;
     setTitle(newTitle);
   }, [data, searchParams, loading]);
 
   useEffect(() => {
-    if (loading || !searchQuery) return;
-
+    if (!searchQuery) return;
     fetchResource("search", { onSuccess: setResults });
+
+    if (!results) return;
+    const searchedPage = +(searchParams.get("page") ?? "");
+    if (searchedPage === results.page) return;
+
+    // Predictively update the page number in the old data
+    setResults({ ...results, page: searchedPage });
   }, [searchParams]);
 
   function submitForm(evt: FormEvent) {
     evt.preventDefault();
     const query = { q: inputValue.trim() };
     setSearchParams(query);
+    setResults(null);
   }
 
   return (
     <>
-      <h2>{!loading && searchQuery ? resultsLabel : title}</h2>
+      <h2>{searchQuery ? resultsLabel : title}</h2>
       {searchQuery ? (
-        loading || !results ? (
-          <div className="centred">
-            <LoadingScreen text={searchingLabel} />
-            <button
-              role="button"
-              className="btn"
-              onClick={() => setSearchParams("")}
-            >
-              {data.liveSeries.search.cancel}
-            </button>
-          </div>
-        ) : (
-          <TvShowPreviewList data={data} tvShows={results} />
-        )
+        <TvShowPreviewList data={data} tvShows={results ?? undefined} />
       ) : (
         <form className="form-editor" onSubmit={submitForm}>
           <InputBox

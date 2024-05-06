@@ -3,8 +3,7 @@
   background-color: var(--color-primary);
   color: var(--color-background);
   padding: 10px;
-  min-width: 20px;
-  height: 20px;
+  min-width: 27px;
   text-align: center;
 }
 
@@ -21,5 +20,36 @@
   cursor: default;
   background-color: var(--color-background-soft);
   color: var(--color-primary-strong);
+}
+
+.auxiliary {
+  background-color: var(--color-primary-strong);
+}
+
+.auxiliary.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media screen and (max-width: 950px) {
+  .page-indicator {
+    font-size: medium;
+    min-width: 20px;
+  }
+}
+
+@media screen and (max-width: 750px) {
+  .page-indicator {
+    font-size: small;
+    min-width: 13px;
+    padding: 8px;
+  }
+}
+
+@media screen and (max-width: 550px) {
+  .page-indicator {
+    font-size: x-small;
+    padding: 6px;
+  }
 }
 

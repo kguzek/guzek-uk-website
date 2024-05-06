@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext, useParams } from "react-router-dom";
 import Carousel from "../../components/Carousel";
-import LoadingScreen from "../../components/LoadingScreen";
 import Episode from "./Episode";
-import { fetchFromEpisodate } from "../../misc/episodate";
 import {
   Episode as EpisodeData,
   ErrorCode,
@@ -13,24 +11,24 @@ import { Translation } from "../../misc/translations";
 import { setTitle } from "../../misc/util";
 import ErrorPage from "../ErrorPage";
 import { OutletContext } from "./Base";
+import TvShowSkeleton from "../../components/LiveSeries/TvShowSkeleton";
 
 export interface WatchedEpisodes {
   [season: number]: number[];
 }
 
 export default function TvShow({ data }: { data: Translation }) {
-  const [loading, setLoading] = useState(false);
   const [flipped, setFlipped] = useState(false);
   const [tvShowDetails, setTvShowDetails] = useState<null | TvShowDetails>(
     null
   );
   const [watchedEpisodes, setWatchedEpisodes] = useState<WatchedEpisodes>({});
   const { tvShowId } = useParams();
-  const { likedShowIds, reloadSite, fetchResource } =
+  const { loading, likedShowIds, reloadSite, fetchResource } =
     useOutletContext<OutletContext>();
 
   useEffect(() => {
-    if (loading || !tvShowId) return;
+    if (!tvShowId) return;
 
     fetchResource("show-details", {
       params: { q: tvShowId },
@@ -39,7 +37,9 @@ export default function TvShow({ data }: { data: Translation }) {
   }, [tvShowId]);
 
   useEffect(() => {
-    setTitle(tvShowDetails ? tvShowDetails.name : "Show Details");
+    setTitle(
+      tvShowDetails ? tvShowDetails.name : data.liveSeries.tvShow.showDetails
+    );
   }, [data, tvShowDetails]);
 
   function sortEpisodes(episodes: EpisodeData[]) {
@@ -54,8 +54,6 @@ export default function TvShow({ data }: { data: Translation }) {
     }
     return Object.entries(seasons);
   }
-
-  if (loading) return <LoadingScreen text={data.loading} />;
 
   function formatDate(which: "start" | "end") {
     const dateString =
@@ -73,9 +71,6 @@ export default function TvShow({ data }: { data: Translation }) {
     return date.toLocaleDateString();
   }
 
-  const isLikedOld = tvShowDetails && likedShowIds?.includes(tvShowDetails.id);
-  const isLiked = flipped ? !isLikedOld : isLikedOld;
-
   async function handleHeart() {
     setFlipped(!flipped);
 
@@ -87,7 +82,15 @@ export default function TvShow({ data }: { data: Translation }) {
     });
   }
 
-  return tvShowDetails ? (
+  if (loading) return <TvShowSkeleton />;
+
+  if (!tvShowDetails)
+    return <ErrorPage data={data} errorCode={ErrorCode.NotFound} />;
+
+  const isLikedOld = tvShowDetails && likedShowIds?.includes(tvShowDetails.id);
+  const isLiked = flipped ? !isLikedOld : isLikedOld;
+
+  return (
     <div className="details">
       <h2>
         <i
@@ -221,8 +224,6 @@ export default function TvShow({ data }: { data: Translation }) {
         </React.Fragment>
       ))}
     </div>
-  ) : (
-    <ErrorPage data={data} errorCode={ErrorCode.NotFound} />
   );
 }
 

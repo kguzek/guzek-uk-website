@@ -21,7 +21,6 @@
 
 .nav-items {
   display: flex;
-  list-style: none;
   text-align: center;
   gap: 15px;
   justify-content: space-between;

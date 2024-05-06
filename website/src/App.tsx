@@ -202,9 +202,9 @@ export default function App() {
   const notFoundErrorPage = (
     <ErrorPage data={pageContent} errorCode={ErrorCode.NotFound} />
   );
-  const unauthorizedErrorPage = (
-    <ErrorPage data={pageContent} errorCode={ErrorCode.Unauthorized} />
-  );
+  // const unauthorizedErrorPage = (
+  //   <ErrorPage data={pageContent} errorCode={ErrorCode.Unauthorized} />
+  // );
 
   return (
     <>
@@ -287,15 +287,12 @@ export default function App() {
         <Route
           path="liveseries"
           element={
-            currentUser ? (
-              <Base
-                data={pageContent}
-                logout={logout}
-                reloadSite={removeOldCaches}
-              ></Base>
-            ) : (
-              unauthorizedErrorPage
-            )
+            <Base
+              data={pageContent}
+              logout={logout}
+              reloadSite={removeOldCaches}
+              user={currentUser}
+            ></Base>
           }
         >
           <Route index element={<Home data={pageContent} />} />
