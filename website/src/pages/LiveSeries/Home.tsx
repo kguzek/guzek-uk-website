@@ -1,12 +1,13 @@
 import React, { useEffect } from "react";
 import { Link, useOutletContext } from "react-router-dom";
+import LoadingScreen from "../../components/LoadingScreen";
 import { Translation } from "../../misc/translations";
 import { setTitle } from "../../misc/util";
 import { getLiveSeriesTitle, OutletContext } from "./Base";
 
 export default function Home({ data }: { data: Translation }) {
   const title = getLiveSeriesTitle(data, "home");
-  const { likedShows } = useOutletContext<OutletContext>();
+  const { likedShows, loading } = useOutletContext<OutletContext>();
 
   useEffect(() => {
     setTitle(title);
@@ -15,7 +16,9 @@ export default function Home({ data }: { data: Translation }) {
   return (
     <>
       <h2>{title}</h2>
-      {likedShows?.length ? (
+      {loading ? (
+        <LoadingScreen text={data.loading} />
+      ) : likedShows?.length ? (
         <>
           Liked Shows
           <ol>
