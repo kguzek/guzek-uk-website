@@ -1,3 +1,5 @@
+import { StateSetter, User } from "./models";
+
 const USE_LOCAL_API_URL = false;
 const LOG_ACCESS_TOKEN = false;
 const CACHE_NAME = "guzek-uk-cache";
@@ -22,17 +24,23 @@ export async function getCache() {
   }
 }
 
+export function clearStoredLoginInfo() {
+  localStorage.removeItem("user");
+  localStorage.removeItem("accessTokenInfo");
+  localStorage.removeItem("refreshToken");
+}
+
 export function getSearchParams(
   params: Record<string, string> | URLSearchParams = {}
 ) {
-  if (Object.keys(params).length === 0) return "";
   const searchParams =
     params instanceof URLSearchParams ? params : new URLSearchParams(params);
+  if ([...searchParams.keys()].length === 0) return "";
   return `?${searchParams}`;
 }
 
 /** Determines the API access token and generates a new one if it is out of date. */
-async function getAccessToken() {
+async function getAccessToken(setUser: StateSetter<User | null>) {
   const accessTokenInfo = localStorage.getItem("accessTokenInfo");
   if (!accessTokenInfo) {
     return null;
@@ -49,12 +57,15 @@ async function getAccessToken() {
     "auth/token",
     "POST",
     { body: { token } },
+    setUser,
     false
   );
   console.info("Refreshing expired access token...");
   const res = await fetch(req);
   if (!res.ok) {
-    console.error("Failed to refresh the access token.");
+    console.error("Failed to refresh the access token. Logging out.");
+    clearStoredLoginInfo();
+    setUser(null);
     return null;
   }
   const body = await res.json();
@@ -76,6 +87,7 @@ async function createRequest(
     params?: Record<string, string> | URLSearchParams;
     body?: Record<string, any>;
   },
+  setUser: StateSetter<User | null>,
   useAccessToken: boolean = true
 ) {
   const url = API_BASE + path + getSearchParams(params);
@@ -90,7 +102,7 @@ async function createRequest(
   }
   // Set the authorisation headers
   if (useAccessToken) {
-    const accessToken = await getAccessToken();
+    const accessToken = await getAccessToken(setUser);
     if (accessToken) {
       LOG_ACCESS_TOKEN && console.info(accessToken);
       options.headers["Authorization"] = `Bearer ${accessToken}`;
@@ -111,9 +123,10 @@ export async function fetchFromAPI(
     params?: Record<string, string> | URLSearchParams;
     body?: Record<string, any>;
   },
+  setUser: StateSetter<User | null>,
   useCache: boolean = false
 ) {
-  const request = await createRequest(path, method, { params, body });
+  const request = await createRequest(path, method, { params, body }, setUser);
   const func = useCache ? fetchWithCache : fetch;
   return await func(request);
 }

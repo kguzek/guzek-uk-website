@@ -20,6 +20,7 @@ export type Translation = Readonly<{
   dateFormat: Intl.DateTimeFormat;
   dateTimeFormat: Intl.DateTimeFormat;
   numberFormat: Intl.NumberFormat;
+  networkError: string;
   profile: {
     title: string;
     body: string;
@@ -70,6 +71,8 @@ export type Translation = Readonly<{
       episodes: string;
       episode: string;
       season: string;
+      like: string;
+      unlike: string;
     };
     search: {
       title: string;
@@ -105,6 +108,8 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
       ...LONG_TIME_FORMAT,
     }),
     numberFormat: new Intl.NumberFormat("en-GB"),
+    networkError:
+      "A network error occurred while performing this action. Please try again later.",
     profile: {
       title: "Profile",
       body: "Welcome to your profile!",
@@ -169,6 +174,8 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
         episodes: "Episodes",
         episode: "Episode",
         season: "Season",
+        like: "Like",
+        unlike: "Unlike",
       },
       search: {
         title: "Search",
@@ -201,6 +208,8 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
       ...LONG_TIME_FORMAT,
     }),
     numberFormat: new Intl.NumberFormat("pl-PL"),
+    networkError:
+      "Nastąpił błąd sieciowy podczas wykonywania tej czynności. Spróbuj ponownie wkrótce.",
     profile: {
       title: "Profil",
       body: "Witamy na Twoim profilu!",
@@ -265,6 +274,8 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
         episodes: "Odcinki",
         episode: "Odcinek",
         season: "Sezon",
+        like: "Polub",
+        unlike: "Odlub",
       },
       search: {
         title: "Wyszukiwarka",

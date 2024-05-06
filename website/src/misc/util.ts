@@ -1,5 +1,5 @@
 import { fetchFromAPI } from "./backend";
-import { PageContent } from "./models";
+import { PageContent, StateSetter, User } from "./models";
 
 export const PAGE_NAME = "Guzek UK";
 
@@ -18,11 +18,12 @@ export async function tryFetch<T>(
   path: string,
   params: Record<string, string>,
   defaultData: T,
+  setUser: StateSetter<User | null>,
   useCache: boolean = true
 ) {
   let res;
   try {
-    res = await fetchFromAPI(path, { params }, useCache);
+    res = await fetchFromAPI(path, { params }, setUser, useCache);
   } catch (networkError) {
     console.error("Could not fetch from API:", networkError);
     return defaultData;
@@ -52,9 +53,10 @@ export function getDuration(milliseconds: number) {
 export async function fetchPageContent(
   id: number,
   lang: string,
-  setContent: (arg0: PageContent) => void
+  setContent: (pageContent: PageContent) => void,
+  setUser: StateSetter<User | null>
 ) {
   const url = `pages/${id}`;
-  const body = await tryFetch(url, { lang }, DEFAULT_PAGE_DATA);
+  const body = await tryFetch(url, { lang }, DEFAULT_PAGE_DATA, setUser);
   setContent(body);
 }

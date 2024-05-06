@@ -45,7 +45,13 @@ export default function App() {
    */
   async function removeOldCaches() {
     const defaultData: { [endpoint: string]: number } = {};
-    const updated = await tryFetch("updated", {}, defaultData, false);
+    const updated = await tryFetch(
+      "updated",
+      {},
+      defaultData,
+      setCurrentUser,
+      false
+    );
     const updatedEndpoints = new Set();
     const cache = await getCache();
     if (!cache) {
@@ -72,7 +78,8 @@ export default function App() {
       }
       const url = new URL(res.url);
       // Extract the base path (only first subdirectory of URL path)
-      const [_, endpoint] = /^\/([^\/]*)(?:\/.*)?$/.exec(url.pathname) ?? [];
+      const [_, endpoint] =
+        /^\/(?:liveseries\/)?([^\/]*)(?:\/.*)?$/.exec(url.pathname) ?? [];
       if (!endpoint) continue;
       // console.debug(
       //   "Cache date:",
@@ -163,7 +170,8 @@ export default function App() {
     const data = await tryFetch(
       "pages",
       { lang: userLanguage },
-      [] as MenuItem[]
+      [] as MenuItem[],
+      setCurrentUser
     );
     setMenuItems(data);
   }
@@ -220,6 +228,7 @@ export default function App() {
                   reload={reload}
                   pageData={item}
                   lang={userLanguage}
+                  setUser={setCurrentUser}
                 />
               }
             />
@@ -263,6 +272,7 @@ export default function App() {
                 lang={userLanguage}
                 menuItems={menuItems}
                 reloadSite={removeOldCaches}
+                setUser={setCurrentUser}
               />
             ) : (
               forbiddenErrorPage
@@ -273,7 +283,11 @@ export default function App() {
           path="liveseries"
           element={
             currentUser ? (
-              <Base data={pageContent}></Base>
+              <Base
+                data={pageContent}
+                setUser={setCurrentUser}
+                reloadSite={removeOldCaches}
+              ></Base>
             ) : (
               unauthorizedErrorPage
             )
