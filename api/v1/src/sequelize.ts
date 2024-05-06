@@ -20,6 +20,9 @@ const sequelize = new Sequelize(
   }
 );
 
+const ensureJson = (dataValue: any) =>
+  typeof dataValue === "string" ? JSON.parse(dataValue) : dataValue;
+
 export class Page extends Model {}
 export class PageContent extends Model {}
 export class User extends Model {}
@@ -204,6 +207,9 @@ LikedShows.init(
       type: DataTypes.JSON(),
       allowNull: false,
       field: "liked_shows",
+      get() {
+        return ensureJson(this.getDataValue("likedShows"));
+      },
     },
   },
   {
@@ -228,6 +234,9 @@ WatchedEpisodes.init(
       type: DataTypes.JSON(),
       allowNull: false,
       field: "watched_episodes",
+      get() {
+        return ensureJson(this.getDataValue("watchedEpisodes"));
+      },
     },
   },
   {
