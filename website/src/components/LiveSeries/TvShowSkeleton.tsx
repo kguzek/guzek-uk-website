@@ -1,15 +1,28 @@
 import React from "react";
 
-export default function TvShowSkeleton({ idx }: { idx: number }) {
+export default function TvShowSkeleton() {
   return (
-    <div
-      className="preview skeleton"
-      style={{ animationDelay: `${(3 * idx) / 4}s` }}
-    >
-      <div className="preview-header">
-        <div className="skeleton-text"></div>
+    <div className="details skeleton">
+      <h2 className="skeleton-text" style={{ height: 32 }}></h2>
+      <div className="flex flex-wrap">
+        <div
+          className="skeleton-text"
+          style={{
+            height: 30,
+            width: "20%",
+            backgroundColor: "var(--color-primary)",
+          }}
+        ></div>
+        <div
+          className="skeleton-text"
+          style={{ height: 30, width: "30%" }}
+        ></div>
       </div>
-      <div className="thumbnail"></div>
+      <p className="skeleton-text" style={{ height: 25, width: 300 }}></p>
+      <p
+        className="skeleton-text"
+        style={{ height: "50vh", width: "100%" }}
+      ></p>
     </div>
   );
 }

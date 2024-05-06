@@ -13,7 +13,7 @@
   z-index: 20;
   transform: translateY(calc(-100% - var(--offset-y)));
   opacity: 0;
-  transition: all 200ms ease;
+  transition: transform 300ms ease, opacity 250ms ease;
 }
 
 .modal.error {
@@ -27,7 +27,7 @@
 }
 
 .modal p {
-  margin: 10px 0 0;
+  margin: 5px 0 10px;
 }
 
 .modal-buttons {
@@ -65,5 +65,29 @@ button.btn-secondary {
 .modal.visible {
   transform: translateY(0);
   opacity: 1;
+}
+@media screen and (max-width: 950px) {
+  .modal {
+    box-sizing: border-box;
+    width: 70%;
+  }
+
+  .modal-buttons button {
+    opacity: 1;
+  }
+}
+
+@media screen and (max-width: 750px) {
+  .modal {
+    width: 90%;
+  }
+}
+
+@media screen and (max-width: 550px) {
+  .modal {
+    width: 95%;
+    padding: 5px 10px;
+    border-radius: 10px;
+  }
 }
 

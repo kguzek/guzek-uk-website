@@ -74,6 +74,7 @@ export type Translation = Readonly<{
       season: string;
       like: string;
       unlike: string;
+      showDetails: string;
     };
     search: {
       title: string;
@@ -83,12 +84,14 @@ export type Translation = Readonly<{
       searching: string;
       cancel: string;
       results: string;
+      noResults: string;
     };
     home: {
       title: string;
       noLikes: string;
       explore: string;
       shows: string;
+      login: string;
     };
     mostPopular: {
       title: string;
@@ -178,6 +181,7 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
         season: "Season",
         like: "Like",
         unlike: "Unlike",
+        showDetails: "Show Details",
       },
       search: {
         title: "Search",
@@ -187,12 +191,15 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
         searching: "Searching",
         cancel: "Cancel",
         results: "Results for",
+        noResults:
+          "Your query returned no results. Try searching for something else.",
       },
       home: {
         title: "Home",
         noLikes: "You have no liked shows.",
         explore: "Explore",
         shows: "Shows",
+        login: "You must be logged in to use that function.",
       },
       mostPopular: {
         title: "Most Popular",
@@ -279,6 +286,7 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
         season: "Sezon",
         like: "Polub",
         unlike: "Odlub",
+        showDetails: "Dane Serialu",
       },
       search: {
         title: "Wyszukiwarka",
@@ -288,12 +296,14 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
         searching: "Szukam",
         cancel: "Anuluj",
         results: "Wyniki wyszukania",
+        noResults: "Brak wyników. Spróbuj wyszukać coś innego.",
       },
       home: {
         title: "Główna",
         noLikes: "Nie masz żadnych polubionych seriali.",
         explore: "Przeglądaj",
         shows: "Seriale",
+        login: "Żeby skorzystać z tej funkcji, musisz się zalogować.",
       },
       mostPopular: {
         title: "Najpopularniejsze",

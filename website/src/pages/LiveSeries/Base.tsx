@@ -3,7 +3,7 @@ import { Outlet, Link, useLocation, useSearchParams } from "react-router-dom";
 import Modal from "../../components/Modal";
 import { fetchFromAPI } from "../../misc/backend";
 import { fetchFromEpisodate } from "../../misc/episodate";
-import { StateSetter, User } from "../../misc/models";
+import { User } from "../../misc/models";
 import { Translation } from "../../misc/translations";
 import "../../styles/liveseries.css";
 
@@ -35,10 +35,12 @@ export default function Base({
   data,
   logout,
   reloadSite,
+  user,
 }: {
   data: Translation;
   logout: () => void;
   reloadSite: () => Promise<void>;
+  user: User | null;
 }) {
   const [loading, setLoading] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
@@ -82,6 +84,16 @@ export default function Base({
       useEpisodate?: boolean;
     }
   ) {
+    if (!user && !useEpisodate) {
+      if (method) {
+        setModalVisible(true);
+        setModalMessage(data.liveSeries.home.login);
+        onError();
+      } else {
+        setLikedShowIds([]);
+      }
+      return;
+    }
     method || setLoading(true);
     try {
       const res = await (useEpisodate

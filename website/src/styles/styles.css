@@ -69,6 +69,10 @@ blockquote {
   border-radius: 3px;
 }
 
+ul {
+  list-style: none;
+}
+
 html {
   background-color: var(--color-background-strong);
   height: 95%;

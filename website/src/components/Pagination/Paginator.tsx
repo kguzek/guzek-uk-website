@@ -20,16 +20,39 @@ export default function Paginator({
     pages.push(page);
   }
 
-  if (currentPage > 4) pages.push(undefined);
+  // Optional second page and skipped pages indicator '...'
+  if (currentPage > 4) {
+    if (currentPage === numPages) {
+      pages.push(2);
+      currentPage > 5 && pages.push(undefined);
+    } else {
+      pages.push(currentPage === 5 ? 2 : undefined);
+    }
+  }
 
   for (let i = -2; i <= 2; i++) {
     addPage(currentPage + i);
   }
-  if (currentPage + 2 < numPages - 1) pages.push(undefined);
+
+  if (currentPage < numPages - 3) {
+    if (currentPage === 1) {
+      currentPage < numPages - 5 && pages.push(undefined);
+      pages.push(numPages - 1);
+    } else {
+      pages.push(currentPage === numPages - 4 ? numPages - 1 : undefined);
+    }
+  }
+
   addPage(numPages);
 
   return (
     <div className="paginator">
+      <PageIndicator
+        data={data}
+        currentPage={currentPage}
+        direction="PREVIOUS"
+        disabled={currentPage === 1}
+      />
       {pages.map((page, idx) => (
         <PageIndicator
           data={data}
@@ -38,6 +61,12 @@ export default function Paginator({
           currentPage={currentPage}
         />
       ))}
+      <PageIndicator
+        data={data}
+        currentPage={currentPage}
+        direction="NEXT"
+        disabled={currentPage === numPages}
+      />
     </div>
   );
 }
