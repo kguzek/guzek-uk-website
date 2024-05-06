@@ -38,13 +38,11 @@ export default function Carousel({
   }
 
   function scrollToImage(imageNumber: number) {
-    document
-      .getElementById(`image-${imageNumber}`)
-      ?.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "center",
-      });
+    document.getElementById(`image-${imageNumber}`)?.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "center",
+    });
   }
 
   function previousImage() {
@@ -66,13 +64,13 @@ export default function Carousel({
   }
 
   return (
-    <div className="carousel-container">
+    <div className="carousel-container flex-wrap">
       <i
         role="button"
         className="carousel-scroller left fas fa-arrow-left"
         onClick={previousImage}
       ></i>
-      <div className={`carousel ${className}`}>
+      <div className={`carousel scroll-x ${className}`}>
         {images.map((url, idx) => (
           <img
             key={idx}

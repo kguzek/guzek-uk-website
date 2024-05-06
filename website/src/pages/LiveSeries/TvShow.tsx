@@ -26,34 +26,21 @@ export default function TvShow({ data }: { data: Translation }) {
   );
   const [watchedEpisodes, setWatchedEpisodes] = useState<WatchedEpisodes>({});
   const { tvShowId } = useParams();
-  const { likedShows, reloadSite, fetchResource } =
+  const { likedShowIds, reloadSite, fetchResource } =
     useOutletContext<OutletContext>();
 
   useEffect(() => {
     if (loading || !tvShowId) return;
 
-    fetchShow(tvShowId);
+    fetchResource("show-details", {
+      params: { q: tvShowId },
+      onSuccess: (json) => setTvShowDetails(json.tvShow),
+    });
   }, [tvShowId]);
 
   useEffect(() => {
     setTitle(tvShowDetails ? tvShowDetails.name : "Show Details");
   }, [data, tvShowDetails]);
-
-  async function fetchShow(tvShowId: string) {
-    setLoading(true);
-    try {
-      const res = await fetchFromEpisodate("show-details", { q: tvShowId });
-      const json = await res.json();
-      setLoading(false);
-      if (res.ok) {
-        setTvShowDetails(json.tvShow);
-      } else {
-        console.error("Received bad response");
-      }
-    } catch {
-      setLoading(false);
-    }
-  }
 
   function sortEpisodes(episodes: EpisodeData[]) {
     const seasons: { [season: number]: EpisodeData[] } = {};
@@ -86,7 +73,7 @@ export default function TvShow({ data }: { data: Translation }) {
     return date.toLocaleDateString();
   }
 
-  const isLikedOld = tvShowDetails && likedShows?.includes(tvShowDetails.id);
+  const isLikedOld = tvShowDetails && likedShowIds?.includes(tvShowDetails.id);
   const isLiked = flipped ? !isLikedOld : isLikedOld;
 
   async function handleHeart() {
@@ -220,7 +207,7 @@ export default function TvShow({ data }: { data: Translation }) {
               ></i>
             </div>
           </div>
-          <div className="episodes">
+          <div className="episodes flex-wrap">
             {episodes.map((episode) => (
               <Episode
                 key={`episode-${episode.episode}`}

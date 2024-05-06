@@ -22,7 +22,7 @@ export default function TvShowPreviewList({
 
   if (!tvShows.total || tvShows.total === "0") return <p>No results.</p>;
   return (
-    <div className="tvshows-list flex-column">
+    <div className="shows-list flex-column">
       <small className="showing">
         {data.liveSeries.tvShowList.showing} <NumericValue value={startIdx} />-
         <NumericValue value={endIdx} /> {data.liveSeries.tvShowList.of}{" "}
@@ -33,7 +33,7 @@ export default function TvShowPreviewList({
         currentPage={tvShows.page}
         numPages={tvShows.pages}
       />
-      <div className="previews">
+      <div className="previews flex-wrap">
         {tvShows.tv_shows.map((showDetails) => (
           <TvShowPreview
             key={"tvShow-" + showDetails.id}

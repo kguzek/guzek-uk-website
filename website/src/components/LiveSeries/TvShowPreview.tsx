@@ -12,10 +12,10 @@ export default function TvShowPreview({
   showDetails: TvShowDetailsShort;
 }) {
   const [flipped, setFlipped] = useState(false);
-  const { likedShows, reloadSite, fetchResource } =
+  const { likedShowIds, reloadSite, fetchResource } =
     useOutletContext<OutletContext>();
 
-  const isLikedOld = likedShows?.includes(showDetails.id) ?? false;
+  const isLikedOld = likedShowIds?.includes(showDetails.id) ?? false;
   const isLiked = flipped ? !isLikedOld : isLikedOld;
 
   async function handleHeart(clickEvent: MouseEvent) {

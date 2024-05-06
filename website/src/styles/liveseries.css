@@ -14,7 +14,7 @@
   width: 240px;
 }
 
-.tvshows-list {
+.shows-list {
   gap: 10px;
 }
 
@@ -23,8 +23,6 @@
 }
 
 .previews {
-  display: flex;
-  flex-wrap: wrap;
   gap: 15px;
   justify-content: center;
 }
@@ -95,17 +93,18 @@
   background-position: center;
 }
 
-.carousel {
-  display: flex;
+.scroll-x {
   overflow-x: scroll;
-  scroll-snap-type: x mandatory;
-
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
-
-.carousel::-webkit-scrollbar {
+.scroll-x::-webkit-scrollbar {
   display: none;
+}
+
+.carousel {
+  display: flex;
+  scroll-snap-type: x mandatory;
 }
 
 .carousel img {
@@ -120,8 +119,6 @@
 }
 
 .episodes {
-  display: flex;
-  flex-wrap: wrap;
   gap: 10px;
   /* width: calc((480px + 5px * 2) * 2 + 10px); */
   width: 100%;
@@ -177,6 +174,37 @@
 
 .liveseries-links {
   gap: 20px;
+}
+
+.preview.skeleton {
+  animation: 4s ease skeleton infinite;
+  opacity: 0.4;
+}
+
+.previews.scroll-x {
+  justify-content: start;
+  padding: 0;
+}
+
+@keyframes skeleton {
+  50% {
+    opacity: 0.8;
+  }
+
+  90% {
+    opacity: 0.4;
+  }
+}
+
+.preview.skeleton .preview-header .skeleton-text {
+  width: 80%;
+  height: 1rem;
+  background-color: var(--color-background);
+  border-radius: 15px;
+}
+
+.preview.skeleton .thumbnail {
+  background-color: var(--color-background-soft);
 }
 
 @media screen and (max-width: 980px) {
