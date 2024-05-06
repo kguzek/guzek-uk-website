@@ -49,8 +49,6 @@
 }
 
 .form-checkboxes {
-  display: flex;
-  flex-wrap: wrap;
   gap: 0px 15px;
 }
 

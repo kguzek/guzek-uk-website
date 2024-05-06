@@ -9,6 +9,8 @@ const logger = getLogger(__filename);
 // Allows all requests to go through, even if JWT authentication fails.
 const DISABLE_AUTH = process.env.NODE_ENV === "development" && false;
 
+// TODO: Server-side token expiry vaildation
+
 export function getTokenSecret(type: "access" | "refresh") {
   const secret = process.env[`JWT_${type.toUpperCase()}_TOKEN_SECRET`];
   return (secret ?? "") as jwt.Secret;

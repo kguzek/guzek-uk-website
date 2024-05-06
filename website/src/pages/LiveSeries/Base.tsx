@@ -7,7 +7,7 @@ import { StateSetter, User } from "../../misc/models";
 import { Translation } from "../../misc/translations";
 import "../../styles/liveseries.css";
 
-type LikedShows = null | number[];
+type LikedShowIds = null | number[];
 
 export type OutletContext = {
   loading: boolean;
@@ -15,17 +15,19 @@ export type OutletContext = {
     endpoint: string,
     {
       method,
+      params,
       onSuccess,
       onError,
       useEpisodate,
     }: {
       method?: string;
+      params?: Record<string, string>;
       onSuccess?: (data: any) => void;
       onError?: () => void;
       useEpisodate?: boolean;
     }
   ) => Promise<void>;
-  likedShows: LikedShows;
+  likedShowIds: LikedShowIds;
   reloadSite: () => Promise<void>;
 };
 
@@ -41,28 +43,40 @@ export default function Base({
   const [loading, setLoading] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [likedShows, setLikedShows] = useState<LikedShows>(null);
+  const [updateDetected, setUpdateDetected] = useState(false);
+  const [likedShowIds, setLikedShowIds] = useState<LikedShowIds>(null);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
-    if (loading || likedShows) return;
+    if (loading || likedShowIds) return;
+    fetchLikedShowIds();
+  }, []);
 
+  function fetchLikedShowIds() {
     fetchResource("liked-shows/personal", {
-      onSuccess: setLikedShows,
+      onSuccess: setLikedShowIds,
       useEpisodate: false,
     });
-  }, []);
+  }
+
+  useEffect(() => {
+    if (!updateDetected) return;
+    setUpdateDetected(false);
+    fetchLikedShowIds();
+  }, [location]);
 
   async function fetchResource(
     endpoint: string,
     {
       method,
+      params,
       onSuccess = () => {},
       onError = () => {},
       useEpisodate = true,
     }: {
       method?: string;
+      params?: Record<string, string>;
       onSuccess?: (data: any) => void;
       onError?: () => void;
       useEpisodate?: boolean;
@@ -71,11 +85,15 @@ export default function Base({
     method || setLoading(true);
     try {
       const res = await (useEpisodate
-        ? fetchFromEpisodate(endpoint, searchParams)
+        ? fetchFromEpisodate(endpoint, params ?? searchParams)
         : fetchFromAPI("liveseries/" + endpoint, { method }, logout, !method));
       const json = await res.json();
       if (res.ok) {
         onSuccess(json);
+        if (method && endpoint.startsWith("liked-shows")) {
+          // Liked shows endpoint was updated, refetch on next page load
+          setUpdateDetected(true);
+        }
       } else {
         setModalMessage(JSON.stringify(json));
         setModalVisible(true);
@@ -104,7 +122,7 @@ export default function Base({
   const context: OutletContext = {
     loading,
     fetchResource,
-    likedShows,
+    likedShowIds,
     reloadSite,
   };
 

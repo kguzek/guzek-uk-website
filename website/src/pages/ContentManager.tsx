@@ -177,7 +177,7 @@ function PagesEditor({
           required
         />
       ))}
-      <div className="form-checkboxes">
+      <div className="form-checkboxes flex-wrap">
         {BOOL_PAGE_PROPERTIES.map((property, idx) => (
           <InputBox
             key={idx}
