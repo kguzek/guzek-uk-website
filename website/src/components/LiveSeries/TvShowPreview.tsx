@@ -23,7 +23,7 @@ export default function TvShowPreview({
 
     setFlipped(!flipped);
 
-    await fetchResource("liked/personal/" + showDetails.id, {
+    await fetchResource("liked-shows/personal/" + showDetails.id, {
       method: isLiked ? "DELETE" : "POST",
       onSuccess: () => reloadSite(),
       onError: () => setFlipped((old) => !old),

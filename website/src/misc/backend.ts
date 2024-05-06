@@ -40,7 +40,7 @@ export function getSearchParams(
 }
 
 /** Determines the API access token and generates a new one if it is out of date. */
-async function getAccessToken(setUser: StateSetter<User | null>) {
+async function getAccessToken(logout: () => void) {
   const accessTokenInfo = localStorage.getItem("accessTokenInfo");
   if (!accessTokenInfo) {
     return null;
@@ -57,7 +57,7 @@ async function getAccessToken(setUser: StateSetter<User | null>) {
     "auth/token",
     "POST",
     { body: { token } },
-    setUser,
+    logout,
     false
   );
   console.info("Refreshing expired access token...");
@@ -65,7 +65,7 @@ async function getAccessToken(setUser: StateSetter<User | null>) {
   if (!res.ok) {
     console.error("Failed to refresh the access token. Logging out.");
     clearStoredLoginInfo();
-    setUser(null);
+    logout();
     return null;
   }
   const body = await res.json();
@@ -87,7 +87,7 @@ async function createRequest(
     params?: Record<string, string> | URLSearchParams;
     body?: Record<string, any>;
   },
-  setUser: StateSetter<User | null>,
+  logout: () => void,
   useAccessToken: boolean = true
 ) {
   const url = API_BASE + path + getSearchParams(params);
@@ -102,7 +102,7 @@ async function createRequest(
   }
   // Set the authorisation headers
   if (useAccessToken) {
-    const accessToken = await getAccessToken(setUser);
+    const accessToken = await getAccessToken(logout);
     if (accessToken) {
       LOG_ACCESS_TOKEN && console.info(accessToken);
       options.headers["Authorization"] = `Bearer ${accessToken}`;
@@ -123,10 +123,10 @@ export async function fetchFromAPI(
     params?: Record<string, string> | URLSearchParams;
     body?: Record<string, any>;
   },
-  setUser: StateSetter<User | null>,
+  logout: () => void,
   useCache: boolean = false
 ) {
-  const request = await createRequest(path, method, { params, body }, setUser);
+  const request = await createRequest(path, method, { params, body }, logout);
   const func = useCache ? fetchWithCache : fetch;
   return await func(request);
 }

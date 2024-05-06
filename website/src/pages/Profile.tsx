@@ -8,11 +8,11 @@ import { setTitle } from "../misc/util";
 function Profile({
   data,
   user,
-  setUser,
+  logout,
 }: {
   data: Translation;
   user: User | null;
-  setUser: StateSetter<User | null>;
+  logout: () => void;
 }) {
   async function handleLogOut(_evt: MouseEvent<HTMLButtonElement>) {
     const token = localStorage.getItem("refreshToken");
@@ -22,10 +22,10 @@ function Profile({
         method: "DELETE",
         body: { token },
       },
-      setUser
+      logout
     );
     clearStoredLoginInfo();
-    setUser(null);
+    logout();
   }
 
   useEffect(() => {

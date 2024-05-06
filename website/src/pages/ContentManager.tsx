@@ -30,12 +30,14 @@ export default function ContentManager({
   menuItems,
   reloadSite,
   setUser,
+  logout,
 }: {
   data: Translation;
   lang: string;
   menuItems: MenuItem[];
   reloadSite: () => void;
   setUser: StateSetter<User | null>;
+  logout: () => void;
 }) {
   const [selectedPageID, setSelectedPageID] = useState(menuItems[0]?.id ?? 0);
 
@@ -73,6 +75,7 @@ export default function ContentManager({
               originalPage={selectedPage as MenuItem}
               reloadSite={reloadSite}
               setUser={setUser}
+              logout={logout}
             />
           </form>
         </>
@@ -87,12 +90,14 @@ function PagesEditor({
   originalPage,
   reloadSite,
   setUser,
+  logout,
 }: {
   data: Translation;
   lang: string;
   originalPage: MenuItem;
   reloadSite: () => void;
   setUser: StateSetter<User | null>;
+  logout: () => void;
 }) {
   const [page, setPage] = useState<MenuItem>(originalPage);
   const [content, setContent] = useState(getEmptyMarkdown());
@@ -107,7 +112,7 @@ function PagesEditor({
         originalPage.id,
         lang,
         (val) => setContent(parseMarkdown(val.content, "html")),
-        setUser
+        logout
       );
     } else {
       setContent(getEmptyMarkdown());
@@ -137,7 +142,7 @@ function PagesEditor({
           method: "PUT",
           body: { ...page, content: content.toString("html") },
         },
-        setUser
+        logout
       );
       if (res.ok) {
         reloadSite();

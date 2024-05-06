@@ -10,10 +10,12 @@ import Modal from "../components/Modal";
 export default function LogIn({
   data,
   user,
+  logout,
   setUser,
 }: {
   data: Translation;
   user: any;
+  logout: () => void;
   setUser: StateSetter<User | null>;
 }) {
   const [email, setEmail] = useState("");
@@ -40,7 +42,7 @@ export default function LogIn({
     const res = await fetchFromAPI(
       "auth/user",
       { method: "POST", body },
-      setUser
+      logout
     );
     const json = await res.json();
     setLoading(false);

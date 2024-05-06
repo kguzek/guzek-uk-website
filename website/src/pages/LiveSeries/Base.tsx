@@ -31,11 +31,11 @@ export type OutletContext = {
 
 export default function Base({
   data,
-  setUser,
+  logout,
   reloadSite,
 }: {
   data: Translation;
-  setUser: StateSetter<User | null>;
+  logout: () => void;
   reloadSite: () => Promise<void>;
 }) {
   const [loading, setLoading] = useState(false);
@@ -48,7 +48,7 @@ export default function Base({
   useEffect(() => {
     if (loading || likedShows) return;
 
-    fetchResource("liked/personal", {
+    fetchResource("liked-shows/personal", {
       onSuccess: setLikedShows,
       useEpisodate: false,
     });
@@ -72,7 +72,7 @@ export default function Base({
     try {
       const res = await (useEpisodate
         ? fetchFromEpisodate(endpoint, searchParams)
-        : fetchFromAPI("liveseries/" + endpoint, { method }, setUser, !method));
+        : fetchFromAPI("liveseries/" + endpoint, { method }, logout, !method));
       const json = await res.json();
       if (res.ok) {
         onSuccess(json);

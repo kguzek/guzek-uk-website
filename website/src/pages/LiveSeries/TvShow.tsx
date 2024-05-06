@@ -92,7 +92,7 @@ export default function TvShow({ data }: { data: Translation }) {
   async function handleHeart() {
     setFlipped(!flipped);
 
-    await fetchResource("liked/personal/" + tvShowDetails?.id, {
+    await fetchResource("liked-shows/personal/" + tvShowDetails?.id, {
       method: isLiked ? "DELETE" : "POST",
       onSuccess: () => reloadSite(),
       onError: () => setFlipped((old) => !old),

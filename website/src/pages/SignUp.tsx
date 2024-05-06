@@ -11,10 +11,12 @@ export default function SignUp({
   data,
   user,
   setUser,
+  logout,
 }: {
   data: Translation;
   user: any;
   setUser: StateSetter<User | null>;
+  logout: () => void;
 }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -50,7 +52,7 @@ export default function SignUp({
     const res = await fetchFromAPI(
       "auth/users",
       { method: "POST", body },
-      setUser
+      logout
     );
     const json = await res.json();
     setLoading(false);
