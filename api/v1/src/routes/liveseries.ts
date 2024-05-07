@@ -14,7 +14,9 @@ export const router = express.Router();
 
 const logger = getLogger(__filename);
 
-type WatchedData = { [showId: string]: number[] };
+type WatchedData = { [season: string]: number[] };
+
+type WatchedShowData = { [showId: string]: WatchedData };
 
 function validateNaturalNumber(value: any) {
   if (!Number.isInteger(value)) return `Key '${value}' must be an integer.`;
@@ -39,8 +41,8 @@ function validateWatchedData(data: any, res: Response) {
   if (!data) return reject("Watched data must be provided in request body.");
   if (Object.keys(data).length === 0)
     return reject("Watched data cannot be empty.");
-  for (const [showId, watchedList] of Object.entries(data)) {
-    const errorMessage = validateNaturalNumber(+showId);
+  for (const [season, watchedList] of Object.entries(data)) {
+    const errorMessage = validateNaturalNumber(+season);
     if (errorMessage) return reject(errorMessage);
     // validateNaturalList already sends 400 response if invalid
     if (!validateNaturalList(watchedList, res)) return;
@@ -107,12 +109,12 @@ router.get("/liked-shows/personal", async (req, res) => {
 });
 
 // GET all users' watched episodes
-router.get("/watched", (_req, res) =>
+router.get("/watched-episodes", (_req, res) =>
   readAllDatabaseEntries(WatchedEpisodes, res)
 );
 
 // GET own watched episodes
-router.get("/watched/personal", async (req, res) => {
+router.get("/watched-episodes/personal", async (req, res) => {
   const watchedEpisodes = await readDatabaseEntry(
     WatchedEpisodes,
     res,
@@ -122,7 +124,7 @@ router.get("/watched/personal", async (req, res) => {
   );
   if (!watchedEpisodes) return;
   const watchedData =
-    (watchedEpisodes[0]?.get("watchedEpisodes") as WatchedData) ?? {};
+    (watchedEpisodes[0]?.get("watchedEpisodes") as WatchedShowData) ?? {};
   sendOK(res, watchedData);
 });
 
@@ -137,7 +139,10 @@ router.delete("/liked-shows/personal/:showId", (req, res) =>
 );
 
 // UPDATE own watched episodes
-router.patch("/watched/personal", async (req, res) => {
+router.put("/watched-episodes/personal/:showId", async (req, res) => {
+  const showId = +req.params.showId;
+  const errorMessage = validateNaturalNumber(showId);
+  if (errorMessage) return sendError(res, 400, { message: errorMessage });
   const watchedData = validateWatchedData(req.body, res);
   if (!watchedData) return;
   const where = { userUUID: req.user.uuid };
@@ -152,13 +157,13 @@ router.patch("/watched/personal", async (req, res) => {
   if (storedData.length === 0) {
     await createDatabaseEntry(WatchedEpisodes, req, res, {
       ...where,
-      watchedEpisodes: watchedData,
+      watchedEpisodes: { [showId]: watchedData },
     });
     return;
   }
   const watchedEpisodes = {
-    ...(storedData[0].get("watchedEpisodes") as WatchedData),
-    ...watchedData,
+    ...(storedData[0].get("watchedEpisodes") as WatchedShowData),
+    [showId]: watchedData,
   };
   updateDatabaseEntry(WatchedEpisodes, req, res, { watchedEpisodes }, where);
 });

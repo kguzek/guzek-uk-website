@@ -9,7 +9,8 @@ const logger = getLogger(__filename);
 // Allows all requests to go through, even if JWT authentication fails.
 const DISABLE_AUTH = process.env.NODE_ENV === "development" && false;
 
-// TODO: Server-side token expiry vaildation
+// If false, allows requests with expired access tokens to go through
+const VERIFY_TOKEN_EXPIRY = true;
 
 export function getTokenSecret(type: "access" | "refresh") {
   const secret = process.env[`JWT_${type.toUpperCase()}_TOKEN_SECRET`];
@@ -45,12 +46,12 @@ const ENDPOINTS = {
       "/tu-lalem", // Submit app coordinates
       "/liveseries/liked-shows/personal", // Add show to liked list
     ],
-    PUT: [],
+    PUT: ["/liveseries/watched-episodes/personal"], // Modify own watched episodes
     DELETE: [
       "/auth/token", // Log out
       "/liveseries/liked-shows/personal", // Remove show from liked list
     ],
-    PATCH: ["/liveseries/watched-episodes/personal"], // Modify own watched episodes
+    PATCH: [],
   },
 } as const;
 
@@ -89,8 +90,14 @@ export function authMiddleware(
       logger.error(err);
       return reject(401, "Invalid authorisation token.");
     }
-    req.user = user as UserObj;
-    // console.log(req.user);
+    const { iat, exp, ...userDetails } = user as UserObj & {
+      iat: number;
+      exp: number;
+    };
+    req.user = userDetails;
+    if (VERIFY_TOKEN_EXPIRY && new Date().getTime() > exp) {
+      return reject(401, "Access token is expired.");
+    }
     if (endpointAccessibleBy.loggedInUser || req.user?.admin) {
       return void next();
     }
