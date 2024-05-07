@@ -35,21 +35,6 @@ function validateNaturalList(list: any, res: Response) {
   return list as number[];
 }
 
-function validateWatchedData(data: any, res: Response) {
-  const reject = (message: string) => void sendError(res, 400, { message });
-
-  if (!data) return reject("Watched data must be provided in request body.");
-  if (Object.keys(data).length === 0)
-    return reject("Watched data cannot be empty.");
-  for (const [season, watchedList] of Object.entries(data)) {
-    const errorMessage = validateNaturalNumber(+season);
-    if (errorMessage) return reject(errorMessage);
-    // validateNaturalList already sends 400 response if invalid
-    if (!validateNaturalList(watchedList, res)) return;
-  }
-  return data as WatchedData;
-}
-
 const getLikedShows = (req: Request, res: Response) =>
   readDatabaseEntry(
     LikedShows,
@@ -139,31 +124,33 @@ router.delete("/liked-shows/personal/:showId", (req, res) =>
 );
 
 // UPDATE own watched episodes
-router.put("/watched-episodes/personal/:showId", async (req, res) => {
+router.put("/watched-episodes/personal/:showId/:season", async (req, res) => {
   const showId = +req.params.showId;
-  const errorMessage = validateNaturalNumber(showId);
+  const season = +req.params.season;
+  const errorMessage =
+    validateNaturalNumber(showId) ?? validateNaturalNumber(season);
   if (errorMessage) return sendError(res, 400, { message: errorMessage });
-  const watchedData = validateWatchedData(req.body, res);
-  if (!watchedData) return;
+  if (!validateNaturalList(req.body, res)) return;
   const where = { userUUID: req.user.uuid };
-  const storedData = await readDatabaseEntry(
+  const storedModel = await readDatabaseEntry(
     WatchedEpisodes,
     res,
     where,
     undefined,
     true
   );
-  if (!storedData) return;
-  if (storedData.length === 0) {
+  if (!storedModel) return;
+  if (storedModel.length === 0) {
     await createDatabaseEntry(WatchedEpisodes, req, res, {
       ...where,
-      watchedEpisodes: { [showId]: watchedData },
+      watchedEpisodes: { [showId]: { [season]: req.body } },
     });
     return;
   }
+  const storedData = storedModel[0].get("watchedEpisodes") as WatchedShowData;
   const watchedEpisodes = {
-    ...(storedData[0].get("watchedEpisodes") as WatchedShowData),
-    [showId]: watchedData,
+    ...storedData,
+    [showId]: { ...storedData[showId], [season]: req.body },
   };
   updateDatabaseEntry(WatchedEpisodes, req, res, { watchedEpisodes }, where);
 });
