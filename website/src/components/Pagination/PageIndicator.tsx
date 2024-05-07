@@ -48,7 +48,7 @@ export default function PageIndicator({
       } ${direction ? "auxiliary" : ""}`}
       to={disabled ? "#" : "?" + getNewSearchParams()}
       onClick={(evt) => {
-        (loading || disabled) && evt.preventDefault();
+        (loading.length > 0 || disabled) && evt.preventDefault();
       }}
     >
       {displayValue}

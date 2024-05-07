@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext, useParams } from "react-router-dom";
 import Carousel from "../../components/Carousel";
-import Episode from "./Episode";
+import Episode from "../../components/LiveSeries/Episode";
 import {
   Episode as EpisodeData,
   ErrorCode,
@@ -13,28 +13,29 @@ import ErrorPage from "../ErrorPage";
 import { OutletContext } from "./Base";
 import TvShowSkeleton from "../../components/LiveSeries/TvShowSkeleton";
 
-export interface WatchedEpisodes {
-  [season: number]: number[];
-}
-
 export default function TvShow({ data }: { data: Translation }) {
   const [flipped, setFlipped] = useState(false);
-  const [tvShowDetails, setTvShowDetails] = useState<null | TvShowDetails>(
-    null
-  );
-  const [watchedEpisodes, setWatchedEpisodes] = useState<WatchedEpisodes>({});
-  const { tvShowId } = useParams();
-  const { loading, likedShowIds, reloadSite, fetchResource } =
-    useOutletContext<OutletContext>();
+  const [tvShowDetails, setTvShowDetails] = useState<
+    null | TvShowDetails | undefined
+  >(null);
+  const { permalink } = useParams();
+  const {
+    likedShowIds,
+    watchedEpisodes,
+    setWatchedEpisodes,
+    reloadSite,
+    fetchResource,
+  } = useOutletContext<OutletContext>();
 
   useEffect(() => {
-    if (!tvShowId) return;
+    if (!permalink) return;
 
     fetchResource("show-details", {
-      params: { q: tvShowId },
+      params: { q: permalink },
       onSuccess: (json) => setTvShowDetails(json.tvShow),
+      onError: () => setTvShowDetails(undefined),
     });
-  }, [tvShowId]);
+  }, [permalink]);
 
   useEffect(() => {
     setTitle(
@@ -82,13 +83,33 @@ export default function TvShow({ data }: { data: Translation }) {
     });
   }
 
-  if (loading) return <TvShowSkeleton />;
+  function updateWatchedEpisodes(season: string, episodes: number[]) {
+    if (!tvShowDetails) return;
+    console.log("updating in API", episodes);
+    fetchResource(`watched-episodes/personal/${tvShowDetails.id}/${season}`, {
+      method: "PUT",
+      onSuccess: () => reloadSite(),
+      onError: () => setWatchedEpisodes(watchedEpisodes),
+      body: episodes,
+      useEpisodate: false,
+    });
+    setWatchedEpisodes((old) => ({
+      ...old,
+      [tvShowDetails.id]: { ...old?.[tvShowDetails.id], [season]: episodes },
+    }));
+  }
 
-  if (!tvShowDetails)
+  if (tvShowDetails === undefined) {
     return <ErrorPage data={data} errorCode={ErrorCode.NotFound} />;
+  }
+
+  if (!tvShowDetails) return <TvShowSkeleton />;
 
   const isLikedOld = tvShowDetails && likedShowIds?.includes(tvShowDetails.id);
   const isLiked = flipped ? !isLikedOld : isLikedOld;
+  const watchedInShow = watchedEpisodes?.[tvShowDetails.id] ?? {};
+  const isSeasonWatched = (season: string, episodes: EpisodeData[]) =>
+    watchedInShow[+season]?.length === episodes.length;
 
   return (
     <div className="details">
@@ -191,21 +212,24 @@ export default function TvShow({ data }: { data: Translation }) {
             </h4>
             <div
               className="watched"
+              title={data.liveSeries.tvShow.markAllWatched.replace(
+                "{UN}",
+                isSeasonWatched(season, episodes)
+                  ? data.liveSeries.tvShow.un
+                  : ""
+              )}
               onClick={() =>
-                setWatchedEpisodes((old) => ({
-                  ...old,
-                  [+season]:
-                    watchedEpisodes[+season]?.length === episodes.length
-                      ? []
-                      : episodes.map((episode) => episode.episode),
-                }))
+                updateWatchedEpisodes(
+                  season,
+                  isSeasonWatched(season, episodes)
+                    ? []
+                    : episodes.map((episode) => episode.episode)
+                )
               }
             >
               <i
                 className={`fas fa-eye${
-                  watchedEpisodes[+season]?.length === episodes.length
-                    ? ""
-                    : "-slash"
+                  isSeasonWatched(season, episodes) ? "" : "-slash"
                 }`}
               ></i>
             </div>
@@ -216,8 +240,7 @@ export default function TvShow({ data }: { data: Translation }) {
                 key={`episode-${episode.episode}`}
                 data={data}
                 episode={episode}
-                watchedEpisodes={watchedEpisodes}
-                setWatchedEpisodes={setWatchedEpisodes}
+                showId={tvShowDetails.id}
               />
             ))}
           </div>

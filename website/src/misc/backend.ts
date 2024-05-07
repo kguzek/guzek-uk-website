@@ -82,7 +82,7 @@ async function createRequest(
   method: string,
   {
     params,
-    body = {},
+    body,
   }: {
     params?: Record<string, string> | URLSearchParams;
     body?: Record<string, any>;
@@ -96,9 +96,10 @@ async function createRequest(
     headers: {},
   };
   // Set the request payload (if present)
-  if (Object.keys(body).length > 0) {
+  if (body) {
     options.headers["Content-Type"] = "application/json";
     options.body = JSON.stringify(body);
+    console.log(options.body);
   }
   // Set the authorisation headers
   if (useAccessToken) {

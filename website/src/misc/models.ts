@@ -79,4 +79,12 @@ export type Episode = {
   air_date: string;
 };
 
+export interface WatchedEpisodes {
+  [season: number]: number[];
+}
+
+export interface WatchedEpisodesData {
+  [showId: number]: WatchedEpisodes;
+}
+
 export type StateSetter<T> = Dispatch<SetStateAction<T>>;
