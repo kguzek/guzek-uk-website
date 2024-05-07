@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { scrollToElement, useScroll } from "../misc/util";
 import "../styles/carousel.css";
 
 export default function Carousel({
@@ -8,18 +9,12 @@ export default function Carousel({
   className?: string;
   images: string[];
 }) {
-  useEffect(() => {
-    const carousel = document.querySelector(".carousel");
-    if (!carousel) return;
-    carousel.addEventListener("scroll", handleScroll, { passive: true });
-    return () => carousel.removeEventListener("scroll", handleScroll);
-  }, []);
+  const { scroll: carouselScroll, totalWidth: carouselTotalWidth } =
+    useScroll(".carousel");
 
-  function handleScroll(scrollEvent: Event) {
-    const carouselElement = scrollEvent?.target as Element;
+  useEffect(() => {
     const scrolled =
-      ((carouselElement.scrollLeft / carouselElement.scrollWidth) *
-        images.length) /
+      ((carouselScroll / carouselTotalWidth) * images.length) /
       (images.length - 1);
     const carouselIndicator = document.querySelector<HTMLElement>(
       ".carousel-indicator"
@@ -28,22 +23,15 @@ export default function Carousel({
     carouselIndicator.style.transform = `translateX(${
       (140 - 14) * scrolled
     }px)`;
-  }
+  }, [carouselScroll]);
 
   function getSelectedImage() {
-    const carouselElement = document.querySelector(".carousel");
-    if (!carouselElement) return 1;
-    const imageWidth = carouselElement.scrollWidth / images.length;
-    return Math.round(carouselElement.scrollLeft / imageWidth) + 1;
+    const imageWidth = carouselTotalWidth / images.length;
+    return Math.round(carouselScroll / imageWidth) + 1;
   }
 
-  function scrollToImage(imageNumber: number) {
-    document.getElementById(`image-${imageNumber}`)?.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "center",
-    });
-  }
+  const scrollToImage = (imageNumber: number) =>
+    scrollToElement(`#image-${imageNumber}`);
 
   function previousImage() {
     const selectedImage = getSelectedImage();

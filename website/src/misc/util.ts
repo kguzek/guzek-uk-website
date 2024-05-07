@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { fetchFromAPI } from "./backend";
 import { PageContent, StateSetter, User } from "./models";
 
@@ -59,4 +60,39 @@ export async function fetchPageContent(
   const url = `pages/${id}`;
   const body = await tryFetch(url, { lang }, DEFAULT_PAGE_DATA, logout);
   setContent(body);
+}
+
+export function useScroll(selector: string) {
+  const [scroll, setScroll] = useState(0);
+  const [element, setElement] = useState<Element | null>(null);
+
+  useEffect(() => {
+    const elem = document.querySelector(selector);
+    if (!elem) throw Error("Invalid selector " + selector);
+    setElement(elem);
+    elem.addEventListener("scroll", handleScroll, { passive: true });
+    return () => elem.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  function handleScroll(scrollEvent: Event) {
+    const elem = scrollEvent.target as Element;
+    setScroll(elem.scrollLeft ?? 0);
+  }
+
+  return {
+    scroll,
+    totalWidth: element?.scrollWidth ?? 0,
+    visibleWidth: (element as HTMLElement | null)?.offsetWidth ?? 0,
+  };
+}
+
+export function scrollToElement(
+  selector: string,
+  inline: ScrollLogicalPosition = "center"
+) {
+  document.querySelector(selector)?.scrollIntoView({
+    behavior: "smooth",
+    block: "nearest",
+    inline,
+  });
 }

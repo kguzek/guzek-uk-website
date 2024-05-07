@@ -249,6 +249,37 @@
   cursor: not-allowed;
 }
 
+.home-carousel {
+  width: 100%;
+  position: relative;
+  --translate-left: calc(-50%);
+}
+
+.home-carousel .carousel-scroller {
+  position: absolute;
+  opacity: 0;
+}
+
+.home-carousel:hover .carousel-scroller {
+  opacity: 0.8;
+}
+
+.home-carousel .carousel-scroller:hover {
+  opacity: 1;
+}
+
+.home-carousel .left {
+  left: 0;
+}
+
+.home-carousel .right {
+  right: 0;
+}
+
+.home-carousel .carousel-scroller.hidden {
+  opacity: 0;
+}
+
 @media screen and (max-width: 980px) {
   .episodes {
     flex-direction: column;
@@ -261,6 +292,19 @@
 
   .embed iframe {
     width: 80%;
+  }
+
+  .home-carousel {
+    --translate-left: -35%;
+  }
+
+  .home-carousel .carousel-scroller,
+  .home-carousel:hover .carousel-scroller {
+    opacity: 0.9;
+  }
+
+  .home-carousel .carousel-scroller.hidden {
+    opacity: 0;
   }
 }
 
@@ -300,4 +344,3 @@
     gap: 10px;
   }
 }
-
