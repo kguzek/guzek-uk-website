@@ -20,6 +20,7 @@
 .text {
   font-family: "Raleway", sans-serif;
   font-weight: 500;
+  margin: 0 10vw;
 }
 
 .text img {
@@ -83,9 +84,9 @@ body {
   color: var(--color-primary);
   font-family: "Roboto Slab", serif;
   font-size: 1.2rem;
-  padding: 10px 2em;
-  margin: 0;
   min-height: 100%;
+  padding: 10px 2em;
+  margin: 0px calc(20vw - 205px);
 }
 
 .color-primary {
@@ -99,15 +100,23 @@ body {
 }
 
 .cutoff {
-  text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .flex {
   display: flex;
   align-items: center;
   gap: 5px;
+}
+
+.gap-10 {
+  gap: 10px;
+}
+
+.gap-15 {
+  gap: 15px;
 }
 
 .flex-wrap {
@@ -120,13 +129,18 @@ body {
   background: var(--color-accent);
 }
 
-@media screen and (min-width: 1101px) {
-  .text {
-    margin-left: 10vw;
-    margin-right: 10vw;
+@media screen and (max-width: 1100px) {
+  body {
+    margin: 0 0;
   }
 
+  .text {
+    margin: 0;
+  }
+}
+
+@media screen and (max-width: 550px) {
   body {
-    margin: 0px calc(25vw - 275px);
+    padding: 10px 1em;
   }
 }

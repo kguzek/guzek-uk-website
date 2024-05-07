@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchFromAPI } from "./backend";
-import { PageContent, StateSetter, User } from "./models";
+import { Episode, PageContent, StateSetter, User } from "./models";
 
 export const PAGE_NAME = "Guzek UK";
 
@@ -96,3 +96,6 @@ export function scrollToElement(
     inline,
   });
 }
+
+export const hasEpisodeAired = (episode: Episode) =>
+  new Date() > new Date(episode.air_date);

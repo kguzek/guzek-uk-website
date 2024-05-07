@@ -68,6 +68,10 @@
     --translate-left: 0;
   }
 
+  .carousel-scroller {
+    font-size: medium;
+  }
+
   .carousel-container .carousel-scroller.left {
     order: 1;
   }

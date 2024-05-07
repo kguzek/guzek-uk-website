@@ -3,7 +3,12 @@ import { Outlet, Link, useLocation, useSearchParams } from "react-router-dom";
 import Modal from "../../components/Modal";
 import { fetchFromAPI } from "../../misc/backend";
 import { fetchFromEpisodate } from "../../misc/episodate";
-import { StateSetter, User, WatchedEpisodesData } from "../../misc/models";
+import {
+  ShowData,
+  StateSetter,
+  User,
+  WatchedEpisodes,
+} from "../../misc/models";
 import { Translation } from "../../misc/translations";
 import "../../styles/liveseries.css";
 
@@ -28,8 +33,8 @@ export type OutletContext = {
   ) => Promise<void>;
   reloadSite: () => Promise<void>;
   likedShowIds: null | number[];
-  watchedEpisodes: null | WatchedEpisodesData;
-  setWatchedEpisodes: StateSetter<null | WatchedEpisodesData>;
+  watchedEpisodes: null | ShowData<WatchedEpisodes>;
+  setWatchedEpisodes: StateSetter<null | ShowData<WatchedEpisodes>>;
 };
 
 export default function Base({
@@ -50,7 +55,7 @@ export default function Base({
   const [watchedEpisodesUpdated, setWatchedEpisodesUpdated] = useState(false);
   const [likedShowIds, setLikedShowIds] = useState<null | number[]>(null);
   const [watchedEpisodes, setWatchedEpisodes] =
-    useState<null | WatchedEpisodesData>(null);
+    useState<null | ShowData<WatchedEpisodes>>(null);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
 
