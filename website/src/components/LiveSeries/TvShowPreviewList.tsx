@@ -45,7 +45,7 @@ export default function TvShowPreviewList({
         numPages={tvShows.pages}
       />
       <div className="previews-list">
-        {tvShowsRaw && !loading
+        {tvShowsRaw && loading.length === 0
           ? tvShows.tv_shows.map((showDetails) => (
               <TvShowPreview
                 key={"tvShow-" + showDetails.id}

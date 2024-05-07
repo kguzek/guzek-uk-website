@@ -15,12 +15,12 @@ export default function Search({ data }: { data: Translation }) {
   const searchQuery = searchParams.get("q");
   const title = getLiveSeriesTitle(data, "search");
   const resultsLabel = `${data.liveSeries.search.results} "${searchQuery}"`;
-  const { loading, fetchResource } = useOutletContext<OutletContext>();
+  const { fetchResource } = useOutletContext<OutletContext>();
 
   useEffect(() => {
     const newTitle = searchQuery ? resultsLabel : title;
     setTitle(newTitle);
-  }, [data, searchParams, loading]);
+  }, [data, searchParams]);
 
   useEffect(() => {
     if (!searchQuery) return;
@@ -43,23 +43,25 @@ export default function Search({ data }: { data: Translation }) {
 
   return (
     <>
-      <h2>{searchQuery ? resultsLabel : title}</h2>
-      {searchQuery ? (
-        <TvShowPreviewList data={data} tvShows={results ?? undefined} />
-      ) : (
-        <form className="form-editor" onSubmit={submitForm}>
-          <InputBox
-            label={data.liveSeries.search.label}
-            value={inputValue}
-            setValue={setInputValue}
-            required={true}
-            placeholder={data.liveSeries.search.prompt}
-            autofocus
-          />
-          <button className="btn" role="submit">
-            {data.liveSeries.search.search}
-          </button>
-        </form>
+      <h2>{title}</h2>
+      <form className="form-editor search" onSubmit={submitForm}>
+        <InputBox
+          label={data.liveSeries.search.label}
+          value={inputValue}
+          setValue={setInputValue}
+          required={true}
+          placeholder={data.liveSeries.search.prompt}
+          autofocus
+        />
+        <button className="btn" role="submit" style={{ minWidth: "unset" }}>
+          {data.liveSeries.search.search}
+        </button>
+      </form>
+      {searchQuery && (
+        <>
+          <h3>{resultsLabel}</h3>
+          <TvShowPreviewList data={data} tvShows={results ?? undefined} />
+        </>
       )}
     </>
   );

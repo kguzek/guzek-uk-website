@@ -303,7 +303,7 @@ export default function App() {
           <Route path="search" element={<Search data={pageContent} />} />
           <Route path="tv-show">
             <Route index element={notFoundErrorPage} />
-            <Route path=":tvShowId" element={<TvShow data={pageContent} />} />
+            <Route path=":permalink" element={<TvShow data={pageContent} />} />
           </Route>
           <Route path="*" element={notFoundErrorPage} />
         </Route>

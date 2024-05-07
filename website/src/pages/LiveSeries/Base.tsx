@@ -3,14 +3,12 @@ import { Outlet, Link, useLocation, useSearchParams } from "react-router-dom";
 import Modal from "../../components/Modal";
 import { fetchFromAPI } from "../../misc/backend";
 import { fetchFromEpisodate } from "../../misc/episodate";
-import { User } from "../../misc/models";
+import { StateSetter, User, WatchedEpisodesData } from "../../misc/models";
 import { Translation } from "../../misc/translations";
 import "../../styles/liveseries.css";
 
-type LikedShowIds = null | number[];
-
 export type OutletContext = {
-  loading: boolean;
+  loading: string[];
   fetchResource: (
     endpoint: string,
     {
@@ -22,13 +20,16 @@ export type OutletContext = {
     }: {
       method?: string;
       params?: Record<string, string>;
+      body?: Record<string, any>;
       onSuccess?: (data: any) => void;
       onError?: () => void;
       useEpisodate?: boolean;
     }
   ) => Promise<void>;
-  likedShowIds: LikedShowIds;
   reloadSite: () => Promise<void>;
+  likedShowIds: null | number[];
+  watchedEpisodes: null | WatchedEpisodesData;
+  setWatchedEpisodes: StateSetter<null | WatchedEpisodesData>;
 };
 
 export default function Base({
@@ -42,43 +43,61 @@ export default function Base({
   reloadSite: () => Promise<void>;
   user: User | null;
 }) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<string[]>([]);
   const [modalMessage, setModalMessage] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [updateDetected, setUpdateDetected] = useState(false);
-  const [likedShowIds, setLikedShowIds] = useState<LikedShowIds>(null);
+  const [likedShowsUpdated, setLikedShowsUpdated] = useState(false);
+  const [watchedEpisodesUpdated, setWatchedEpisodesUpdated] = useState(false);
+  const [likedShowIds, setLikedShowIds] = useState<null | number[]>(null);
+  const [watchedEpisodes, setWatchedEpisodes] =
+    useState<null | WatchedEpisodesData>(null);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
-    if (loading || likedShowIds) return;
-    fetchLikedShowIds();
+    if (likedShowIds && watchedEpisodes) return;
+    fetchLikedShows();
+    fetchWatchedEpisodes();
   }, []);
 
-  function fetchLikedShowIds() {
+  useEffect(() => {
+    if (likedShowsUpdated) {
+      setLikedShowsUpdated(false);
+      fetchLikedShows();
+    }
+    if (watchedEpisodesUpdated) {
+      setWatchedEpisodesUpdated(false);
+      fetchWatchedEpisodes();
+    }
+  }, [location]);
+
+  function fetchLikedShows() {
     fetchResource("liked-shows/personal", {
       onSuccess: setLikedShowIds,
       useEpisodate: false,
     });
   }
 
-  useEffect(() => {
-    if (!updateDetected) return;
-    setUpdateDetected(false);
-    fetchLikedShowIds();
-  }, [location]);
+  function fetchWatchedEpisodes() {
+    fetchResource("watched-episodes/personal", {
+      onSuccess: setWatchedEpisodes,
+      useEpisodate: false,
+    });
+  }
 
   async function fetchResource(
     endpoint: string,
     {
       method,
       params,
+      body,
       onSuccess = () => {},
       onError = () => {},
       useEpisodate = true,
     }: {
       method?: string;
       params?: Record<string, string>;
+      body?: Record<string, any>;
       onSuccess?: (data: any) => void;
       onError?: () => void;
       useEpisodate?: boolean;
@@ -91,20 +110,34 @@ export default function Base({
         onError();
       } else {
         setLikedShowIds([]);
+        setWatchedEpisodes({});
       }
       return;
     }
-    method || setLoading(true);
+    method || setLoading((old) => [...old, endpoint]);
     try {
       const res = await (useEpisodate
         ? fetchFromEpisodate(endpoint, params ?? searchParams)
-        : fetchFromAPI("liveseries/" + endpoint, { method }, logout, !method));
+        : fetchFromAPI(
+            "liveseries/" + endpoint,
+            { method, body },
+            logout,
+            !method
+          ));
       const json = await res.json();
       if (res.ok) {
         onSuccess(json);
-        if (method && endpoint.startsWith("liked-shows")) {
-          // Liked shows endpoint was updated, refetch on next page load
-          setUpdateDetected(true);
+        if (method) {
+          switch (endpoint.split("/")[0]) {
+            case "liked-shows":
+              setLikedShowsUpdated(true);
+              break;
+            case "watched-episodes":
+              setWatchedEpisodesUpdated(true);
+              break;
+            default:
+              break;
+          }
         }
       } else {
         setModalMessage(JSON.stringify(json));
@@ -119,7 +152,7 @@ export default function Base({
       setSearchParams("");
       onError();
     }
-    method || setLoading(false);
+    method || setLoading((old) => old.filter((value) => value !== endpoint));
   }
 
   const getClassName = (path?: string) =>
@@ -134,8 +167,10 @@ export default function Base({
   const context: OutletContext = {
     loading,
     fetchResource,
-    likedShowIds,
     reloadSite,
+    likedShowIds,
+    watchedEpisodes,
+    setWatchedEpisodes,
   };
 
   return (
@@ -174,6 +209,6 @@ export default function Base({
 
 export const getLiveSeriesTitle = (
   data: Translation,
-  page: keyof Omit<Translation["liveSeries"], "title" | "tvShowList">
+  page: "home" | "mostPopular" | "search" | "tvShow"
 ) => `${data.liveSeries[page].title} – ${data.liveSeries.title}`;
 

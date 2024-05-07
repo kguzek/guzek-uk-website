@@ -88,6 +88,10 @@ body {
   min-height: 100%;
 }
 
+.color-primary {
+  color: var(--color-primary);
+}
+
 .link-container {
   display: flex;
   justify-content: stretch;

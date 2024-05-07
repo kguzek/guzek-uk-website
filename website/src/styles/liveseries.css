@@ -157,9 +157,6 @@
 }
 
 .watched {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 2rem;
 }
 
@@ -171,7 +168,9 @@
   color: var(--color-error);
 }
 
-.fa-heart {
+.fa-heart,
+.fa-eye,
+.fa-eye-slash {
   cursor: pointer;
 }
 
@@ -191,6 +190,11 @@
 }
 
 .liveseries-links {
+  gap: 20px;
+}
+
+.search {
+  flex-direction: row;
   gap: 20px;
 }
 
@@ -228,6 +232,21 @@
 
 .preview.skeleton .thumbnail {
   background-color: var(--color-background-soft);
+}
+
+.downloaded {
+  color: var(--color-success);
+  cursor: pointer;
+}
+
+.pending {
+  color: var(--color-accent2);
+  cursor: wait;
+}
+
+.failed {
+  color: var(--color-error);
+  cursor: not-allowed;
 }
 
 @media screen and (max-width: 980px) {
@@ -275,6 +294,10 @@
 
   .gallery {
     width: 100%;
+  }
+
+  .search {
+    gap: 10px;
   }
 }
 

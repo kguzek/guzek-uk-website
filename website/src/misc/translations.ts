@@ -1,4 +1,4 @@
-import { ErrorCode, ErrorPageContent, Language } from "./models";
+import { Episode, ErrorCode, ErrorPageContent, Language } from "./models";
 
 const LONG_DATE_FORMAT = {
   day: "2-digit",
@@ -6,11 +6,15 @@ const LONG_DATE_FORMAT = {
   year: "numeric",
 } as const;
 
-const LONG_TIME_FORMAT = {
+const SHORT_TIME_FORMAT = {
   hour: "2-digit",
   minute: "2-digit",
-  second: "2-digit",
 } as const;
+
+// const LONG_TIME_FORMAT = {
+//   ...SHORT_TIME_FORMAT,
+//   second: "2-digit",
+// } as const;
 
 export type Translation = Readonly<{
   footer: string;
@@ -75,6 +79,11 @@ export type Translation = Readonly<{
       like: string;
       unlike: string;
       showDetails: string;
+      markWatched: string;
+      markAllWatched: string;
+      un: string;
+      serialiseEpisode: (episode: Episode) => string;
+      unwatched: string;
     };
     search: {
       title: string;
@@ -96,6 +105,11 @@ export type Translation = Readonly<{
     mostPopular: {
       title: string;
     };
+    download: {
+      pending: string;
+      failed: string;
+      downloaded: string;
+    };
   };
   error: { [code in ErrorCode]: ErrorPageContent };
 }>;
@@ -109,7 +123,7 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
     dateFormat: new Intl.DateTimeFormat("en-GB", LONG_DATE_FORMAT),
     dateTimeFormat: new Intl.DateTimeFormat("en-GB", {
       ...LONG_DATE_FORMAT,
-      ...LONG_TIME_FORMAT,
+      ...SHORT_TIME_FORMAT,
     }),
     numberFormat: new Intl.NumberFormat("en-GB"),
     networkError:
@@ -182,6 +196,14 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
         like: "Like",
         unlike: "Unlike",
         showDetails: "Show Details",
+        markWatched: "Mark episode as {UN}watched",
+        markAllWatched: "Mark all episodes in season as {UN}watched",
+        un: "un",
+        serialiseEpisode: (episode) =>
+          `S${episode.season.toString().padStart(2, "0")}E${episode.episode
+            .toString()
+            .padStart(2, "0")}`,
+        unwatched: "Unwatched",
       },
       search: {
         title: "Search",
@@ -204,6 +226,11 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
       mostPopular: {
         title: "Most Popular",
       },
+      download: {
+        pending: "Download pending",
+        failed: "Download failed",
+        downloaded: "Downloaded",
+      },
     },
   },
   PL: {
@@ -214,7 +241,7 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
     dateFormat: new Intl.DateTimeFormat("pl-PL", LONG_DATE_FORMAT),
     dateTimeFormat: new Intl.DateTimeFormat("pl-PL", {
       ...LONG_DATE_FORMAT,
-      ...LONG_TIME_FORMAT,
+      ...SHORT_TIME_FORMAT,
     }),
     numberFormat: new Intl.NumberFormat("pl-PL"),
     networkError:
@@ -287,6 +314,12 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
         like: "Polub",
         unlike: "Odlub",
         showDetails: "Dane Serialu",
+        markWatched: "Zaznacz odcinek jako {UN}obejrzany",
+        markAllWatched:
+          "Zaznacz wszystkie odcinki w sezonie jako {UN}obejrzane",
+        un: "nie",
+        serialiseEpisode: (episode) => `S${episode.season}:O${episode.episode}`,
+        unwatched: "Nieobejrzane",
       },
       search: {
         title: "Wyszukiwarka",
@@ -307,6 +340,11 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
       },
       mostPopular: {
         title: "Najpopularniejsze",
+      },
+      download: {
+        pending: "Oczekuje na pobranie",
+        failed: "Pobranie nie powiodło się",
+        downloaded: "Pobrane",
       },
     },
   },
