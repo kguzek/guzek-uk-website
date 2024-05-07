@@ -2,6 +2,7 @@
   justify-content: center;
   align-items: center;
   gap: 10px 0;
+  --translate-left: 50%;
 }
 
 .carousel-container::after {
@@ -20,9 +21,10 @@
   border-radius: 100%;
   width: 1em;
   height: 1em;
-  opacity: 80%;
+  opacity: 0.8;
   cursor: pointer;
   transition: opacity 200ms ease;
+  z-index: 1;
 }
 
 .carousel-scroller:hover {
@@ -30,13 +32,11 @@
 }
 
 .carousel-scroller.left {
-  transform: translateX(50%);
-  order: 0;
+  transform: translateX(var(--translate-left));
 }
 
 .carousel-scroller.right {
-  transform: translateX(-50%);
-  order: 2;
+  transform: translateX(calc(-1 * var(--translate-left)));
 }
 
 .carousel-indicator-container {
@@ -65,9 +65,10 @@
 @media screen and (max-width: 550px) {
   .carousel-container {
     gap: 10px;
+    --translate-left: 0;
   }
 
-  .carousel-scroller.left {
+  .carousel-container .carousel-scroller.left {
     order: 1;
   }
 
@@ -75,12 +76,7 @@
     order: 2;
   }
 
-  .carousel-scroller.right {
+  .carousel-container .carousel-scroller.right {
     order: 3;
   }
-
-  .carousel-scroller {
-    transform: none !important;
-  }
 }
-

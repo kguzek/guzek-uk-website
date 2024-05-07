@@ -85,7 +85,6 @@ export default function TvShow({ data }: { data: Translation }) {
 
   function updateWatchedEpisodes(season: string, episodes: number[]) {
     if (!tvShowDetails) return;
-    console.log("updating in API", episodes);
     fetchResource(`watched-episodes/personal/${tvShowDetails.id}/${season}`, {
       method: "PUT",
       onSuccess: () => reloadSite(),
@@ -127,7 +126,7 @@ export default function TvShow({ data }: { data: Translation }) {
       <div className="flex flex-wrap">
         <div className="genres flex">
           {tvShowDetails.genres.map((genre, idx) => (
-            <div key={`genre-${genre}-${idx}`} className="genre">
+            <div key={`genre-${genre}-${idx}`} className="genre nowrap">
               {genre}
             </div>
           ))}
@@ -249,4 +248,3 @@ export default function TvShow({ data }: { data: Translation }) {
     </div>
   );
 }
-

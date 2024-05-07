@@ -99,7 +99,6 @@ async function createRequest(
   if (body) {
     options.headers["Content-Type"] = "application/json";
     options.body = JSON.stringify(body);
-    console.log(options.body);
   }
   // Set the authorisation headers
   if (useAccessToken) {
