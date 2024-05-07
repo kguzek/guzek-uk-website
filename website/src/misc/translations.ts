@@ -101,6 +101,7 @@ export type Translation = Readonly<{
       explore: string;
       shows: string;
       login: string;
+      noUnwatched: string;
     };
     mostPopular: {
       title: string;
@@ -222,6 +223,7 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
         explore: "Explore",
         shows: "Shows",
         login: "You must be logged in to use that function.",
+        noUnwatched: "You're all up-to-date!",
       },
       mostPopular: {
         title: "Most Popular",
@@ -337,6 +339,7 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
         explore: "Przeglądaj",
         shows: "Seriale",
         login: "Żeby skorzystać z tej funkcji, musisz się zalogować.",
+        noUnwatched: "Nie masz żadnych nieobjerzanych odcinków!",
       },
       mostPopular: {
         title: "Najpopularniejsze",

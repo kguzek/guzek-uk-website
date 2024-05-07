@@ -42,11 +42,14 @@ export default function TvShowPreview({
             {showDetails.name} ({showDetails.country})
           </p>
         </Link>
-        <i
-          className={`fa-${isLiked ? "solid" : "regular"} fa-heart`}
-          title={data.liveSeries.tvShow[isLiked ? "unlike" : "like"]}
+        <div
           onClick={handleHeart}
-        ></i>
+          title={data.liveSeries.tvShow[isLiked ? "unlike" : "like"]}
+        >
+          <i
+            className={`clickable fa-${isLiked ? "solid" : "regular"} fa-heart`}
+          ></i>
+        </div>
       </div>
       <Link to={`../tv-show/${showDetails.permalink}`} title={showDetails.name}>
         <div

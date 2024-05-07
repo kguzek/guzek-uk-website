@@ -12,19 +12,6 @@ export default function Carousel({
   const { scroll: carouselScroll, totalWidth: carouselTotalWidth } =
     useScroll(".carousel");
 
-  useEffect(() => {
-    const scrolled =
-      ((carouselScroll / carouselTotalWidth) * images.length) /
-      (images.length - 1);
-    const carouselIndicator = document.querySelector<HTMLElement>(
-      ".carousel-indicator"
-    );
-    if (!carouselIndicator) return;
-    carouselIndicator.style.transform = `translateX(${
-      (140 - 14) * scrolled
-    }px)`;
-  }, [carouselScroll]);
-
   function getSelectedImage() {
     const imageWidth = carouselTotalWidth / images.length;
     return Math.round(carouselScroll / imageWidth) + 1;
@@ -74,7 +61,16 @@ export default function Carousel({
         onClick={nextImage}
       ></i>
       <div className="carousel-indicator-container">
-        <div className="carousel-indicator"></div>
+        <div
+          className="carousel-indicator"
+          style={{
+            transform: `translateX(${
+              ((140 - 14) *
+                ((carouselScroll / carouselTotalWidth) * images.length)) /
+              (images.length - 1)
+            }px)`,
+          }}
+        ></div>
       </div>
     </div>
   );

@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
+import EpisodesList from "../../components/LiveSeries/EpisodesList";
 import TvShowPreview from "../../components/LiveSeries/TvShowPreview";
 import TvShowPreviewSkeleton from "../../components/LiveSeries/TvShowPreviewSkeleton";
-import { TvShowDetails } from "../../misc/models";
+import { Episode, EpisodeStatuses, TvShowDetails } from "../../misc/models";
 import { Translation } from "../../misc/translations";
-import { scrollToElement, setTitle, useScroll } from "../../misc/util";
+import {
+  hasEpisodeAired,
+  scrollToElement,
+  setTitle,
+  useScroll,
+} from "../../misc/util";
 import { getLiveSeriesTitle, OutletContext } from "./Base";
-import Episode from "../../components/LiveSeries/Episode";
-
-const DOWNLOAD_STATES = ["pending", "failed", "downloaded", undefined] as const;
 
 // Number of skeleton cards to display when loading liked show ids
 const SKELETON_CARDS_COUNT = 4;
@@ -76,10 +79,9 @@ function LikedShowsCarousel({
   }
 
   return (
-    <div className="flex-column">
+    <div className="flex-column home">
       <div className="flex home-carousel">
         <i
-          role="button"
           className={`carousel-scroller fas ${getScrollerClassName("left")}`}
           onClick={previousImage}
         ></i>
@@ -97,7 +99,6 @@ function LikedShowsCarousel({
           )}
         </ul>
         <i
-          role="button"
           className={`carousel-scroller fas ${getScrollerClassName("right")}`}
           onClick={nextImage}
         ></i>
@@ -144,14 +145,20 @@ export default function Home({ data }: { data: Translation }) {
     }
   }, [likedShowIds]);
 
+  function getUnwatchedEpisodes(showId: number) {
+    const unwatched = likedShows[showId].episodes.filter(
+      (episode) =>
+        hasEpisodeAired(episode) &&
+        !watchedEpisodes?.[showId]?.[episode.season]?.includes(episode.episode)
+    );
+    if (unwatched.length > 0) unwatchedEpisodesByShowId[showId] = unwatched;
+    return unwatched;
+  }
+
   const readyToRenderPreviews =
     Object.keys(likedShows).length === likedShowIds?.length;
 
-  const getUnwatchedEpisodes = (showId: number) =>
-    likedShows[showId].episodes.filter(
-      (episode) =>
-        !watchedEpisodes?.[showId]?.[episode.season]?.includes(episode.episode)
-    );
+  const unwatchedEpisodesByShowId: { [showId: number]: Episode[] } = {};
 
   return (
     <>
@@ -176,25 +183,19 @@ export default function Home({ data }: { data: Translation }) {
                 if (unwatchedEpisodes.length === 0) return null;
                 return (
                   <div key={`liked-show-${showId}-${idx}`}>
-                    <h4>
-                      {likedShows[showId].name} ({unwatchedEpisodes.length})
-                    </h4>
-                    <div className="episodes flex-wrap">
-                      {unwatchedEpisodes.map((episode, idx) => (
-                        <Episode
-                          key={`episode-unwatched-${idx}`}
-                          data={data}
-                          episode={episode}
-                          showId={showId}
-                          downloadStatus={
-                            DOWNLOAD_STATES[Math.round(Math.random() * 10) % 4]
-                          }
-                        />
-                      ))}
-                    </div>
+                    <EpisodesList
+                      data={data}
+                      showId={showId}
+                      heading={`${likedShows[showId].name} (${unwatchedEpisodes.length})`}
+                      episodes={unwatchedEpisodes}
+                      episodeStatuses={{}}
+                    />
                   </div>
                 );
               })}
+              {Object.keys(unwatchedEpisodesByShowId).length === 0 && (
+                <p>{data.liveSeries.home.noUnwatched}</p>
+              )}
             </>
           )}
         </>

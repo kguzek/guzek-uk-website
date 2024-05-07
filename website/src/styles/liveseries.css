@@ -136,10 +136,28 @@
   width: 60%;
 }
 
+.episodes-container {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 400ms ease, opacity 1s ease;
+}
+
+.episodes-container.hidden {
+  opacity: 0;
+  grid-template-rows: 0fr;
+}
+
+.episodes-header {
+  display: grid;
+  grid-template-columns: max-content 1.5rem;
+  align-items: center;
+}
+
 .episodes {
   gap: 10px;
   /* width: calc((480px + 5px * 2) * 2 + 10px); */
   width: 100%;
+  overflow: hidden;
 }
 
 .episode {
@@ -150,14 +168,11 @@
   padding: 5px;
   border-radius: 5px;
   width: calc(50% - 15px);
-}
-
-.episode-details {
-  width: calc(100% - 2em);
+  box-sizing: border-box;
 }
 
 .watched {
-  width: 2rem;
+  width: 1.5rem;
 }
 
 .details .fa-heart.fa-regular {
@@ -168,25 +183,18 @@
   color: var(--color-error);
 }
 
-.fa-heart,
-.fa-eye,
-.fa-eye-slash {
-  cursor: pointer;
-}
-
 .fa-eye {
   color: var(--color-primary-strong);
+}
+
+.fa-clock {
+  color: var(--color-primary);
+  cursor: not-allowed;
 }
 
 .fa-eye-slash {
   color: var(--color-accent-soft);
   opacity: 0.8;
-}
-
-.season {
-  display: flex;
-  align-items: center;
-  gap: 15px;
 }
 
 .liveseries-links {
@@ -282,8 +290,7 @@
 
 @media screen and (max-width: 980px) {
   .episodes {
-    flex-direction: column;
-    align-items: center;
+    justify-content: center;
   }
 
   .episode {

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext, useParams } from "react-router-dom";
 import Carousel from "../../components/Carousel";
-import Episode from "../../components/LiveSeries/Episode";
+import EpisodesList from "../../components/LiveSeries/EpisodesList";
 import {
-  Episode as EpisodeData,
+  Episode as EpisodeType,
   ErrorCode,
   TvShowDetails,
 } from "../../misc/models";
 import { Translation } from "../../misc/translations";
-import { setTitle } from "../../misc/util";
+import { hasEpisodeAired, setTitle } from "../../misc/util";
 import ErrorPage from "../ErrorPage";
 import { OutletContext } from "./Base";
 import TvShowSkeleton from "../../components/LiveSeries/TvShowSkeleton";
@@ -43,8 +43,8 @@ export default function TvShow({ data }: { data: Translation }) {
     );
   }, [data, tvShowDetails]);
 
-  function sortEpisodes(episodes: EpisodeData[]) {
-    const seasons: { [season: number]: EpisodeData[] } = {};
+  function sortEpisodes(episodes: EpisodeType[]) {
+    const seasons: { [season: number]: EpisodeType[] } = {};
     for (const episode of episodes) {
       const season = episode.season;
       if (seasons[season]) {
@@ -83,18 +83,22 @@ export default function TvShow({ data }: { data: Translation }) {
     });
   }
 
-  function updateWatchedEpisodes(season: string, episodes: number[]) {
+  function updateWatchedEpisodes(season: string, episodes: EpisodeType[]) {
     if (!tvShowDetails) return;
+    const episodeNumbers = episodes.map((episode) => episode.episode);
     fetchResource(`watched-episodes/personal/${tvShowDetails.id}/${season}`, {
       method: "PUT",
       onSuccess: () => reloadSite(),
       onError: () => setWatchedEpisodes(watchedEpisodes),
-      body: episodes,
+      body: episodeNumbers,
       useEpisodate: false,
     });
     setWatchedEpisodes((old) => ({
       ...old,
-      [tvShowDetails.id]: { ...old?.[tvShowDetails.id], [season]: episodes },
+      [tvShowDetails.id]: {
+        ...old?.[tvShowDetails.id],
+        [season]: episodeNumbers,
+      },
     }));
   }
 
@@ -107,14 +111,14 @@ export default function TvShow({ data }: { data: Translation }) {
   const isLikedOld = tvShowDetails && likedShowIds?.includes(tvShowDetails.id);
   const isLiked = flipped ? !isLikedOld : isLikedOld;
   const watchedInShow = watchedEpisodes?.[tvShowDetails.id] ?? {};
-  const isSeasonWatched = (season: string, episodes: EpisodeData[]) =>
+  const isSeasonWatched = (season: string, episodes: EpisodeType[]) =>
     watchedInShow[+season]?.length === episodes.length;
 
   return (
     <div className="details">
       <h2>
         <i
-          className={`fa-${isLiked ? "solid" : "regular"} fa-heart`}
+          className={`clickable fa-${isLiked ? "solid" : "regular"} fa-heart`}
           title={data.liveSeries.tvShow[isLiked ? "unlike" : "like"]}
           onClick={handleHeart}
         ></i>{" "}
@@ -203,48 +207,45 @@ export default function TvShow({ data }: { data: Translation }) {
       )}
       <h3>{data.liveSeries.tvShow.episodes}</h3>
       {tvShowDetails.episodes.length === 0 ? <p>No episodes to list.</p> : null}
-      {sortEpisodes(tvShowDetails.episodes).map(([season, episodes]) => (
-        <React.Fragment key={`season-${season}`}>
-          <div className="season">
-            <h4>
-              {data.liveSeries.tvShow.season} {season}
-            </h4>
-            <div
-              className="watched"
-              title={data.liveSeries.tvShow.markAllWatched.replace(
-                "{UN}",
-                isSeasonWatched(season, episodes)
-                  ? data.liveSeries.tvShow.un
-                  : ""
-              )}
-              onClick={() =>
-                updateWatchedEpisodes(
-                  season,
-                  isSeasonWatched(season, episodes)
-                    ? []
-                    : episodes.map((episode) => episode.episode)
-                )
-              }
+      {sortEpisodes(tvShowDetails.episodes).map(([season, episodes]) => {
+        const allEpisodesAired = episodes.every(hasEpisodeAired);
+        const seasonWatched = isSeasonWatched(season, episodes);
+        return (
+          <React.Fragment key={`season-${season}`}>
+            <EpisodesList
+              data={data}
+              showId={tvShowDetails.id}
+              heading={`${data.liveSeries.tvShow.season} ${season}`}
+              episodes={episodes}
             >
-              <i
-                className={`fas fa-eye${
-                  isSeasonWatched(season, episodes) ? "" : "-slash"
-                }`}
-              ></i>
-            </div>
-          </div>
-          <div className="episodes flex-wrap">
-            {episodes.map((episode) => (
-              <Episode
-                key={`episode-${episode.episode}`}
-                data={data}
-                episode={episode}
-                showId={tvShowDetails.id}
-              />
-            ))}
-          </div>
-        </React.Fragment>
-      ))}
+              <div className="centred">
+                {allEpisodesAired ? (
+                  <div
+                    title={data.liveSeries.tvShow.markAllWatched.replace(
+                      "{UN}",
+                      seasonWatched ? data.liveSeries.tvShow.un : ""
+                    )}
+                    onClick={() =>
+                      updateWatchedEpisodes(
+                        season,
+                        seasonWatched ? [] : episodes
+                      )
+                    }
+                  >
+                    <i
+                      className={`clickable fas fa-eye${
+                        seasonWatched ? "" : "-slash"
+                      }`}
+                    ></i>
+                  </div>
+                ) : (
+                  <i className="fa-regular fa-clock"></i>
+                )}
+              </div>
+            </EpisodesList>
+          </React.Fragment>
+        );
+      })}
     </div>
   );
 }
