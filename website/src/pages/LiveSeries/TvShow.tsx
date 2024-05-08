@@ -8,12 +8,18 @@ import {
   TvShowDetails,
 } from "../../misc/models";
 import { Translation } from "../../misc/translations";
-import { hasEpisodeAired, setTitle } from "../../misc/util";
+import {
+  getEpisodeAirDate,
+  hasEpisodeAired,
+  isInvalidDate,
+  setTitle,
+} from "../../misc/util";
 import ErrorPage from "../ErrorPage";
 import { OutletContext } from "./Base";
 import TvShowSkeleton from "../../components/LiveSeries/TvShowSkeleton";
 
 export default function TvShow({ data }: { data: Translation }) {
+  const [numImagesLoaded, setNumImagesLoaded] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [tvShowDetails, setTvShowDetails] = useState<
     null | TvShowDetails | undefined
@@ -57,10 +63,16 @@ export default function TvShow({ data }: { data: Translation }) {
   }
 
   function formatDate(which: "start" | "end") {
-    const dateString =
-      tvShowDetails?.[`${which}_date`] ||
-      (which === "end" && tvShowDetails?.episodes?.at(-1)?.air_date);
+    const latestEpisode = tvShowDetails?.episodes?.at(-1);
+    const dateString = tvShowDetails?.[`${which}_date`];
     if (!dateString) {
+      if (which === "end" && latestEpisode) {
+        const latestEpisodeAirDate = getEpisodeAirDate(latestEpisode);
+        if (latestEpisodeAirDate > new Date())
+          return data.liveSeries.tvShow.present;
+        return data.dateTimeFormat.format(latestEpisodeAirDate);
+      }
+
       return data.liveSeries.tvShow[
         which === "end" && tvShowDetails?.status === "Running"
           ? "present"
@@ -68,8 +80,8 @@ export default function TvShow({ data }: { data: Translation }) {
       ];
     }
     const date = new Date(dateString);
-    if (date.toString() === "Invalid Date") return dateString;
-    return date.toLocaleDateString();
+    if (isInvalidDate(date)) return dateString;
+    return data.dateTimeFormat.format(date);
   }
 
   async function handleHeart() {
@@ -114,138 +126,149 @@ export default function TvShow({ data }: { data: Translation }) {
   const isSeasonWatched = (season: string, episodes: EpisodeType[]) =>
     watchedInShow[+season]?.length === episodes.length;
 
+  const imagesLoading = numImagesLoaded < tvShowDetails.pictures.length;
+
   return (
-    <div className="details">
-      <h2>
-        <i
-          className={`clickable fa-${isLiked ? "solid" : "regular"} fa-heart`}
-          title={data.liveSeries.tvShow[isLiked ? "unlike" : "like"]}
-          onClick={handleHeart}
-        ></i>{" "}
-        {tvShowDetails.name}{" "}
-        <small className="regular">
-          ({formatDate("start")}-{formatDate("end")})
-        </small>
-      </h2>
-      <div className="flex flex-wrap">
-        <div className="genres flex">
-          {tvShowDetails.genres.map((genre, idx) => (
-            <div key={`genre-${genre}-${idx}`} className="genre nowrap">
-              {genre}
-            </div>
-          ))}
-        </div>
-        {tvShowDetails.rating ? (
-          <div className="flex">
-            <div
-              className="stars"
-              title={`${(+tvShowDetails.rating).toFixed(1)}/10`}
-            >
-              <div
-                className="flex stars-filled"
-                style={{ width: `${+tvShowDetails.rating * 10}%` }}
-              >
-                {Array(10)
-                  .fill(0)
-                  .map((_, idx) => (
-                    <i
-                      key={`star-filled-${idx}`}
-                      className="fa-solid fa-star"
-                    ></i>
-                  ))}
+    <>
+      {imagesLoading && <TvShowSkeleton />}
+      <div className={`details ${imagesLoading ? "display-none" : ""}`}>
+        <h2>
+          <i
+            className={`clickable fa-${isLiked ? "solid" : "regular"} fa-heart`}
+            title={data.liveSeries.tvShow[isLiked ? "unlike" : "like"]}
+            onClick={handleHeart}
+          ></i>{" "}
+          {tvShowDetails.name}{" "}
+          <small className="regular">
+            ({formatDate("start")}-{formatDate("end")})
+          </small>
+        </h2>
+        <div className="flex flex-wrap">
+          <div className="genres flex">
+            {tvShowDetails.genres.map((genre, idx) => (
+              <div key={`genre-${genre}-${idx}`} className="genre nowrap">
+                {genre}
               </div>
-              <div className="flex stars-empty">
-                {Array(10)
-                  .fill(0)
-                  .map((_, idx) => (
-                    <i
-                      key={`star-empty-${idx}`}
-                      className="fa-regular fa-star"
-                    ></i>
-                  ))}
-              </div>
-            </div>
-            <span>({tvShowDetails.rating_count})</span>
+            ))}
           </div>
-        ) : null}
-      </div>
-      <p>
-        <i className="serif regular">{tvShowDetails.network}</i> (
-        {tvShowDetails.country}) | {tvShowDetails.runtime} min
-      </p>
-      <blockquote
-        dangerouslySetInnerHTML={{
-          // Trim description end from line breaks
-          __html: tvShowDetails.description.replace(
-            /(\s|\<br\s?\>|\\n|\s)*$/,
-            ""
-          ),
-        }}
-      ></blockquote>
-      <small>
-        {data.liveSeries.tvShow.source}:{" "}
-        {tvShowDetails.description_source ? (
-          <a href={tvShowDetails.description_source}>
-            {decodeURI(tvShowDetails.description_source)}
-          </a>
-        ) : (
-          data.liveSeries.tvShow.unknown.toLowerCase()
-        )}
-      </small>
-      {tvShowDetails.youtube_link && (
-        <div className="embed">
-          <iframe
-            src={`https://www.youtube.com/embed/${tvShowDetails.youtube_link}`}
-          ></iframe>
-        </div>
-      )}
-      {tvShowDetails.pictures.length > 0 && (
-        <>
-          <h3>{data.liveSeries.tvShow.images}</h3>
-          <Carousel className="gallery" images={tvShowDetails.pictures} />
-        </>
-      )}
-      <h3>{data.liveSeries.tvShow.episodes}</h3>
-      {tvShowDetails.episodes.length === 0 ? <p>No episodes to list.</p> : null}
-      {sortEpisodes(tvShowDetails.episodes).map(([season, episodes]) => {
-        const allEpisodesAired = episodes.every(hasEpisodeAired);
-        const seasonWatched = isSeasonWatched(season, episodes);
-        return (
-          <React.Fragment key={`season-${season}`}>
-            <EpisodesList
-              data={data}
-              showId={tvShowDetails.id}
-              heading={`${data.liveSeries.tvShow.season} ${season}`}
-              episodes={episodes}
-            >
-              <div className="centred">
-                {allEpisodesAired ? (
-                  <div
-                    title={data.liveSeries.tvShow.markAllWatched.replace(
-                      "{UN}",
-                      seasonWatched ? data.liveSeries.tvShow.un : ""
-                    )}
-                    onClick={() =>
-                      updateWatchedEpisodes(
-                        season,
-                        seasonWatched ? [] : episodes
-                      )
-                    }
-                  >
-                    <i
-                      className={`clickable fas fa-eye${
-                        seasonWatched ? "" : "-slash"
-                      }`}
-                    ></i>
-                  </div>
-                ) : (
-                  <i className="fa-regular fa-clock"></i>
-                )}
+          {tvShowDetails.rating ? (
+            <div className="flex">
+              <div
+                className="stars"
+                title={`${(+tvShowDetails.rating).toFixed(1)}/10`}
+              >
+                <div
+                  className="flex stars-filled"
+                  style={{ width: `${+tvShowDetails.rating * 10}%` }}
+                >
+                  {Array(10)
+                    .fill(0)
+                    .map((_, idx) => (
+                      <i
+                        key={`star-filled-${idx}`}
+                        className="fa-solid fa-star"
+                      ></i>
+                    ))}
+                </div>
+                <div className="flex stars-empty">
+                  {Array(10)
+                    .fill(0)
+                    .map((_, idx) => (
+                      <i
+                        key={`star-empty-${idx}`}
+                        className="fa-regular fa-star"
+                      ></i>
+                    ))}
+                </div>
               </div>
-            </EpisodesList>
-          </React.Fragment>
-        );
-      })}
-    </div>
+              <span>({tvShowDetails.rating_count})</span>
+            </div>
+          ) : null}
+        </div>
+        <p>
+          <i className="serif regular">{tvShowDetails.network}</i> (
+          {tvShowDetails.country}) | {tvShowDetails.runtime} min
+        </p>
+        <blockquote
+          dangerouslySetInnerHTML={{
+            // Trim description end from line breaks
+            __html: tvShowDetails.description.replace(
+              /(\s|\<br\s?\>|\\n|\s)*$/,
+              ""
+            ),
+          }}
+        ></blockquote>
+        <small>
+          {data.liveSeries.tvShow.source}:{" "}
+          {tvShowDetails.description_source ? (
+            <a href={tvShowDetails.description_source}>
+              {decodeURI(tvShowDetails.description_source)}
+            </a>
+          ) : (
+            data.liveSeries.tvShow.unknown.toLowerCase()
+          )}
+        </small>
+        {tvShowDetails.youtube_link && (
+          <div className="embed">
+            <iframe
+              src={`https://www.youtube.com/embed/${tvShowDetails.youtube_link}`}
+            ></iframe>
+          </div>
+        )}
+        {tvShowDetails.pictures.length > 0 && (
+          <>
+            <h3>{data.liveSeries.tvShow.images}</h3>
+            <Carousel
+              className="gallery"
+              images={tvShowDetails.pictures}
+              onLoadImage={() => setNumImagesLoaded((old) => old + 1)}
+            />
+          </>
+        )}
+        <h3>{data.liveSeries.tvShow.episodes}</h3>
+        {tvShowDetails.episodes.length === 0 ? (
+          <p>No episodes to list.</p>
+        ) : null}
+        {sortEpisodes(tvShowDetails.episodes).map(([season, episodes]) => {
+          const allEpisodesAired = episodes.every(hasEpisodeAired);
+          const seasonWatched = isSeasonWatched(season, episodes);
+          return (
+            <React.Fragment key={`season-${season}`}>
+              <EpisodesList
+                data={data}
+                showId={tvShowDetails.id}
+                heading={`${data.liveSeries.tvShow.season} ${season}`}
+                episodes={episodes}
+              >
+                <div className="centred">
+                  {allEpisodesAired ? (
+                    <div
+                      title={data.liveSeries.tvShow.markAllWatched.replace(
+                        "{UN}",
+                        seasonWatched ? data.liveSeries.tvShow.un : ""
+                      )}
+                      onClick={() =>
+                        updateWatchedEpisodes(
+                          season,
+                          seasonWatched ? [] : episodes
+                        )
+                      }
+                    >
+                      <i
+                        className={`clickable fas fa-eye${
+                          seasonWatched ? "" : "-slash"
+                        }`}
+                      ></i>
+                    </div>
+                  ) : (
+                    <i className="fa-regular fa-clock"></i>
+                  )}
+                </div>
+              </EpisodesList>
+            </React.Fragment>
+          );
+        })}
+      </div>
+    </>
   );
 }

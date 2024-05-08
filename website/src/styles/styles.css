@@ -99,6 +99,10 @@ body {
   width: 250px;
 }
 
+.no-overflow {
+  overflow: hidden;
+}
+
 .cutoff {
   overflow: hidden;
   white-space: nowrap;
@@ -122,6 +126,10 @@ body {
 .flex-wrap {
   display: flex;
   flex-wrap: wrap;
+}
+
+.display-none {
+  display: none;
 }
 
 ::selection {

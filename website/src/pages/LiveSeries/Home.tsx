@@ -31,11 +31,18 @@ function LikedShowsCarousel({
   likedShows: LikedShows;
   readyToRenderPreviews: boolean;
 }) {
-  const {
-    scroll: carouselScroll,
-    totalWidth: carouselTotalWidth,
-    visibleWidth: carouselVisibleWidth,
-  } = useScroll(".scroll-x");
+  const [cardsToLoad, setCardsToLoad] = useState<number[]>([]);
+
+  const carouselElement = document.querySelector<HTMLElement>(".scroll-x");
+  const carouselTotalWidth = carouselElement?.scrollWidth ?? 1;
+  const carouselVisibleWidth = carouselElement?.offsetWidth ?? 1;
+
+  const { scroll: carouselScroll } = useScroll(carouselElement);
+
+  useEffect(() => {
+    if (!likedShowIds) return;
+    setCardsToLoad(likedShowIds);
+  }, [likedShowIds]);
 
   function getDisplayedCards() {
     const totalCards = likedShowIds?.length ?? SKELETON_CARDS_COUNT;
@@ -52,7 +59,6 @@ function LikedShowsCarousel({
       cardsPerPage,
       totalCards,
     };
-    console.log(info);
     return info;
   }
 
@@ -89,11 +95,17 @@ function LikedShowsCarousel({
           {(likedShowIds ?? Array(SKELETON_CARDS_COUNT).fill(0)).map(
             (showId, idx) => (
               <li key={`home-preview ${showId} ${idx}`}>
-                {readyToRenderPreviews ? (
-                  <TvShowPreview data={data} showDetails={likedShows[showId]} />
-                ) : (
-                  <TvShowPreviewSkeleton idx={idx} />
-                )}
+                <TvShowPreview
+                  idx={idx}
+                  data={data}
+                  showDetails={likedShowIds ? likedShows[showId] : undefined}
+                  onLoad={() =>
+                    setCardsToLoad((old) =>
+                      old.filter((value) => value !== showId)
+                    )
+                  }
+                  ready={cardsToLoad.length === 0 && readyToRenderPreviews}
+                />
               </li>
             )
           )}

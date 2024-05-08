@@ -62,28 +62,24 @@ export async function fetchPageContent(
   setContent(body);
 }
 
-export function useScroll(selector: string) {
+export function useScroll(element: Element | null) {
   const [scroll, setScroll] = useState(0);
-  const [element, setElement] = useState<Element | null>(null);
 
   useEffect(() => {
-    const elem = document.querySelector(selector);
-    if (!elem) throw Error("Invalid selector " + selector);
-    setElement(elem);
-    elem.addEventListener("scroll", handleScroll, { passive: true });
-    return () => elem.removeEventListener("scroll", handleScroll);
-  }, []);
+    if (!element) return;
+    element.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      element.removeEventListener("scroll", handleScroll);
+    };
+  }, [element]);
 
   function handleScroll(scrollEvent: Event) {
-    const elem = scrollEvent.target as Element;
-    setScroll(elem.scrollLeft ?? 0);
+    const elem = scrollEvent.target as Element | null;
+    setScroll(elem?.scrollLeft ?? 0);
   }
 
-  return {
-    scroll,
-    totalWidth: element?.scrollWidth ?? 0,
-    visibleWidth: (element as HTMLElement | null)?.offsetWidth ?? 0,
-  };
+  return { scroll };
 }
 
 export function scrollToElement(
@@ -97,5 +93,15 @@ export function scrollToElement(
   });
 }
 
+export const isInvalidDate = (date: Date) => date.toString() === "Invalid Date";
+
+export const getEpisodeAirDate = (episode: Episode) => {
+  // This is needed in order to interpret the `air_date` as a date given in UTC+0
+  const correctedDateString = new Date(episode.air_date + " Z");
+  const correctedDate = new Date(correctedDateString);
+  if (isInvalidDate(correctedDate)) console.warn(episode.air_date);
+  return correctedDate;
+};
+
 export const hasEpisodeAired = (episode: Episode) =>
-  new Date() > new Date(episode.air_date);
+  new Date() > getEpisodeAirDate(episode);
