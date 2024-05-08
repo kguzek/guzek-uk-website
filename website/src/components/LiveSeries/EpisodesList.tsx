@@ -6,7 +6,7 @@ import {
   ShowData,
 } from "../../misc/models";
 import { Translation } from "../../misc/translations";
-import { hasEpisodeAired } from "../../misc/util";
+import { getEpisodeAirDate, hasEpisodeAired } from "../../misc/util";
 import { OutletContext } from "../../pages/LiveSeries/Base";
 
 const DOWNLOAD_STATES = ["pending", "failed", "downloaded", undefined] as const;
@@ -24,7 +24,7 @@ function Episode({
 }) {
   const { setWatchedEpisodes, watchedEpisodes, fetchResource, reloadSite } =
     useOutletContext<OutletContext>();
-  const airDate = data.dateTimeFormat.format(new Date(episode.air_date));
+  const airDate = data.dateTimeFormat.format(getEpisodeAirDate(episode));
 
   const watchedInSeason = watchedEpisodes?.[showId]?.[+episode.season];
   const isWatched = watchedInSeason?.includes(episode.episode);
@@ -45,12 +45,12 @@ function Episode({
 
   return (
     <div className="episode">
-      <div className="episode-details cutoff">
-        <div className="cutoff">
+      <div className="episode-details no-overflow">
+        <div className="flex" title={episode.name}>
           <span className="color-primary">
             {data.liveSeries.tvShow.serialiseEpisode(episode)}
           </span>{" "}
-          {episode.name}
+          <div className="cutoff">{episode.name}</div>
         </div>
         <small>{airDate}</small>
       </div>

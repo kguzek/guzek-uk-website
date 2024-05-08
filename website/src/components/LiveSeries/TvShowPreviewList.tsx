@@ -1,15 +1,19 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { TvShowList } from "../../misc/models";
 import { Translation } from "../../misc/translations";
 import { OutletContext } from "../../pages/LiveSeries/Base";
 import Paginator from "../Pagination/Paginator";
 import TvShowPreview from "./TvShowPreview";
-import TvShowPreviewSkeleton from "./TvShowPreviewSkeleton";
 
 const RESULTS_PER_PAGE = 20;
 
-const DUMMY_TV_SHOWS = { page: 1, total: "200", pages: 10, tv_shows: [] };
+const DUMMY_TV_SHOWS = {
+  page: 1,
+  total: "200",
+  pages: 10,
+  tv_shows: Array(20).fill(0),
+};
 
 export default function TvShowPreviewList({
   data,
@@ -18,7 +22,13 @@ export default function TvShowPreviewList({
   data: Translation;
   tvShows?: TvShowList;
 }) {
+  const [cardsToLoad, setCardsToLoad] = useState<number[]>([]);
   const { loading } = useOutletContext<OutletContext>();
+
+  useEffect(() => {
+    if (!tvShowsRaw) return;
+    setCardsToLoad(tvShowsRaw.tv_shows.map((show) => show.id));
+  }, [tvShowsRaw]);
 
   const NumericValue = ({ value }: { value: number | string }) => (
     <span className="serif">{data.numberFormat.format(+value)}</span>
@@ -45,19 +55,24 @@ export default function TvShowPreviewList({
         numPages={tvShows.pages}
       />
       <div className="previews-list">
-        {tvShowsRaw && loading.length === 0
-          ? tvShows.tv_shows.map((showDetails) => (
-              <TvShowPreview
-                key={"tvShow-" + showDetails.id}
-                data={data}
-                showDetails={showDetails}
-              />
-            ))
-          : Array(20)
-              .fill(0)
-              .map((_, idx) => (
-                <TvShowPreviewSkeleton key={idx} idx={idx % 8} />
-              ))}
+        {tvShows.tv_shows.map((showDetails, idx) => (
+          <TvShowPreview
+            key={`tv-show-${showDetails.id}-${idx}`}
+            idx={idx % 8}
+            data={data}
+            showDetails={tvShowsRaw ? showDetails : undefined}
+            ready={
+              cardsToLoad.length === 0 &&
+              null != tvShowsRaw &&
+              loading.length === 0
+            }
+            onLoad={() =>
+              setCardsToLoad((old) =>
+                old.filter((value) => value !== showDetails.id)
+              )
+            }
+          />
+        ))}
       </div>
       <Paginator
         data={data}

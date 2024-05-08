@@ -47,6 +47,7 @@ export default function Search({ data }: { data: Translation }) {
       <form className="form-editor search" onSubmit={submitForm}>
         <InputBox
           label={data.liveSeries.search.label}
+          type="search"
           value={inputValue}
           setValue={setInputValue}
           required={true}

@@ -1,16 +1,20 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { scrollToElement, useScroll } from "../misc/util";
 import "../styles/carousel.css";
 
 export default function Carousel({
   className = "",
   images,
+  onLoadImage,
 }: {
   className?: string;
   images: string[];
+  onLoadImage: () => void;
 }) {
-  const { scroll: carouselScroll, totalWidth: carouselTotalWidth } =
-    useScroll(".carousel");
+  const carouselElement = document.querySelector(".carousel");
+  const carouselTotalWidth = carouselElement?.scrollWidth || 1;
+
+  const { scroll: carouselScroll } = useScroll(carouselElement);
 
   function getSelectedImage() {
     const imageWidth = carouselTotalWidth / images.length;
@@ -50,8 +54,10 @@ export default function Carousel({
           <img
             key={idx}
             id={`image-${idx + 1}`}
-            alt={`image-${idx + 1}`}
+            alt={`gallery image ${idx + 1}`}
             src={url}
+            onLoad={onLoadImage}
+            onError={onLoadImage}
           />
         ))}
       </div>
