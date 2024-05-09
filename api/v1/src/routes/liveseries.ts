@@ -1,6 +1,9 @@
 import express, { Request, Response } from "express";
+import { CronJob } from "cron";
+import { exec } from "child_process";
 import { getLogger } from "../middleware/logging";
-import { LikedShows, WatchedEpisodes } from "../sequelize";
+import { LikedShows, User, WatchedEpisodes } from "../sequelize";
+import axios from "axios";
 import {
   createDatabaseEntry,
   readAllDatabaseEntries,
@@ -9,6 +12,7 @@ import {
   sendOK,
   updateDatabaseEntry,
 } from "../util";
+import { getTorrent } from "../torrents";
 
 export const router = express.Router();
 
@@ -17,6 +21,98 @@ const logger = getLogger(__filename);
 type WatchedData = { [season: string]: number[] };
 
 type WatchedShowData = { [showId: string]: WatchedData };
+
+interface TvShow {
+  id: number;
+  name: string;
+  // ...
+  episodes: Episode[];
+}
+
+interface Episode {
+  episode: number;
+  season: number;
+  name: string;
+  air_date: string;
+}
+
+const EPISODATE_API_BASE = "https://episodate.com/api/show-details?q=";
+
+const hasEpisodeAired = (episode: Episode) =>
+  new Date() > new Date(episode.air_date + " Z");
+
+const serialiseEpisode = (episode: Episode) =>
+  "S" +
+  `${episode.season}`.padStart(2, "0") +
+  "E" +
+  `${episode.episode}`.padStart(2, "0");
+
+function episodeDownloadFail(message: string) {
+  logger.error(message);
+  // TODO: add to database
+}
+
+function episodeDownloadSuccess() {
+  // TODO: add to database
+}
+
+async function downloadEpisode(showName: string, episode: Episode) {
+  const episodeSearchQuery = `${showName} ${serialiseEpisode(episode)}`;
+  const torrent = await getTorrent(episodeSearchQuery);
+  if (!torrent) {
+    episodeDownloadFail(`Did not find torrents for '${episodeSearchQuery}'.`);
+    return;
+  }
+  logger.debug(torrent);
+  if (process.platform === "win32") {
+    exec(`start ${torrent}`);
+  } else {
+    // TODO: torrent client implementation on non-Windows systems
+  }
+  episodeDownloadSuccess();
+}
+
+async function checkUnwatchedEpisodes() {
+  const users = await User.findAll({ where: { admin: true } });
+  for (const user of users) {
+    const username = user.get("username") as string;
+    logger.info(`Checking ${username}'s unwatched episodes`);
+    const uuid = user.get("uuid") as string;
+    const watchedEpisodes = await WatchedEpisodes.findByPk(uuid);
+    if (!watchedEpisodes) continue;
+    const watchedShowData = watchedEpisodes.get(
+      "watchedEpisodes"
+    ) as WatchedShowData;
+    const likedShowsData = await LikedShows.findByPk(uuid);
+    if (!likedShowsData) continue;
+    const likedShows = likedShowsData.get("likedShows");
+
+    for (const likedShowId of likedShows as number[]) {
+      const watchedData = watchedShowData[likedShowId];
+      axios.get(EPISODATE_API_BASE + likedShowId).then((res) => {
+        const tvShow = res.data.tvShow as TvShow;
+        for (const episode of tvShow.episodes) {
+          if (!hasEpisodeAired(episode)) continue;
+          if (watchedData?.[episode.season]?.includes(episode.episode))
+            continue;
+          downloadEpisode(tvShow.name, episode);
+        }
+      }, logger.error);
+    }
+  }
+}
+
+export function init() {
+  checkUnwatchedEpisodes();
+
+  new CronJob(
+    "0 0 */6 * * *",
+    checkUnwatchedEpisodes,
+    null,
+    true,
+    "Europe/Warsaw"
+  );
+}
 
 function validateNaturalNumber(value: any) {
   if (!Number.isInteger(value)) return `Key '${value}' must be an integer.`;

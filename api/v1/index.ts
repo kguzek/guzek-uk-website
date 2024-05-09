@@ -33,7 +33,7 @@ const ENDPOINTS = [
 console.log(); // Add newline before app output for readability
 
 /** Initialises the HTTP RESTful API server. */
-function initialise() {
+async function initialise() {
   const iterations = process.env.HASH_ITERATIONS;
   if (!iterations) {
     console.log(process.env);
@@ -50,10 +50,8 @@ function initialise() {
 
   // Enable individual API routes
   for (const endpoint of ENDPOINTS) {
-    const middleware = require("./src/routes/" + endpoint);
-    if (endpoint === "updated") {
-      middleware.init(ENDPOINTS);
-    }
+    const middleware = await import("./src/routes/" + endpoint);
+    if (middleware.init) middleware.init(ENDPOINTS);
     app.use("/" + endpoint, middleware.router);
   }
 
