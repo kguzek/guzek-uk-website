@@ -1,19 +1,19 @@
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { FormEvent, useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { fetchFromAPI, updateAccessToken } from "../misc/backend";
 import InputBox from "../components/Forms/InputBox";
-import LoadingScreen, { LoadingButton } from "../components/LoadingScreen";
-import { Translation } from "../misc/translations";
+import LoadingScreen, {
+  LoadingButton,
+} from "../components/LoadingScreen/LoadingScreen";
+import { Translation, TranslationContext } from "../misc/translations";
 import { StateSetter, User } from "../misc/models";
-import Modal from "../components/Modal";
+import Modal from "../components/Modal/Modal";
 
 export default function LogIn({
-  data,
   user,
   logout,
   setUser,
 }: {
-  data: Translation;
   user: any;
   logout: () => void;
   setUser: StateSetter<User | null>;
@@ -23,6 +23,7 @@ export default function LogIn({
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const navigate = useNavigate();
+  const data = useContext<Translation>(TranslationContext);
 
   useEffect(() => {
     if (user) navigate("/profile");

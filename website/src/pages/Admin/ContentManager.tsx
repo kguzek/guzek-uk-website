@@ -1,20 +1,20 @@
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { FormEvent, useContext, useEffect, useState } from "react";
 import { EditorValue } from "react-rte";
-import { fetchFromAPI } from "../misc/backend";
+import { fetchFromAPI } from "../../misc/backend";
 import InputArea, {
   getEmptyMarkdown,
   parseMarkdown,
-} from "../components/Forms/InputArea";
-import InputBox from "../components/Forms/InputBox";
-import { LoadingButton } from "../components/LoadingScreen";
-import { MenuItem, StateSetter, User } from "../misc/models";
-import { Translation } from "../misc/translations";
-import { fetchPageContent, setTitle } from "../misc/util";
-import Modal from "../components/Modal";
+} from "../../components/Forms/InputArea";
+import InputBox from "../../components/Forms/InputBox";
+import { LoadingButton } from "../../components/LoadingScreen/LoadingScreen";
+import { MenuItem, StateSetter, User } from "../../misc/models";
+import { Translation, TranslationContext } from "../../misc/translations";
+import { fetchPageContent, setTitle } from "../../misc/util";
+import Modal from "../../components/Modal/Modal";
 
 type PropertyName = keyof (
   | MenuItem
-  | Translation["contentManager"]["formDetails"]
+  | Translation["admin"]["contentManager"]["formDetails"]
 );
 
 const TEXT_PAGE_PROPERTIES: PropertyName[] = ["title", "url"];
@@ -25,14 +25,12 @@ const BOOL_PAGE_PROPERTIES: PropertyName[] = [
 ];
 
 export default function ContentManager({
-  data,
   lang,
   menuItems,
   reloadSite,
   setUser,
   logout,
 }: {
-  data: Translation;
   lang: string;
   menuItems: MenuItem[];
   reloadSite: () => void;
@@ -40,9 +38,10 @@ export default function ContentManager({
   logout: () => void;
 }) {
   const [selectedPageID, setSelectedPageID] = useState(menuItems[0]?.id ?? 0);
+  const data = useContext<Translation>(TranslationContext);
 
   useEffect(() => {
-    setTitle(data.contentManager.title);
+    setTitle(data.admin.contentManager.title);
   }, [data]);
 
   const pagesMap = new Map<number, string>();
@@ -54,23 +53,22 @@ export default function ContentManager({
 
   return (
     <div className="text">
-      <h2>{data.contentManager.title}</h2>
+      <h2>{data.admin.contentManager.title}</h2>
       {menuItems.length === 0 ? (
         <button className="btn btn-submit">
-          {data.contentManager.addPage}
+          {data.admin.contentManager.addPage}
         </button>
       ) : (
         <>
           <form className="form-editor">
             <InputBox
               type="dropdown"
-              label={data.contentManager.selectedPage}
+              label={data.admin.contentManager.selectedPage}
               value={selectedPageID}
               setValue={setSelectedPageID}
               options={pagesMap}
             />
             <PagesEditor
-              data={data}
               lang={lang}
               originalPage={selectedPage as MenuItem}
               reloadSite={reloadSite}
@@ -85,14 +83,12 @@ export default function ContentManager({
 }
 
 function PagesEditor({
-  data,
   lang,
   originalPage,
   reloadSite,
   setUser,
   logout,
 }: {
-  data: Translation;
   lang: string;
   originalPage: MenuItem;
   reloadSite: () => void;
@@ -105,6 +101,7 @@ function PagesEditor({
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const data = useContext<Translation>(TranslationContext);
 
   useEffect(() => {
     if (originalPage.shouldFetch) {
@@ -171,7 +168,7 @@ function PagesEditor({
       {TEXT_PAGE_PROPERTIES.map((property, idx) => (
         <InputBox
           key={idx}
-          label={data.contentManager.formDetails[property]}
+          label={data.admin.contentManager.formDetails[property]}
           setValue={(val: string) => handleUpdate(property, val)}
           value={page[property]}
           required
@@ -182,7 +179,7 @@ function PagesEditor({
           <InputBox
             key={idx}
             type="checkbox"
-            label={data.contentManager.formDetails[property]}
+            label={data.admin.contentManager.formDetails[property]}
             setValue={(val: boolean) => handleUpdate(property, val)}
             value={page[property]}
           />
@@ -208,7 +205,7 @@ function PagesEditor({
           disabled={!unsavedChanges}
           onClick={handleSubmit}
         >
-          {data.contentManager.formDetails.update}
+          {data.admin.contentManager.formDetails.update}
         </button>
       )}
     </>

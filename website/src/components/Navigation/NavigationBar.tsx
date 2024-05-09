@@ -1,19 +1,26 @@
-import React, { useState, useEffect, MouseEventHandler } from "react";
+import React, {
+  useState,
+  useEffect,
+  MouseEventHandler,
+  useContext,
+} from "react";
 import { Link } from "react-router-dom";
-import Logo from "../media/Logo";
-import TRANSLATIONS, { Translation } from "../misc/translations";
-import "../styles/navigation.css";
-import { Language, MenuItem, User } from "../misc/models";
-import { PAGE_NAME } from "../misc/util";
+import Logo from "../../media/Logo";
+import {
+  TRANSLATIONS,
+  Translation,
+  TranslationContext,
+} from "../../misc/translations";
+import { Language, MenuItem, User } from "../../misc/models";
+import { PAGE_NAME } from "../../misc/util";
+import "./Navigation.css";
 
 function NavigationBar({
-  data,
   user,
   selectedLanguage,
   changeLang,
   menuItems,
 }: {
-  data: Translation;
   user: User | null;
   selectedLanguage: Language;
   changeLang: MouseEventHandler<HTMLButtonElement>;
@@ -21,6 +28,7 @@ function NavigationBar({
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const winDims = useWindowDimensions();
+  const data = useContext<Translation>(TranslationContext);
 
   // Create the array of nav bar page elements
   const menuItemElements = menuItems.map((item, index) => (
@@ -34,7 +42,6 @@ function NavigationBar({
 
   const userWidget = (
     <UserWidget
-      data={data}
       user={user}
       displayStyle={displayStyle}
       setMenuOpen={setMenuOpen}
@@ -112,16 +119,15 @@ function LangSelector({
 }
 
 function UserWidget({
-  data,
   user,
   displayStyle,
   setMenuOpen,
 }: {
-  data: Translation;
   user: any;
   displayStyle: string;
   setMenuOpen: Function;
 }) {
+  const data = useContext<Translation>(TranslationContext);
   const imgUrl =
     (user && user.url) ||
     "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/default-avatar.png";
@@ -176,3 +182,39 @@ function useWindowDimensions() {
 }
 
 export default NavigationBar;
+
+interface Page {
+  link: string;
+  label: string;
+}
+
+export function MiniNavBar({
+  pathBase,
+  pages,
+}: {
+  pathBase: string;
+  pages: Page[];
+}) {
+  const getClassName = (path: string) =>
+    (
+      path
+        ? location.pathname.startsWith(`/${pathBase}/` + path)
+        : [`/${pathBase}`, `/${pathBase}/`].includes(location.pathname)
+    )
+      ? " active"
+      : "";
+
+  return (
+    <nav className="flex mini-navbar serif">
+      {pages.map(({ link, label }, idx) => (
+        <Link
+          key={idx}
+          className={"clickable nav-link" + getClassName(link)}
+          to={link}
+        >
+          {label}
+        </Link>
+      ))}
+    </nav>
+  );
+}

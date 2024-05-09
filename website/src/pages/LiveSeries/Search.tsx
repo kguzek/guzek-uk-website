@@ -1,21 +1,22 @@
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { FormEvent, useContext, useEffect, useState } from "react";
 import { useOutletContext, useSearchParams } from "react-router-dom";
 import InputBox from "../../components/Forms/InputBox";
 import TvShowPreviewList from "../../components/LiveSeries/TvShowPreviewList";
 import { TvShowList } from "../../misc/models";
-import { Translation } from "../../misc/translations";
+import { Translation, TranslationContext } from "../../misc/translations";
 import { setTitle } from "../../misc/util";
 import { getLiveSeriesTitle, OutletContext } from "./Base";
 
-export default function Search({ data }: { data: Translation }) {
+export default function Search() {
   const [inputValue, setInputValue] = useState("");
   const [results, setResults] = useState<null | TvShowList>(null);
   const [searchParams, setSearchParams] = useSearchParams();
+  const data = useContext<Translation>(TranslationContext);
+  const { fetchResource } = useOutletContext<OutletContext>();
 
   const searchQuery = searchParams.get("q");
   const title = getLiveSeriesTitle(data, "search");
   const resultsLabel = `${data.liveSeries.search.results} "${searchQuery}"`;
-  const { fetchResource } = useOutletContext<OutletContext>();
 
   useEffect(() => {
     const newTitle = searchQuery ? resultsLabel : title;
@@ -61,7 +62,7 @@ export default function Search({ data }: { data: Translation }) {
       {searchQuery && (
         <>
           <h3>{resultsLabel}</h3>
-          <TvShowPreviewList data={data} tvShows={results ?? undefined} />
+          <TvShowPreviewList tvShows={results ?? undefined} />
         </>
       )}
     </>

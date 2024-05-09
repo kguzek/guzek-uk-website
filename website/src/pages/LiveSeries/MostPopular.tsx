@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useOutletContext, useSearchParams } from "react-router-dom";
 import TvShowPreviewList from "../../components/LiveSeries/TvShowPreviewList";
 import { TvShowList } from "../../misc/models";
-import { Translation } from "../../misc/translations";
+import { Translation, TranslationContext } from "../../misc/translations";
 import { setTitle } from "../../misc/util";
 import { getLiveSeriesTitle, OutletContext } from "./Base";
 
-export default function MostPopular({ data }: { data: Translation }) {
+export default function MostPopular() {
   const [results, setResults] = useState<TvShowList | null>(null);
-
-  const [searchParams] = useSearchParams();
+  const data = useContext<Translation>(TranslationContext);
   const { fetchResource } = useOutletContext<OutletContext>();
+  const [searchParams] = useSearchParams();
 
   const title = getLiveSeriesTitle(data, "mostPopular");
 
@@ -30,7 +30,7 @@ export default function MostPopular({ data }: { data: Translation }) {
   return (
     <>
       <h2>{title}</h2>
-      <TvShowPreviewList data={data} tvShows={results ?? undefined} />
+      <TvShowPreviewList tvShows={results ?? undefined} />
     </>
   );
 }

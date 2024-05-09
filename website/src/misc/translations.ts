@@ -1,3 +1,4 @@
+import { createContext } from "react";
 import { Episode, ErrorCode, ErrorPageContent, Language } from "./models";
 
 const LONG_DATE_FORMAT = {
@@ -47,17 +48,25 @@ export type Translation = Readonly<{
       logout: string;
     };
   };
-  contentManager: {
-    title: string;
-    selectedPage: string;
-    addPage: string;
-    formDetails: {
+  admin: {
+    contentManager: {
       title: string;
-      url: string;
-      adminOnly: string;
-      shouldFetch: string;
-      localUrl: string;
-      update: string;
+      selectedPage: string;
+      addPage: string;
+      formDetails: {
+        title: string;
+        url: string;
+        adminOnly: string;
+        shouldFetch: string;
+        localUrl: string;
+        update: string;
+      };
+    };
+    users: {
+      title: string;
+    };
+    logs: {
+      title: string;
     };
   };
   liveSeries: {
@@ -115,7 +124,7 @@ export type Translation = Readonly<{
   error: { [code in ErrorCode]: ErrorPageContent };
 }>;
 
-const TRANSLATIONS: { [lang in Language]: Translation } = {
+export const TRANSLATIONS: { [lang in Language]: Translation } = {
   EN: {
     footer: "{YEAR} \u00a9 Konrad Guzek",
     loading: "Loading",
@@ -165,17 +174,25 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
         body: "The requested resource was not found.",
       },
     },
-    contentManager: {
-      title: "Content Manager",
-      selectedPage: "Selected page",
-      addPage: "Create page",
-      formDetails: {
-        title: "Title",
-        url: "URL",
-        adminOnly: "Admin only",
-        localUrl: "Dynamic",
-        shouldFetch: "Custom contents",
-        update: "Update",
+    admin: {
+      contentManager: {
+        title: "Content Manager",
+        selectedPage: "Selected page",
+        addPage: "Create page",
+        formDetails: {
+          title: "Title",
+          url: "URL",
+          adminOnly: "Admin only",
+          localUrl: "Dynamic",
+          shouldFetch: "Custom contents",
+          update: "Update",
+        },
+      },
+      users: {
+        title: "Users",
+      },
+      logs: {
+        title: "Logs",
       },
     },
     liveSeries: {
@@ -284,17 +301,25 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
         body: "Nie znaleziono zasobu, którego szukasz.",
       },
     },
-    contentManager: {
-      title: "Edytor Treści",
-      selectedPage: "Wybrana strona",
-      addPage: "Stwórz stronę",
-      formDetails: {
-        title: "Tytuł",
-        url: "URL",
-        adminOnly: "Ukryta",
-        localUrl: "Dynamiczna",
-        shouldFetch: "Edytuj treść",
-        update: "Zaktualizuj",
+    admin: {
+      contentManager: {
+        title: "Edytor Treści",
+        selectedPage: "Wybrana strona",
+        addPage: "Stwórz stronę",
+        formDetails: {
+          title: "Tytuł",
+          url: "URL",
+          adminOnly: "Ukryta",
+          localUrl: "Dynamiczna",
+          shouldFetch: "Edytuj treść",
+          update: "Zaktualizuj",
+        },
+      },
+      users: {
+        title: "Użytkownicy",
+      },
+      logs: {
+        title: "Logi",
       },
     },
     liveSeries: {
@@ -353,4 +378,4 @@ const TRANSLATIONS: { [lang in Language]: Translation } = {
   },
 };
 
-export default TRANSLATIONS;
+export const TranslationContext = createContext<Translation>(TRANSLATIONS.EN);

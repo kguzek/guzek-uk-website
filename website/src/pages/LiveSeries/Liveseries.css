@@ -7,10 +7,6 @@
   justify-content: center;
 }
 
-.liveseries-links a:last-child::after {
-  content: "";
-}
-
 .shows-list {
   gap: 10px;
 }
@@ -191,10 +187,6 @@
   opacity: 0.8;
 }
 
-.liveseries-links {
-  gap: 20px;
-}
-
 .search {
   flex-direction: row;
   gap: 20px;
@@ -310,15 +302,6 @@
 }
 
 @media screen and (max-width: 750px) {
-  .liveseries-links {
-    justify-content: center;
-  }
-
-  .liveseries-links a::after {
-    content: "";
-    margin-left: 0;
-  }
-
   .gallery {
     width: 70%;
   }
@@ -333,10 +316,6 @@
 }
 
 @media screen and (max-width: 550px) {
-  .liveseries-links {
-    font-size: medium;
-  }
-
   .gallery {
     width: 100%;
   }

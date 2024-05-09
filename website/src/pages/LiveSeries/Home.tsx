@@ -1,10 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
+import { CarouselIndicator } from "../../components/Carousel/Carousel";
 import EpisodesList from "../../components/LiveSeries/EpisodesList";
 import TvShowPreview from "../../components/LiveSeries/TvShowPreview";
 import TvShowPreviewSkeleton from "../../components/LiveSeries/TvShowPreviewSkeleton";
-import { Episode, EpisodeStatuses, TvShowDetails } from "../../misc/models";
-import { Translation } from "../../misc/translations";
+import {
+  CAROUSEL_INDICATOR_FULL_WIDTH,
+  Episode,
+  EpisodeStatuses,
+  TvShowDetails,
+} from "../../misc/models";
+import { Translation, TranslationContext } from "../../misc/translations";
 import {
   hasEpisodeAired,
   scrollToElement,
@@ -21,12 +27,10 @@ interface LikedShows {
 }
 
 function LikedShowsCarousel({
-  data,
   likedShowIds,
   likedShows,
   readyToRenderPreviews,
 }: {
-  data: Translation;
   likedShowIds: null | number[];
   likedShows: LikedShows;
   readyToRenderPreviews: boolean;
@@ -97,7 +101,6 @@ function LikedShowsCarousel({
               <li key={`home-preview ${showId} ${idx}`}>
                 <TvShowPreview
                   idx={idx}
-                  data={data}
                   showDetails={likedShowIds ? likedShows[showId] : undefined}
                   onLoad={() =>
                     setCardsToLoad((old) =>
@@ -115,23 +118,18 @@ function LikedShowsCarousel({
           onClick={nextImage}
         ></i>
       </div>
-      <div className="carousel-indicator-container">
-        <div
-          className="carousel-indicator"
-          style={{
-            transform: `translateX(${
-              (126 * carouselScroll) /
-              (carouselTotalWidth - carouselVisibleWidth)
-            }px)`,
-          }}
-        ></div>
-      </div>
+      <CarouselIndicator
+        scrolledWidth={carouselScroll}
+        totalWidth={carouselTotalWidth}
+        visibleWidth={carouselVisibleWidth}
+      />
     </div>
   );
 }
 
-export default function Home({ data }: { data: Translation }) {
+export default function Home() {
   const [likedShows, setLikedShows] = useState<LikedShows>({});
+  const data = useContext<Translation>(TranslationContext);
   const title = getLiveSeriesTitle(data, "home");
   const { likedShowIds, watchedEpisodes, loading, fetchResource } =
     useOutletContext<OutletContext>();
@@ -179,7 +177,6 @@ export default function Home({ data }: { data: Translation }) {
       {loading.length > 0 || likedShowIds?.length !== 0 ? (
         <>
           <LikedShowsCarousel
-            data={data}
             likedShowIds={likedShowIds}
             likedShows={likedShows}
             readyToRenderPreviews={readyToRenderPreviews}
@@ -196,7 +193,6 @@ export default function Home({ data }: { data: Translation }) {
                 return (
                   <div key={`liked-show-${showId}-${idx}`}>
                     <EpisodesList
-                      data={data}
                       showId={showId}
                       heading={`${likedShows[showId].name} (${unwatchedEpisodes.length})`}
                       episodes={unwatchedEpisodes}
