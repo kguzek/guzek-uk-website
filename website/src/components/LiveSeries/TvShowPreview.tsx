@@ -1,24 +1,23 @@
-import React, { MouseEvent, useState } from "react";
+import React, { MouseEvent, useContext, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { TvShowDetailsShort } from "../../misc/models";
-import { Translation } from "../../misc/translations";
+import { Translation, TranslationContext } from "../../misc/translations";
 import { OutletContext } from "../../pages/LiveSeries/Base";
 import TvShowPreviewSkeleton from "./TvShowPreviewSkeleton";
 
 export default function TvShowPreview({
   idx,
-  data,
   showDetails,
   onLoad,
   ready,
 }: {
   idx: number;
-  data: Translation;
   showDetails?: TvShowDetailsShort;
   ready: boolean;
   onLoad: () => void;
 }) {
   const [flipped, setFlipped] = useState(false);
+  const data = useContext<Translation>(TranslationContext);
   const { likedShowIds, reloadSite, fetchResource } =
     useOutletContext<OutletContext>();
 

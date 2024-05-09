@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useOutletContext, useParams } from "react-router-dom";
-import Carousel from "../../components/Carousel";
+import Carousel from "../../components/Carousel/Carousel";
 import EpisodesList from "../../components/LiveSeries/EpisodesList";
 import {
   Episode as EpisodeType,
   ErrorCode,
   TvShowDetails,
 } from "../../misc/models";
-import { Translation } from "../../misc/translations";
+import { Translation, TranslationContext } from "../../misc/translations";
 import {
   getEpisodeAirDate,
   hasEpisodeAired,
@@ -18,13 +18,13 @@ import ErrorPage from "../ErrorPage";
 import { OutletContext } from "./Base";
 import TvShowSkeleton from "../../components/LiveSeries/TvShowSkeleton";
 
-export default function TvShow({ data }: { data: Translation }) {
+export default function TvShow() {
   const [numImagesLoaded, setNumImagesLoaded] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [tvShowDetails, setTvShowDetails] = useState<
     null | TvShowDetails | undefined
   >(null);
-  const { permalink } = useParams();
+  const data = useContext<Translation>(TranslationContext);
   const {
     likedShowIds,
     watchedEpisodes,
@@ -32,6 +32,7 @@ export default function TvShow({ data }: { data: Translation }) {
     reloadSite,
     fetchResource,
   } = useOutletContext<OutletContext>();
+  const { permalink } = useParams();
 
   useEffect(() => {
     if (!permalink) return;
@@ -114,8 +115,11 @@ export default function TvShow({ data }: { data: Translation }) {
     }));
   }
 
-  if (tvShowDetails === undefined) {
-    return <ErrorPage data={data} errorCode={ErrorCode.NotFound} />;
+  if (
+    tvShowDetails === undefined ||
+    (Array.isArray(tvShowDetails) && tvShowDetails.length === 0)
+  ) {
+    return <ErrorPage errorCode={ErrorCode.NotFound} />;
   }
 
   if (!tvShowDetails) return <TvShowSkeleton />;
@@ -235,7 +239,6 @@ export default function TvShow({ data }: { data: Translation }) {
           return (
             <React.Fragment key={`season-${season}`}>
               <EpisodesList
-                data={data}
                 showId={tvShowDetails.id}
                 heading={`${data.liveSeries.tvShow.season} ${season}`}
                 episodes={episodes}

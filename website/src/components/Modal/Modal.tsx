@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/modal.css";
+import "./Modal.css";
 
 export default function Modal({
   message,

@@ -1,6 +1,7 @@
 import React from "react";
-import { scrollToElement, useScroll } from "../misc/util";
-import "../styles/carousel.css";
+import { CAROUSEL_INDICATOR_FULL_WIDTH } from "../../misc/models";
+import { scrollToElement, useScroll } from "../../misc/util";
+import "./Carousel.css";
 
 export default function Carousel({
   className = "",
@@ -66,18 +67,39 @@ export default function Carousel({
         className="carousel-scroller right fas fa-arrow-right"
         onClick={nextImage}
       ></i>
-      <div className="carousel-indicator-container">
-        <div
-          className="carousel-indicator"
-          style={{
-            transform: `translateX(${
-              ((140 - 14) *
-                ((carouselScroll / carouselTotalWidth) * images.length)) /
-              (images.length - 1)
-            }px)`,
-          }}
-        ></div>
-      </div>
+      <CarouselIndicator
+        scrolledWidth={carouselScroll}
+        totalWidth={carouselTotalWidth}
+        visibleWidth={carouselTotalWidth / images.length}
+      />
+    </div>
+  );
+}
+
+export function CarouselIndicator({
+  scrolledWidth,
+  totalWidth,
+  visibleWidth,
+}: {
+  scrolledWidth: number;
+  totalWidth: number;
+  visibleWidth: number;
+}) {
+  const width = (CAROUSEL_INDICATOR_FULL_WIDTH * visibleWidth) / totalWidth;
+
+  const percentageScrolled = scrolledWidth / (totalWidth - visibleWidth);
+
+  return (
+    <div className="carousel-indicator-container">
+      <div
+        className="carousel-indicator"
+        style={{
+          width,
+          transform: `translateX(${
+            (CAROUSEL_INDICATOR_FULL_WIDTH - width) * percentageScrolled
+          }px)`,
+        }}
+      ></div>
     </div>
   );
 }

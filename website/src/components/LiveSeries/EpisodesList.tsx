@@ -1,27 +1,26 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useContext, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import {
   Episode as EpisodeType,
   EpisodeStatuses,
   ShowData,
 } from "../../misc/models";
-import { Translation } from "../../misc/translations";
+import { Translation, TranslationContext } from "../../misc/translations";
 import { getEpisodeAirDate, hasEpisodeAired } from "../../misc/util";
 import { OutletContext } from "../../pages/LiveSeries/Base";
 
 const DOWNLOAD_STATES = ["pending", "failed", "downloaded", undefined] as const;
 
 function Episode({
-  data,
   episode,
   showId,
   downloadStatus,
 }: {
-  data: Translation;
   episode: EpisodeType;
   showId: number;
   downloadStatus?: "pending" | "failed" | "downloaded";
 }) {
+  const data = useContext<Translation>(TranslationContext);
   const { setWatchedEpisodes, watchedEpisodes, fetchResource, reloadSite } =
     useOutletContext<OutletContext>();
   const airDate = data.dateTimeFormat.format(getEpisodeAirDate(episode));
@@ -93,20 +92,19 @@ function Episode({
 }
 
 export default function EpisodesList({
-  data,
   showId,
   heading,
   episodes,
   episodeStatuses,
   children,
 }: {
-  data: Translation;
   showId: number;
   heading: string;
   episodes: EpisodeType[];
   episodeStatuses?: ShowData<EpisodeStatuses>;
   children?: ReactElement<any, any>;
 }) {
+  const data = useContext<Translation>(TranslationContext);
   const [collapsed, setCollapsed] = useState(true);
 
   return (
@@ -126,7 +124,6 @@ export default function EpisodesList({
           {episodes.map((episode, idx) => (
             <Episode
               key={`episode-unwatched-${idx}`}
-              data={data}
               episode={episode}
               showId={showId}
               downloadStatus={

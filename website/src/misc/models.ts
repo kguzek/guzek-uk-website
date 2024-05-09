@@ -94,3 +94,5 @@ export interface ShowData<T> {
 }
 
 export type StateSetter<T> = Dispatch<SetStateAction<T>>;
+
+export const CAROUSEL_INDICATOR_FULL_WIDTH = 140;

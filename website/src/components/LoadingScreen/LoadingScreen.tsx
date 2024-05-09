@@ -1,6 +1,6 @@
 import React from "react";
 import { ThreeDots } from "react-loader-spinner";
-import "../styles/loadingScreen.css";
+import "./LoadingScreen.css";
 
 const COLOR_PRIMARY = "var(--color-primary)";
 

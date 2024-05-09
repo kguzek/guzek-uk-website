@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Outlet, Link, useLocation, useSearchParams } from "react-router-dom";
-import Modal from "../../components/Modal";
+import React, { useContext, useEffect, useState } from "react";
+import { Outlet, useLocation, useSearchParams } from "react-router-dom";
+import Modal from "../../components/Modal/Modal";
+import { MiniNavBar } from "../../components/Navigation/NavigationBar";
 import { fetchFromAPI } from "../../misc/backend";
 import { fetchFromEpisodate } from "../../misc/episodate";
 import {
@@ -9,8 +10,8 @@ import {
   User,
   WatchedEpisodes,
 } from "../../misc/models";
-import { Translation } from "../../misc/translations";
-import "../../styles/liveseries.css";
+import { Translation, TranslationContext } from "../../misc/translations";
+import "./Liveseries.css";
 
 export type OutletContext = {
   loading: string[];
@@ -37,13 +38,11 @@ export type OutletContext = {
   setWatchedEpisodes: StateSetter<null | ShowData<WatchedEpisodes>>;
 };
 
-export default function Base({
-  data,
+export default function LiveSeriesBase({
   logout,
   reloadSite,
   user,
 }: {
-  data: Translation;
   logout: () => void;
   reloadSite: () => Promise<void>;
   user: User | null;
@@ -58,6 +57,7 @@ export default function Base({
     useState<null | ShowData<WatchedEpisodes>>(null);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const data = useContext<Translation>(TranslationContext);
 
   useEffect(() => {
     if (likedShowIds && watchedEpisodes) return;
@@ -160,15 +160,6 @@ export default function Base({
     method || setLoading((old) => old.filter((value) => value !== endpoint));
   }
 
-  const getClassName = (path?: string) =>
-    (
-      path
-        ? location.pathname.startsWith("/liveseries/" + path)
-        : ["/liveseries", "/liveseries/"].includes(location.pathname)
-    )
-      ? " active"
-      : "";
-
   const context: OutletContext = {
     loading,
     fetchResource,
@@ -189,23 +180,14 @@ export default function Base({
         onClick={() => setModalVisible(false)}
       />
       <div className="text liveseries">
-        <nav className="liveseries-links serif flex">
-          <Link className={"clickable nav-link" + getClassName()} to="">
-            {data.liveSeries.home.title}
-          </Link>
-          <Link
-            className={"clickable nav-link" + getClassName("search")}
-            to="search"
-          >
-            {data.liveSeries.search.title}
-          </Link>
-          <Link
-            className={"clickable nav-link" + getClassName("most-popular")}
-            to="most-popular"
-          >
-            {data.liveSeries.mostPopular.title}
-          </Link>
-        </nav>
+        <MiniNavBar
+          pathBase="liveseries"
+          pages={[
+            { link: "", label: data.liveSeries.home.title },
+            { link: "search", label: data.liveSeries.search.title },
+            { link: "most-popular", label: data.liveSeries.mostPopular.title },
+          ]}
+        />
         <Outlet context={context} />
       </div>
     </>

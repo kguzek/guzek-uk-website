@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { TvShowList } from "../../misc/models";
-import { Translation } from "../../misc/translations";
+import { Translation, TranslationContext } from "../../misc/translations";
 import { OutletContext } from "../../pages/LiveSeries/Base";
 import Paginator from "../Pagination/Paginator";
 import TvShowPreview from "./TvShowPreview";
@@ -16,13 +16,12 @@ const DUMMY_TV_SHOWS = {
 };
 
 export default function TvShowPreviewList({
-  data,
   tvShows: tvShowsRaw,
 }: {
-  data: Translation;
   tvShows?: TvShowList;
 }) {
   const [cardsToLoad, setCardsToLoad] = useState<number[]>([]);
+  const data = useContext<Translation>(TranslationContext);
   const { loading } = useOutletContext<OutletContext>();
 
   useEffect(() => {
@@ -49,17 +48,12 @@ export default function TvShowPreviewList({
         <NumericValue value={endIdx} /> {data.liveSeries.tvShowList.of}{" "}
         <NumericValue value={tvShows.total} />
       </small>
-      <Paginator
-        data={data}
-        currentPage={tvShows.page}
-        numPages={tvShows.pages}
-      />
+      <Paginator currentPage={tvShows.page} numPages={tvShows.pages} />
       <div className="previews-list">
         {tvShows.tv_shows.map((showDetails, idx) => (
           <TvShowPreview
             key={`tv-show-${showDetails.id}-${idx}`}
             idx={idx % 8}
-            data={data}
             showDetails={tvShowsRaw ? showDetails : undefined}
             ready={
               cardsToLoad.length === 0 &&
@@ -74,11 +68,7 @@ export default function TvShowPreviewList({
           />
         ))}
       </div>
-      <Paginator
-        data={data}
-        currentPage={tvShows.page}
-        numPages={tvShows.pages}
-      />
+      <Paginator currentPage={tvShows.page} numPages={tvShows.pages} />
     </div>
   );
 }

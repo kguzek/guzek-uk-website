@@ -1,19 +1,17 @@
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { FormEvent, useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { fetchFromAPI } from "../misc/backend";
 import InputBox from "../components/Forms/InputBox";
-import { LoadingButton } from "../components/LoadingScreen";
-import { Translation } from "../misc/translations";
+import { LoadingButton } from "../components/LoadingScreen/LoadingScreen";
+import { Translation, TranslationContext } from "../misc/translations";
 import { StateSetter, User } from "../misc/models";
-import Modal from "../components/Modal";
+import Modal from "../components/Modal/Modal";
 
 export default function SignUp({
-  data,
   user,
   setUser,
   logout,
 }: {
-  data: Translation;
   user: any;
   setUser: StateSetter<User | null>;
   logout: () => void;
@@ -25,6 +23,7 @@ export default function SignUp({
 
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const data = useContext<Translation>(TranslationContext);
   const navigate = useNavigate();
 
   useEffect(() => {

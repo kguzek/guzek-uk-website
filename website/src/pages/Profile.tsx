@@ -1,19 +1,12 @@
-import React, { MouseEvent, useEffect } from "react";
-import { Link, Navigate } from "react-router-dom";
+import React, { MouseEvent, useContext, useEffect } from "react";
+import { Navigate } from "react-router-dom";
 import { fetchFromAPI, clearStoredLoginInfo } from "../misc/backend";
-import { StateSetter, User } from "../misc/models";
-import { Translation } from "../misc/translations";
+import { User } from "../misc/models";
+import { Translation, TranslationContext } from "../misc/translations";
 import { setTitle } from "../misc/util";
 
-function Profile({
-  data,
-  user,
-  logout,
-}: {
-  data: Translation;
-  user: User | null;
-  logout: () => void;
-}) {
+function Profile({ user, logout }: { user: User | null; logout: () => void }) {
+  const data = useContext<Translation>(TranslationContext);
   async function handleLogOut(_evt: MouseEvent<HTMLButtonElement>) {
     const token = localStorage.getItem("refreshToken");
     await fetchFromAPI(

@@ -1,26 +1,29 @@
 import React, { useState, useEffect, MouseEvent } from "react";
 import { Routes, Route, useSearchParams } from "react-router-dom";
-import TRANSLATIONS from "./misc/translations";
-import NavigationBar from "./components/NavigationBar";
-import Footer from "./components/Footer";
+import { TranslationContext, TRANSLATIONS } from "./misc/translations";
+import NavigationBar from "./components/Navigation/NavigationBar";
+import Footer from "./components/Footer/Footer";
 import PageTemplate from "./pages/PageTemplate";
 import ErrorPage from "./pages/ErrorPage";
 import { getCache } from "./misc/backend";
 import Profile from "./pages/Profile";
-import LoadingScreen from "./components/LoadingScreen";
+import LoadingScreen from "./components/LoadingScreen/LoadingScreen";
 import "./styles/styles.css";
 import "./styles/forms.css";
 import LogIn from "./pages/LogIn";
 import SignUp from "./pages/SignUp";
 import { ErrorCode, Language, MenuItem, User } from "./misc/models";
-import ContentManager from "./pages/ContentManager";
+import ContentManager from "./pages/Admin/ContentManager";
 import { PAGE_NAME, tryFetch } from "./misc/util";
-import Base from "./pages/LiveSeries/Base";
+import LiveSeriesBase from "./pages/LiveSeries/Base";
 import MostPopular from "./pages/LiveSeries/MostPopular";
 import Home from "./pages/LiveSeries/Home";
 import Search from "./pages/LiveSeries/Search";
 import TvShow from "./pages/LiveSeries/TvShow";
-import Modal from "./components/Modal";
+import Modal from "./components/Modal/Modal";
+import AdminBase from "./pages/Admin/Base";
+import Users from "./pages/Admin/Users";
+import Logs from "./pages/Admin/Logs";
 
 /** When set to `true`, doesn't remove caches whose creation date is unknown. */
 const IGNORE_INVALID_RESPONSE_DATES = false;
@@ -196,25 +199,19 @@ export default function App() {
     return <LoadingScreen text={`${pageContent.loading} ${PAGE_NAME}`} />;
   }
 
-  const forbiddenErrorPage = (
-    <ErrorPage data={pageContent} errorCode={ErrorCode.Forbidden} />
-  );
-  const notFoundErrorPage = (
-    <ErrorPage data={pageContent} errorCode={ErrorCode.NotFound} />
-  );
+  const forbiddenErrorPage = <ErrorPage errorCode={ErrorCode.Forbidden} />;
   // const unauthorizedErrorPage = (
-  //   <ErrorPage data={pageContent} errorCode={ErrorCode.Unauthorized} />
+  //   <ErrorPage  errorCode={ErrorCode.Unauthorized} />
   // );
 
   return (
-    <>
+    <TranslationContext.Provider value={pageContent}>
       <Modal
         message={pageContent.loggedOut}
         visible={modalVisible}
         onClick={() => setModalVisible(false)}
       />
       <NavigationBar
-        data={pageContent}
         selectedLanguage={userLanguage}
         changeLang={changeLang}
         menuItems={menuItems.filter(
@@ -241,15 +238,12 @@ export default function App() {
           ))}
         <Route
           path="profile"
-          element={
-            <Profile data={pageContent} user={currentUser} logout={logout} />
-          }
+          element={<Profile user={currentUser} logout={logout} />}
         />
         <Route
           path="login"
           element={
             <LogIn
-              data={pageContent}
               user={currentUser}
               setUser={setCurrentUser}
               logout={logout}
@@ -260,7 +254,6 @@ export default function App() {
           path="signup"
           element={
             <SignUp
-              data={pageContent}
               user={currentUser}
               setUser={setCurrentUser}
               logout={logout}
@@ -268,48 +261,45 @@ export default function App() {
           }
         />
         <Route
-          path="content-manager"
-          element={
-            currentUser?.admin ? (
+          path="admin"
+          element={currentUser?.admin ? <AdminBase /> : forbiddenErrorPage}
+        >
+          <Route
+            path="content-manager"
+            element={
               <ContentManager
-                data={pageContent}
                 lang={userLanguage}
                 menuItems={menuItems}
                 reloadSite={removeOldCaches}
                 setUser={setCurrentUser}
                 logout={logout}
               />
-            ) : (
-              forbiddenErrorPage
-            )
-          }
-        />
+            }
+          />
+          <Route path="users" element={<Users />} />
+          <Route path="logs" element={<Logs />} />
+        </Route>
         <Route
           path="liveseries"
           element={
-            <Base
-              data={pageContent}
+            <LiveSeriesBase
               logout={logout}
               reloadSite={removeOldCaches}
               user={currentUser}
-            ></Base>
+            ></LiveSeriesBase>
           }
         >
-          <Route index element={<Home data={pageContent} />} />
-          <Route
-            path="most-popular"
-            element={<MostPopular data={pageContent} />}
-          />
-          <Route path="search" element={<Search data={pageContent} />} />
-          <Route path="tv-show">
-            <Route index element={notFoundErrorPage} />
-            <Route path=":permalink" element={<TvShow data={pageContent} />} />
-          </Route>
-          <Route path="*" element={notFoundErrorPage} />
+          <Route index element={<Home />} />
+          <Route path="most-popular" element={<MostPopular />} />
+          <Route path="search" element={<Search />} />
+          <Route path="tv-show/:permalink" element={<TvShow />} />
         </Route>
-        <Route path="*" element={notFoundErrorPage} />
+        <Route
+          path="*"
+          element={<ErrorPage errorCode={ErrorCode.NotFound} />}
+        />
       </Routes>
-      <Footer data={pageContent} />
-    </>
+      <Footer />
+    </TranslationContext.Provider>
   );
 }

@@ -126,6 +126,10 @@
   font-size: 2rem;
 }
 
+nav.mini-navbar {
+  gap: 20px;
+}
+
 /* Desktop devices */
 @media screen and (min-width: 981px) {
   .hamburger {
@@ -170,5 +174,17 @@
 
   .nav-items.closed {
     pointer-events: none;
+  }
+}
+
+@media screen and (max-width: 750px) {
+  .mini-navbar {
+    justify-content: center;
+  }
+}
+
+@media screen and (max-width: 550px) {
+  .mini-navbar {
+    font-size: medium;
   }
 }

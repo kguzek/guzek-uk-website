@@ -1,17 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
 import PageIndicator from "./PageIndicator";
-import "../../styles/pagination.css";
-import { Translation } from "../../misc/translations";
+import "./Pagination.css";
+import { Translation, TranslationContext } from "../../misc/translations";
 
 export default function Paginator({
-  data,
   currentPage,
   numPages,
 }: {
-  data: Translation;
   currentPage: number;
   numPages: number;
 }) {
+  const data = useContext<Translation>(TranslationContext);
   const pages: (undefined | number)[] = [1];
 
   function addPage(page: number) {
@@ -48,21 +47,18 @@ export default function Paginator({
   return (
     <div className="paginator">
       <PageIndicator
-        data={data}
         currentPage={currentPage}
         direction="PREVIOUS"
         disabled={currentPage === 1}
       />
       {pages.map((page, idx) => (
         <PageIndicator
-          data={data}
           key={"page-" + page + "-" + idx}
           page={page}
           currentPage={currentPage}
         />
       ))}
       <PageIndicator
-        data={data}
         currentPage={currentPage}
         direction="NEXT"
         disabled={currentPage === numPages}
