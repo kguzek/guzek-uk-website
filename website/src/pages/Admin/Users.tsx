@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import LoadingScreen from "../../components/LoadingScreen/LoadingScreen";
 import {
@@ -11,11 +11,15 @@ import { getErrorMessage } from "../../misc/util";
 import { AdminContext } from "./Base";
 
 export default function Users() {
-  const { users, setUsers } = useOutletContext<AdminContext>();
+  const { users, setUsers, setTitle } = useOutletContext<AdminContext>();
   const { setModalChoice, setModalError, setModalInfo } =
     useContext(ModalContext);
   const { fetchFromAPI } = useFetchContext();
   const data = useContext(TranslationContext);
+
+  useEffect(() => {
+    setTitle(data.admin.users.title);
+  }, []);
 
   if (!users) return <LoadingScreen />;
 
@@ -27,7 +31,7 @@ export default function Users() {
 
   async function deleteUser(user: User) {
     try {
-      const res = await fetchFromAPI(`users/${user.uuid}`, {
+      const res = await fetchFromAPI(`auth/users/${user.uuid}`, {
         method: "DELETE",
       });
       if (res.ok) {
@@ -46,24 +50,31 @@ export default function Users() {
   }
 
   return (
-    <div className="users flex-column gap-10">
-      {users.map((user, idx) => (
-        <div key={idx} className="clickable user-container no-overflow">
-          <Link to={user.uuid} className="user flex gap-15">
-            <i className={`fa-solid fa-user ${user.admin ? "admin" : ""}`}></i>
-            <div>
-              <div className="flex">
-                <i>{user.username}</i>
+    <div>
+      <h3>{data.admin.users.title}</h3>
+      <div className="users flex-column">
+        <div className="cards flex-column gap-10">
+          {users.map((user, idx) => (
+            <div key={idx} className="clickable card-container no-overflow">
+              <Link to={user.uuid} className="card user flex gap-15">
+                <i
+                  className={`fa-solid fa-user ${user.admin ? "admin" : ""}`}
+                ></i>
+                <div>
+                  <div className="flex">
+                    <i>{user.username}</i>
+                  </div>
+                  <div className="serif regular">{user.email}</div>
+                </div>
+                <i className="fa-solid fa-gear"></i>
+              </Link>
+              <div className="delete" onClick={() => confirmDelete(user)}>
+                <i className="fa-solid fa-trash"></i>
               </div>
-              <div className="serif regular">{user.email}</div>
             </div>
-            <i className="fa-solid fa-gear"></i>
-          </Link>
-          <div className="delete" onClick={() => confirmDelete(user)}>
-            <i className="fa-solid fa-trash"></i>
-          </div>
+          ))}
         </div>
-      ))}
+      </div>
     </div>
   );
 }

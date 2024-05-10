@@ -118,8 +118,12 @@ export default function EpisodesList({
         </div>
         {children}
       </div>
-      <div className={`episodes-container ${collapsed ? "hidden" : ""}`}>
-        <div className="episodes flex-wrap">
+      <div
+        className={`episodes-container collapsible ${
+          collapsed ? "hidden" : ""
+        }`}
+      >
+        <div className="episodes flex-wrap gap-10 no-overflow">
           {episodes.map((episode, idx) => (
             <Episode
               key={`episode-unwatched-${idx}`}

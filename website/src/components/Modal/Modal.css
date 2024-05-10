@@ -83,7 +83,7 @@ button.btn-secondary {
   background-color: var(--color-error);
 }
 
-@media screen and (max-width: 950px) {
+@media screen and (max-width: 980px) {
   .modal {
     box-sizing: border-box;
     width: 70%;

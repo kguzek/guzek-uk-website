@@ -31,7 +31,7 @@
   cursor: not-allowed;
 }
 
-@media screen and (max-width: 950px) {
+@media screen and (max-width: 980px) {
   .page-indicator {
     font-size: medium;
     min-width: 20px;

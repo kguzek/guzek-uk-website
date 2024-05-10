@@ -121,6 +121,10 @@ body {
   align-items: center;
 }
 
+.stretch {
+  align-items: stretch;
+}
+
 .gap-10 {
   gap: 10px;
 }
@@ -138,10 +142,22 @@ body {
   display: none;
 }
 
+.collapsible {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 300ms ease, opacity 300ms ease;
+}
+
+.collapsible.hidden {
+  opacity: 0;
+  grid-template-rows: 0fr;
+}
+
 [disabled] {
   filter: contrast(60%);
   cursor: not-allowed;
 }
+
 ::selection {
   color: var(--color-primary-strong);
   background: var(--color-accent);

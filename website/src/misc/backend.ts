@@ -56,7 +56,7 @@ async function getAccessToken(auth: Auth) {
   const token = localStorage.getItem("refreshToken") ?? "";
   const req = await createRequest(
     auth,
-    "auth/token",
+    "auth/access",
     "POST",
     { body: { token } },
     false

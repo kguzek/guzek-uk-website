@@ -1,0 +1,38 @@
+.syntax {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+pre {
+  border: 2px solid var(--color-background-soft);
+  background-color: var(--color-background);
+  border-radius: 5px;
+  padding: 10px 5px;
+  overflow-x: auto;
+}
+
+.string {
+  color: var(--color-accent2);
+}
+
+.number {
+  color: var(--color-accent);
+}
+
+.true {
+  color: var(--color-success);
+}
+
+.false {
+  color: var(--color-error);
+}
+
+.null {
+  color: var(--color-background-soft);
+}
+
+.key {
+  color: var(--color-primary);
+}
+

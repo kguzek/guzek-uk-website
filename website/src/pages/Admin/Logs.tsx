@@ -1,27 +1,315 @@
-import React, { useEffect, useState } from "react";
-import { useFetchContext } from "../../misc/context";
+import React, { useContext, useEffect, useState } from "react";
+import { useOutletContext, useSearchParams } from "react-router-dom";
+import InputBox from "../../components/Forms/InputBox";
+import LoadingScreen from "../../components/LoadingScreen/LoadingScreen";
+import { NumericValue } from "../../components/NumericValue";
+import SyntaxHighlighted from "../../components/SyntaxHighlighted/SyntaxHighlighted";
+import { TranslationContext, useFetchContext } from "../../misc/context";
+import { StateSetter } from "../../misc/models";
+import { scrollToElement } from "../../misc/util";
+import { AdminContext } from "./Base";
 
-interface Log {
-  timestamp: string;
-  level: string;
+const DEFAULT_RESPONSE: LogResponse = {
+  date: new Date().toISOString(),
+  logs: [],
+};
+
+const ICONS = {
+  error: "warning",
+  request: "download",
+  response: "upload",
+  info: "info-circle",
+  debug: "info-circle",
+} as const;
+
+type LogLevel = keyof typeof ICONS;
+
+interface LogEntry {
+  label: string;
+  level: LogLevel;
   message: string;
+  metadata: any;
+  timestamp: string;
 }
 
+type LogResponse = { date: string; logs: LogEntry[] } | null;
+
+type Filter = {
+  ascending: boolean;
+  levels: LogLevel[];
+  labels: string[];
+  withBodyOnly: boolean;
+};
+
+const getIcon = (key: string) =>
+  ICONS[key as keyof typeof ICONS] || "question error";
+
+const getDateString = (dateInit?: any) =>
+  (dateInit ? new Date(dateInit) : new Date()).toISOString().split("T")[0];
+
+const entryHasBody = (entry: LogEntry) =>
+  entry.metadata?.body && Object.keys(entry.metadata.body).length > 0;
+
 export default function Logs() {
-  const [logs, setLogs] = useState<Log[] | null>(null);
+  const [dateLogs, setDateLogs] = useState<LogResponse>(null);
+  const [errorLogs, setErrorLogs] = useState<LogResponse>(null);
+  const [filteredLogs, setFilteredLogs] = useState<LogEntry[]>([]);
+  const [labels, setLabels] = useState<string[]>([]);
+  const [filter, setFilter] = useState<Filter>({
+    ascending: true,
+    levels: Object.keys(ICONS) as LogLevel[],
+    labels: [],
+    withBodyOnly: false,
+  });
   const { tryFetch } = useFetchContext();
+  const { setTitle } = useOutletContext<AdminContext>();
+  const data = useContext(TranslationContext);
+  const [search] = useSearchParams();
 
   useEffect(() => {
-    if (logs) return;
-
-    fetchLogs();
+    if (errorLogs) return;
+    fetchErrorLogs();
   }, []);
 
-  async function fetchLogs() {
-    const res = await tryFetch("logs", {}, [] as Log[]);
-    setLogs(res);
+  useEffect(() => {
+    const date = search.get("date") ?? getDateString();
+    if (dateLogs?.date === date) return;
+
+    fetchLogs(date);
+  }, [search]);
+
+  useEffect(() => {
+    setTitle(data.admin.logs.title);
+  }, [data]);
+
+  useEffect(() => {
+    if (!dateLogs || !errorLogs) return;
+
+    const foundLabels = new Set<string>();
+    for (const log of [...errorLogs.logs, ...dateLogs.logs]) {
+      if (!log.label) continue;
+      foundLabels.add(log.label);
+    }
+    setLabels([...foundLabels]);
+
+    const errorLogsFiltered = errorLogs.logs.filter(
+      (log) => getDateString(log.timestamp) === dateLogs.date
+    );
+
+    const logsSorted = [...dateLogs.logs, ...errorLogsFiltered].sort(
+      (a, b) =>
+        (new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()) *
+        (filter.ascending ? 1 : -1)
+    );
+
+    const baseLogFilter = (log: LogEntry) =>
+      filter.levels.includes(log.level) &&
+      (!filter.withBodyOnly || entryHasBody(log));
+
+    const predicate =
+      filter.labels.length === 0
+        ? baseLogFilter
+        : (log: LogEntry) =>
+            baseLogFilter(log) && filter.labels.includes(log.label);
+
+    setFilteredLogs(logsSorted.filter(predicate));
+    scrollToElement("#logs-header");
+  }, [dateLogs, errorLogs, filter]);
+
+  async function fetchErrorLogs() {
+    const res = await tryFetch("logs/error", {}, DEFAULT_RESPONSE, false);
+    setErrorLogs(res);
   }
 
-  return <div>Logs</div>;
+  async function fetchLogs(date: string) {
+    const res = await tryFetch(
+      `logs/date/${date}`,
+      {},
+      DEFAULT_RESPONSE,
+      false
+    );
+    setDateLogs(res);
+  }
+
+  if (!dateLogs || !errorLogs) return <LoadingScreen />;
+
+  return (
+    <div>
+      <h3>{data.admin.logs.title}</h3>
+      <div className="logs flex-column">
+        <div className="cards flex-column stretch gap-10">
+          <div className="flex gap-10">
+            <h4>Log levels:</h4>
+            {Object.entries(ICONS).map(([key, icon], idx) => {
+              const level = key as LogLevel;
+              const selected = filter.levels.includes(level);
+              return (
+                <div key={`level-selector-${idx}`} className={level}>
+                  <div
+                    className="clickable level-icon"
+                    onClick={() =>
+                      setFilter((old) => ({
+                        ...old,
+                        levels: selected
+                          ? old.levels.filter((val) => val !== level)
+                          : [...old.levels, level],
+                      }))
+                    }
+                  >
+                    <i
+                      className={`fa-solid fa-${icon} ${
+                        selected ? "" : "deselected"
+                      }`}
+                      title={level}
+                    ></i>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex gap-10 stretch">
+            <h4 className="nowrap">Source files:</h4>
+            <div className="flex flex-wrap">
+              {labels.map((label, idx) => {
+                const selected = filter.labels.includes(label);
+                return (
+                  <div
+                    key={`label-selector-${idx}`}
+                    className={`clickable log-label ${
+                      selected ? "" : "deselected"
+                    }`}
+                    onClick={() =>
+                      setFilter((old) => ({
+                        ...old,
+                        labels: selected
+                          ? old.labels.filter((val) => val !== label)
+                          : [...old.labels, label],
+                      }))
+                    }
+                  >
+                    {label}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="flex">
+            <InputBox
+              label={"With body only:"}
+              type="checkbox"
+              value={filter.withBodyOnly}
+              setValue={(withBodyOnly: boolean) =>
+                setFilter((old) => ({ ...old, withBodyOnly }))
+              }
+            />
+          </div>
+          <div className="flex gap-10">
+            <div
+              className="clickable flex gap-10"
+              onClick={() =>
+                setFilter((old) => ({ ...old, ascending: !old.ascending }))
+              }
+            >
+              <h4>Sort:</h4>
+              <div>
+                <i
+                  className={`fa-solid fa-arrow-${
+                    filter.ascending ? "up" : "down"
+                  }`}
+                ></i>
+              </div>
+            </div>
+          </div>
+          <h3 id="logs-header">
+            Number of log entries: <NumericValue value={filteredLogs.length} />
+          </h3>
+          {filteredLogs.map((log, idx) => (
+            <Log key={idx} data={log} setFilter={setFilter} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Log({
+  data,
+  setFilter,
+}: {
+  data: LogEntry;
+  setFilter: StateSetter<Filter>;
+}) {
+  const [collapsed, setCollapsed] = useState(true);
+
+  const showBody = entryHasBody(data);
+
+  return (
+    <div className="flex-column stretch">
+      <div className={`card-container log ${data.level}`}>
+        <div className="card flex gap-10">
+          <div
+            className="clickable centred level-icon"
+            title={data.level}
+            onClick={() =>
+              setFilter((old) => ({ ...old, levels: [data.level] }))
+            }
+          >
+            <i className={`fa-solid fa-${getIcon(data.level)}`}></i>
+          </div>
+          <div className="log-body flex flex-column gap-10">
+            <div className="log-header flex">
+              <small>
+                <code className="flex gap-10">
+                  {data.timestamp}
+                  {data.metadata?.ip && (
+                    <span className="clickable">({data.metadata.ip})</span>
+                  )}
+                </code>
+              </small>
+              <div
+                className="clickable log-label"
+                onClick={() =>
+                  setFilter((old) => ({ ...old, labels: [data.label] }))
+                }
+              >
+                {data.label}
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-10">
+              {showBody && (
+                <div
+                  className="clickable"
+                  onClick={() => setCollapsed((old) => !old)}
+                >
+                  <div
+                    className="message flex"
+                    title={
+                      (collapsed ? "Expand" : "Collapse") + " request body"
+                    }
+                  >
+                    <i className="fas fa-code"></i>
+                    <i
+                      className={`fas fa-caret-${collapsed ? "down" : "up"}`}
+                    ></i>
+                  </div>
+                </div>
+              )}
+              <code className="message">{data.message + ""}</code>
+            </div>
+          </div>
+        </div>
+      </div>
+      {showBody && (
+        <div
+          className={`log-container collapsible ${collapsed ? "hidden" : ""}`}
+        >
+          <div className="flex no-overflow">
+            <SyntaxHighlighted json={data.metadata.body} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
