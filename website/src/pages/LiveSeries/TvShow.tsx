@@ -7,7 +7,7 @@ import {
   ErrorCode,
   TvShowDetails,
 } from "../../misc/models";
-import { Translation, TranslationContext } from "../../misc/translations";
+import { TranslationContext } from "../../misc/context";
 import {
   getEpisodeAirDate,
   hasEpisodeAired,
@@ -15,7 +15,7 @@ import {
   setTitle,
 } from "../../misc/util";
 import ErrorPage from "../ErrorPage";
-import { OutletContext } from "./Base";
+import { LiveSeriesOutletContext } from "./Base";
 import TvShowSkeleton from "../../components/LiveSeries/TvShowSkeleton";
 
 export default function TvShow() {
@@ -24,14 +24,14 @@ export default function TvShow() {
   const [tvShowDetails, setTvShowDetails] = useState<
     null | TvShowDetails | undefined
   >(null);
-  const data = useContext<Translation>(TranslationContext);
+  const data = useContext(TranslationContext);
   const {
     likedShowIds,
     watchedEpisodes,
     setWatchedEpisodes,
     reloadSite,
     fetchResource,
-  } = useOutletContext<OutletContext>();
+  } = useOutletContext<LiveSeriesOutletContext>();
   const { permalink } = useParams();
 
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function TvShow() {
         const latestEpisodeAirDate = getEpisodeAirDate(latestEpisode);
         if (latestEpisodeAirDate > new Date())
           return data.liveSeries.tvShow.present;
-        return data.dateTimeFormat.format(latestEpisodeAirDate);
+        return data.dateShortFormat.format(latestEpisodeAirDate);
       }
 
       return data.liveSeries.tvShow[
@@ -82,7 +82,7 @@ export default function TvShow() {
     }
     const date = new Date(dateString);
     if (isInvalidDate(date)) return dateString;
-    return data.dateTimeFormat.format(date);
+    return data.dateShortFormat.format(date);
   }
 
   async function handleHeart() {
@@ -144,7 +144,7 @@ export default function TvShow() {
           ></i>{" "}
           {tvShowDetails.name}{" "}
           <small className="regular">
-            ({formatDate("start")}-{formatDate("end")})
+            ({formatDate("start")} – {formatDate("end")})
           </small>
         </h2>
         <div className="flex flex-wrap">

@@ -1,19 +1,18 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Outlet, useLocation, useSearchParams } from "react-router-dom";
-import Modal from "../../components/Modal/Modal";
 import { MiniNavBar } from "../../components/Navigation/NavigationBar";
-import { fetchFromAPI } from "../../misc/backend";
-import { fetchFromEpisodate } from "../../misc/episodate";
 import {
-  ShowData,
-  StateSetter,
-  User,
-  WatchedEpisodes,
-} from "../../misc/models";
-import { Translation, TranslationContext } from "../../misc/translations";
+  AuthContext,
+  ModalContext,
+  TranslationContext,
+  useFetchContext,
+} from "../../misc/context";
+import { fetchFromEpisodate } from "../../misc/episodate";
+import { ShowData, StateSetter, WatchedEpisodes } from "../../misc/models";
+import { getErrorMessage } from "../../misc/util";
 import "./Liveseries.css";
 
-export type OutletContext = {
+export type LiveSeriesOutletContext = {
   loading: string[];
   fetchResource: (
     endpoint: string,
@@ -39,17 +38,11 @@ export type OutletContext = {
 };
 
 export default function LiveSeriesBase({
-  logout,
   reloadSite,
-  user,
 }: {
-  logout: () => void;
   reloadSite: () => Promise<void>;
-  user: User | null;
 }) {
   const [loading, setLoading] = useState<string[]>([]);
-  const [modalMessage, setModalMessage] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
   const [likedShowsUpdated, setLikedShowsUpdated] = useState(false);
   const [watchedEpisodesUpdated, setWatchedEpisodesUpdated] = useState(false);
   const [likedShowIds, setLikedShowIds] = useState<null | number[]>(null);
@@ -57,7 +50,10 @@ export default function LiveSeriesBase({
     useState<null | ShowData<WatchedEpisodes>>(null);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const data = useContext<Translation>(TranslationContext);
+  const data = useContext(TranslationContext);
+  const { user } = useContext(AuthContext);
+  const { fetchFromAPI } = useFetchContext();
+  const { setModalError } = useContext(ModalContext);
 
   useEffect(() => {
     if (likedShowIds && watchedEpisodes) return;
@@ -110,8 +106,7 @@ export default function LiveSeriesBase({
   ) {
     if (!user && !useEpisodate) {
       if (method) {
-        setModalVisible(true);
-        setModalMessage(data.liveSeries.home.login);
+        setModalError(data.liveSeries.home.login);
         onError();
       } else {
         setLikedShowIds([]);
@@ -123,12 +118,7 @@ export default function LiveSeriesBase({
     try {
       const res = await (useEpisodate
         ? fetchFromEpisodate(endpoint, params ?? searchParams)
-        : fetchFromAPI(
-            "liveseries/" + endpoint,
-            { method, body },
-            logout,
-            !method
-          ));
+        : fetchFromAPI("liveseries/" + endpoint, { method, body }, !method));
       const json = await res.json();
       if (res.ok) {
         onSuccess(json);
@@ -145,22 +135,20 @@ export default function LiveSeriesBase({
           }
         }
       } else {
-        setModalMessage(JSON.stringify(json));
-        setModalVisible(true);
+        setModalError(getErrorMessage(res, json, data));
         setSearchParams("");
         onError();
       }
     } catch (error) {
       console.error(error);
-      setModalMessage("networkError");
-      setModalVisible(true);
+      setModalError(data.networkError);
       setSearchParams("");
       onError();
     }
     method || setLoading((old) => old.filter((value) => value !== endpoint));
   }
 
-  const context: OutletContext = {
+  const context: LiveSeriesOutletContext = {
     loading,
     fetchResource,
     reloadSite,
@@ -170,32 +158,24 @@ export default function LiveSeriesBase({
   };
 
   return (
-    <>
-      <Modal
-        className="error"
-        message={
-          modalMessage === "networkError" ? data.networkError : modalMessage
-        }
-        visible={modalVisible}
-        onClick={() => setModalVisible(false)}
+    <div className="text liveseries">
+      <MiniNavBar
+        pathBase="liveseries"
+        pages={[
+          { link: "", label: data.liveSeries.home.title },
+          { link: "search", label: data.liveSeries.search.title },
+          { link: "most-popular", label: data.liveSeries.mostPopular.title },
+        ]}
       />
-      <div className="text liveseries">
-        <MiniNavBar
-          pathBase="liveseries"
-          pages={[
-            { link: "", label: data.liveSeries.home.title },
-            { link: "search", label: data.liveSeries.search.title },
-            { link: "most-popular", label: data.liveSeries.mostPopular.title },
-          ]}
-        />
-        <Outlet context={context} />
-      </div>
-    </>
+      <Outlet context={context} />
+    </div>
   );
 }
 
-export const getLiveSeriesTitle = (
-  data: Translation,
+export function getLiveSeriesTitle(
   page: "home" | "mostPopular" | "search" | "tvShow"
-) => `${data.liveSeries[page].title} – ${data.liveSeries.title}`;
+) {
+  const data = useContext(TranslationContext);
+  return `${data.liveSeries[page].title} – ${data.liveSeries.title}`;
+}
 

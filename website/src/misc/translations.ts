@@ -1,9 +1,14 @@
-import { createContext } from "react";
 import { Episode, ErrorCode, ErrorPageContent, Language } from "./models";
 
 const LONG_DATE_FORMAT = {
   day: "2-digit",
   month: "long",
+  year: "numeric",
+} as const;
+
+const SHORT_DATE_FORMAT = {
+  day: "2-digit",
+  month: "2-digit",
   year: "numeric",
 } as const;
 
@@ -23,15 +28,19 @@ export type Translation = Readonly<{
   language: string;
   loginShort: string;
   dateFormat: Intl.DateTimeFormat;
+  dateShortFormat: Intl.DateTimeFormat;
   dateTimeFormat: Intl.DateTimeFormat;
+  dateTimeShortFormat: Intl.DateTimeFormat;
   numberFormat: Intl.NumberFormat;
   networkError: string;
+  unknownError: string;
   loggedOut: string;
   profile: {
     title: string;
     body: string;
     loading: string;
     invalidCredentials: string;
+    passwordMismatch: string;
     formDetails: {
       username: string;
       email: string;
@@ -49,6 +58,8 @@ export type Translation = Readonly<{
     };
   };
   admin: {
+    title: string;
+    confirmDelete: string;
     contentManager: {
       title: string;
       selectedPage: string;
@@ -68,6 +79,10 @@ export type Translation = Readonly<{
     logs: {
       title: string;
     };
+  };
+  modal: {
+    yes: string;
+    no: string;
   };
   liveSeries: {
     title: "LiveSeries";
@@ -131,19 +146,26 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
     language: "Language",
     loginShort: "Log in",
     dateFormat: new Intl.DateTimeFormat("en-GB", LONG_DATE_FORMAT),
+    dateShortFormat: new Intl.DateTimeFormat("en-GB", SHORT_DATE_FORMAT),
     dateTimeFormat: new Intl.DateTimeFormat("en-GB", {
       ...LONG_DATE_FORMAT,
+      ...SHORT_TIME_FORMAT,
+    }),
+    dateTimeShortFormat: new Intl.DateTimeFormat("en-GB", {
+      ...SHORT_DATE_FORMAT,
       ...SHORT_TIME_FORMAT,
     }),
     numberFormat: new Intl.NumberFormat("en-GB"),
     networkError:
       "A network error occurred while performing this action. Please try again later.",
+    unknownError: "An unknown error occured. Please contact konrad@guzek.uk",
     loggedOut: "You have been logged out.",
     profile: {
       title: "Profile",
       body: "Welcome to your profile!",
       loading: "Validating",
       invalidCredentials: "Invalid credentials.",
+      passwordMismatch: "Passwords do not match.",
       formDetails: {
         username: "Username",
         email: "Email",
@@ -175,6 +197,8 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
       },
     },
     admin: {
+      title: "Admin Tools",
+      confirmDelete: "Are you sure you want to delete this user?",
       contentManager: {
         title: "Content Manager",
         selectedPage: "Selected page",
@@ -194,6 +218,10 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
       logs: {
         title: "Logs",
       },
+    },
+    modal: {
+      yes: "Yes",
+      no: "No",
     },
     liveSeries: {
       title: "LiveSeries",
@@ -258,19 +286,27 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
     language: "Język",
     loginShort: "Zaloguj",
     dateFormat: new Intl.DateTimeFormat("pl-PL", LONG_DATE_FORMAT),
+    dateShortFormat: new Intl.DateTimeFormat("pl-PL", SHORT_DATE_FORMAT),
     dateTimeFormat: new Intl.DateTimeFormat("pl-PL", {
       ...LONG_DATE_FORMAT,
+      ...SHORT_TIME_FORMAT,
+    }),
+    dateTimeShortFormat: new Intl.DateTimeFormat("pl-PL", {
+      ...SHORT_DATE_FORMAT,
       ...SHORT_TIME_FORMAT,
     }),
     numberFormat: new Intl.NumberFormat("pl-PL"),
     networkError:
       "Nastąpił błąd sieciowy podczas wykonywania tej czynności. Spróbuj ponownie wkrótce.",
+    unknownError:
+      "Nastąpił nieoczekiwany bład. Proszę skontaktować się z konrad@guzek.uk",
     loggedOut: "Wylogowano z konta.",
     profile: {
       title: "Profil",
       body: "Witamy na Twoim profilu!",
       loading: "Trwa walidacja",
       invalidCredentials: "Niepoprawne dane loginowe.",
+      passwordMismatch: "Hasła się nie zgadzają.",
       formDetails: {
         username: "Nazwa użytkownika",
         email: "Email",
@@ -302,6 +338,8 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
       },
     },
     admin: {
+      title: "Narzędzia Administracyjne",
+      confirmDelete: "Na pewno chcesz usunąć tego użytkownika?",
       contentManager: {
         title: "Edytor Treści",
         selectedPage: "Wybrana strona",
@@ -321,6 +359,10 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
       logs: {
         title: "Logi",
       },
+    },
+    modal: {
+      yes: "Tak",
+      no: "Nie",
     },
     liveSeries: {
       title: "LiveSeries",
@@ -377,5 +419,3 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
     },
   },
 };
-
-export const TranslationContext = createContext<Translation>(TRANSLATIONS.EN);

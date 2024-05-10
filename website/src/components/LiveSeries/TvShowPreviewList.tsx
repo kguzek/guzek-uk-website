@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { TvShowList } from "../../misc/models";
-import { Translation, TranslationContext } from "../../misc/translations";
-import { OutletContext } from "../../pages/LiveSeries/Base";
+import { TranslationContext } from "../../misc/context";
+import { LiveSeriesOutletContext } from "../../pages/LiveSeries/Base";
 import Paginator from "../Pagination/Paginator";
 import TvShowPreview from "./TvShowPreview";
 
@@ -21,8 +21,8 @@ export default function TvShowPreviewList({
   tvShows?: TvShowList;
 }) {
   const [cardsToLoad, setCardsToLoad] = useState<number[]>([]);
-  const data = useContext<Translation>(TranslationContext);
-  const { loading } = useOutletContext<OutletContext>();
+  const data = useContext(TranslationContext);
+  const { loading } = useOutletContext<LiveSeriesOutletContext>();
 
   useEffect(() => {
     if (!tvShowsRaw) return;

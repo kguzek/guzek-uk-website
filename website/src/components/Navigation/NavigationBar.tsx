@@ -6,14 +6,11 @@ import React, {
 } from "react";
 import { Link } from "react-router-dom";
 import Logo from "../../media/Logo";
-import {
-  TRANSLATIONS,
-  Translation,
-  TranslationContext,
-} from "../../misc/translations";
+import { TRANSLATIONS } from "../../misc/translations";
 import { Language, MenuItem, User } from "../../misc/models";
 import { PAGE_NAME } from "../../misc/util";
 import "./Navigation.css";
+import { TranslationContext } from "../../misc/context";
 
 function NavigationBar({
   user,
@@ -28,7 +25,6 @@ function NavigationBar({
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const winDims = useWindowDimensions();
-  const data = useContext<Translation>(TranslationContext);
 
   // Create the array of nav bar page elements
   const menuItemElements = menuItems.map((item, index) => (
@@ -127,7 +123,7 @@ function UserWidget({
   displayStyle: string;
   setMenuOpen: Function;
 }) {
-  const data = useContext<Translation>(TranslationContext);
+  const data = useContext(TranslationContext);
   const imgUrl =
     (user && user.url) ||
     "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/default-avatar.png";

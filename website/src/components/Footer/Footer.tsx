@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
 import Logo from "../../media/Logo";
-import { Translation, TranslationContext } from "../../misc/translations";
+import { TranslationContext } from "../../misc/context";
 import "./Footer.css";
 
 function Footer() {
-  const data = useContext<Translation>(TranslationContext);
+  const data = useContext(TranslationContext);
   return (
     <footer className="centred">
       <hr />

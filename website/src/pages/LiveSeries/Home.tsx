@@ -3,21 +3,15 @@ import { Link, useOutletContext } from "react-router-dom";
 import { CarouselIndicator } from "../../components/Carousel/Carousel";
 import EpisodesList from "../../components/LiveSeries/EpisodesList";
 import TvShowPreview from "../../components/LiveSeries/TvShowPreview";
-import TvShowPreviewSkeleton from "../../components/LiveSeries/TvShowPreviewSkeleton";
-import {
-  CAROUSEL_INDICATOR_FULL_WIDTH,
-  Episode,
-  EpisodeStatuses,
-  TvShowDetails,
-} from "../../misc/models";
-import { Translation, TranslationContext } from "../../misc/translations";
+import { Episode, TvShowDetails } from "../../misc/models";
+import { TranslationContext } from "../../misc/context";
 import {
   hasEpisodeAired,
   scrollToElement,
   setTitle,
   useScroll,
 } from "../../misc/util";
-import { getLiveSeriesTitle, OutletContext } from "./Base";
+import { getLiveSeriesTitle, LiveSeriesOutletContext } from "./Base";
 
 // Number of skeleton cards to display when loading liked show ids
 const SKELETON_CARDS_COUNT = 4;
@@ -129,10 +123,10 @@ function LikedShowsCarousel({
 
 export default function Home() {
   const [likedShows, setLikedShows] = useState<LikedShows>({});
-  const data = useContext<Translation>(TranslationContext);
-  const title = getLiveSeriesTitle(data, "home");
+  const data = useContext(TranslationContext);
+  const title = getLiveSeriesTitle("home");
   const { likedShowIds, watchedEpisodes, loading, fetchResource } =
-    useOutletContext<OutletContext>();
+    useOutletContext<LiveSeriesOutletContext>();
 
   useEffect(() => {
     setTitle(title);

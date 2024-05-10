@@ -2,17 +2,17 @@ import React, { useContext, useEffect, useState } from "react";
 import { useOutletContext, useSearchParams } from "react-router-dom";
 import TvShowPreviewList from "../../components/LiveSeries/TvShowPreviewList";
 import { TvShowList } from "../../misc/models";
-import { Translation, TranslationContext } from "../../misc/translations";
+import { TranslationContext } from "../../misc/context";
 import { setTitle } from "../../misc/util";
-import { getLiveSeriesTitle, OutletContext } from "./Base";
+import { getLiveSeriesTitle, LiveSeriesOutletContext } from "./Base";
 
 export default function MostPopular() {
   const [results, setResults] = useState<TvShowList | null>(null);
-  const data = useContext<Translation>(TranslationContext);
-  const { fetchResource } = useOutletContext<OutletContext>();
+  const data = useContext(TranslationContext);
+  const { fetchResource } = useOutletContext<LiveSeriesOutletContext>();
   const [searchParams] = useSearchParams();
 
-  const title = getLiveSeriesTitle(data, "mostPopular");
+  const title = getLiveSeriesTitle("mostPopular");
 
   useEffect(() => {
     setTitle(title);

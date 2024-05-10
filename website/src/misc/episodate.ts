@@ -9,7 +9,6 @@ export function fetchFromEpisodate(
   const url = API_BASE + endpoint + getSearchParams(params);
   const request = new Request(url);
   // Episodate API allows direct fetching for applications with low traffic
-  // return fetchWithCache(request);
   return fetch(request);
 }
 

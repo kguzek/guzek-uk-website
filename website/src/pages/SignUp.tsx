@@ -1,29 +1,28 @@
 import React, { FormEvent, useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { fetchFromAPI } from "../misc/backend";
 import InputBox from "../components/Forms/InputBox";
 import { LoadingButton } from "../components/LoadingScreen/LoadingScreen";
-import { Translation, TranslationContext } from "../misc/translations";
-import { StateSetter, User } from "../misc/models";
-import Modal from "../components/Modal/Modal";
+import { User } from "../misc/models";
+import {
+  AuthContext,
+  ModalContext,
+  TranslationContext,
+  useFetchContext,
+} from "../misc/context";
+import { getErrorMessage } from "../misc/util";
 
-export default function SignUp({
-  user,
-  setUser,
-  logout,
-}: {
-  user: any;
-  setUser: StateSetter<User | null>;
-  logout: () => void;
-}) {
+export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const [username, setUsername] = useState("");
 
-  const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const data = useContext<Translation>(TranslationContext);
+  const data = useContext(TranslationContext);
+
+  const { user, setUser } = useContext(AuthContext);
+  const { fetchFromAPI } = useFetchContext();
+  const { setModalError } = useContext(ModalContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,16 +30,16 @@ export default function SignUp({
   }, [user]);
 
   useEffect(() => {
-    setErrorMessage("");
+    setModalError();
   }, [password, repeatPassword]);
 
   async function handleSignUp(evt: FormEvent<HTMLFormElement>) {
     evt.preventDefault();
     if (password !== repeatPassword) {
-      setErrorMessage("Passwords do not match.");
+      setModalError(data.profile.passwordMismatch);
       return;
     }
-    setErrorMessage("");
+    setModalError("");
     setLoading(true);
 
     const body = {
@@ -48,29 +47,18 @@ export default function SignUp({
       email,
       password,
     };
-    const res = await fetchFromAPI(
-      "auth/users",
-      { method: "POST", body },
-      logout
-    );
+    const res = await fetchFromAPI("auth/users", { method: "POST", body });
     const json = await res.json();
     setLoading(false);
     if (res.ok) {
       setUser(json as User);
     } else {
-      const msg = Object.entries(json).shift() ?? [];
-      setErrorMessage(msg.join(": "));
+      setModalError(getErrorMessage(res, json, data));
     }
   }
 
   return (
     <div className="flex-column">
-      <Modal
-        className="error"
-        message={errorMessage}
-        visible={!!errorMessage}
-        onClick={() => setErrorMessage("")}
-      />
       <form className="form-login" onSubmit={handleSignUp}>
         <InputBox
           label={data.profile.formDetails.username}

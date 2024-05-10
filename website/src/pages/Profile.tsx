@@ -1,29 +1,31 @@
 import React, { MouseEvent, useContext, useEffect } from "react";
 import { Navigate } from "react-router-dom";
-import { fetchFromAPI, clearStoredLoginInfo } from "../misc/backend";
-import { User } from "../misc/models";
-import { Translation, TranslationContext } from "../misc/translations";
+import { clearStoredLoginInfo } from "../misc/backend";
+import {
+  AuthContext,
+  TranslationContext,
+  useFetchContext,
+} from "../misc/context";
 import { setTitle } from "../misc/util";
 
-function Profile({ user, logout }: { user: User | null; logout: () => void }) {
-  const data = useContext<Translation>(TranslationContext);
-  async function handleLogOut(_evt: MouseEvent<HTMLButtonElement>) {
-    const token = localStorage.getItem("refreshToken");
-    await fetchFromAPI(
-      "auth/token",
-      {
-        method: "DELETE",
-        body: { token },
-      },
-      logout
-    );
-    clearStoredLoginInfo();
-    logout();
-  }
+function Profile() {
+  const data = useContext(TranslationContext);
+  const { user, logout } = useContext(AuthContext);
+  const { fetchFromAPI } = useFetchContext();
 
   useEffect(() => {
     setTitle(data.profile.title);
   }, [data]);
+
+  async function handleLogOut(_evt: MouseEvent<HTMLButtonElement>) {
+    const token = localStorage.getItem("refreshToken");
+    await fetchFromAPI("auth/token", {
+      method: "DELETE",
+      body: { token },
+    });
+    clearStoredLoginInfo();
+    logout();
+  }
 
   if (!user) {
     return <Navigate to="/login" replace={true} />;

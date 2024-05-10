@@ -3,19 +3,19 @@ import { useOutletContext, useSearchParams } from "react-router-dom";
 import InputBox from "../../components/Forms/InputBox";
 import TvShowPreviewList from "../../components/LiveSeries/TvShowPreviewList";
 import { TvShowList } from "../../misc/models";
-import { Translation, TranslationContext } from "../../misc/translations";
+import { TranslationContext } from "../../misc/context";
 import { setTitle } from "../../misc/util";
-import { getLiveSeriesTitle, OutletContext } from "./Base";
+import { getLiveSeriesTitle, LiveSeriesOutletContext } from "./Base";
 
 export default function Search() {
   const [inputValue, setInputValue] = useState("");
   const [results, setResults] = useState<null | TvShowList>(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const data = useContext<Translation>(TranslationContext);
-  const { fetchResource } = useOutletContext<OutletContext>();
+  const data = useContext(TranslationContext);
+  const { fetchResource } = useOutletContext<LiveSeriesOutletContext>();
 
   const searchQuery = searchParams.get("q");
-  const title = getLiveSeriesTitle(data, "search");
+  const title = getLiveSeriesTitle("search");
   const resultsLabel = `${data.liveSeries.search.results} "${searchQuery}"`;
 
   useEffect(() => {
