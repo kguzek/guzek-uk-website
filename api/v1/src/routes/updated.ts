@@ -1,6 +1,6 @@
 import express from "express";
 import { Updated } from "../sequelize";
-import { readAllDatabaseEntries, sendOK, setCacheControl } from "../util";
+import { readAllDatabaseEntries, sendOK } from "../util";
 export const router = express.Router();
 
 const ENDPOINTS: { [endpoint: string]: number } = {};
@@ -25,7 +25,6 @@ const processData = (data: Updated[]) => ({
 router.get("/", (_req, res) =>
   readAllDatabaseEntries(Updated, res, (data) => {
     res.setHeader("Cache-Control", "no-store");
-    setCacheControl(res, 1);
     sendOK(res, processData(data));
   })
 );

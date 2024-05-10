@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { FetchFromAPI } from "./backend";
-import { Episode, StateSetter } from "./models";
+import { FetchFromAPI, updateAccessToken } from "./backend";
+import { Episode, StateSetter, User } from "./models";
 import { Translation } from "./translations";
 
 export const PAGE_NAME = "Guzek UK";
@@ -107,3 +107,10 @@ export const hasEpisodeAired = (episode: Episode) =>
 export const getErrorMessage = (res: Response, json: any, data: Translation) =>
   (json[`${res.status} ${res.statusText}`] ?? JSON.stringify(json)) ||
   data.unknownError;
+
+export function getUserFromResponse(json: any) {
+  const { accessToken, refreshToken, ...userDetails } = json;
+  updateAccessToken(accessToken);
+  localStorage.setItem("refreshToken", refreshToken);
+  return userDetails as User;
+}

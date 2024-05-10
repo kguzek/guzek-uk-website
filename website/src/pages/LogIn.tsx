@@ -1,17 +1,16 @@
 import React, { FormEvent, useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { updateAccessToken } from "../misc/backend";
 import InputBox from "../components/Forms/InputBox";
 import LoadingScreen, {
   LoadingButton,
 } from "../components/LoadingScreen/LoadingScreen";
-import { User } from "../misc/models";
 import {
   AuthContext,
   ModalContext,
   TranslationContext,
   useFetchContext,
 } from "../misc/context";
+import { getUserFromResponse } from "../misc/util";
 
 export default function LogIn() {
   const [email, setEmail] = useState("");
@@ -39,10 +38,7 @@ export default function LogIn() {
     const json = await res.json();
     setLoading(false);
     if (res.ok) {
-      const { accessToken, refreshToken, ...userDetails } = json;
-      setUser(userDetails as User);
-      updateAccessToken(accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
+      setUser(getUserFromResponse(json));
     } else {
       setModalError(data.profile.invalidCredentials);
     }

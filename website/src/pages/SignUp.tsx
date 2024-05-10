@@ -2,14 +2,13 @@ import React, { FormEvent, useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import InputBox from "../components/Forms/InputBox";
 import { LoadingButton } from "../components/LoadingScreen/LoadingScreen";
-import { User } from "../misc/models";
 import {
   AuthContext,
   ModalContext,
   TranslationContext,
   useFetchContext,
 } from "../misc/context";
-import { getErrorMessage } from "../misc/util";
+import { getErrorMessage, getUserFromResponse } from "../misc/util";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -47,14 +46,19 @@ export default function SignUp() {
       email,
       password,
     };
-    const res = await fetchFromAPI("auth/users", { method: "POST", body });
-    const json = await res.json();
-    setLoading(false);
-    if (res.ok) {
-      setUser(json as User);
-    } else {
-      setModalError(getErrorMessage(res, json, data));
+    try {
+      const res = await fetchFromAPI("auth/users", { method: "POST", body });
+      const json = await res.json();
+      if (res.ok) {
+        setUser(getUserFromResponse(json));
+      } else {
+        setModalError(getErrorMessage(res, json, data));
+      }
+    } catch (error) {
+      console.error(error);
+      setModalError(data.networkError);
     }
+    setLoading(false);
   }
 
   return (
