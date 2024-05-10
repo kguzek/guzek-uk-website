@@ -35,7 +35,7 @@ export default function LogIn() {
       email,
       password,
     };
-    const res = await fetchFromAPI("auth/user", { method: "POST", body });
+    const res = await fetchFromAPI("auth/tokens", { method: "POST", body });
     const json = await res.json();
     setLoading(false);
     if (res.ok) {

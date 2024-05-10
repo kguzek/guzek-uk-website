@@ -11,12 +11,14 @@ import {
   sendError,
   sendOK,
 } from "../util";
-import { Token, User } from "../sequelize";
+import { LikedShows, Token, User, WatchedEpisodes } from "../sequelize";
 import { getTokenSecret } from "../middleware/auth";
 import { UserObj } from "../models";
+import { getLogger } from "../middleware/logging";
 const password = require("s-salt-pepper");
 
 export const router = express.Router();
+const logger = getLogger(__filename);
 
 const MODIFIABLE_USER_PROPERTIES = ["username", "email"];
 /** The number of milliseconds a newly-generated access token should be valid for. */
@@ -122,88 +124,25 @@ router
     );
   })
 
-  // POST login details
-  .post("/user", async (req: Request, res: Response) => {
-    const reject = (message: string) => sendError(res, 400, { message });
-
-    const { password: pw, email } = req.body;
-
-    if (!email) return reject("Email not provided.");
-
-    let userData;
-    try {
-      userData = await authenticateUser(res, { email }, pw);
-    } catch (err) {
-      return void reject((err as Error).message);
-    }
-    if (!userData) return;
-    sendNewTokens(res, userData);
-  })
-
-  // CREATE new access JWT
-  .post("/token", async (req: Request, res: Response) => {
-    const reject = (message: string) => sendError(res, 400, { message });
-
-    const refreshToken = req.body.token;
-    if (!refreshToken) return reject("No refresh token provided.");
-    const tokens = await readDatabaseEntry(
-      Token,
-      res,
-      { value: refreshToken },
-      () => {
-        reject("The provided refresh token was not issued by this server.");
-      }
-    );
-    if (!tokens) return;
-    jwt.verify(
-      refreshToken as string,
-      getTokenSecret("refresh"),
-      (err, user) => {
-        if (err) return reject("Invalid or expired refresh token.");
-
-        sendOK(res, generateAccessToken(user as UserObj), 201);
-      }
-    );
-  })
-
   // READ all users
   .get("/users", (_req: Request, res: Response) => {
     sendUsers(res, false);
   })
 
-  // READ all usernames
-  .get("/usernames", (_req: Request, res: Response) => {
-    sendUsers(res, true);
-  })
-
   // READ specific user by search query
-  .get("/user", async (req: Request, res: Response) => {
+  .get("/users", async (req: Request, res: Response) => {
     const results = await readDatabaseEntry(User, res, req.query);
     if (results) sendOK(res, removeSensitiveData(results)[0]);
   })
 
   // READ specific user by uuid
-  .get("/user/:uuid", async (req: Request, res: Response) => {
+  .get("/users/:uuid", async (req: Request, res: Response) => {
     const results = await readDatabaseEntry(User, res, req.params);
     if (results) sendOK(res, removeSensitiveData(results));
   })
 
-  // DELETE existing user
-  .delete("/user/:uuid", async (req: Request, res: Response) => {
-    await deleteDatabaseEntry(User, { uuid: req.params.uuid }, res);
-  })
-
-  // DELETE user token
-  .delete("/token", async (req: Request, res: Response) => {
-    const reject = (message: string) => sendError(res, 400, { message });
-    const refreshToken = req.body.token;
-    if (!refreshToken) return void reject("No refresh token provided.");
-
-    await deleteDatabaseEntry(Token, { value: refreshToken }, res);
-  })
-
   // UPDATE existing user details
-  .put("/user/:uuid/details", async (req: Request, res: Response) => {
+  .put("/users/:uuid/details", async (req: Request, res: Response) => {
     for (const property in req.body) {
       if (MODIFIABLE_USER_PROPERTIES.includes(property)) continue;
       if (req.user?.admin) continue;
@@ -217,7 +156,7 @@ router
   })
 
   // UPDATE existing user password
-  .put("/user/:uuid/password", async (req: Request, res: Response) => {
+  .put("/users/:uuid/password", async (req: Request, res: Response) => {
     const reject = (message: string) => sendError(res, 400, { message });
 
     if (!req.body.oldPassword) return reject("Old password not provided.");
@@ -244,5 +183,79 @@ router
       User,
       { params: req.params, body: credentials } as Request,
       res
+    );
+  })
+
+  // DELETE existing user
+  .delete("/users/:uuid", async (req: Request, res: Response) => {
+    const uuid = req.params.uuid;
+    if (!uuid)
+      return sendError(res, 400, {
+        message: "User UUID must be provided in request path.",
+      });
+    try {
+      await deleteDatabaseEntry(LikedShows, { userUUID: uuid });
+      await deleteDatabaseEntry(WatchedEpisodes, { userUUID: uuid });
+    } catch (error) {
+      logger.error(`Could not delete user-associated entries: ${error}`);
+    }
+    await deleteDatabaseEntry(User, { uuid }, res);
+  })
+
+  // READ all usernames
+  .get("/usernames", (_req: Request, res: Response) => {
+    sendUsers(res, true);
+  })
+
+  // CREATE refresh token
+  .post("/tokens", async (req: Request, res: Response) => {
+    const reject = (message: string) => sendError(res, 400, { message });
+
+    const { password: pw, email } = req.body;
+
+    if (!email) return reject("Email not provided.");
+
+    let userData;
+    try {
+      userData = await authenticateUser(res, { email }, pw);
+    } catch (err) {
+      return void reject((err as Error).message);
+    }
+    if (!userData) return;
+    sendNewTokens(res, userData);
+  })
+
+  // DELETE refresh token
+  .delete("/tokens/:token", async (req: Request, res: Response) => {
+    const reject = (message: string) => sendError(res, 400, { message });
+    const refreshToken = req.params.token;
+    if (!refreshToken) return void reject("No refresh token provided.");
+
+    await deleteDatabaseEntry(Token, { value: refreshToken }, res);
+  })
+
+  // CREATE new access JWT
+  .post("/access", async (req: Request, res: Response) => {
+    const reject = (message: string) => sendError(res, 400, { message });
+
+    const refreshToken = req.body.token;
+    if (!refreshToken) return reject("No refresh token provided.");
+    const tokens = await readDatabaseEntry(
+      Token,
+      res,
+      { value: refreshToken },
+      () => {
+        reject("The provided refresh token was not issued by this server.");
+      }
+    );
+    if (!tokens) return;
+    jwt.verify(
+      refreshToken as string,
+      getTokenSecret("refresh"),
+      (err, user) => {
+        if (err) return reject("Invalid or expired refresh token.");
+
+        sendOK(res, generateAccessToken(user as UserObj), 201);
+      }
     );
   });

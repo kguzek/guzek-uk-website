@@ -1,14 +1,19 @@
-.user-container {
+.cards {
   width: 80%;
+}
+
+.card-container {
+  width: 100%;
   background-color: var(--color-primary);
   display: flex;
   border-radius: 15px;
+  color: var(--color-background);
 }
 
-.user {
-  color: var(--color-background);
-  padding: 15px;
+.card {
+  color: inherit;
   width: 100%;
+  padding: 15px;
 }
 
 .admin {
@@ -39,5 +44,102 @@
 .delete:hover {
   background-size: 100% 100%;
   color: var(--color-primary-strong);
+}
+
+.input-box {
+  margin-bottom: 0;
+}
+
+.log {
+  background-color: var(--color-background-soft);
+  color: var(--color-primary-strong);
+}
+
+.log .card {
+  padding: 10px 15px;
+}
+
+.log-label {
+  color: var(--color-primary-strong);
+  background-color: var(--color-accent);
+  border-radius: 8px;
+  padding: 0 10px;
+  font-size: medium;
+}
+
+.log-body {
+  align-items: start;
+  width: 100%;
+}
+
+.log-header {
+  justify-content: space-between;
+  width: 100%;
+}
+
+.level-icon {
+  font-size: x-large;
+  min-width: 2rem;
+  color: inherit;
+}
+
+.info .level-icon {
+  color: var(--color-primary);
+}
+
+.debug .level-icon {
+  color: var(--color-accent);
+}
+
+.error .level-icon,
+.level-icon .error {
+  color: var(--color-error);
+}
+
+.response .level-icon {
+  color: rgb(218, 119, 213);
+}
+
+.request .level-icon {
+  color: var(--color-accent2);
+}
+
+.level-icon .deselected {
+  color: var(--color-background-soft);
+}
+
+.log-label.deselected {
+  color: var(--color-primary);
+  background-color: var(--color-background-soft);
+}
+
+.logs h4 {
+  margin: 10px 0;
+}
+
+.message {
+  padding: 10px 15px;
+  border-radius: 20px;
+  word-break: break-all;
+  background-color: var(--color-primary);
+  color: var(--color-background);
+}
+
+.error .message {
+  color: var(--color-error);
+  background-color: var(--color-background);
+}
+
+@media screen and (max-width: 1100px) {
+  .cards {
+    width: 90%;
+  }
+}
+
+@media screen and (max-width: 750px) {
+  .cards {
+    width: 100%;
+    font-size: medium;
+  }
 }
 

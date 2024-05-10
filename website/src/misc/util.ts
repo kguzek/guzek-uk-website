@@ -35,11 +35,12 @@ export const getTryFetch = (
       res = await fetchFromAPI(path, { params }, useCache);
     } catch (networkError) {
       console.error("Could not fetch from API:", networkError);
+      setModalError(data.networkError);
       return defaultData;
     }
-    const json: T = await res.json();
-    if (res.ok) return json;
-    setModalError(data.networkError);
+    const json = await res.json();
+    if (res.ok) return json as T;
+    setModalError(getErrorMessage(res, json, data));
     return defaultData;
   };
 

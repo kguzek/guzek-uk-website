@@ -19,10 +19,7 @@ function Profile() {
 
   async function handleLogOut(_evt: MouseEvent<HTMLButtonElement>) {
     const token = localStorage.getItem("refreshToken");
-    await fetchFromAPI("auth/token", {
-      method: "DELETE",
-      body: { token },
-    });
+    await fetchFromAPI(`auth/tokens/${token}`, { method: "DELETE" });
     clearStoredLoginInfo();
     logout();
   }

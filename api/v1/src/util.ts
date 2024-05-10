@@ -153,14 +153,25 @@ export async function updateDatabaseEntry(
 export async function deleteDatabaseEntry(
   model: ModelType,
   where: WhereOptions,
-  res: Response
+  res?: Response
 ) {
   let destroyedRows: number;
   try {
     destroyedRows = await model.destroy({ where });
   } catch (error) {
+    if (!res) throw error;
     return void sendError(res, 500, error as Error);
   }
   await updateEndpoint(model);
-  sendOK(res, { destroyedRows });
+  if (res) {
+    sendOK(res, { destroyedRows });
+  } else {
+    return destroyedRows;
+  }
 }
+
+export const isInvalidDate = (date: Date) => date.toString() === "Invalid Date";
+
+/** Sets the Cache-Control header in the response so that browsers will be able to cache it for a maximum of `maxAgeMinutes` minutes. */
+export const setCacheControl = (res: Response, maxAgeMinutes: number) =>
+  res.set("Cache-Control", `public, max-age=${maxAgeMinutes * 60}`);

@@ -126,15 +126,8 @@
   width: 100%;
 }
 
-.episodes-container {
-  display: grid;
-  grid-template-rows: 1fr;
+.episodes-container.collapsible {
   transition: grid-template-rows 400ms ease, opacity 1s ease;
-}
-
-.episodes-container.hidden {
-  opacity: 0;
-  grid-template-rows: 0fr;
 }
 
 .episodes-header {
@@ -144,10 +137,8 @@
 }
 
 .episodes {
-  gap: 10px;
   /* width: calc((480px + 5px * 2) * 2 + 10px); */
   width: 100%;
-  overflow: hidden;
 }
 
 .episode {

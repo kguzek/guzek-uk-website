@@ -17,7 +17,7 @@ export function getTokenSecret(type: "access" | "refresh") {
   return (secret ?? "") as jwt.Secret;
 }
 
-const ENDPOINTS = {
+const PERMISSIONS = {
   anonymous: {
     GET: [
       "/pages", // View all pages
@@ -26,9 +26,9 @@ const ENDPOINTS = {
       "/cocodentax-admin/allegro/api", // Make Allegro API requests
     ],
     POST: [
-      "/auth/user", // Log in
       "/auth/users", // Sign up
-      "/auth/token", // Regenerate token
+      "/auth/tokens", // Log in
+      "/auth/access", // Regenerate access token
       "/cocodentax-admin/pocztex/orders", // Submit Pocztex order
     ],
     PUT: [],
@@ -48,7 +48,7 @@ const ENDPOINTS = {
     ],
     PUT: ["/liveseries/watched-episodes/personal"], // Modify own watched episodes
     DELETE: [
-      "/auth/token", // Log out
+      "/auth/tokens", // Log out
       "/liveseries/liked-shows/personal", // Remove show from liked list
     ],
     PATCH: [],
@@ -65,9 +65,9 @@ export function authMiddleware(
     loggedInUser: false,
   };
   // Check if the current endpoint is accessible using the request method to anonymous or logged in users
-  for (const [level, routes] of Object.entries(ENDPOINTS)) {
+  for (const [level, routes] of Object.entries(PERMISSIONS)) {
     const endpoints = routes[req.method as RequestMethod] ?? [];
-    endpointAccessibleBy[level as keyof typeof ENDPOINTS] = endpoints.some(
+    endpointAccessibleBy[level as keyof typeof PERMISSIONS] = endpoints.some(
       (endpoint) => req.path.startsWith(endpoint)
     );
   }

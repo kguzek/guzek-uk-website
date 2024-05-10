@@ -5,6 +5,7 @@ import { TranslationContext } from "../../misc/context";
 import { LiveSeriesOutletContext } from "../../pages/LiveSeries/Base";
 import Paginator from "../Pagination/Paginator";
 import TvShowPreview from "./TvShowPreview";
+import { NumericValue } from "../NumericValue";
 
 const RESULTS_PER_PAGE = 20;
 
@@ -28,10 +29,6 @@ export default function TvShowPreviewList({
     if (!tvShowsRaw) return;
     setCardsToLoad(tvShowsRaw.tv_shows.map((show) => show.id));
   }, [tvShowsRaw]);
-
-  const NumericValue = ({ value }: { value: number | string }) => (
-    <span className="serif">{data.numberFormat.format(+value)}</span>
-  );
 
   const tvShows = tvShowsRaw ?? DUMMY_TV_SHOWS;
 

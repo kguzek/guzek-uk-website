@@ -1,7 +1,6 @@
 import React, { FormEvent, useContext, useEffect, useState } from "react";
 import { EditorValue } from "react-rte";
 import {
-  AuthContext,
   ModalContext,
   TranslationContext,
   useFetchContext,
@@ -12,13 +11,10 @@ import InputArea, {
 } from "../../components/Forms/InputArea";
 import InputBox from "../../components/Forms/InputBox";
 import { LoadingButton } from "../../components/LoadingScreen/LoadingScreen";
-import {
-  DEFAULT_PAGE_DATA,
-  MenuItem,
-  StateSetter,
-  User,
-} from "../../misc/models";
-import { getErrorMessage, setTitle } from "../../misc/util";
+import { DEFAULT_PAGE_DATA, MenuItem } from "../../misc/models";
+import { getErrorMessage } from "../../misc/util";
+import { useOutletContext } from "react-router-dom";
+import { AdminContext } from "./Base";
 
 const TEXT_PAGE_PROPERTIES = ["title", "url"] as const;
 const BOOL_PAGE_PROPERTIES = ["adminOnly", "localUrl", "shouldFetch"] as const;
@@ -34,7 +30,7 @@ export default function ContentManager({
 }) {
   const [selectedPageID, setSelectedPageID] = useState(menuItems[0]?.id ?? 0);
   const data = useContext(TranslationContext);
-  const { logout, setUser } = useContext(AuthContext);
+  const { setTitle } = useOutletContext<AdminContext>();
 
   useEffect(() => {
     setTitle(data.admin.contentManager.title);
@@ -48,8 +44,8 @@ export default function ContentManager({
   const selectedPage = menuItems.find((page) => page.id === selectedPageID);
 
   return (
-    <div className="text">
-      <h2>{data.admin.contentManager.title}</h2>
+    <div>
+      <h3>{data.admin.contentManager.title}</h3>
       {menuItems.length === 0 ? (
         <button className="btn btn-submit">
           {data.admin.contentManager.addPage}
@@ -68,8 +64,6 @@ export default function ContentManager({
               lang={lang}
               originalPage={selectedPage as MenuItem}
               reloadSite={reloadSite}
-              setUser={setUser}
-              logout={logout}
             />
           </form>
         </>
@@ -82,14 +76,10 @@ function PagesEditor({
   lang,
   originalPage,
   reloadSite,
-  setUser,
-  logout,
 }: {
   lang: string;
   originalPage: MenuItem;
   reloadSite: () => void;
-  setUser: StateSetter<User | null>;
-  logout: () => void;
 }) {
   const [page, setPage] = useState<MenuItem>(originalPage);
   const [content, setContent] = useState(getEmptyMarkdown());

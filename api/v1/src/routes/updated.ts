@@ -1,6 +1,6 @@
 import express from "express";
 import { Updated } from "../sequelize";
-import { readAllDatabaseEntries, sendOK } from "../util";
+import { readAllDatabaseEntries, sendOK, setCacheControl } from "../util";
 export const router = express.Router();
 
 const ENDPOINTS: { [endpoint: string]: number } = {};
@@ -16,16 +16,16 @@ const processData = (data: Updated[]) => ({
   ...ENDPOINTS,
   ...Object.fromEntries(
     data.map((model) => [
-			(model.get("endpoint") as string).replace(/_/, "-"),
-			model.get("timestamp"),
-		])
+      (model.get("endpoint") as string).replace(/_/, "-"),
+      model.get("timestamp"),
+    ])
   ),
 });
 
 router.get("/", (_req, res) =>
   readAllDatabaseEntries(Updated, res, (data) => {
     res.setHeader("Cache-Control", "no-store");
+    setCacheControl(res, 1);
     sendOK(res, processData(data));
   })
 );
-

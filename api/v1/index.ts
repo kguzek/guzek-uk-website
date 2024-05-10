@@ -28,6 +28,7 @@ const ENDPOINTS = [
   "cocodentax-admin/allegro",
   "cocodentax-admin/pocztex",
   "liveseries",
+  "logs",
 ];
 
 console.log(); // Add newline before app output for readability
