@@ -32,8 +32,8 @@ function LikedShowsCarousel({
   const [cardsToLoad, setCardsToLoad] = useState<number[]>([]);
 
   const carouselElement = document.querySelector<HTMLElement>(".scroll-x");
-  const carouselTotalWidth = carouselElement?.scrollWidth ?? 1;
-  const carouselVisibleWidth = carouselElement?.offsetWidth ?? 1;
+  const carouselTotalWidth = carouselElement?.scrollWidth || 1;
+  const carouselVisibleWidth = carouselElement?.offsetWidth || 1;
 
   const { scroll: carouselScroll } = useScroll(carouselElement);
 
@@ -112,11 +112,13 @@ function LikedShowsCarousel({
           onClick={nextImage}
         ></i>
       </div>
-      <CarouselIndicator
-        scrolledWidth={carouselScroll}
-        totalWidth={carouselTotalWidth}
-        visibleWidth={carouselVisibleWidth}
-      />
+      {carouselTotalWidth > carouselVisibleWidth && (
+        <CarouselIndicator
+          scrolledWidth={carouselScroll}
+          totalWidth={carouselTotalWidth}
+          visibleWidth={carouselVisibleWidth}
+        />
+      )}
     </div>
   );
 }

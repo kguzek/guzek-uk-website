@@ -1,9 +1,22 @@
 import { useEffect, useState } from "react";
-import { FetchFromAPI, updateAccessToken } from "./backend";
+import {
+  clearStoredLoginInfo,
+  FetchFromAPI,
+  updateAccessToken,
+} from "./backend";
 import { Episode, StateSetter, User } from "./models";
 import { Translation } from "./translations";
 
 export const PAGE_NAME = "Guzek UK";
+
+const USER_REQUIRED_PROPERTIES = [
+  "uuid",
+  "username",
+  "email",
+  "admin",
+  "created_at",
+  "modified_at",
+];
 
 export const setTitle = (title: string) =>
   (document.title = `${title} | ${PAGE_NAME}`);
@@ -109,8 +122,41 @@ export const getErrorMessage = (res: Response, json: any, data: Translation) =>
   data.unknownError;
 
 export function getUserFromResponse(json: any) {
-  const { accessToken, refreshToken, ...userDetails } = json;
+  const { accessToken, refreshToken, expiersAt, ...userDetails } = json;
   updateAccessToken(accessToken);
   localStorage.setItem("refreshToken", refreshToken);
   return userDetails as User;
+}
+
+function rejectSavedUser() {
+  console.warn(
+    "Cleared fake user set in localStorage. If you're reading this, nice try!"
+  );
+  clearStoredLoginInfo();
+}
+
+export function getLocalUser() {
+  const savedUser = localStorage.getItem("user");
+  if (!savedUser) return;
+  let parsedUser;
+  try {
+    parsedUser = JSON.parse(savedUser);
+  } catch {
+    return clearStoredLoginInfo();
+  }
+  if (!parsedUser) return clearStoredLoginInfo();
+  for (const property of USER_REQUIRED_PROPERTIES) {
+    if (parsedUser[property] !== undefined) continue;
+    return rejectSavedUser();
+  }
+  if (
+    Object.keys(parsedUser).length !==
+    Object.keys(USER_REQUIRED_PROPERTIES).length
+  ) {
+    return rejectSavedUser();
+  }
+  for (const dateString of [parsedUser.created_at, parsedUser.modified_at]) {
+    if (isInvalidDate(new Date(dateString))) return rejectSavedUser();
+  }
+  return parsedUser as User;
 }

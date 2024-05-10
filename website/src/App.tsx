@@ -5,7 +5,12 @@ import NavigationBar from "./components/Navigation/NavigationBar";
 import Footer from "./components/Footer/Footer";
 import PageTemplate from "./pages/PageTemplate";
 import ErrorPage from "./pages/ErrorPage";
-import { Fetch, getCache, getFetchFromAPI } from "./misc/backend";
+import {
+  clearStoredLoginInfo,
+  Fetch,
+  getCache,
+  getFetchFromAPI,
+} from "./misc/backend";
 import Profile from "./pages/Profile";
 import LoadingScreen from "./components/LoadingScreen/LoadingScreen";
 import "./styles/styles.css";
@@ -14,7 +19,7 @@ import LogIn from "./pages/LogIn";
 import SignUp from "./pages/SignUp";
 import { ErrorCode, Language, MenuItem, User } from "./misc/models";
 import ContentManager from "./pages/Admin/ContentManager";
-import { getTryFetch, PAGE_NAME } from "./misc/util";
+import { getLocalUser, getTryFetch, PAGE_NAME } from "./misc/util";
 import LiveSeriesBase from "./pages/LiveSeries/Base";
 import MostPopular from "./pages/LiveSeries/MostPopular";
 import Home from "./pages/LiveSeries/Home";
@@ -170,13 +175,13 @@ export default function App() {
   }, [userLanguage]);
 
   useEffect(() => {
-    const localUser = localStorage.getItem("user");
+    const localUser = getLocalUser();
     if (currentUser) {
       if (!localUser) {
         localStorage.setItem("user", JSON.stringify(currentUser));
       }
     } else if (localUser) {
-      setCurrentUser(JSON.parse(localUser));
+      setCurrentUser(localUser);
     }
   }, [currentUser]);
 
@@ -241,7 +246,15 @@ export default function App() {
         <ModalContext.Provider
           value={{
             setModalInfo,
-            setModalError,
+            setModalError: (value?: string) => {
+              if (
+                value === '{"401 Unauthorised":"Missing authorisation token."}'
+              ) {
+                clearStoredLoginInfo();
+                logout();
+              }
+              setModalError(value);
+            },
             setModalChoice: (message) =>
               new Promise((resolve) => {
                 setModalChoice(message);

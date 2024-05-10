@@ -178,4 +178,3 @@ export function getLiveSeriesTitle(
   const data = useContext(TranslationContext);
   return `${data.liveSeries[page].title} – ${data.liveSeries.title}`;
 }
-
