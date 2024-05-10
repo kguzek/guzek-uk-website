@@ -21,6 +21,9 @@ export const router = express.Router();
 const logger = getLogger(__filename);
 
 const MODIFIABLE_USER_PROPERTIES = ["username", "email"];
+
+const ADMIN_USER_PROPERTIES = ["uuid", "admin", "created_at", "modified_at"];
+
 /** The number of milliseconds a newly-generated access token should be valid for. */
 const TOKEN_VALID_FOR_MS = 30 * 60 * 1000; // 30 mins
 
@@ -145,10 +148,15 @@ router
   .put("/users/:uuid/details", async (req: Request, res: Response) => {
     for (const property in req.body) {
       if (MODIFIABLE_USER_PROPERTIES.includes(property)) continue;
-      if (req.user?.admin) continue;
+      if (!req.user?.admin) {
+        return sendError(res, 403, {
+          message: `Protected user property '${property}'.`,
+        });
+      }
+      if (ADMIN_USER_PROPERTIES.includes(property)) continue;
 
-      return sendError(res, 403, {
-        message: `Protected user property '${property}'.`,
+      return sendError(res, 400, {
+        message: `Unmodifiable user property '${property}'.`,
       });
     }
 
@@ -159,7 +167,8 @@ router
   .put("/users/:uuid/password", async (req: Request, res: Response) => {
     const reject = (message: string) => sendError(res, 400, { message });
 
-    if (!req.body.oldPassword) return reject("Old password not provided.");
+    if (!req.body.oldPassword && !req.user?.admin)
+      return reject("Old password not provided.");
 
     try {
       const success = await authenticateUser(

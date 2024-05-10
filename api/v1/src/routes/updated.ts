@@ -4,9 +4,18 @@ import { readAllDatabaseEntries, sendOK } from "../util";
 export const router = express.Router();
 
 const ENDPOINTS: { [endpoint: string]: number } = {};
+const IGNORED_ENDPOINTS = [
+  "auth",
+  "updated",
+  "cocodentax-admin/allegro",
+  "cocodentax-admin/pocztex",
+  "liveseries",
+  "logs",
+];
 
 export function init(endpoints: string[]) {
   for (const endpoint of endpoints) {
+    if (IGNORED_ENDPOINTS.includes(endpoint)) continue;
     ENDPOINTS[endpoint] = 0;
   }
 }
