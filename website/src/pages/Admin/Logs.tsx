@@ -56,7 +56,7 @@ export default function Logs() {
   const [filteredLogs, setFilteredLogs] = useState<LogEntry[]>([]);
   const [labels, setLabels] = useState<string[]>([]);
   const [filter, setFilter] = useState<Filter>({
-    ascending: true,
+    ascending: false,
     levels: Object.keys(ICONS) as LogLevel[],
     labels: [],
     withBodyOnly: false,
