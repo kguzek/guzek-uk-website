@@ -1,4 +1,5 @@
-import { StateSetter, User } from "./models";
+import { Auth } from "./context";
+import { TryFetch } from "./util";
 
 const USE_LOCAL_API_URL = false;
 const LOG_ACCESS_TOKEN = false;
@@ -40,7 +41,7 @@ export function getSearchParams(
 }
 
 /** Determines the API access token and generates a new one if it is out of date. */
-async function getAccessToken(logout: () => void) {
+async function getAccessToken(auth: Auth) {
   const accessTokenInfo = localStorage.getItem("accessTokenInfo");
   if (!accessTokenInfo) {
     return null;
@@ -54,10 +55,10 @@ async function getAccessToken(logout: () => void) {
   // Generate a new access token
   const token = localStorage.getItem("refreshToken") ?? "";
   const req = await createRequest(
+    auth,
     "auth/token",
     "POST",
     { body: { token } },
-    logout,
     false
   );
   console.info("Refreshing expired access token...");
@@ -65,7 +66,7 @@ async function getAccessToken(logout: () => void) {
   if (!res.ok) {
     console.error("Failed to refresh the access token. Logging out.");
     clearStoredLoginInfo();
-    logout();
+    auth.logout();
     return null;
   }
   const body = await res.json();
@@ -78,6 +79,7 @@ async function getAccessToken(logout: () => void) {
  *  as well as determining the `Content-Type` and URL search query parameters.
  */
 async function createRequest(
+  auth: Auth,
   path: string,
   method: string,
   {
@@ -87,7 +89,6 @@ async function createRequest(
     params?: Record<string, string> | URLSearchParams;
     body?: Record<string, any>;
   },
-  logout: () => void,
   useAccessToken: boolean = true
 ) {
   const url = API_BASE + path + getSearchParams(params);
@@ -102,7 +103,7 @@ async function createRequest(
   }
   // Set the authorisation headers
   if (useAccessToken) {
-    const accessToken = await getAccessToken(logout);
+    const accessToken = await getAccessToken(auth);
     if (accessToken) {
       LOG_ACCESS_TOKEN && console.info(accessToken);
       options.headers["Authorization"] = `Bearer ${accessToken}`;
@@ -111,11 +112,10 @@ async function createRequest(
   return new Request(url, options);
 }
 
-/** Performs an HTTPS request to the API using the provided values and the stored access token. */
-export async function fetchFromAPI(
+export type FetchFromAPI = (
   path: string,
   {
-    method = "GET",
+    method,
     params,
     body,
   }: {
@@ -123,19 +123,34 @@ export async function fetchFromAPI(
     params?: Record<string, string> | URLSearchParams;
     body?: Record<string, any>;
   },
-  logout: () => void,
-  useCache: boolean = false
-) {
-  const request = await createRequest(path, method, { params, body }, logout);
-  const func = useCache ? fetchWithCache : fetch;
-  return await func(request);
-}
+  useCache?: boolean
+) => Promise<Response>;
+
+export const getFetchFromAPI = (auth: Auth): FetchFromAPI =>
+  /** Performs an HTTPS request to the API using the provided values and the stored access token. */
+  async function fetchFromAPI(
+    path: string,
+    {
+      method = "GET",
+      params,
+      body,
+    }: {
+      method?: string;
+      params?: Record<string, string> | URLSearchParams;
+      body?: Record<string, any>;
+    },
+    useCache: boolean = false
+  ) {
+    const request = await createRequest(auth, path, method, { params, body });
+    const func = useCache ? fetchWithCache : fetch;
+    return await func(request);
+  };
 
 /** Searches for the corresponding cache for the given request. If found, returns
  *  the cached response. Otherwise, performs the fetch request and adds the response
  *  to cache. Returns the HTTP response.
  */
-export async function fetchWithCache(request: Request) {
+async function fetchWithCache(request: Request) {
   const cache = await getCache();
   if (!cache) {
     return await fetch(request);
@@ -170,3 +185,5 @@ export function updateAccessToken(accessToken: string) {
   const accessTokenInfo = { accessToken, expiresAt };
   localStorage.setItem("accessTokenInfo", JSON.stringify(accessTokenInfo));
 }
+
+export type Fetch = { fetchFromAPI: FetchFromAPI; tryFetch: TryFetch };

@@ -1,11 +1,11 @@
 import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ErrorCode } from "../misc/models";
-import { Translation, TranslationContext } from "../misc/translations";
+import { TranslationContext } from "../misc/context";
 import { PAGE_NAME, setTitle } from "../misc/util";
 
 export default function ErrorPage({ errorCode }: { errorCode: ErrorCode }) {
-  const data = useContext<Translation>(TranslationContext);
+  const data = useContext(TranslationContext);
 
   useEffect(() => {
     setTitle(`${errorCode} ${data.error[errorCode].title}`);

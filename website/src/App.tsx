@@ -1,11 +1,11 @@
 import React, { useState, useEffect, MouseEvent } from "react";
 import { Routes, Route, useSearchParams } from "react-router-dom";
-import { TranslationContext, TRANSLATIONS } from "./misc/translations";
+import { TRANSLATIONS } from "./misc/translations";
 import NavigationBar from "./components/Navigation/NavigationBar";
 import Footer from "./components/Footer/Footer";
 import PageTemplate from "./pages/PageTemplate";
 import ErrorPage from "./pages/ErrorPage";
-import { getCache } from "./misc/backend";
+import { Fetch, getCache, getFetchFromAPI } from "./misc/backend";
 import Profile from "./pages/Profile";
 import LoadingScreen from "./components/LoadingScreen/LoadingScreen";
 import "./styles/styles.css";
@@ -14,27 +14,55 @@ import LogIn from "./pages/LogIn";
 import SignUp from "./pages/SignUp";
 import { ErrorCode, Language, MenuItem, User } from "./misc/models";
 import ContentManager from "./pages/Admin/ContentManager";
-import { PAGE_NAME, tryFetch } from "./misc/util";
+import { getTryFetch, PAGE_NAME } from "./misc/util";
 import LiveSeriesBase from "./pages/LiveSeries/Base";
 import MostPopular from "./pages/LiveSeries/MostPopular";
 import Home from "./pages/LiveSeries/Home";
 import Search from "./pages/LiveSeries/Search";
 import TvShow from "./pages/LiveSeries/TvShow";
-import Modal from "./components/Modal/Modal";
+import Modal, { ModalHandler } from "./components/Modal/Modal";
 import AdminBase from "./pages/Admin/Base";
 import Users from "./pages/Admin/Users";
 import Logs from "./pages/Admin/Logs";
+import {
+  Auth,
+  AuthContext,
+  FetchContext,
+  ModalContext,
+  TranslationContext,
+} from "./misc/context";
+import UserPage from "./pages/Admin/User";
 
 /** When set to `true`, doesn't remove caches whose creation date is unknown. */
 const IGNORE_INVALID_RESPONSE_DATES = false;
 
 export default function App() {
   const [userLanguage, setUserLanguage] = useState<Language>(Language.EN);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalInfo, setModalInfo] = useState<string | undefined>();
+  const [modalError, setModalError] = useState<string | undefined>();
+  const [modalChoice, setModalChoice] = useState<string | undefined>();
+  const [modalChoiceResolve, setModalChoiceResolve] = useState<ModalHandler>(
+    () => () => {}
+  );
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [menuItems, setMenuItems] = useState<MenuItem[] | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [reload, setReload] = useState(false);
+
+  const pageContent = TRANSLATIONS[userLanguage];
+
+  const authContext: Auth = {
+    user: currentUser,
+    setUser: setCurrentUser,
+    logout,
+  };
+
+  const fetchFromAPI = getFetchFromAPI(authContext);
+
+  const fetchContext: Fetch = {
+    fetchFromAPI,
+    tryFetch: getTryFetch(fetchFromAPI, setModalError, pageContent),
+  };
 
   function setLanguage(langString: string) {
     if (!(langString in Language)) {
@@ -47,7 +75,7 @@ export default function App() {
 
   function logout() {
     setCurrentUser(null);
-    setModalVisible(true);
+    setModalInfo(pageContent.loggedOut);
   }
 
   /** Checks if any of the saved caches is older than the version on the server.
@@ -55,7 +83,12 @@ export default function App() {
    */
   async function removeOldCaches() {
     const defaultData: { [endpoint: string]: number } = {};
-    const updated = await tryFetch("updated", {}, defaultData, logout, false);
+    const updated = await fetchContext.tryFetch(
+      "updated",
+      {},
+      defaultData,
+      false
+    );
     const updatedEndpoints = new Set();
     const cache = await getCache();
     if (!cache) {
@@ -171,11 +204,10 @@ export default function App() {
 
   /** Retrieve the menu items from the API */
   async function fetchPages() {
-    const data = await tryFetch(
+    const data = await fetchContext.tryFetch(
       "pages",
       { lang: userLanguage },
-      [] as MenuItem[],
-      logout
+      [] as MenuItem[]
     );
     setMenuItems(data);
   }
@@ -194,7 +226,6 @@ export default function App() {
     }
   }
 
-  const pageContent = TRANSLATIONS[userLanguage];
   if (!pageContent || !menuItems) {
     return <LoadingScreen text={`${pageContent.loading} ${PAGE_NAME}`} />;
   }
@@ -205,101 +236,104 @@ export default function App() {
   // );
 
   return (
-    <TranslationContext.Provider value={pageContent}>
-      <Modal
-        message={pageContent.loggedOut}
-        visible={modalVisible}
-        onClick={() => setModalVisible(false)}
-      />
-      <NavigationBar
-        selectedLanguage={userLanguage}
-        changeLang={changeLang}
-        menuItems={menuItems.filter(
-          (item) => !item.adminOnly || currentUser?.admin
-        )}
-        user={currentUser}
-      />
-      <Routes>
-        {menuItems
-          .filter((item) => item.shouldFetch)
-          .map((item, idx) => (
-            <Route
-              key={idx}
-              path={item.url}
-              element={
-                <PageTemplate
-                  reload={reload}
-                  pageData={item}
-                  lang={userLanguage}
-                  logout={logout}
+    <AuthContext.Provider value={authContext}>
+      <FetchContext.Provider value={fetchContext}>
+        <ModalContext.Provider
+          value={{
+            setModalInfo,
+            setModalError,
+            setModalChoice: (message) =>
+              new Promise((resolve) => {
+                setModalChoice(message);
+                setModalChoiceResolve(() => resolve);
+              }),
+          }}
+        >
+          <TranslationContext.Provider value={pageContent}>
+            <Modal value={modalInfo} onClick={() => setModalInfo("")} />
+            <Modal
+              className="error"
+              value={modalError}
+              onClick={() => setModalError("")}
+            />
+            <Modal
+              value={modalChoice}
+              labelPrimary={pageContent.modal.yes}
+              labelSecondary={pageContent.modal.no}
+              onClick={(primary) => {
+                modalChoiceResolve(primary);
+                setModalChoice("");
+              }}
+            />
+            <NavigationBar
+              selectedLanguage={userLanguage}
+              changeLang={changeLang}
+              menuItems={menuItems.filter(
+                (item) => !item.adminOnly || currentUser?.admin
+              )}
+              user={currentUser}
+            />
+            <Routes>
+              {menuItems
+                .filter((item) => item.shouldFetch)
+                .map((item, idx) => (
+                  <Route
+                    key={idx}
+                    path={item.url}
+                    element={
+                      <PageTemplate
+                        reload={reload}
+                        pageData={item}
+                        lang={userLanguage}
+                      />
+                    }
+                  />
+                ))}
+              <Route path="profile" element={<Profile />} />
+              <Route path="login" element={<LogIn />} />
+              <Route path="signup" element={<SignUp />} />
+              <Route
+                path="admin"
+                element={
+                  currentUser?.admin ? <AdminBase /> : forbiddenErrorPage
+                }
+              >
+                <Route
+                  path="content-manager"
+                  element={
+                    <ContentManager
+                      lang={userLanguage}
+                      menuItems={menuItems}
+                      reloadSite={removeOldCaches}
+                    />
+                  }
                 />
-              }
-            />
-          ))}
-        <Route
-          path="profile"
-          element={<Profile user={currentUser} logout={logout} />}
-        />
-        <Route
-          path="login"
-          element={
-            <LogIn
-              user={currentUser}
-              setUser={setCurrentUser}
-              logout={logout}
-            />
-          }
-        />
-        <Route
-          path="signup"
-          element={
-            <SignUp
-              user={currentUser}
-              setUser={setCurrentUser}
-              logout={logout}
-            />
-          }
-        />
-        <Route
-          path="admin"
-          element={currentUser?.admin ? <AdminBase /> : forbiddenErrorPage}
-        >
-          <Route
-            path="content-manager"
-            element={
-              <ContentManager
-                lang={userLanguage}
-                menuItems={menuItems}
-                reloadSite={removeOldCaches}
-                setUser={setCurrentUser}
-                logout={logout}
+                <Route path="users">
+                  <Route index element={<Users />} />
+                  <Route path=":uuid" element={<UserPage />} />
+                </Route>
+                <Route path="logs" element={<Logs />} />
+              </Route>
+              <Route
+                path="liveseries"
+                element={
+                  <LiveSeriesBase reloadSite={removeOldCaches}></LiveSeriesBase>
+                }
+              >
+                <Route index element={<Home />} />
+                <Route path="most-popular" element={<MostPopular />} />
+                <Route path="search" element={<Search />} />
+                <Route path="tv-show/:permalink" element={<TvShow />} />
+              </Route>
+              <Route
+                path="*"
+                element={<ErrorPage errorCode={ErrorCode.NotFound} />}
               />
-            }
-          />
-          <Route path="users" element={<Users />} />
-          <Route path="logs" element={<Logs />} />
-        </Route>
-        <Route
-          path="liveseries"
-          element={
-            <LiveSeriesBase
-              logout={logout}
-              reloadSite={removeOldCaches}
-              user={currentUser}
-            ></LiveSeriesBase>
-          }
-        >
-          <Route index element={<Home />} />
-          <Route path="most-popular" element={<MostPopular />} />
-          <Route path="search" element={<Search />} />
-          <Route path="tv-show/:permalink" element={<TvShow />} />
-        </Route>
-        <Route
-          path="*"
-          element={<ErrorPage errorCode={ErrorCode.NotFound} />}
-        />
-      </Routes>
-      <Footer />
-    </TranslationContext.Provider>
+            </Routes>
+            <Footer />
+          </TranslationContext.Provider>
+        </ModalContext.Provider>
+      </FetchContext.Provider>
+    </AuthContext.Provider>
   );
 }

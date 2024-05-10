@@ -96,3 +96,7 @@ export interface ShowData<T> {
 export type StateSetter<T> = Dispatch<SetStateAction<T>>;
 
 export const CAROUSEL_INDICATOR_FULL_WIDTH = 140;
+
+export const DEFAULT_PAGE_DATA: PageContent = {
+  content: "Oops! This page hasn't been implemented yet.",
+};

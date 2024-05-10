@@ -1,44 +1,40 @@
 import React, { FormEvent, useContext, useEffect, useState } from "react";
 import { EditorValue } from "react-rte";
-import { fetchFromAPI } from "../../misc/backend";
+import {
+  AuthContext,
+  ModalContext,
+  TranslationContext,
+  useFetchContext,
+} from "../../misc/context";
 import InputArea, {
   getEmptyMarkdown,
   parseMarkdown,
 } from "../../components/Forms/InputArea";
 import InputBox from "../../components/Forms/InputBox";
 import { LoadingButton } from "../../components/LoadingScreen/LoadingScreen";
-import { MenuItem, StateSetter, User } from "../../misc/models";
-import { Translation, TranslationContext } from "../../misc/translations";
-import { fetchPageContent, setTitle } from "../../misc/util";
-import Modal from "../../components/Modal/Modal";
+import {
+  DEFAULT_PAGE_DATA,
+  MenuItem,
+  StateSetter,
+  User,
+} from "../../misc/models";
+import { getErrorMessage, setTitle } from "../../misc/util";
 
-type PropertyName = keyof (
-  | MenuItem
-  | Translation["admin"]["contentManager"]["formDetails"]
-);
-
-const TEXT_PAGE_PROPERTIES: PropertyName[] = ["title", "url"];
-const BOOL_PAGE_PROPERTIES: PropertyName[] = [
-  "adminOnly",
-  "localUrl",
-  "shouldFetch",
-];
+const TEXT_PAGE_PROPERTIES = ["title", "url"] as const;
+const BOOL_PAGE_PROPERTIES = ["adminOnly", "localUrl", "shouldFetch"] as const;
 
 export default function ContentManager({
   lang,
   menuItems,
   reloadSite,
-  setUser,
-  logout,
 }: {
   lang: string;
   menuItems: MenuItem[];
   reloadSite: () => void;
-  setUser: StateSetter<User | null>;
-  logout: () => void;
 }) {
   const [selectedPageID, setSelectedPageID] = useState(menuItems[0]?.id ?? 0);
-  const data = useContext<Translation>(TranslationContext);
+  const data = useContext(TranslationContext);
+  const { logout, setUser } = useContext(AuthContext);
 
   useEffect(() => {
     setTitle(data.admin.contentManager.title);
@@ -99,18 +95,13 @@ function PagesEditor({
   const [content, setContent] = useState(getEmptyMarkdown());
   const [clickedSubmit, setClickedSubmit] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalMessage, setModalMessage] = useState("");
-  const data = useContext<Translation>(TranslationContext);
+  const data = useContext(TranslationContext);
+  const { fetchFromAPI, tryFetch } = useFetchContext();
+  const { setModalError } = useContext(ModalContext);
 
   useEffect(() => {
     if (originalPage.shouldFetch) {
-      fetchPageContent(
-        originalPage.id,
-        lang,
-        (val) => setContent(parseMarkdown(val.content, "html")),
-        logout
-      );
+      fetchContent();
     } else {
       setContent(getEmptyMarkdown());
     }
@@ -118,6 +109,12 @@ function PagesEditor({
       return;
     setPage(originalPage);
   }, [originalPage, lang]);
+
+  async function fetchContent() {
+    const url = `pages/${originalPage.id}`;
+    const body = await tryFetch(url, { lang }, DEFAULT_PAGE_DATA);
+    setContent(parseMarkdown(body.content, "html"));
+  }
 
   function handleUpdate(changedProperty: string, newValue: string | boolean) {
     // console.debug("Set", changedProperty, "to", newValue);
@@ -133,38 +130,25 @@ function PagesEditor({
     setClickedSubmit(true);
     const url = `pages/${page.id}?lang=${lang}`;
     try {
-      const res = await fetchFromAPI(
-        url,
-        {
-          method: "PUT",
-          body: { ...page, content: content.toString("html") },
-        },
-        logout
-      );
+      const res = await fetchFromAPI(url, {
+        method: "PUT",
+        body: { ...page, content: content.toString("html") },
+      });
       if (res.ok) {
         reloadSite();
         setUnsavedChanges(false);
       } else {
-        setModalVisible(true);
-        const errorObject = await res.json();
-        const [code, description] = Object.entries(errorObject)[0];
-        setModalMessage(`Error: ${description} (${code})`);
+        const json = await res.json();
+        setModalError(getErrorMessage(res, json, data));
       }
     } catch {
-      setModalVisible(true);
-      setModalMessage(data.networkError);
+      setModalError(data.networkError);
     }
     setClickedSubmit(false);
   }
 
   return (
     <>
-      <Modal
-        className="error"
-        message={modalMessage}
-        visible={modalVisible}
-        onClick={() => setModalVisible(false)}
-      ></Modal>
       {TEXT_PAGE_PROPERTIES.map((property, idx) => (
         <InputBox
           key={idx}

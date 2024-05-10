@@ -1,8 +1,8 @@
 import React, { MouseEvent, useContext, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { TvShowDetailsShort } from "../../misc/models";
-import { Translation, TranslationContext } from "../../misc/translations";
-import { OutletContext } from "../../pages/LiveSeries/Base";
+import { TranslationContext } from "../../misc/context";
+import { LiveSeriesOutletContext } from "../../pages/LiveSeries/Base";
 import TvShowPreviewSkeleton from "./TvShowPreviewSkeleton";
 
 export default function TvShowPreview({
@@ -17,9 +17,9 @@ export default function TvShowPreview({
   onLoad: () => void;
 }) {
   const [flipped, setFlipped] = useState(false);
-  const data = useContext<Translation>(TranslationContext);
+  const data = useContext(TranslationContext);
   const { likedShowIds, reloadSite, fetchResource } =
-    useOutletContext<OutletContext>();
+    useOutletContext<LiveSeriesOutletContext>();
 
   const isLikedOld =
     showDetails && likedShowIds ? likedShowIds.includes(showDetails.id) : false;

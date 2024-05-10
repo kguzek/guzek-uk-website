@@ -1,0 +1,43 @@
+.user-container {
+  width: 80%;
+  background-color: var(--color-primary);
+  display: flex;
+  border-radius: 15px;
+}
+
+.user {
+  color: var(--color-background);
+  padding: 15px;
+  width: 100%;
+}
+
+.admin {
+  color: var(--color-accent);
+}
+
+.fa-gear {
+  margin-left: auto;
+  transition: transform 500ms ease;
+}
+
+.user:hover .fa-gear {
+  transform: rotate(120deg);
+}
+
+.delete {
+  color: var(--color-error);
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  background: linear-gradient(var(--color-error), var(--color-error)) no-repeat
+    right;
+  background-size: 0 100%;
+  transition: all 200ms ease;
+}
+
+.delete:hover {
+  background-size: 100% 100%;
+  color: var(--color-primary-strong);
+}
+

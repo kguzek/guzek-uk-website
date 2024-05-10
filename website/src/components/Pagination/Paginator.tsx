@@ -1,7 +1,6 @@
-import React, { useContext } from "react";
+import React from "react";
 import PageIndicator from "./PageIndicator";
 import "./Pagination.css";
-import { Translation, TranslationContext } from "../../misc/translations";
 
 export default function Paginator({
   currentPage,
@@ -10,7 +9,6 @@ export default function Paginator({
   currentPage: number;
   numPages: number;
 }) {
-  const data = useContext<Translation>(TranslationContext);
   const pages: (undefined | number)[] = [1];
 
   function addPage(page: number) {

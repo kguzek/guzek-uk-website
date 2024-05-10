@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Link, useOutletContext, useSearchParams } from "react-router-dom";
-import { Translation, TranslationContext } from "../../misc/translations";
-import { OutletContext } from "../../pages/LiveSeries/Base";
+import { TranslationContext } from "../../misc/context";
+import { LiveSeriesOutletContext } from "../../pages/LiveSeries/Base";
 
 const pagePattern = /page=\d+/;
 
@@ -16,8 +16,8 @@ export default function PageIndicator({
   direction?: "PREVIOUS" | "NEXT";
   disabled?: boolean;
 }) {
-  const data = useContext<Translation>(TranslationContext);
-  const { loading } = useOutletContext<OutletContext>();
+  const data = useContext(TranslationContext);
+  const { loading } = useOutletContext<LiveSeriesOutletContext>();
   const [searchParams] = useSearchParams();
 
   function getNewSearchParams() {

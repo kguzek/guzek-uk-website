@@ -1,39 +1,47 @@
 import { useEffect, useState } from "react";
-import { fetchFromAPI } from "./backend";
-import { Episode, PageContent, StateSetter, User } from "./models";
+import { FetchFromAPI } from "./backend";
+import { Episode, StateSetter } from "./models";
+import { Translation } from "./translations";
 
 export const PAGE_NAME = "Guzek UK";
-
-const DEFAULT_PAGE_DATA: PageContent = {
-  content: "Oops! This page hasn't been implemented yet.",
-};
 
 export const setTitle = (title: string) =>
   (document.title = `${title} | ${PAGE_NAME}`);
 
-/** Attempts to fetch the data from local cache or from the API.
- *  On success, returns the consumed response's body.
- *  On failure, returns `defaultData`.
- */
-export async function tryFetch<T>(
+export type TryFetch = <T>(
   path: string,
   params: Record<string, string>,
   defaultData: T,
-  logout: () => void,
-  useCache: boolean = true
-) {
-  let res;
-  try {
-    res = await fetchFromAPI(path, { params }, logout, useCache);
-  } catch (networkError) {
-    console.error("Could not fetch from API:", networkError);
+  useCache?: boolean
+) => Promise<T>;
+
+export const getTryFetch = (
+  fetchFromAPI: FetchFromAPI,
+  setModalError: StateSetter<string | undefined>,
+  data: Translation
+): TryFetch =>
+  /** Attempts to fetch the data from local cache or from the API.
+   *  On success, returns the consumed response's body.
+   *  On failure, returns `defaultData`.
+   */
+  async function tryFetch<T>(
+    path: string,
+    params: Record<string, string>,
+    defaultData: T,
+    useCache: boolean = true
+  ) {
+    let res;
+    try {
+      res = await fetchFromAPI(path, { params }, useCache);
+    } catch (networkError) {
+      console.error("Could not fetch from API:", networkError);
+      return defaultData;
+    }
+    const json: T = await res.json();
+    if (res.ok) return json;
+    setModalError(data.networkError);
     return defaultData;
-  }
-  const json: T = await res.json();
-  if (res.ok) return json;
-  console.error("Invalid response from API:", json);
-  return defaultData;
-}
+  };
 
 const divmod = (dividend: number, divisor: number) => [
   Math.floor(dividend / divisor),
@@ -49,17 +57,6 @@ export function getDuration(milliseconds: number) {
   [days, hours] = divmod(hours, 24);
   const formatted = `${days}d ${hours}h ${minutes}m ${seconds}s`;
   return { formatted, days, hours, minutes, seconds, milliseconds };
-}
-
-export async function fetchPageContent(
-  id: number,
-  lang: string,
-  setContent: (pageContent: PageContent) => void,
-  logout: () => void
-) {
-  const url = `pages/${id}`;
-  const body = await tryFetch(url, { lang }, DEFAULT_PAGE_DATA, logout);
-  setContent(body);
 }
 
 export function useScroll(element: Element | null) {
@@ -105,3 +102,7 @@ export const getEpisodeAirDate = (episode: Episode) => {
 
 export const hasEpisodeAired = (episode: Episode) =>
   new Date() > getEpisodeAirDate(episode);
+
+export const getErrorMessage = (res: Response, json: any, data: Translation) =>
+  (json[`${res.status} ${res.statusText}`] ?? JSON.stringify(json)) ||
+  data.unknownError;

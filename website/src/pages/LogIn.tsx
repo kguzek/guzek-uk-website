@@ -1,29 +1,27 @@
 import React, { FormEvent, useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { fetchFromAPI, updateAccessToken } from "../misc/backend";
+import { updateAccessToken } from "../misc/backend";
 import InputBox from "../components/Forms/InputBox";
 import LoadingScreen, {
   LoadingButton,
 } from "../components/LoadingScreen/LoadingScreen";
-import { Translation, TranslationContext } from "../misc/translations";
-import { StateSetter, User } from "../misc/models";
-import Modal from "../components/Modal/Modal";
+import { User } from "../misc/models";
+import {
+  AuthContext,
+  ModalContext,
+  TranslationContext,
+  useFetchContext,
+} from "../misc/context";
 
-export default function LogIn({
-  user,
-  logout,
-  setUser,
-}: {
-  user: any;
-  logout: () => void;
-  setUser: StateSetter<User | null>;
-}) {
+export default function LogIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
   const navigate = useNavigate();
-  const data = useContext<Translation>(TranslationContext);
+  const data = useContext(TranslationContext);
+  const { user, setUser } = useContext(AuthContext);
+  const { fetchFromAPI } = useFetchContext();
+  const { setModalError } = useContext(ModalContext);
 
   useEffect(() => {
     if (user) navigate("/profile");
@@ -31,17 +29,13 @@ export default function LogIn({
 
   async function handleLogin(evt: FormEvent<HTMLFormElement>) {
     evt.preventDefault();
-    setModalVisible(false);
+    setModalError();
     setLoading(true);
     const body = {
       email,
       password,
     };
-    const res = await fetchFromAPI(
-      "auth/user",
-      { method: "POST", body },
-      logout
-    );
+    const res = await fetchFromAPI("auth/user", { method: "POST", body });
     const json = await res.json();
     setLoading(false);
     if (res.ok) {
@@ -50,18 +44,12 @@ export default function LogIn({
       updateAccessToken(accessToken);
       localStorage.setItem("refreshToken", refreshToken);
     } else {
-      setModalVisible(true);
+      setModalError(data.profile.invalidCredentials);
     }
   }
 
   return (
     <>
-      <Modal
-        className="error"
-        message={data.profile.invalidCredentials}
-        visible={modalVisible}
-        onClick={() => setModalVisible(false)}
-      />
       {user ? (
         <LoadingScreen className="flex-column" text={data.profile.loading} />
       ) : (
