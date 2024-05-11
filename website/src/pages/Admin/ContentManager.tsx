@@ -22,11 +22,9 @@ const BOOL_PAGE_PROPERTIES = ["adminOnly", "localUrl", "shouldFetch"] as const;
 export default function ContentManager({
   lang,
   menuItems,
-  reloadSite,
 }: {
   lang: string;
   menuItems: MenuItem[];
-  reloadSite: () => void;
 }) {
   const [selectedPageID, setSelectedPageID] = useState(menuItems[0]?.id ?? 0);
   const data = useContext(TranslationContext);
@@ -52,7 +50,7 @@ export default function ContentManager({
         </button>
       ) : (
         <>
-          <form className="form-editor">
+          <form className="form-editor flex-column gap-15">
             <InputBox
               type="dropdown"
               label={data.admin.contentManager.selectedPage}
@@ -60,11 +58,7 @@ export default function ContentManager({
               setValue={setSelectedPageID}
               options={pagesMap}
             />
-            <PagesEditor
-              lang={lang}
-              originalPage={selectedPage as MenuItem}
-              reloadSite={reloadSite}
-            />
+            <PagesEditor lang={lang} originalPage={selectedPage as MenuItem} />
           </form>
         </>
       )}
@@ -75,18 +69,16 @@ export default function ContentManager({
 function PagesEditor({
   lang,
   originalPage,
-  reloadSite,
 }: {
   lang: string;
   originalPage: MenuItem;
-  reloadSite: () => void;
 }) {
   const [page, setPage] = useState<MenuItem>(originalPage);
   const [content, setContent] = useState(getEmptyMarkdown());
   const [clickedSubmit, setClickedSubmit] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const data = useContext(TranslationContext);
-  const { fetchFromAPI, tryFetch } = useFetchContext();
+  const { fetchFromAPI, tryFetch, removeOldCaches } = useFetchContext();
   const { setModalError } = useContext(ModalContext);
 
   useEffect(() => {
@@ -125,7 +117,7 @@ function PagesEditor({
         body: { ...page, content: content.toString("html") },
       });
       if (res.ok) {
-        reloadSite();
+        removeOldCaches();
         setUnsavedChanges(false);
       } else {
         const json = await res.json();

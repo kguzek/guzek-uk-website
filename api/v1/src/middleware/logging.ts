@@ -92,43 +92,53 @@ const errorFileTransport = new transports.File({
   format: jsonFormat,
 });
 
-/** Gets the logger instance for the given source code file. */
-export function getLogger(filename: string) {
-  // Idk this magic got it from stackoverflow
-  // https://stackoverflow.com/a/56091110/15757366
+const LOG_LEVELS = {
+  error: 0,
+  warn: 1,
+  response: 2,
+  request: 3,
+  info: 4,
+  debug: 5,
+} as const;
 
-  const loggerOptions: CustomLoggerOptions = {
-    level: "info",
-    levels: {
-      error: 0,
-      warn: 1,
-      response: 2,
-      request: 3,
-      info: 4,
-      debug: 5,
-    },
-    format: format.combine(
-      format.label({ label: path.basename(filename) }),
-      format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-      // Format the metadata object
-      format.metadata({
-        fillExcept: ["message", "level", "timestamp", "label"],
-      })
-    ),
-    transports: [defaultFileTransport, errorFileTransport],
-  };
-  if (process.env.NODE_ENV === "development") {
-    loggerOptions.level = "debug";
-    // Special options for when running from a development environment
-    const consoleTransport = new transports.Console({
-      format: logFormat,
-    });
-    loggerOptions.transports.push(consoleTransport);
-  }
+// Idk this magic got it from stackoverflow
+// https://stackoverflow.com/a/56091110/15757366
 
-  const logger = createLogger(loggerOptions);
-  return logger as CustomLogger;
+const loggerOptions: CustomLoggerOptions = {
+  level: "info",
+  levels: LOG_LEVELS,
+  format: format.combine(
+    // format.label({ label: path.basename(filename) }),
+    format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+    // Format the metadata object
+    format.metadata({
+      fillExcept: ["message", "level", "timestamp", "label"],
+    })
+  ),
+  transports: [defaultFileTransport, errorFileTransport],
+};
+if (process.env.NODE_ENV === "development") {
+  loggerOptions.level = "debug";
+  // Special options for when running from a development environment
+  const consoleTransport = new transports.Console({
+    format: logFormat,
+  });
+  loggerOptions.transports.push(consoleTransport);
 }
+const baseLogger = createLogger(loggerOptions);
+
+/** Gets the logger instance for the given source code file. */
+export const getLogger = (filename: string) =>
+  Object.fromEntries(
+    Object.keys(LOG_LEVELS).map((level) => [
+      level,
+      (message: any, metadata?: any) =>
+        baseLogger[level as keyof Logger](message, {
+          ...metadata,
+          label: path.basename(filename),
+        }),
+    ])
+  );
 
 const logger = getLogger(__filename);
 

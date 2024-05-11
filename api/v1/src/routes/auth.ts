@@ -167,24 +167,24 @@ router
   .put("/users/:uuid/password", async (req: Request, res: Response) => {
     const reject = (message: string) => sendError(res, 400, { message });
 
-    if (!req.body.oldPassword && !req.user?.admin)
-      return reject("Old password not provided.");
+    if (!req.user?.admin) {
+      if (!req.body.oldPassword) return reject("Old password not provided.");
 
-    try {
-      const success = await authenticateUser(
-        res,
-        req.params,
-        req.body.oldPassword
-      );
-      if (!success) return;
-    } catch (e) {
-      const err = e as Error;
-      return reject(
-        err.message === "Password not provided."
-          ? "Old password not provided."
-          : err.message
-      );
+      // Validate the old password
+      try {
+        const success = await authenticateUser(
+          res,
+          req.params,
+          req.body.oldPassword
+        );
+        if (!success) return;
+      } catch (error) {
+        const { message } = error as Error;
+        // Update the error message to better reflect the situation
+        return reject(message.replace(/^Password/, "Old password"));
+      }
     }
+
     const credentials: { hash: string; salt: string } = await password.hash(
       req.body.newPassword
     );

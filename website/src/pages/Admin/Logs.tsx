@@ -98,8 +98,7 @@ export default function Logs() {
 
     const logsSorted = [...dateLogs.logs, ...errorLogsFiltered].sort(
       (a, b) =>
-        (new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()) *
-        (filter.ascending ? 1 : -1)
+        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
     );
 
     const baseLogFilter = (log: LogEntry) =>
@@ -112,7 +111,11 @@ export default function Logs() {
         : (log: LogEntry) =>
             baseLogFilter(log) && filter.labels.includes(log.label);
 
-    setFilteredLogs(logsSorted.filter(predicate));
+    const logsFiltered = logsSorted.filter(predicate);
+    if (!filter.ascending) {
+      logsFiltered.reverse();
+    }
+    setFilteredLogs(logsFiltered);
     scrollToElement("#logs-header");
   }, [dateLogs, errorLogs, filter]);
 

@@ -2,7 +2,6 @@ import { Auth } from "./context";
 import { TryFetch } from "./util";
 
 const USE_LOCAL_API_URL = false;
-const LOG_ACCESS_TOKEN = false;
 const CACHE_NAME = "guzek-uk-cache";
 
 interface RequestOptions {
@@ -40,8 +39,10 @@ export function getSearchParams(
   return `?${searchParams}`;
 }
 
+const isTokenRefreshing = () => localStorage.getItem("refreshingToken") != null;
+
 /** Determines the API access token and generates a new one if it is out of date. */
-async function getAccessToken(auth: Auth) {
+async function getAccessToken(auth: Auth): Promise<null | string> {
   const accessTokenInfo = localStorage.getItem("accessTokenInfo");
   if (!accessTokenInfo) {
     return null;
@@ -52,7 +53,15 @@ async function getAccessToken(auth: Auth) {
   if (tokenNotExpired && tokenInfo.accessToken) {
     return tokenInfo.accessToken as string;
   }
+  if (isTokenRefreshing()) {
+    while (isTokenRefreshing()) {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    }
+    console.info("Token refreshed!");
+    return await getAccessToken(auth);
+  }
   // Generate a new access token
+  localStorage.setItem("refreshingToken", "true");
   const token = localStorage.getItem("refreshToken") ?? "";
   const req = await createRequest(
     auth,
@@ -66,11 +75,13 @@ async function getAccessToken(auth: Auth) {
   if (!res.ok) {
     console.error("Failed to refresh the access token. Logging out.");
     clearStoredLoginInfo();
+    localStorage.removeItem("refreshingToken");
     auth.logout();
     return null;
   }
   const body = await res.json();
   updateAccessToken(body.accessToken);
+  localStorage.removeItem("refreshingToken");
   return body.accessToken as string;
 }
 
@@ -105,7 +116,6 @@ async function createRequest(
   if (useAccessToken) {
     const accessToken = await getAccessToken(auth);
     if (accessToken) {
-      LOG_ACCESS_TOKEN && console.info(accessToken);
       options.headers["Authorization"] = `Bearer ${accessToken}`;
     }
   }
@@ -159,7 +169,7 @@ async function fetchWithCache(request: Request) {
   // Check if response is already cached
   const cachedResponse = await cache.match(request);
   if (cachedResponse) {
-    console.debug("Using cached response for", request.url);
+    // console.debug("Using cached response for", request.url);
     return cachedResponse.clone();
   }
 
@@ -186,4 +196,8 @@ export function updateAccessToken(accessToken: string) {
   localStorage.setItem("accessTokenInfo", JSON.stringify(accessTokenInfo));
 }
 
-export type Fetch = { fetchFromAPI: FetchFromAPI; tryFetch: TryFetch };
+export type Fetch = {
+  fetchFromAPI: FetchFromAPI;
+  tryFetch: TryFetch;
+  removeOldCaches: () => void;
+};

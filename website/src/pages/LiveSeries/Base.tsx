@@ -31,17 +31,12 @@ export type LiveSeriesOutletContext = {
       useEpisodate?: boolean;
     }
   ) => Promise<void>;
-  reloadSite: () => Promise<void>;
   likedShowIds: null | number[];
   watchedEpisodes: null | ShowData<WatchedEpisodes>;
   setWatchedEpisodes: StateSetter<null | ShowData<WatchedEpisodes>>;
 };
 
-export default function LiveSeriesBase({
-  reloadSite,
-}: {
-  reloadSite: () => Promise<void>;
-}) {
+export default function LiveSeriesBase() {
   const [loading, setLoading] = useState<string[]>([]);
   const [likedShowsUpdated, setLikedShowsUpdated] = useState(false);
   const [watchedEpisodesUpdated, setWatchedEpisodesUpdated] = useState(false);
@@ -151,7 +146,6 @@ export default function LiveSeriesBase({
   const context: LiveSeriesOutletContext = {
     loading,
     fetchResource,
-    reloadSite,
     likedShowIds,
     watchedEpisodes,
     setWatchedEpisodes,

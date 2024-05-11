@@ -45,7 +45,7 @@ export default function Search() {
   return (
     <>
       <h2>{title}</h2>
-      <form className="form-editor search" onSubmit={submitForm}>
+      <form className="form-editor flex-column search" onSubmit={submitForm}>
         <InputBox
           label={data.liveSeries.search.label}
           type="search"
