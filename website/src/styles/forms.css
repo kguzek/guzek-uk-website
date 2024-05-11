@@ -24,12 +24,6 @@
   height: 1.5rem;
 }
 
-.form-editor {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .form-editor > label,
 .form-checkboxes {
   width: 60%;
@@ -43,7 +37,7 @@
 }
 
 .form-checkboxes {
-  gap: 0px 15px;
+  gap: 10px 15px;
 }
 
 .form-checkboxes label:has(input:checked) {

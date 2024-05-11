@@ -1,7 +1,7 @@
 import React, { MouseEvent, useContext, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { TvShowDetailsShort } from "../../misc/models";
-import { TranslationContext } from "../../misc/context";
+import { TranslationContext, useFetchContext } from "../../misc/context";
 import { LiveSeriesOutletContext } from "../../pages/LiveSeries/Base";
 import TvShowPreviewSkeleton from "./TvShowPreviewSkeleton";
 
@@ -18,8 +18,9 @@ export default function TvShowPreview({
 }) {
   const [flipped, setFlipped] = useState(false);
   const data = useContext(TranslationContext);
-  const { likedShowIds, reloadSite, fetchResource } =
+  const { likedShowIds, fetchResource } =
     useOutletContext<LiveSeriesOutletContext>();
+  const { removeOldCaches } = useFetchContext();
 
   const isLikedOld =
     showDetails && likedShowIds ? likedShowIds.includes(showDetails.id) : false;
@@ -33,7 +34,7 @@ export default function TvShowPreview({
 
     await fetchResource("liked-shows/personal/" + showDetails.id, {
       method: isLiked ? "DELETE" : "POST",
-      onSuccess: () => reloadSite(),
+      onSuccess: () => removeOldCaches(),
       onError: () => setFlipped((old) => !old),
       useEpisodate: false,
     });

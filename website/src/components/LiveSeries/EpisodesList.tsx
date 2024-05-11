@@ -1,6 +1,6 @@
 import React, { ReactElement, useContext, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { TranslationContext } from "../../misc/context";
+import { TranslationContext, useFetchContext } from "../../misc/context";
 import {
   Episode as EpisodeType,
   EpisodeStatuses,
@@ -21,8 +21,10 @@ function Episode({
   downloadStatus?: "pending" | "failed" | "downloaded";
 }) {
   const data = useContext(TranslationContext);
-  const { setWatchedEpisodes, watchedEpisodes, fetchResource, reloadSite } =
+  const { setWatchedEpisodes, watchedEpisodes, fetchResource } =
     useOutletContext<LiveSeriesOutletContext>();
+  const { removeOldCaches } = useFetchContext();
+
   const airDate = data.dateTimeFormat.format(getEpisodeAirDate(episode));
 
   const watchedInSeason = watchedEpisodes?.[showId]?.[+episode.season];
@@ -31,7 +33,7 @@ function Episode({
   function updateWatchedEpisodes(episodes: number[]) {
     fetchResource(`watched-episodes/personal/${showId}/${episode.season}`, {
       method: "PUT",
-      onSuccess: () => reloadSite(),
+      onSuccess: () => removeOldCaches(),
       onError: () => setWatchedEpisodes(watchedEpisodes),
       body: episodes,
       useEpisodate: false,

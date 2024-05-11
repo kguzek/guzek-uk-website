@@ -7,7 +7,7 @@ import {
   ErrorCode,
   TvShowDetails,
 } from "../../misc/models";
-import { TranslationContext } from "../../misc/context";
+import { TranslationContext, useFetchContext } from "../../misc/context";
 import {
   getEpisodeAirDate,
   hasEpisodeAired,
@@ -25,13 +25,9 @@ export default function TvShow() {
     null | TvShowDetails | undefined
   >(null);
   const data = useContext(TranslationContext);
-  const {
-    likedShowIds,
-    watchedEpisodes,
-    setWatchedEpisodes,
-    reloadSite,
-    fetchResource,
-  } = useOutletContext<LiveSeriesOutletContext>();
+  const { likedShowIds, watchedEpisodes, setWatchedEpisodes, fetchResource } =
+    useOutletContext<LiveSeriesOutletContext>();
+  const { removeOldCaches } = useFetchContext();
   const { permalink } = useParams();
 
   useEffect(() => {
@@ -90,7 +86,7 @@ export default function TvShow() {
 
     await fetchResource("liked-shows/personal/" + tvShowDetails?.id, {
       method: isLiked ? "DELETE" : "POST",
-      onSuccess: () => reloadSite(),
+      onSuccess: () => removeOldCaches(),
       onError: () => setFlipped((old) => !old),
       useEpisodate: false,
     });
@@ -101,7 +97,7 @@ export default function TvShow() {
     const episodeNumbers = episodes.map((episode) => episode.episode);
     fetchResource(`watched-episodes/personal/${tvShowDetails.id}/${season}`, {
       method: "PUT",
-      onSuccess: () => reloadSite(),
+      onSuccess: () => removeOldCaches(),
       onError: () => setWatchedEpisodes(watchedEpisodes),
       body: episodeNumbers,
       useEpisodate: false,

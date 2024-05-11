@@ -67,6 +67,7 @@ export default function App() {
   const fetchContext: Fetch = {
     fetchFromAPI,
     tryFetch: getTryFetch(fetchFromAPI, setModalError, pageContent),
+    removeOldCaches,
   };
 
   function setLanguage(langString: string) {
@@ -121,7 +122,7 @@ export default function App() {
       const url = new URL(res.url);
       // Extract the base path (only first subdirectory of URL path)
       const [_, endpoint] =
-        /^\/(?:liveseries\/)?([^\/]*)(?:\/.*)?$/.exec(url.pathname) ?? [];
+        /^\/(?:liveseries|auth\/)?([^\/]*)(?:\/.*)?$/.exec(url.pathname) ?? [];
       if (!endpoint) continue;
       // console.debug(
       //   "Cache date:",
@@ -144,14 +145,14 @@ export default function App() {
       }
       updatedEndpoints.add(endpoint);
       const deleted = await cache.delete(res.url);
-      console.info(
+      console.debug(
         "Deleted cache",
         res.url,
         (deleted ? "" : "UN") + "SUCCESSFULLY"
       );
     }
     if (updatedEndpoints.size > 0) {
-      console.info("Updated endpoints:", updatedEndpoints);
+      console.debug("Updated endpoints:", updatedEndpoints);
       setReload(true);
     } else {
       // console.debug("All cached responses are up-to-date.");
@@ -314,11 +315,7 @@ export default function App() {
                 <Route
                   path="content-manager"
                   element={
-                    <ContentManager
-                      lang={userLanguage}
-                      menuItems={menuItems}
-                      reloadSite={removeOldCaches}
-                    />
+                    <ContentManager lang={userLanguage} menuItems={menuItems} />
                   }
                 />
                 <Route path="users">
@@ -327,12 +324,7 @@ export default function App() {
                 </Route>
                 <Route path="logs" element={<Logs />} />
               </Route>
-              <Route
-                path="liveseries"
-                element={
-                  <LiveSeriesBase reloadSite={removeOldCaches}></LiveSeriesBase>
-                }
-              >
+              <Route path="liveseries" element={<LiveSeriesBase />}>
                 <Route index element={<Home />} />
                 <Route path="most-popular" element={<MostPopular />} />
                 <Route path="search" element={<Search />} />

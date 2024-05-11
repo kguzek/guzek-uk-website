@@ -122,15 +122,16 @@ export const getErrorMessage = (res: Response, json: any, data: Translation) =>
   data.unknownError;
 
 export function getUserFromResponse(json: any) {
-  const { accessToken, refreshToken, expiersAt, ...userDetails } = json;
+  const { accessToken, refreshToken, expiresAt, ...userDetails } = json;
   updateAccessToken(accessToken);
   localStorage.setItem("refreshToken", refreshToken);
   return userDetails as User;
 }
 
-function rejectSavedUser() {
+function rejectSavedUser(user: any) {
   console.warn(
-    "Cleared fake user set in localStorage. If you're reading this, nice try!"
+    "Cleared fake user set in localStorage. If you're reading this, nice try!",
+    user
   );
   clearStoredLoginInfo();
 }
@@ -147,16 +148,16 @@ export function getLocalUser() {
   if (!parsedUser) return clearStoredLoginInfo();
   for (const property of USER_REQUIRED_PROPERTIES) {
     if (parsedUser[property] !== undefined) continue;
-    return rejectSavedUser();
+    return rejectSavedUser(parsedUser);
   }
   if (
     Object.keys(parsedUser).length !==
     Object.keys(USER_REQUIRED_PROPERTIES).length
   ) {
-    return rejectSavedUser();
+    return rejectSavedUser(parsedUser);
   }
   for (const dateString of [parsedUser.created_at, parsedUser.modified_at]) {
-    if (isInvalidDate(new Date(dateString))) return rejectSavedUser();
+    if (isInvalidDate(new Date(dateString))) return rejectSavedUser(parsedUser);
   }
   return parsedUser as User;
 }
