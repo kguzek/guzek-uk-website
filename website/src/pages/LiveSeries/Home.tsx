@@ -45,18 +45,27 @@ function LikedShowsCarousel({
   function getDisplayedCards() {
     const totalCards = likedShowIds?.length ?? SKELETON_CARDS_COUNT;
     const cardWidth = carouselTotalWidth / totalCards;
+    // Predetermined card width doesn't take into account padding/spacing, so using this
     const cardsPerPage = Math.floor(carouselVisibleWidth / cardWidth);
-    const firstCard = Math.ceil(carouselScroll / cardWidth) + 1;
+    // Add 0.1 tolerance because we don't want 1.00001 to be ceiled to 2
+    const firstCard = Math.ceil(carouselScroll / cardWidth - 0.1) + 1;
+    // or 5.99999... to be floored to 5.0
     const lastCard =
       Math.floor(
-        (carouselScroll + carouselVisibleWidth - cardWidth) / cardWidth
+        (carouselScroll + carouselVisibleWidth - cardWidth) / cardWidth + 0.1
       ) + 1;
+    // Not using Math.round because then on small layouts the app will assume
+    // we can see the full card when we can only see half of it
     const info = {
       firstCard,
       lastCard,
       cardsPerPage,
       totalCards,
     };
+    console.log(
+      (carouselScroll + carouselVisibleWidth - cardWidth) / cardWidth,
+      lastCard
+    );
     return info;
   }
 
@@ -79,6 +88,7 @@ function LikedShowsCarousel({
     const { firstCard, lastCard, totalCards } = getDisplayedCards();
     const visible =
       direction === "left" ? firstCard > 1 : lastCard < totalCards;
+    if (direction === "right") console.log({ firstCard, lastCard, totalCards });
     return `${direction} fa-arrow-${direction} ${visible ? "" : "hidden"}`;
   }
 
