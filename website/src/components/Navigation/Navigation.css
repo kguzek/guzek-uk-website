@@ -32,6 +32,10 @@
   margin-bottom: auto;
 }
 
+.nav-items .skeleton {
+  cursor: wait;
+}
+
 .nav-link {
   display: inline-block;
   color: lightgray;
@@ -164,6 +168,15 @@ nav.mini-navbar {
     z-index: 1;
   }
 
+  .nav-items .skeleton {
+    margin-top: 30px;
+    flex-direction: column;
+  }
+
+  .nav-items .skeleton-text {
+    max-width: 65%;
+  }
+
   .lang-selector {
     margin-top: 10px;
   }
@@ -186,5 +199,9 @@ nav.mini-navbar {
 @media screen and (max-width: 550px) {
   .mini-navbar {
     font-size: medium;
+  }
+
+  .nav-items .skeleton {
+    margin-top: 0;
   }
 }

@@ -21,6 +21,7 @@ export default function Users() {
     setTitle(data.admin.users.title);
   }, []);
 
+  // TODO: Change to skeleton
   if (!users) return <LoadingScreen />;
 
   async function confirmDelete(user: User) {

@@ -15,16 +15,27 @@ import ErrorPage from "../ErrorPage";
 import { AdminContext } from "./Base";
 
 export default function UserPage() {
-  const { users, setUsers } = useOutletContext<AdminContext>();
-  const [user, setUser] = useState<User | undefined>();
+  const { users, setUsers, setTitle } = useOutletContext<AdminContext>();
+  const [loading, setLoading] = useState(true);
   const params = useParams();
+  const [user, setUser] = useState<User | undefined>();
 
   useEffect(() => {
     if (!users) return;
-    setUser(users.find((user) => user.uuid === params.uuid));
+    const user = users.find((user) => user.uuid === params.uuid);
+    if (user) {
+      setUser(user);
+      setTitle("@" + user.username);
+    }
+    setLoading(false);
   }, [params, users]);
 
-  if (!users) return <LoadingScreen />;
+  if (loading)
+    return (
+      <div className="user-page">
+        <LoadingScreen />
+      </div>
+    );
 
   if (!user) return <ErrorPage errorCode={ErrorCode.NotFound} />;
 

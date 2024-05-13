@@ -10,7 +10,9 @@ import InputArea, {
   parseMarkdown,
 } from "../../components/Forms/InputArea";
 import InputBox from "../../components/Forms/InputBox";
-import { LoadingButton } from "../../components/LoadingScreen/LoadingScreen";
+import LoadingScreen, {
+  LoadingButton,
+} from "../../components/LoadingScreen/LoadingScreen";
 import { DEFAULT_PAGE_DATA, MenuItem } from "../../misc/models";
 import { getErrorMessage } from "../../misc/util";
 import { useOutletContext } from "react-router-dom";
@@ -24,15 +26,23 @@ export default function ContentManager({
   menuItems,
 }: {
   lang: string;
-  menuItems: MenuItem[];
+  menuItems: null | MenuItem[];
 }) {
-  const [selectedPageID, setSelectedPageID] = useState(menuItems[0]?.id ?? 0);
+  const [selectedPageID, setSelectedPageID] = useState(0);
   const data = useContext(TranslationContext);
   const { setTitle } = useOutletContext<AdminContext>();
 
   useEffect(() => {
     setTitle(data.admin.contentManager.title);
   }, [data]);
+
+  useEffect(() => {
+    if (!menuItems) return;
+    setSelectedPageID(menuItems[0]?.id ?? 0);
+  }, [menuItems]);
+
+  // TODO: change to skeleton
+  if (!menuItems) return <LoadingScreen />;
 
   const pagesMap = new Map<number, string>();
   menuItems.forEach((page) =>
@@ -58,7 +68,12 @@ export default function ContentManager({
               setValue={setSelectedPageID}
               options={pagesMap}
             />
-            <PagesEditor lang={lang} originalPage={selectedPage as MenuItem} />
+            {selectedPage && (
+              <PagesEditor
+                lang={lang}
+                originalPage={selectedPage as MenuItem}
+              />
+            )}
           </form>
         </>
       )}
