@@ -18,16 +18,16 @@ function NavigationBar({
   changeLang,
   menuItems,
 }: {
-  user: User | null;
+  user?: User | null;
   selectedLanguage: Language;
   changeLang: MouseEventHandler<HTMLButtonElement>;
-  menuItems: MenuItem[];
+  menuItems?: MenuItem[];
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const winDims = useWindowDimensions();
 
   // Create the array of nav bar page elements
-  const menuItemElements = menuItems.map((item, index) => (
+  const menuItemElements = menuItems?.map((item, index) => (
     <li key={index}>
       <NavBarItem item={item} setMenuOpen={setMenuOpen} />
     </li>
@@ -51,7 +51,11 @@ function NavigationBar({
         <h1>{PAGE_NAME}</h1>
         <ul className={`${menuOpen ? "open" : "closed"} no-select nav-items `}>
           {displayStyle === "mobile" && userWidget}
-          {menuItemElements}
+          {menuItemElements ?? (
+            <div className="skeleton flex">
+              <p className="skeleton-text" style={{ width: "25vw" }}></p>
+            </div>
+          )}
           <LangSelector
             selectedLanguage={selectedLanguage}
             changeLang={changeLang}

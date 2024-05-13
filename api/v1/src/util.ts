@@ -29,13 +29,18 @@ async function updateEndpoint(endpointClass: ModelType) {
   logger.debug(`Updated endpoint '${endpoint}'`);
 }
 
+const logResponse = (res: Response, message: string) =>
+  logger.response(message, {
+    ip: (res as any).ip,
+  });
+
 /** Sends the response with a 200 status and JSON body containing the given data object. */
 export function sendOK(
   res: Response,
   data: object | object[] | null,
   code: number = 200
 ) {
-  logger.response(`${code} ${STATUS_CODES[code] ?? STATUS_CODES[200]}`);
+  logResponse(res, `${code} ${STATUS_CODES[code] ?? STATUS_CODES[200]}`);
   res.status(code).json(data);
 }
 
@@ -50,7 +55,7 @@ export function sendError(
 ) {
   const codeDescription = `${code} ${STATUS_CODES[code] ?? STATUS_CODES[500]}`;
   const jsonRes = { [codeDescription]: error.message };
-  logger.response(`${codeDescription}: ${error.message}`);
+  logResponse(res, `${codeDescription}: ${error.message}`);
   res.status(code).json(jsonRes);
 }
 

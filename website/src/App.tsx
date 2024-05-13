@@ -3,7 +3,7 @@ import { Routes, Route, useSearchParams } from "react-router-dom";
 import { TRANSLATIONS } from "./misc/translations";
 import NavigationBar from "./components/Navigation/NavigationBar";
 import Footer from "./components/Footer/Footer";
-import PageTemplate from "./pages/PageTemplate";
+import PageTemplate, { PageSkeleton } from "./pages/PageTemplate";
 import ErrorPage from "./pages/ErrorPage";
 import {
   clearStoredLoginInfo,
@@ -12,14 +12,13 @@ import {
   getFetchFromAPI,
 } from "./misc/backend";
 import Profile from "./pages/Profile";
-import LoadingScreen from "./components/LoadingScreen/LoadingScreen";
 import "./styles/styles.css";
 import "./styles/forms.css";
 import LogIn from "./pages/LogIn";
 import SignUp from "./pages/SignUp";
 import { ErrorCode, Language, MenuItem, User } from "./misc/models";
 import ContentManager from "./pages/Admin/ContentManager";
-import { getLocalUser, getTryFetch, PAGE_NAME } from "./misc/util";
+import { getLocalUser, getTryFetch } from "./misc/util";
 import LiveSeriesBase from "./pages/LiveSeries/Base";
 import MostPopular from "./pages/LiveSeries/MostPopular";
 import Home from "./pages/LiveSeries/Home";
@@ -49,7 +48,7 @@ export default function App() {
   const [modalChoiceResolve, setModalChoiceResolve] = useState<ModalHandler>(
     () => () => {}
   );
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null | undefined>();
   const [menuItems, setMenuItems] = useState<MenuItem[] | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [reload, setReload] = useState(false);
@@ -57,7 +56,7 @@ export default function App() {
   const pageContent = TRANSLATIONS[userLanguage];
 
   const authContext: Auth = {
-    user: currentUser,
+    user: currentUser ?? null,
     setUser: setCurrentUser,
     logout,
   };
@@ -232,15 +231,6 @@ export default function App() {
     }
   }
 
-  if (!pageContent || !menuItems) {
-    return <LoadingScreen text={`${pageContent.loading} ${PAGE_NAME}`} />;
-  }
-
-  const forbiddenErrorPage = <ErrorPage errorCode={ErrorCode.Forbidden} />;
-  // const unauthorizedErrorPage = (
-  //   <ErrorPage  errorCode={ErrorCode.Unauthorized} />
-  // );
-
   return (
     <AuthContext.Provider value={authContext}>
       <FetchContext.Provider value={fetchContext}>
@@ -282,34 +272,53 @@ export default function App() {
             <NavigationBar
               selectedLanguage={userLanguage}
               changeLang={changeLang}
-              menuItems={menuItems.filter(
+              menuItems={menuItems?.filter(
                 (item) => !item.adminOnly || currentUser?.admin
               )}
               user={currentUser}
             />
             <Routes>
-              {menuItems
-                .filter((item) => item.shouldFetch)
-                .map((item, idx) => (
-                  <Route
-                    key={idx}
-                    path={item.url}
-                    element={
-                      <PageTemplate
-                        reload={reload}
-                        pageData={item}
-                        lang={userLanguage}
-                      />
-                    }
-                  />
-                ))}
+              {menuItems ? (
+                menuItems
+                  .filter((item) => item.shouldFetch)
+                  .map((item, idx) => (
+                    <Route
+                      key={idx}
+                      path={item.url}
+                      element={
+                        <PageTemplate
+                          reload={reload}
+                          pageData={item}
+                          lang={userLanguage}
+                        />
+                      }
+                    />
+                  ))
+              ) : (
+                <Route
+                  index
+                  element={
+                    <div className="text">
+                      <PageSkeleton />
+                    </div>
+                  }
+                />
+              )}
               <Route path="profile" element={<Profile />} />
               <Route path="login" element={<LogIn />} />
               <Route path="signup" element={<SignUp />} />
               <Route
                 path="admin"
                 element={
-                  currentUser?.admin ? <AdminBase /> : forbiddenErrorPage
+                  currentUser === undefined ? (
+                    <div className="flex-column">
+                      <h3>Validating permissions...</h3>
+                    </div>
+                  ) : currentUser?.admin ? (
+                    <AdminBase />
+                  ) : (
+                    <ErrorPage errorCode={ErrorCode.Forbidden} />
+                  )
                 }
               >
                 <Route

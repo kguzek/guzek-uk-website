@@ -208,12 +208,12 @@
   height: 21px; /* Font height is 21px */
   width: 80%;
   max-width: 100%;
-  background-color: var(--color-background);
+  background-color: var(--color-background-soft);
   border-radius: 15px;
 }
 
-.details .skeleton-text {
-  background-color: var(--color-background-soft);
+.preview-header .skeleton-text {
+  background-color: var(--color-background);
 }
 
 .preview.skeleton .thumbnail {

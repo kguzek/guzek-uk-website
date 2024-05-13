@@ -10,7 +10,7 @@ import {
 import DailyRotateFile from "winston-daily-rotate-file";
 
 const c = {
-  clr: "\x1b[0m",
+  clear: "\x1b[0m",
   bright: "\x1b[1m",
   dim: "\x1b[2m",
   underscore: "\x1b[4m",
@@ -18,28 +18,28 @@ const c = {
   reverse: "\x1b[7m",
   hidden: "\x1b[8m",
 
-  fgBlack: "\x1b[30m",
-  fgRed: "\x1b[31m",
-  fgGreen: "\x1b[32m",
-  fgYellow: "\x1b[33m",
-  fgBlue: "\x1b[34m",
-  fgMagenta: "\x1b[35m",
-  fgCyan: "\x1b[36m",
-  fgWhite: "\x1b[37m",
+  fg: {
+    black: "\x1b[30m",
+    red: "\x1b[31m",
+    green: "\x1b[32m",
+    yellow: "\x1b[33m",
+    blue: "\x1b[34m",
+    magenta: "\x1b[35m",
+    cyan: "\x1b[36m",
+    white: "\x1b[37m",
+  },
 
-  bgBlack: "\x1b[40m",
-  bgRed: "\x1b[41m",
-  bgGreen: "\x1b[42m",
-  bgYellow: "\x1b[43m",
-  bgBlue: "\x1b[44m",
-  bgMagenta: "\x1b[45m",
-  bgCyan: "\x1b[46m",
-  bgWhite: "\x1b[47m",
+  bg: {
+    black: "\x1b[40m",
+    red: "\x1b[41m",
+    green: "\x1b[42m",
+    yellow: "\x1b[43m",
+    blue: "\x1b[44m",
+    magenta: "\x1b[45m",
+    cyan: "\x1b[46m",
+    white: "\x1b[47m",
+  },
 };
-
-interface Colour {
-  [logLevel: string]: string;
-}
 
 interface CustomLoggerOptions extends LoggerOptions {
   transports: Array<
@@ -49,32 +49,39 @@ interface CustomLoggerOptions extends LoggerOptions {
   >;
 }
 
+type LogFunction = (message: string, metadata?: Record<string, any>) => void;
+
 interface CustomLogger extends Logger {
-  request: Function;
-  response: Function;
+  request: LogFunction;
+  response: LogFunction;
 }
 
-const colours: { lbl: Colour; msg: Colour } = {
-  lbl: {
-    error: c.bgRed,
-    warn: c.bgYellow + c.fgBlack,
-    response: c.bgMagenta + c.fgBlack,
-    request: c.fgMagenta,
-    info: c.fgGreen,
-    debug: c.fgCyan,
+type ColourMap = { [logLevel: string]: string };
+
+const colours: { level: ColourMap; message: ColourMap } = {
+  level: {
+    error: c.bg.red,
+    warn: c.bg.yellow + c.fg.black,
+    response: c.bg.magenta + c.fg.black,
+    request: c.fg.magenta,
+    info: c.fg.green,
+    debug: c.fg.cyan,
   },
-  msg: {
-    error: c.fgRed + c.bright,
-    warn: c.fgYellow + c.bright,
+  message: {
+    error: c.fg.red + c.bright,
+    warn: c.fg.yellow + c.bright,
   },
 };
 
-const logFormat = format.printf(({ timestamp, level, label, message }) => {
-  const lvl = (colours.lbl[level] || "") + level + c.clr;
-  const lbl = c.fgBlue + label + c.clr;
-  const msg = (colours.msg[level] || "") + message + c.clr;
-  return `${c.dim + timestamp + c.clr} ${lvl} [${lbl}]: ${msg}`;
-});
+const logFormat = format.printf(
+  ({ timestamp, level, label, message, metadata }) => {
+    if (typeof message !== "string") message = JSON.stringify(message);
+    message = (colours.message[level] ?? "") + message + c.clear;
+    level = (colours.level[level] ?? "") + level + c.clear;
+    label = c.fg.blue + label + c.clear;
+    return `${c.dim + timestamp + c.clear} ${level} [${label}]: ${message}`;
+  }
+);
 
 const jsonFormat = format.combine(format.json());
 
@@ -128,33 +135,35 @@ if (process.env.NODE_ENV === "development") {
 const baseLogger = createLogger(loggerOptions);
 
 /** Gets the logger instance for the given source code file. */
-export const getLogger = (filename: string) =>
-  Object.fromEntries(
+export function getLogger(filename: string) {
+  const label = path.basename(filename);
+  return Object.fromEntries(
     Object.keys(LOG_LEVELS).map((level) => [
       level,
       (message: any, metadata?: any) =>
-        baseLogger[level as keyof Logger](message, {
-          ...metadata,
-          label: path.basename(filename),
-        }),
+        baseLogger[level as keyof Logger](message, { ...metadata, label }),
     ])
-  );
+  ) as unknown as CustomLogger;
+}
 
 const logger = getLogger(__filename);
 
+const getRequestIP = (req: Request) =>
+  req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
+
 export async function loggingMiddleware(
   req: Request,
-  _res: Response,
+  res: Response,
   next: NextFunction
 ) {
-  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
-  const bodyCopy = Array.isArray(req.body) ? [...req.body] : { ...req.body };
-  const metadata = { ip, body: bodyCopy };
+  const body = Array.isArray(req.body) ? [...req.body] : { ...req.body };
   // Ensure passwords are not logged in plaintext
   for (const sensitiveField of ["password", "oldPassword", "newPassword"]) {
-    if (!metadata.body?.[sensitiveField]) continue;
-    metadata.body[sensitiveField] = "********";
+    if (!body[sensitiveField]) continue;
+    body[sensitiveField] = "********";
   }
-  logger.request(`${req.method} ${req.originalUrl}`, metadata);
+  const ip = getRequestIP(req);
+  (res as any).ip = ip;
+  logger.request(`${req.method} ${req.originalUrl}`, { ip, body });
   next();
 }

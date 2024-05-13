@@ -6,6 +6,7 @@ import { NumericValue } from "../../components/NumericValue";
 import SyntaxHighlighted from "../../components/SyntaxHighlighted/SyntaxHighlighted";
 import { TranslationContext, useFetchContext } from "../../misc/context";
 import { StateSetter } from "../../misc/models";
+import { TRANSLATIONS } from "../../misc/translations";
 import { scrollToElement } from "../../misc/util";
 import { AdminContext } from "./Base";
 
@@ -44,8 +45,16 @@ type Filter = {
 const getIcon = (key: string) =>
   ICONS[key as keyof typeof ICONS] || "question error";
 
-const getDateString = (dateInit?: any) =>
-  (dateInit ? new Date(dateInit) : new Date()).toISOString().split("T")[0];
+// Converts local date format to YYYY-MM-DD
+const getTodayString = () =>
+  TRANSLATIONS.EN.dateShortFormat
+    .format(new Date())
+    .split("/")
+    .reverse()
+    .join("-");
+
+const getUTCDateString = (dateInit: any) =>
+  new Date(dateInit).toISOString().split("T")[0];
 
 const entryHasBody = (entry: LogEntry) =>
   entry.metadata?.body && Object.keys(entry.metadata.body).length > 0;
@@ -72,7 +81,7 @@ export default function Logs() {
   }, []);
 
   useEffect(() => {
-    const date = search.get("date") ?? getDateString();
+    const date = search.get("date") || getTodayString();
     if (dateLogs?.date === date) return;
 
     fetchLogs(date);
@@ -93,7 +102,7 @@ export default function Logs() {
     setLabels([...foundLabels]);
 
     const errorLogsFiltered = errorLogs.logs.filter(
-      (log) => getDateString(log.timestamp) === dateLogs.date
+      (log) => getUTCDateString(log.timestamp) === dateLogs.date
     );
 
     const logsSorted = [...dateLogs.logs, ...errorLogsFiltered].sort(

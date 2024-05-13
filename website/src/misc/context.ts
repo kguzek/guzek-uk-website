@@ -5,7 +5,7 @@ import { Translation, TRANSLATIONS } from "./translations";
 
 export interface Auth {
   user: User | null;
-  setUser: StateSetter<User | null>;
+  setUser: StateSetter<User | null | undefined>;
   logout: () => void;
 }
 
