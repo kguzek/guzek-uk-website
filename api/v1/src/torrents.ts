@@ -6,14 +6,20 @@ const logger = getLogger(__filename);
 const CONSOLE_LOG = console.log;
 const CONSOLE_ERROR = console.error;
 
+let numLogDisablers = 0;
+
 function disableLogging() {
+  numLogDisablers++;
   console.log = () => {};
   console.error = () => {};
 }
 
 function enableLogging() {
-  console.log = CONSOLE_LOG;
-  console.error = CONSOLE_ERROR;
+  numLogDisablers--;
+  if (numLogDisablers === 0) {
+    console.log = CONSOLE_LOG;
+    console.error = CONSOLE_ERROR;
+  }
 }
 
 // All sources:

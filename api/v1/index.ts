@@ -3,7 +3,12 @@ import cors from "cors";
 import express from "express";
 import path from "path";
 import dotenv from "dotenv";
-const dotEnvPath = path.resolve(__dirname, "../.env");
+const DEBUG_MODE = process.env.NODE_ENV === "development";
+// In production mode, this code is run from /api/v1/dist/index.js
+// In development mode, it is in /api/v1/index.ts
+// The env file is in /api/.env, so adjust accordingly
+const ENV_FILE_PATH = DEBUG_MODE ? "../.env" : "../../.env";
+const dotEnvPath = path.resolve(__dirname, ENV_FILE_PATH);
 dotenv.config({ path: dotEnvPath });
 const password = require("s-salt-pepper");
 
@@ -31,13 +36,15 @@ const ENDPOINTS = [
   "logs",
 ];
 
-console.log(); // Add newline before app output for readability
+if (DEBUG_MODE) {
+  // Add newline before app output for readability
+  console.log();
+}
 
 /** Initialises the HTTP RESTful API server. */
 async function initialise() {
   const iterations = process.env.HASH_ITERATIONS;
   if (!iterations) {
-    console.log(process.env);
     logger.error("No HASH_ITERATIONS environment variable set.");
     return;
   }

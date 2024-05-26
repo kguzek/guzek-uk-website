@@ -11,7 +11,8 @@
   "main": "index.ts",
   "scripts": {
     "dev": "NODE_ENV=development NODE_PORT=5017 nodemon --exec ts-node --files index.ts",
-    "prod": "NODE_ENV=production NODE_PORT=5017 ts-node --files index.ts"
+    "prod": "NODE_ENV=production NODE_PORT=5017 node --max-old-space-size=500 dist/index.js",
+    "compile": "tsc"
   },
   "resolutions": {
     "dottie": "^2.0.4",

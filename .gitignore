@@ -10,6 +10,7 @@ coverage
 
 # production
 build
+api/v1/dist
 
 # Firebase directory
 firebase
