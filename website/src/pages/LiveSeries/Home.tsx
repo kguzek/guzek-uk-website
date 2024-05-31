@@ -62,10 +62,6 @@ function LikedShowsCarousel({
       cardsPerPage,
       totalCards,
     };
-    console.log(
-      (carouselScroll + carouselVisibleWidth - cardWidth) / cardWidth,
-      lastCard
-    );
     return info;
   }
 
@@ -88,7 +84,6 @@ function LikedShowsCarousel({
     const { firstCard, lastCard, totalCards } = getDisplayedCards();
     const visible =
       direction === "left" ? firstCard > 1 : lastCard < totalCards;
-    if (direction === "right") console.log({ firstCard, lastCard, totalCards });
     return `${direction} fa-arrow-${direction} ${visible ? "" : "hidden"}`;
   }
 

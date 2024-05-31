@@ -89,15 +89,21 @@ async function checkUnwatchedEpisodes() {
 
     for (const likedShowId of likedShows as number[]) {
       const watchedData = watchedShowData[likedShowId];
-      axios.get(EPISODATE_API_BASE + likedShowId).then((res) => {
-        const tvShow = res.data.tvShow as TvShow;
-        for (const episode of tvShow.episodes) {
-          if (!hasEpisodeAired(episode)) continue;
-          if (watchedData?.[episode.season]?.includes(episode.episode))
-            continue;
-          downloadEpisode(tvShow.name, episode);
-        }
-      }, logger.error);
+      axios.get(EPISODATE_API_BASE + likedShowId).then(
+        (res) => {
+          const tvShow = res.data.tvShow as TvShow;
+          for (const episode of tvShow.episodes) {
+            if (!hasEpisodeAired(episode)) continue;
+            if (watchedData?.[episode.season]?.includes(episode.episode))
+              continue;
+            downloadEpisode(tvShow.name, episode);
+          }
+        },
+        (error) =>
+          logger.error(
+            `Could not retrieve liked show ${likedShowId} details. ${error.name} ${error.message} ${error.code}`
+          )
+      );
     }
   }
 }
@@ -250,4 +256,3 @@ router.put("/watched-episodes/personal/:showId/:season", async (req, res) => {
   };
   updateDatabaseEntry(WatchedEpisodes, req, res, { watchedEpisodes }, where);
 });
-

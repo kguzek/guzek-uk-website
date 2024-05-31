@@ -17,7 +17,7 @@ const sequelize = new Sequelize(
   {
     host: SESSION_INFO.DB_HOST,
     dialect: "mysql",
-    logging: process.env.NODE_ENV === "development",
+    logging: process.env.NODE_ENV === "development" && console.log,
   }
 );
 
