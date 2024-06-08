@@ -12,11 +12,13 @@ import {
   sendOK,
   updateDatabaseEntry,
 } from "../util";
-import { getTorrent } from "../torrents";
+import { searchTorrent } from "../torrentIndexer";
+import { TorrentClient } from "../torrentClient";
 
 export const router = express.Router();
 
 const logger = getLogger(__filename);
+let torrentClient: TorrentClient;
 
 type WatchedData = { [season: string]: number[] };
 
@@ -58,16 +60,15 @@ function episodeDownloadSuccess() {
 
 async function downloadEpisode(showName: string, episode: Episode) {
   const episodeSearchQuery = `${showName} ${serialiseEpisode(episode)}`;
-  const torrent = await getTorrent(episodeSearchQuery);
+  const torrent = await searchTorrent(episodeSearchQuery);
   if (!torrent) {
     episodeDownloadFail(`Did not find torrents for '${episodeSearchQuery}'.`);
     return;
   }
-  logger.debug(torrent);
   if (process.platform === "win32") {
     exec(`start ${torrent}`);
   } else {
-    // TODO: torrent client implementation on non-Windows systems
+    torrentClient.addTorrent(torrent);
   }
   episodeDownloadSuccess();
 }
@@ -110,6 +111,7 @@ async function checkUnwatchedEpisodes() {
 
 export function init() {
   checkUnwatchedEpisodes();
+  torrentClient = new TorrentClient();
 
   new CronJob(
     "0 0 */6 * * *",

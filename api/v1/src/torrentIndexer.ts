@@ -75,7 +75,7 @@ interface TorrentResult {
 
 const torrentIndexer = new TorrentIndexer({ sources: SOURCE_AMENDMENTS });
 
-export async function getTorrent(search: any) {
+export async function searchTorrent(search: any) {
   if (!search || typeof search !== "string") {
     throw new Error(`Invalid search query '${search}'.`);
   }
