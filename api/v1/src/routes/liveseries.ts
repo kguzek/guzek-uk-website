@@ -319,7 +319,7 @@ router.ws("/ws", (ws, req) => {
     let evt: { type: string; data: any };
 
     try {
-      evt = JSON.parse(msg);
+      evt = JSON.parse(msg.toString());
     } catch (error) {
       logger.error(`Could not parse websocket message '${msg}'. ${error}`);
       return;
@@ -341,7 +341,7 @@ router.ws("/ws", (ws, req) => {
     const delayBeforeResponseMs = Math.min(0, minNextResponseTimestamp - currentTimestamp);
 
     setTimeout(async () => {
-      data = await action(evt.data);
+      const data = await action(evt.data);
       ws.send(JSON.stringify({ data }));
     }, delayBeforeResponseMs);
 
