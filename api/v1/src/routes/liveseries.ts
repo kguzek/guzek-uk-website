@@ -57,8 +57,9 @@ const serialiseEpisode = (episode: Episode) =>
 async function downloadEpisode(tvShow: TvShow, episode: Episode) {
   const episodeSearchQuery = `${tvShow.name} ${serialiseEpisode(episode)}`;
   const magnetLink = await searchTorrent(episodeSearchQuery);
+  logger.debug(`Found unwatched episode, searching for '${episodeSearchQuery}'.`)
   if (!magnetLink) {
-    logger.error(`Did not find torrents for '${episodeSearchQuery}'.`);
+    logger.error("Search query turned up empty. Either no torrents available, or indexer is outdated.");
     return null;
   }
   if (process.platform === "win32") {
@@ -78,6 +79,7 @@ async function downloadEpisode(tvShow: TvShow, episode: Episode) {
     status: TorrentStatus.PENDING,
   });
   await updateEndpoint(DownloadedEpisode);
+  logger.info(`Successfully added new torrent with id '${torrentInfo.id}'.`);
   return downloadedEpisode;
 }
 
@@ -300,20 +302,50 @@ router.put("/watched-episodes/personal/:showId/:season", async (req, res) => {
   updateDatabaseEntry(WatchedEpisodes, req, res, { watchedEpisodes }, where);
 });
 
+async function getTorrentInfo(data: any) {
+  const info = await torrentClient.getTorrentInfo();
+  return info;
+}
+
 router.ws("/ws", (ws, req) => {
-  let minNextResponseTimestamp = new Date().getTime();
   if (!torrentClient) {
-    logger.error("Websocket connection without torrent client");
+    logger.error("Websocket connection established without active torrent client.");
     return;
   }
+  
+  let minNextResponseTimestamp = new Date().getTime();
 
   ws.on("message", (msg) => {
-    setTimeout(() => {
-      minNextResponseTimestamp = new Date().getTime() + WS_RESPONSE_INTERVAL_MS;
-      torrentClient.getTorrentInfo().then((data) => 
-        ws.send(JSON.stringify({ data }))
-      );  
-    }, minNextResponseTimestamp - new Date().getTime());  
+    let evt: { type: string; data: any };
+
+    try {
+      evt = JSON.parse(msg);
+    } catch (error) {
+      logger.error(`Could not parse websocket message '${msg}'. ${error}`);
+      return;
+    }
+
+    /** The callback to call after a message event which should resolve to the data to be sent back. */
+    let action: (data: any) => Promise<any>;
+
+    switch (evt.type) {
+      case "poll":
+        action = getTorrentInfo;
+        break;
+      default:
+        logger.warn(`Unknown message type '${evt.type}' received in websocket connection.`);
+        return;
+    }
+
+    const currentTimestamp = new Date().getTime();
+    const delayBeforeResponseMs = Math.min(0, minNextResponseTimestamp - currentTimestamp);
+
+    setTimeout(async () => {
+      data = await action(evt.data);
+      ws.send(JSON.stringify({ data }));
+    }, delayBeforeResponseMs);
+
+    minNextResponseTimestamp += delayBeforeResponseMs + WS_RESPONSE_INTERVAL_MS;
   });
 });
 

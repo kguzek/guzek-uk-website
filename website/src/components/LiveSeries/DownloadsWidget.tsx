@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { TranslationContext } from "../../misc/context";
 import { DownloadedEpisode } from "../../misc/models";
-import { bytesToReadable } from "../../misc/util";
+import { bytesToReadable, getDuration } from "../../misc/util";
 import "./DownloadsWidget.css";
 
 export default function DownloadsWidget({
@@ -20,17 +20,23 @@ export default function DownloadsWidget({
     <div className={`collapsible ${collapsed ? 'hidden' : ''}`}>
       <div className="flex flex-column no-overflow">
         {downloadedEpisodes.map((episode, idx) => {
-          const downloadProgress = (100 * (episode.status === 3 ? 1 : episode.progress ?? 0)).toFixed(1) + "%";
+          const downloadProgress = (100 * (episode.progress ?? 0)).toFixed(1) + "%";
           return <div key={`downloads-card-${idx}`} className="downloads-card flex">
             <div className="flex">
               <div>{episode.showId} {serialise(episode)}</div>
               <div className="serif">{downloadProgress}</div>
-              {episode.speed != null &&
+              {episode.speed != null && episode.status === 2 &&
                 <div className="serif">({bytesToReadable(episode.speed)}/s)</div>
+              }
+              {episode.eta != null && episode.eta > 0 &&
+                <div>{getDuration(episode.eta * 1000).formatted}</div>
               }
             </div>
             <div className="progress-bar-container">
-              <div className="progress-bar" style={{width: downloadProgress}}></div>
+              <div
+                className={`progress-bar ${episode.status === 3 ? 'done' : ''}`}
+                style={{width: downloadProgress}}
+              ></div>
             </div>
           </div>
         })}

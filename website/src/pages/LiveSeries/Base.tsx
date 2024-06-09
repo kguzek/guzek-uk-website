@@ -80,32 +80,49 @@ export default function LiveSeriesBase() {
     try {
       socket = new WebSocket(WEBSOCKET_URL);
     } catch (error) {
-      console.error(error);
+      console.error("Connection error:", error);
       setModalError("Could not establish a connection with the websocket.");
       return;
     }
     setExistingSocket(socket);
-    const poll = () => socket.send("poll");
-    socket.onopen = poll;
+    socket.onerror = (message) => {
+      console.error("Unknown error:", message);
+      setModalError("An unknown error occured during websocket communication.")
+    };
+    const poll = (data: any) => socket.send(JSON.stringify({ type: "poll", data }));
+    socket.onopen = () => poll({});
     socket.onmessage = (message) => {
       const torrentInfo = JSON.parse(message.data).data as TorrentInfo[];
-      poll();
-      setDownloadedEpisodes((old) => old.map((entry) => {
-        const info = torrentInfo?.find((info) => info.id === entry.torrentId);
-        if (!info) return entry;
-        const map = {6: 3, 4: 2} as const;
-        let status = entry.status;
-        const possibleStatus = map[info.status as keyof typeof map];
-        if (possibleStatus != null) status = possibleStatus;
-        if (status === 3 && entry.status !== 3) {
-          const episodeString = data.liveSeries.tvShow.serialiseEpisode(entry);
-          setModalInfo(data.liveSeries.downloadComplete.replace("{episode}", episodeString));
+      setDownloadedEpisodes((old) => {
+        poll(old);
+        const mapped = old.map((entry) => {
+          const info = torrentInfo?.find((info) => info.id === entry.torrentId);
+          if (!info) return entry;
+          const map = {6: 3, 4: 2} as const;
+          let status = entry.status;
+          const possibleStatus = map[info.status as keyof typeof map];
+          if (possibleStatus != null) status = possibleStatus;
+          if (status === 3 && entry.status !== 3) {
+            const episodeString = data.liveSeries.tvShow.serialiseEpisode(entry);
+            setModalInfo(data.liveSeries.downloadComplete.replace("{episode}", episodeString));
+          }
+          const progress = info.percentDone;
+          const speed = info.rateDownload;
+          const eta = info.eta;
+          return { ...entry, status, progress, speed, eta };
+        });
+        const missing = [];
+        for (const info of torrentInfo) {
+          if (old.find((val) => val.torrentId === info.id)) continue;
+          missing.push(info);
         }
-        const progress = info.percentDone;
-        const speed = info.rateDownload;
-        return { ...entry, status, progress, speed };
-      }));
-   } 
+        if (missing.length > 0) {
+          console.warn("Missing downloaded episode infos", missing);
+          console.log(mapped);
+        }
+        return mapped;
+      });
+    } 
   }, [user]);
 
   useEffect(() => {
