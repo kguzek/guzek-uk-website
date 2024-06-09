@@ -14,7 +14,7 @@ import { getErrorMessage } from "../../misc/util";
 import { API_BASE } from "../../misc/backend";
 import "./Liveseries.css";
 
-const WEBSOCKET_URL = API_BASE.replace(/https?/, "ws") + "liveseries/ws";
+const WEBSOCKET_URL = API_BASE.replace("http", "ws") + "liveseries/ws";
 
 interface TorrentInfo {
   id: number;
