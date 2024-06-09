@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import { TranslationContext } from "../../misc/context";
 import { DownloadedEpisode } from "../../misc/models";
+import { bytesToReadable } from "../../misc/util";
 import "./DownloadsWidget.css";
 
 export default function DownloadsWidget({
@@ -19,13 +20,14 @@ export default function DownloadsWidget({
     <div className={`collapsible ${collapsed ? 'hidden' : ''}`}>
       <div className="flex flex-column no-overflow">
         {downloadedEpisodes.map((episode, idx) => {
-          if (episode.status !== 2) return null;
-          const downloadProgress = (100 * (episode.progress ?? 0)).toFixed(1) + "%";
+          const downloadProgress = (100 * (episode.status === 3 ? 1 : episode.progress ?? 0)).toFixed(1) + "%";
           return <div key={`downloads-card-${idx}`} className="downloads-card flex">
             <div className="flex">
               <div>{episode.showId} {serialise(episode)}</div>
               <div className="serif">{downloadProgress}</div>
-              <div className="serif">({((episode.speed ?? 0) / 1024).toFixed(1)} MiB/s)</div>
+              {episode.speed != null &&
+                <div className="serif">({bytesToReadable(episode.speed)}/s)</div>
+              }
             </div>
             <div className="progress-bar-container">
               <div className="progress-bar" style={{width: downloadProgress}}></div>
