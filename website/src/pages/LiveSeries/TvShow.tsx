@@ -235,7 +235,7 @@ export default function TvShow() {
           return (
             <React.Fragment key={`season-${season}`}>
               <EpisodesList
-                showId={tvShowDetails.id}
+                tvShow={tvShowDetails}
                 heading={`${data.liveSeries.tvShow.season} ${season}`}
                 episodes={episodes}
               >

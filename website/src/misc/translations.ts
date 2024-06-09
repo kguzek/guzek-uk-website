@@ -1,4 +1,4 @@
-import { Episode, ErrorCode, ErrorPageContent, Language } from "./models";
+import { Episode, ErrorCode, ErrorPageContent, Language, DownloadedEpisode } from "./models";
 
 const LONG_DATE_FORMAT = {
   day: "2-digit",
@@ -106,7 +106,7 @@ export type Translation = Readonly<{
       markWatched: string;
       markAllWatched: string;
       un: string;
-      serialiseEpisode: (episode: Episode) => string;
+      serialiseEpisode: (episode: Pick<Episode, "episode" | "season">) => string;
       unwatched: string;
     };
     search: {
@@ -130,11 +130,9 @@ export type Translation = Readonly<{
     mostPopular: {
       title: string;
     };
-    download: {
-      pending: string;
-      failed: string;
-      downloaded: string;
-    };
+    downloadStatus: Record<DownloadedEpisode["status"], string>;
+    downloadComplete: string;
+    downloadError: string;
   };
   error: { [code in ErrorCode]: ErrorPageContent };
 }>;
@@ -273,11 +271,14 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
       mostPopular: {
         title: "Most Popular",
       },
-      download: {
-        pending: "Download pending",
-        failed: "Download failed",
-        downloaded: "Downloaded",
+      downloadStatus: {
+        1: "Force start download",
+        2: "Downloading",
+        3: "Open download",
+        4: "Download failed",
       },
+      downloadComplete: "{episode} has finished downloading.",
+      downloadError: "{episode} download has failed.",
     },
   },
   PL: {
@@ -411,11 +412,14 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
       mostPopular: {
         title: "Najpopularniejsze",
       },
-      download: {
-        pending: "Oczekuje na pobranie",
-        failed: "Pobranie nie powiodło się",
-        downloaded: "Pobrane",
+      downloadStatus: {
+        1: "Rozpocznij pobieranie",
+        2: "W trakcie pobierania",
+        3: "Otwórz",
+        4: "Pobranie nie powiodło się",
       },
+      downloadComplete: "Pomyśłnie pobrano {episode}.",
+      downloadError: "Pobieranie {episode} nie powiodło się.",
     },
   },
 };

@@ -18,7 +18,7 @@ import LogIn from "./pages/LogIn";
 import SignUp from "./pages/SignUp";
 import { ErrorCode, Language, MenuItem, User } from "./misc/models";
 import ContentManager from "./pages/Admin/ContentManager";
-import { getLocalUser, getTryFetch } from "./misc/util";
+import { getLocalUser, getTryFetch, getDuration } from "./misc/util";
 import LiveSeriesBase from "./pages/LiveSeries/Base";
 import MostPopular from "./pages/LiveSeries/MostPopular";
 import Home from "./pages/LiveSeries/Home";
@@ -40,6 +40,8 @@ import UserPage from "./pages/Admin/User";
 /** When set to `true`, doesn't remove caches whose creation date is unknown. */
 const IGNORE_INVALID_RESPONSE_DATES = false;
 
+const LOG_CACHE_INVALIDATION = false;
+
 export default function App() {
   const [userLanguage, setUserLanguage] = useState<Language>(Language.EN);
   const [modalInfo, setModalInfo] = useState<string | undefined>();
@@ -52,6 +54,7 @@ export default function App() {
   const [menuItems, setMenuItems] = useState<MenuItem[] | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [reload, setReload] = useState(false);
+  const [filterCachesPromise, setFilterCachesPromise] = useState<null | Promise<void>>(null);
 
   const pageContent = TRANSLATIONS[userLanguage];
 
@@ -61,12 +64,13 @@ export default function App() {
     logout,
   };
 
-  const fetchFromAPI = getFetchFromAPI(authContext);
+  const fetchFromAPI = getFetchFromAPI(authContext, filterCachesPromise);
+  const filterCaches = () => setFilterCachesPromise(removeOldCaches());
 
   const fetchContext: Fetch = {
     fetchFromAPI,
     tryFetch: getTryFetch(fetchFromAPI, setModalError, pageContent),
-    removeOldCaches,
+    removeOldCaches: filterCaches,
   };
 
   function setLanguage(langString: string) {
@@ -105,41 +109,44 @@ export default function App() {
     const cachedResponses = await cache.matchAll();
     for (let i = 0; i < cachedResponses.length; i++) {
       const res = cachedResponses[i];
-      // console.debug(
-      //   "Checking cached response",
-      //   i + 1,
-      //   "/",
-      //   cachedResponses.length,
-      //   `'${res.url}'`,
-      //   // Object.fromEntries(res.headers.entries()),
-      //   "..."
-      // );
+        LOG_CACHE_INVALIDATION && console.debug(
+         "Checking cached response",
+         i + 1,
+         "/",
+         cachedResponses.length,
+         `'${res.url}'`,
+         // Object.fromEntries(res.headers.entries()),
+         "..."
+       );
       const resTimestamp = parseInt(res.headers.get("Pragma") ?? "0");
       if (!res.url) {
         continue;
       }
       const url = new URL(res.url);
       // Extract the base path (only first subdirectory of URL path)
-      const [_, endpoint] =
-        /^\/(?:liveseries|auth\/)?([^\/]*)(?:\/.*)?$/.exec(url.pathname) ?? [];
-      if (!endpoint) continue;
-      // console.debug(
-      //   "Cache date:",
-      //   resTimestamp,
-      //   `| Endpoint '${endpoint}' last updated:`,
-      //   updated[endpoint]
-      // );
+      const endpoint =
+        /^\/(?:liveseries\/|auth\/)?([^\/]*)(?:\/.*)?$/.exec(url.pathname)?.[1];
+      if (!endpoint) {
+        console.debug("Cache does not match regex:", url.pathname);
+        return;
+      }
+      LOG_CACHE_INVALIDATION && console.debug(
+        "Cache date:",
+        resTimestamp,
+        `| Endpoint '${endpoint}' last updated:`,
+        updated[endpoint]
+      );
       if (
         resTimestamp > updated[endpoint] ||
         (IGNORE_INVALID_RESPONSE_DATES && !resTimestamp)
       ) {
-        // const diff = getDuration(resTimestamp - updated[endpoint]);
+        const diff = getDuration(resTimestamp - updated[endpoint]);
 
-        // console.debug(
-        //   "Cache was created",
-        //   diff.formatted,
-        //   "after the last change on the server."
-        // );
+        LOG_CACHE_INVALIDATION && console.debug(
+          "Cache was created",
+          diff.formatted,
+          "after the last change on the server."
+        );
         continue;
       }
       updatedEndpoints.add(endpoint);
@@ -160,7 +167,7 @@ export default function App() {
 
   useEffect(() => {
     // Remove outdated caches
-    removeOldCaches();
+    filterCaches();
   }, []);
 
   useEffect(() => {

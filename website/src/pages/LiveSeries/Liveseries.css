@@ -220,17 +220,41 @@
   background-color: var(--color-background-soft);
 }
 
-.downloaded {
-  color: var(--color-success);
+.status-container {
+  align-items: center;
+}
+
+/* Stopped */
+.status-1 {
+  color: var(--color-primary);
   cursor: pointer;
 }
 
-.pending {
+/* Downloading/pending */
+.status-2 {
   color: var(--color-accent2);
   cursor: wait;
 }
 
-.failed {
+.status-progress-bar {
+  position: absolute;
+  color: transparent;
+  background: linear-gradient(var(--color-success), var(--color-success));
+  background-size: 0 100%;
+  background-repeat: no-repeat;
+  background-clip: text;
+  transition: background-size 200ms ease;
+  cursor: wait;
+}
+
+/* Downloaded */
+.status-3 {
+  color: var(--color-success);
+  cursor: pointer;
+}
+
+/* Failed */
+.status-4 {
   color: var(--color-error);
   cursor: not-allowed;
 }

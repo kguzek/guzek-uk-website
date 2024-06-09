@@ -1,37 +1,51 @@
-import React, { ReactElement, useContext, useState } from "react";
+import React, { ReactElement, useContext, useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
-import { TranslationContext, useFetchContext } from "../../misc/context";
+import { TranslationContext, useFetchContext, ModalContext, AuthContext } from "../../misc/context";
 import {
   Episode as EpisodeType,
-  EpisodeStatuses,
-  ShowData,
+  TvShowDetails,
+  DownloadedEpisode,
 } from "../../misc/models";
 import { getEpisodeAirDate, hasEpisodeAired } from "../../misc/util";
 import { LiveSeriesOutletContext } from "../../pages/LiveSeries/Base";
 
-const DOWNLOAD_STATES = ["pending", "failed", "downloaded", undefined] as const;
-
 function Episode({
   episode,
-  showId,
-  downloadStatus,
+  tvShow,
 }: {
   episode: EpisodeType;
-  showId: number;
-  downloadStatus?: "pending" | "failed" | "downloaded";
+  tvShow: TvShowDetails;
 }) {
+  const [metadata, setMetadata] = useState<DownloadedEpisode | undefined>();
   const data = useContext(TranslationContext);
-  const { setWatchedEpisodes, watchedEpisodes, fetchResource } =
-    useOutletContext<LiveSeriesOutletContext>();
+  const { user } = useContext(AuthContext);
+  const { setModalError } = useContext(ModalContext);
+  const {
+    setWatchedEpisodes,
+    watchedEpisodes,
+    fetchResource,
+    downloadedEpisodes,
+    monitorEpisodeDownloads,
+  } = useOutletContext<LiveSeriesOutletContext>();
   const { removeOldCaches } = useFetchContext();
 
   const airDate = data.dateTimeFormat.format(getEpisodeAirDate(episode));
+  const watchedInSeason = watchedEpisodes?.[tvShow.id]?.[+episode.season];
+  const isWatched = watchedInSeason?.includes(episode.episode); 
+  const episodeString = `${tvShow.name} ${data.liveSeries.tvShow.serialiseEpisode(episode)}`;
 
-  const watchedInSeason = watchedEpisodes?.[showId]?.[+episode.season];
-  const isWatched = watchedInSeason?.includes(episode.episode);
+  const episodePredicate = (check: DownloadedEpisode) => 
+    check.showId === tvShow.id &&
+    check.season === episode.season &&
+    check.episode === episode.episode;
+
+  useEffect(() => {
+    const downloadedEpisode = downloadedEpisodes.find(episodePredicate);
+    setMetadata(downloadedEpisode);
+  }, [downloadedEpisodes]);
 
   function updateWatchedEpisodes(episodes: number[]) {
-    fetchResource(`watched-episodes/personal/${showId}/${episode.season}`, {
+    fetchResource(`watched-episodes/personal/${tvShow.id}/${episode.season}`, {
       method: "PUT",
       onSuccess: () => removeOldCaches(),
       onError: () => setWatchedEpisodes(watchedEpisodes),
@@ -40,9 +54,27 @@ function Episode({
     });
     setWatchedEpisodes((old) => ({
       ...old,
-      [showId]: { ...old?.[showId], [episode.season]: episodes },
+      [tvShow.id]: { ...old?.[tvShow.id], [episode.season]: episodes },
     }));
   }
+
+  function startDownload() {
+    fetchResource("downloaded-episodes", {
+      method: "POST",
+      useEpisodate: false,
+      body: { tvShow, episode },
+      onSuccess: (data) => monitorEpisodeDownloads(data, episodePredicate, episodeString),
+      onError: () => {
+        setModalError(data.liveSeries.downloadError.replace("{episode}", episodeString));
+        setMetadata((old) => old && ({...old, status: 4}));
+      },
+    });
+    setMetadata((old) => old && ({...old, status: 2}));
+  }
+
+  let downloadTooltip = data.liveSeries.downloadStatus[metadata?.status ?? 1];
+  if (metadata?.status === 2 && metadata?.progress != null)
+    downloadTooltip += ` (${Math.floor(metadata.progress * 100)}%)`
 
   return (
     <div className="episode">
@@ -56,14 +88,21 @@ function Episode({
         <small>{airDate}</small>
       </div>
       <div className="flex gap-10 noshrink">
-        {downloadStatus && (
+        {user?.admin &&
           <div
-            className="centred"
-            title={data.liveSeries.download[downloadStatus]}
+            className="flex"
+            title={downloadTooltip}
+            onClick={(metadata?.status ?? 1) === 1 ? startDownload : undefined}
           >
-            <i className={`fas fa-download ${downloadStatus}`}></i>
+            {metadata?.status === 2 && 
+              <i
+                className="fas fa-download status-progress-bar"
+                style={{ backgroundSize: `${100 * (metadata?.progress ?? 0)}%` }}
+              ></i>
+            }
+            <i className={`fas fa-download status-${metadata?.status ?? 1}`}></i>
           </div>
-        )}
+        }
         {hasEpisodeAired(episode) ? (
           <div
             className="watched centred"
@@ -94,16 +133,14 @@ function Episode({
 }
 
 export default function EpisodesList({
-  showId,
+  tvShow,
   heading,
   episodes,
-  episodeStatuses,
   children,
 }: {
-  showId: number;
+  tvShow: TvShowDetails;
   heading: string;
   episodes: EpisodeType[];
-  episodeStatuses?: ShowData<EpisodeStatuses>;
   children?: ReactElement<any, any>;
 }) {
   const [collapsed, setCollapsed] = useState(true);
@@ -130,11 +167,7 @@ export default function EpisodesList({
             <Episode
               key={`episode-unwatched-${idx}`}
               episode={episode}
-              showId={showId}
-              downloadStatus={
-                episodeStatuses &&
-                DOWNLOAD_STATES[Math.round(Math.random() * 10) % 4]
-              }
+              tvShow={tvShow}
             />
           ))}
         </div>

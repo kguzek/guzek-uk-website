@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
+  getFetchFromAPI,
   clearStoredLoginInfo,
-  FetchFromAPI,
   updateAccessToken,
 } from "./backend";
 import { Episode, StateSetter, User } from "./models";
@@ -29,7 +29,7 @@ export type TryFetch = <T>(
 ) => Promise<T>;
 
 export const getTryFetch = (
-  fetchFromAPI: FetchFromAPI,
+  fetchFromAPI: ReturnType<typeof getFetchFromAPI>,
   setModalError: StateSetter<string | undefined>,
   data: Translation
 ): TryFetch =>
