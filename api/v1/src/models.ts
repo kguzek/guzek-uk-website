@@ -49,3 +49,11 @@ export interface UserObj {
   email: string;
   admin?: boolean;
 }
+
+export const TorrentStatus = {
+  STOPPED: 1,
+  PENDING: 2,
+  COMPLETE: 3,
+  FAILED: 4,
+};
+

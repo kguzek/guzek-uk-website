@@ -16,9 +16,7 @@ import { getLiveSeriesTitle, LiveSeriesOutletContext } from "./Base";
 // Number of skeleton cards to display when loading liked show ids
 const SKELETON_CARDS_COUNT = 4;
 
-interface LikedShows {
-  [showId: number]: TvShowDetails;
-}
+type LikedShows = Record<number, TvShowDetails>;
 
 function LikedShowsCarousel({
   likedShowIds,
@@ -142,7 +140,7 @@ export default function Home() {
   useEffect(() => {
     if (!likedShowIds) return;
     if (likedShowIds.length === Object.keys(likedShows).length) return;
-    setLikedShows([]);
+    setLikedShows({});
     for (const showId of likedShowIds) {
       fetchResource("show-details", {
         params: { q: `${showId}` },
@@ -194,10 +192,9 @@ export default function Home() {
                 return (
                   <div key={`liked-show-${showId}-${idx}`}>
                     <EpisodesList
-                      showId={showId}
+                      tvShow={likedShows[showId]}
                       heading={`${likedShows[showId].name} (${unwatchedEpisodes.length})`}
                       episodes={unwatchedEpisodes}
-                      episodeStatuses={{}}
                     />
                   </div>
                 );

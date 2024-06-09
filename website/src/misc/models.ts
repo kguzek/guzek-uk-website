@@ -79,18 +79,22 @@ export type Episode = {
   air_date: string;
 };
 
-export type EpisodeStatus = "failed" | "pending " | "downloading";
-
-export type EpisodeStatuses = {
-  [season: number]: { status: EpisodeStatus };
-};
-
 export interface WatchedEpisodes {
   [season: number]: number[];
 }
 
 export interface ShowData<T> {
   [showId: number]: T;
+}
+
+export interface DownloadedEpisode {
+  torrentId: number;
+  status: 1 | 2 | 3 | 4;
+  showId: number;
+  season: number;
+  episode: number;
+  progress?: number;
+  speed?: number;
 }
 
 export type StateSetter<T> = Dispatch<SetStateAction<T>>;

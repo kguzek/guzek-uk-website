@@ -17,7 +17,7 @@ const STATUS_CODES: { [code: number]: string } = {
 };
 
 /** Updates the 'timestamp' column for the given endpoint in the 'updated' table with the current Epoch time. */
-async function updateEndpoint(endpointClass: ModelType) {
+export async function updateEndpoint(endpointClass: ModelType) {
   const newValue = { timestamp: new Date().getTime() };
   const endpoint = endpointClass.tableName;
   const row = await Updated.findOne({ where: { endpoint } });

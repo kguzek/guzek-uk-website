@@ -32,6 +32,7 @@ export class Updated extends Model {}
 export class TuLalem extends Model {}
 export class LikedShows extends Model {}
 export class WatchedEpisodes extends Model {}
+export class DownloadedEpisode extends Model {}
 
 Page.init(
   {
@@ -245,6 +246,41 @@ WatchedEpisodes.init(
     timestamps: false,
     modelName: "WatchedEpisodes",
     tableName: "watched_episodes",
+  }
+);
+
+DownloadedEpisode.init(
+  {
+    torrentId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      unique: true,
+      field: "torrent_id",
+      primaryKey: true,
+    },
+    showId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "show_id",
+    },
+    season: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    episode: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    status: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    }
+  },
+  {
+    sequelize,
+    timestamps: false,
+    modelName: "DownloadedEpisode",
+    tableName: "downloaded_episodes"
   }
 );
 

@@ -24,6 +24,7 @@ const PERMISSIONS = {
       "/updated", // View site updates
       "/cocodentax-admin/allegro/auth", // Login to Allegro
       "/cocodentax-admin/allegro/api", // Make Allegro API requests
+      "/liveseries/ws/.websocket", // LiveSeries downloading info
     ],
     POST: [
       "/auth/users", // Sign up

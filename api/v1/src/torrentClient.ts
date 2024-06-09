@@ -54,10 +54,13 @@ interface Torrent {
   percentDone: number;
 }
 
+type ExemptMethod = "session-get" | "session-stats";
+
 export class TorrentClient {
   auth?: { username: string; password: string };
   sessionId?: string;
   numTorrents: number = 0;
+  private initPromise: Promise<void> | null = null;
 
   constructor() {
     const auth = process.env.TR_AUTH;
@@ -68,12 +71,16 @@ export class TorrentClient {
     }
     const [username, password] = auth.split(":");
     this.auth = { username, password };
-    this.init();
+    this.initPromise = this.init();
+  }
+
+  private updateSessionId(resData: string) {
+    this.sessionId = resData.match(SESSION_ID_PATTERN)?.[1];
   }
 
   private async init() {
     const resSessionId = await this.fetch("session-get");
-    this.sessionId = resSessionId.match(SESSION_ID_PATTERN)?.[1];
+    this.updateSessionId(resSessionId);
     if (this.sessionId == null) {
       logger.error("Could not establish the session id.");
       return;
@@ -84,10 +91,16 @@ export class TorrentClient {
 
   private async fetch<T extends Method>(
     method: T,
-    ...[args]: T extends "session-get" | "session-stats"
+    ...[args]: T extends ExemptMethod
       ? []
       : [args: Record<string, any>]
   ): Promise<TorrentResponse<T>> {
+    if (this.initPromise != null && !method.startsWith("session")) {
+      // Wait until the client has completed initialisation
+      await this.initPromise;
+      this.initPromise = null;
+    }
+
     let res;
     try {
       res = await axios({
@@ -105,14 +118,25 @@ export class TorrentClient {
       if (!res) {
         throw new Error("Could not obtain a response from the torrent client.");
       }
-      if (method !== "session-get")
+      if (method !== "session-get") {
+        if (res.status === 409) {
+          this.updateSessionId(res.data as string);
+          const passed = [args] as T extends ExemptMethod ? [] : [args: Record<string, any>];
+          logger.warn("Recursing due to 409 client response");
+          return await this.fetch(method, ...passed);
+        }
         logger.error(`Client response: ${res.status} ${res.statusText}`);
+      }
     }
     return res.data;
   }
 
   async getTorrentInfo(id?: number) {
     const response = await this.fetch("torrent-get", { fields: FIELDS });
+    if (!response.arguments) {
+      logger.error("Invalid response " + JSON.stringify(response));
+      return [];
+    }
     const torrents = response.arguments.torrents;
     if (!id) return torrents;
     return torrents.find((torrent) => torrent.id === id);
@@ -138,7 +162,10 @@ export class TorrentClient {
       paused: false,
     });
     const torrent = resTorrentAdd.arguments["torrent-added"];
-    if (!torrent) return null;
+    if (!torrent) {
+      logger.warn("Duplicate file; no torrents added.");
+      return null;
+    }
     this.numTorrents++;
     return torrent;
   }

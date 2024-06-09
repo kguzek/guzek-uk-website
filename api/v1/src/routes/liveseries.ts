@@ -1,8 +1,10 @@
 import express, { Request, Response } from "express";
+import expressWs from "express-ws";
 import { CronJob } from "cron";
 import { exec } from "child_process";
 import { getLogger } from "../middleware/logging";
-import { LikedShows, User, WatchedEpisodes } from "../sequelize";
+import { LikedShows, User, WatchedEpisodes, DownloadedEpisode } from "../sequelize";
+import { TorrentStatus } from "../models"
 import axios from "axios";
 import {
   createDatabaseEntry,
@@ -11,11 +13,14 @@ import {
   sendError,
   sendOK,
   updateDatabaseEntry,
+  updateEndpoint,
 } from "../util";
 import { searchTorrent } from "../torrentIndexer";
 import { TorrentClient } from "../torrentClient";
 
 export const router = express.Router();
+
+const WS_RESPONSE_INTERVAL_MS = 4000;
 
 const logger = getLogger(__filename);
 let torrentClient: TorrentClient;
@@ -49,28 +54,31 @@ const serialiseEpisode = (episode: Episode) =>
   "E" +
   `${episode.episode}`.padStart(2, "0");
 
-function episodeDownloadFail(message: string) {
-  logger.error(message);
-  // TODO: add to database
-}
-
-function episodeDownloadSuccess() {
-  // TODO: add to database
-}
-
-async function downloadEpisode(showName: string, episode: Episode) {
-  const episodeSearchQuery = `${showName} ${serialiseEpisode(episode)}`;
-  const torrent = await searchTorrent(episodeSearchQuery);
-  if (!torrent) {
-    episodeDownloadFail(`Did not find torrents for '${episodeSearchQuery}'.`);
-    return;
+async function downloadEpisode(tvShow: TvShow, episode: Episode) {
+  const episodeSearchQuery = `${tvShow.name} ${serialiseEpisode(episode)}`;
+  const magnetLink = await searchTorrent(episodeSearchQuery);
+  if (!magnetLink) {
+    logger.error(`Did not find torrents for '${episodeSearchQuery}'.`);
+    return null;
   }
   if (process.platform === "win32") {
-    exec(`start ${torrent}`);
-  } else {
-    torrentClient.addTorrent(torrent);
+    exec(`start ${magnetLink}`);
+    return null;
   }
-  episodeDownloadSuccess();
+  const torrentInfo = await torrentClient.addTorrent(magnetLink);
+  if (!torrentInfo) {
+    logger.error(`Adding the torrent to the client failed.`);
+    return null;
+  }
+  const downloadedEpisode = await DownloadedEpisode.create({
+    torrentId: torrentInfo.id, 
+    showId: tvShow.id,
+    episode: episode.episode,
+    season: episode.season,
+    status: TorrentStatus.PENDING,
+  });
+  await updateEndpoint(DownloadedEpisode);
+  return downloadedEpisode;
 }
 
 async function checkUnwatchedEpisodes() {
@@ -97,7 +105,11 @@ async function checkUnwatchedEpisodes() {
             if (!hasEpisodeAired(episode)) continue;
             if (watchedData?.[episode.season]?.includes(episode.episode))
               continue;
-            downloadEpisode(tvShow.name, episode);
+            DownloadedEpisode.findOne({ where: {
+              showId: tvShow.id,
+              episode: episode.episode,
+              season: episode.season,
+            }}).then((result) => result || downloadEpisode(tvShow, episode));
           }
         },
         (error) =>
@@ -110,8 +122,12 @@ async function checkUnwatchedEpisodes() {
 }
 
 export function init() {
-  checkUnwatchedEpisodes();
   torrentClient = new TorrentClient();
+  if (!torrentClient) {
+    logger.error("Failed to initialise the torrent client. Aborting cron job.");
+    return;
+  }
+  checkUnwatchedEpisodes();
 
   new CronJob(
     "0 0 */6 * * *",
@@ -217,6 +233,31 @@ router.get("/watched-episodes/personal", async (req, res) => {
   sendOK(res, watchedData);
 });
 
+// GET all admin downloaded episodes
+router.get("/downloaded-episodes", (_, res) => 
+  readAllDatabaseEntries(DownloadedEpisode, res)        
+);
+
+// START downloading episode
+router.post("/downloaded-episodes", async (req, res) => {
+  const tvShow: TvShow = req.body.tvShow;
+  const episode: Episode = req.body.episode;
+  
+  const errorMessage = validateNaturalNumber(tvShow?.id)
+    ?? validateNaturalNumber(episode.season)
+    ?? validateNaturalNumber(episode.episode)
+    ?? tvShow.name ? null : "Request body `tvShow` object is missing property `name`.";
+
+  if (errorMessage)
+    return sendError(res, 400, { message: errorMessage });
+
+  const downloadedEpisode = await downloadEpisode(tvShow, episode);
+  if (downloadedEpisode) return sendOK(res, downloadedEpisode);
+  sendError(res, 400, {
+    message: `Invalid TV show '${tvShow.name}' or episode '${serialiseEpisode(episode)}'.`
+  });
+});
+
 // ADD liked TV show
 router.post("/liked-shows/personal/:showId", (req, res) =>
   modifyLikedShows(req, res, true)
@@ -258,3 +299,23 @@ router.put("/watched-episodes/personal/:showId/:season", async (req, res) => {
   };
   updateDatabaseEntry(WatchedEpisodes, req, res, { watchedEpisodes }, where);
 });
+
+(router as unknown as expressWs.Router).ws("/ws", (ws, req) => {
+  //logger.request("/liveseries/ws");
+
+  let minNextResponseTimestamp = new Date().getTime();
+  if (!torrentClient) {
+    logger.error("Websocket connection without torrent client");
+    return;
+  }
+
+  ws.on("message", (msg) => {
+    setTimeout(() => {
+      minNextResponseTimestamp = new Date().getTime() + WS_RESPONSE_INTERVAL_MS;
+      torrentClient.getTorrentInfo().then((data) => 
+        ws.send(JSON.stringify({ data }))
+      );  
+    }, minNextResponseTimestamp - new Date().getTime());  
+  });
+});
+

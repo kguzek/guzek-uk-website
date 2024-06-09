@@ -1,0 +1,60 @@
+.collapser {
+  width: 100%;
+  color: var(--color-primary-strong);
+}
+
+.collapser i {
+  transition: transform 200ms ease;
+}
+
+.collapser i.rotated {
+  transform: rotate(-180deg);
+}
+
+.downloads-widget {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  padding: 5px 5px 0;
+  border-top-left-radius: 10px;
+  background-color: var(--color-background-soft);
+  z-index: 7;
+  box-shadow: 0 0 15px 15px var(--color-background-dark);
+  transition: opacity 300ms ease;
+}
+
+.downloads-widget.collapsed {
+  opacity: 0.6;
+}
+
+.downloads-widget.collapsed:hover {
+  opacity: 0.8;
+}
+
+.downloads-card {
+  flex-direction: column;
+  align-items: start;
+  background-color: var(--color-background);
+  padding: 10px;
+  border-radius: 5px;
+  width: 350px;
+}
+
+.downloads-card:last-child {
+  margin-bottom: 5px;
+}
+
+.downloads-card .progress-bar-container {
+  border-radius: 25px;
+  overflow: hidden;
+  background-color: var(--color-primary);
+  height: 16px;
+  width: 100%;
+}
+
+.downloads-card .progress-bar {
+  align-self: left;
+  background-color: var(--color-success);
+  height: 100%;
+}
+

@@ -164,21 +164,7 @@ async function createRequest(
   return new Request(url, options);
 }
 
-export type FetchFromAPI = (
-  path: string,
-  {
-    method,
-    params,
-    body,
-  }: {
-    method?: string;
-    params?: Record<string, string> | URLSearchParams;
-    body?: Record<string, any>;
-  },
-  useCache?: boolean
-) => Promise<Response>;
-
-export const getFetchFromAPI = (auth: Auth): FetchFromAPI =>
+export const getFetchFromAPI = (auth: Auth, filterCaches: null | Promise<void>) =>
   /** Performs an HTTPS request to the API using the provided values and the stored access token. */
   async function fetchFromAPI(
     path: string,
@@ -193,6 +179,7 @@ export const getFetchFromAPI = (auth: Auth): FetchFromAPI =>
     },
     useCache: boolean = false
   ) {
+    if(filterCaches) await filterCaches;
     const request = await createRequest(auth, path, method, { params, body });
     const func = useCache ? fetchWithCache : fetch;
     return await func(request);
@@ -239,7 +226,7 @@ export function updateAccessToken(accessToken: string) {
 }
 
 export type Fetch = {
-  fetchFromAPI: FetchFromAPI;
+  fetchFromAPI: ReturnType<typeof getFetchFromAPI>;
   tryFetch: TryFetch;
   removeOldCaches: () => void;
 };

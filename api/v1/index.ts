@@ -20,6 +20,7 @@ const logger = getLogger(__filename);
 
 // Initialise the application instance
 const app = express();
+export const wsInstance = require("express-ws")(app);
 
 // Determine the server port
 const PORT = process.env.NODE_PORT;
