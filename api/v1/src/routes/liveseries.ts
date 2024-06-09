@@ -18,7 +18,7 @@ import {
 import { searchTorrent } from "../torrentIndexer";
 import { TorrentClient } from "../torrentClient";
 
-export const router = express.Router();
+export const router = express.Router() as expressWs.Router;
 
 const WS_RESPONSE_INTERVAL_MS = 4000;
 
@@ -300,9 +300,7 @@ router.put("/watched-episodes/personal/:showId/:season", async (req, res) => {
   updateDatabaseEntry(WatchedEpisodes, req, res, { watchedEpisodes }, where);
 });
 
-(router as unknown as expressWs.Router).ws("/ws", (ws, req) => {
-  //logger.request("/liveseries/ws");
-
+router.ws("/ws", (ws, req) => {
   let minNextResponseTimestamp = new Date().getTime();
   if (!torrentClient) {
     logger.error("Websocket connection without torrent client");
