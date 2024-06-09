@@ -6,7 +6,7 @@ import {
   TvShowDetails,
   DownloadedEpisode,
 } from "../../misc/models";
-import { getEpisodeAirDate, hasEpisodeAired } from "../../misc/util";
+import { getEpisodeAirDate, hasEpisodeAired, bytesToReadable } from "../../misc/util";
 import { LiveSeriesOutletContext } from "../../pages/LiveSeries/Base";
 
 function Episode({
@@ -73,8 +73,13 @@ function Episode({
   }
 
   let downloadTooltip = data.liveSeries.downloadStatus[metadata?.status ?? 1];
-  if (metadata?.status === 2 && metadata?.progress != null)
-    downloadTooltip += ` (${Math.floor(metadata.progress * 100)}%)`
+  if (metadata?.status === 2) {
+    if (metadata.progress != null)
+      downloadTooltip += ` (${(metadata.progress * 100).toFixed(1)}%)`;
+    if (metadata.speed != null)
+      downloadTooltip = downloadTooltip.replace(")", ` @ ${bytesToReadable(metadata.speed)}/s)`);
+  }
+
 
   return (
     <div className="episode">
