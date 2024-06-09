@@ -69,7 +69,12 @@ export function getDuration(milliseconds: number) {
   [minutes, seconds] = divmod(seconds, 60);
   [hours, minutes] = divmod(minutes, 60);
   [days, hours] = divmod(hours, 24);
-  const formatted = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  let formatted = "";
+  if (days) formatted += ` ${days}d`;
+  if (hours) formatted += ` ${hours}h`;
+  if (!days && minutes) formatted += ` ${minutes}m`;
+  if (!days && !hours && seconds) formatted += ` ${seconds}s`;
+  formatted = formatted.trim();
   return { formatted, days, hours, minutes, seconds, milliseconds };
 }
 
@@ -164,3 +169,21 @@ export function getLocalUser() {
   }
   return parsedUser as User;
 }
+
+const UNIT_PREFIXES = ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi"];
+
+/** Converts a value in bytes to a human-readable form. E.g. (4096) => "4.00 KiB" */
+export function bytesToReadable(value: number) {
+  const result = _bytesToReadable(value);
+  //console.debug(value, '->', result);
+  return result;
+}
+
+function _bytesToReadable(value: number) {
+  const exponent = Math.floor(Math.log2(value) / 10);
+  const unitPrefix = UNIT_PREFIXES[exponent];
+  if (!unitPrefix) return `${value} B`;
+  const divisor = Math.pow(1024, exponent);
+  return `${(value / divisor).toFixed(1)} ${unitPrefix}B`;
+}
+

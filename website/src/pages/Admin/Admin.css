@@ -84,7 +84,7 @@
 }
 
 .info .level-icon {
-  color: var(--color-primary);
+  color: var(--color-success);
 }
 
 .debug .level-icon {

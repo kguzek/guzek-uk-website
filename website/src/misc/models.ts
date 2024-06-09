@@ -95,6 +95,7 @@ export interface DownloadedEpisode {
   episode: number;
   progress?: number;
   speed?: number;
+  eta?: number;
 }
 
 export type StateSetter<T> = Dispatch<SetStateAction<T>>;
