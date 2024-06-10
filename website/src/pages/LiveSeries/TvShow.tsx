@@ -191,7 +191,7 @@ export default function TvShow() {
           dangerouslySetInnerHTML={{
             // Trim description end from line breaks
             __html: tvShowDetails.description.replace(
-              /(\s|\<br\s?\>|\\n|\s)*$/,
+              /(\<br\s?\>|\\n|\s)*$/,
               ""
             ),
           }}
