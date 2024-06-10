@@ -1,3 +1,0 @@
-[MASTER]
-load-plugins=pylint_django
-django-settings-module=guzek_uk_api.settings
