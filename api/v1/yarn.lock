@@ -453,14 +453,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^0.28.0":
-  version: 0.28.1
-  resolution: "axios@npm:0.28.1"
+"axios@npm:^1.6.0":
+  version: 1.7.2
+  resolution: "axios@npm:1.7.2"
   dependencies:
-    follow-redirects: ^1.15.0
+    follow-redirects: ^1.15.6
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
-  checksum: 5115a38d79064d07437c5a28f15841e3607634040e3120ec06a2c4367a7d07cf213b16496eab53b6f58ebc5fb377a440ba9ed4782529b14449a1e285734bfb54
+  checksum: e457e2b0ab748504621f6fa6609074ac08c824bf0881592209dfa15098ece7e88495300e02cd22ba50b3468fd712fe687e629dcb03d6a3f6a51989727405aedf
   languageName: node
   linkType: hard
 
@@ -1080,7 +1080,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.15.0":
+"follow-redirects@npm:^1.15.6":
   version: 1.15.6
   resolution: "follow-redirects@npm:1.15.6"
   peerDependenciesMeta:
@@ -1248,7 +1248,7 @@ __metadata:
     "@types/node": ^17.0.33
     "@types/sequelize": ^4.28.13
     "@types/uuid": ^8.3.4
-    axios: ^0.28.0
+    axios: ^1.6.0
     cors: ^2.8.5
     cron: ^3.1.7
     dotenv: ^16.0.1
@@ -1877,8 +1877,8 @@ __metadata:
   linkType: hard
 
 "mysql2@npm:^3.9.4":
-  version: 3.9.7
-  resolution: "mysql2@npm:3.9.7"
+  version: 3.10.0
+  resolution: "mysql2@npm:3.10.0"
   dependencies:
     denque: ^2.1.0
     generate-function: ^2.3.1
@@ -1888,7 +1888,7 @@ __metadata:
     named-placeholders: ^1.1.3
     seq-queue: ^0.0.5
     sqlstring: ^2.3.2
-  checksum: 535261d076f840f0966788b3f33a5ff7872e5da321240c2359be5c9e7ec19197ed5f6e01f0bc7beae06dd291d03eb2bde00f474461a578debcb85fcd98e347d3
+  checksum: 4306de21317a05fcd4bbf28679e6b61b5e3421f7b8e2813ce7be8a06a8f7f4e09067bbd77507de465aba59a5742d1c48a3ed1038e96fb76935d24e1648d4b9c3
   languageName: node
   linkType: hard
 
