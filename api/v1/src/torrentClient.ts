@@ -107,12 +107,13 @@ export class TorrentClient {
           method,
           arguments: args,
         },
-        headers: { [SESSION_ID_HEADER_NAME]: this.sessionId },
+        headers: { [SESSION_ID_HEADER_NAME]: this.sessionId ?? "" },
       });
     } catch (error) {
       res = (error as AxiosError).response;
       if (!res) {
-        throw new Error("Could not obtain a response from the torrent client.");
+        console.error("Could not obtain a response from the torrent client.");
+        throw error;
       }
       if (method !== "session-get") {
         if (res.status === 409) {
@@ -124,7 +125,7 @@ export class TorrentClient {
         logger.error(`Client response: ${res.status} ${res.statusText}`);
       }
     }
-    return res.data;
+    return res.data as TorrentResponse<T>;
   }
 
   async getTorrentInfo() {

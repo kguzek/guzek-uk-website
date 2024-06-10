@@ -8,15 +8,18 @@ const logger = getLogger(__filename);
 
 const DOWNLOAD_STATUS_MAP = { 4: DownloadStatus.PENDING, 6: DownloadStatus.COMPLETE } as const;
 
-const STATUS_CODES: { [code: number]: string } = {
+export const STATUS_CODES: { [code: number]: string } = {
   200: "OK",
   201: "Created",
   400: "Bad Request",
   401: "Unauthorised",
   403: "Forbidden",
   404: "Not Found",
+  429: "Too Many Requests",
   500: "Internal Server Error",
-};
+} as const;
+
+type StatusCode = keyof typeof STATUS_CODES;
 
 const TORRENT_NAME_PATTERN = /^(.+)(?:\.|\s|\+)S0?(\d+)E0?(\d+)/;
 
@@ -33,7 +36,7 @@ export async function updateEndpoint(endpointClass: ModelType) {
   logger.debug(`Updated endpoint '${endpoint}'`);
 }
 
-const logResponse = (res: Response, message: string) =>
+export const logResponse = (res: Response, message: string) =>
   logger.response(message, {
     ip: (res as any).ip,
   });
@@ -42,7 +45,7 @@ const logResponse = (res: Response, message: string) =>
 export function sendOK(
   res: Response,
   data: object | object[] | null,
-  code: number = 200
+  code: StatusCode = 200
 ) {
   logResponse(res, `${code} ${STATUS_CODES[code] ?? STATUS_CODES[200]}`);
   res.status(code).json(data);
@@ -54,7 +57,7 @@ export function sendOK(
  */
 export function sendError(
   res: Response,
-  code: number,
+  code: StatusCode,
   error: { message: string } = { message: "Unknown error." }
 ) {
   const codeDescription = `${code} ${STATUS_CODES[code] ?? STATUS_CODES[500]}`;
