@@ -9,20 +9,12 @@ import {
   useFetchContext,
 } from "../../misc/context";
 import { fetchFromEpisodate } from "../../misc/episodate";
-import { ShowData, StateSetter, WatchedEpisodes, DownloadedEpisode } from "../../misc/models";
-import { getErrorMessage } from "../../misc/util";
+import { ShowData, StateSetter, WatchedEpisodes, DownloadedEpisode, DownloadStatus } from "../../misc/models";
+import { getErrorMessage, compareEpisodes } from "../../misc/util";
 import { API_BASE } from "../../misc/backend";
 import "./Liveseries.css";
 
-const WEBSOCKET_URL = API_BASE.replace("http", "ws") + "liveseries/ws";
-
-interface TorrentInfo {
-  id: number;
-  status: number;
-  eta: number;
-  rateDownload: number;
-  percentDone: number;
-}
+const WEBSOCKET_URL = API_BASE.replace("http", "ws") + "liveseries/downloaded-episodes/ws";
 
 export type LiveSeriesOutletContext = {
   loading: string[];
@@ -54,6 +46,9 @@ export type LiveSeriesOutletContext = {
   ) => void,
 };
 
+const serialiseEpisodeForSorting = (episode: DownloadedEpisode) =>
+  `${episode.showName}.${episode.season}.${episode.episode}`;
+
 export default function LiveSeriesBase() {
   const [loading, setLoading] = useState<string[]>([]);
   const [likedShowsUpdated, setLikedShowsUpdated] = useState(false);
@@ -68,13 +63,16 @@ export default function LiveSeriesBase() {
   const data = useContext(TranslationContext);
   const { user } = useContext(AuthContext);
   const { fetchFromAPI } = useFetchContext();
-  const { setModalInfo, setModalError } = useContext(ModalContext);
+  const { setModalInfo, setModalError, setModalChoice } = useContext(ModalContext);
 
   useEffect(() => {
     if (!likedShowIds?.length) fetchLikedShows();
     fetchWatchedEpisodes();
     if (!user?.admin) return;
-    fetchDownloadedEpisodes();
+    connectToWebsocket();
+  }, [user]);
+
+  function connectToWebsocket() {
     if (existingSocket) return;
     let socket: WebSocket;
     try {
@@ -89,41 +87,39 @@ export default function LiveSeriesBase() {
       console.error("Unknown error:", message);
       setModalError("An unknown error occured during websocket communication.")
     };
-    const poll = (data: any) => socket.send(JSON.stringify({ type: "poll", data }));
-    socket.onopen = () => poll({});
+    //const poll = (data: any) => socket.send(JSON.stringify({ type: "poll", data }));
+    const poll = () => socket.send('{"type":"poll"}');
+    socket.onopen = poll;
+    socket.onclose = async () => {
+      setExistingSocket(null);
+      const result = await setModalChoice("The websocket connection was forcefully closed. Reconnect?");
+      if (result) connectToWebsocket();
+    };
     socket.onmessage = (message) => {
-      const torrentInfo = JSON.parse(message.data).data as TorrentInfo[];
-      setDownloadedEpisodes((old) => {
-        poll(old);
-        const mapped = old.map((entry) => {
-          const info = torrentInfo?.find((info) => info.id === entry.torrentId);
-          if (!info) return entry;
-          const map = {6: 3, 4: 2} as const;
-          let status = entry.status;
-          const possibleStatus = map[info.status as keyof typeof map];
-          if (possibleStatus != null) status = possibleStatus;
-          if (status === 3 && entry.status !== 3) {
-            const episodeString = data.liveSeries.tvShow.serialiseEpisode(entry);
-            setModalInfo(data.liveSeries.downloadComplete.replace("{episode}", episodeString));
-          }
-          const progress = info.percentDone;
-          const speed = info.rateDownload;
-          const eta = info.eta;
-          return { ...entry, status, progress, speed, eta };
+      const torrentInfo = JSON.parse(message.data).data as DownloadedEpisode[];
+      let completedDownload = null;
+      poll();
+      setDownloadedEpisodes((currentDownloadedEpisodes) => {
+        //console.log(torrentInfo);
+        const mapped = torrentInfo.map((val) => {
+          const found = currentDownloadedEpisodes.find((info) => compareEpisodes(val, info));
+          if (!found) return val;
+          // Check for episodes whose download status just changed
+          if (found.status === DownloadStatus.PENDING && val.status === DownloadStatus.COMPLETE) 
+            completedDownload = `${val.showName} ${data.liveSeries.tvShow.serialiseEpisode(val)}`;
+          return val;
         });
-        const missing = [];
-        for (const info of torrentInfo) {
-          if (old.find((val) => val.torrentId === info.id)) continue;
-          missing.push(info);
-        }
-        if (missing.length > 0) {
-          console.warn("Missing downloaded episode infos", missing);
-          console.log(mapped);
-        }
-        return mapped;
+        //for (const info of torrentInfo) {
+          //if (currentDownloadedEpisodes.find((val) => compareEpisodes(val, info))) continue;
+          //mapped.push(info);
+        //}
+        return mapped.sort((a, b) => 
+          serialiseEpisodeForSorting(a).localeCompare(serialiseEpisodeForSorting(b), "en", { numeric: true })
+        );
       });
+      if (completedDownload) setModalInfo(data.liveSeries.downloadComplete.replace("{episode}", completedDownload));
     } 
-  }, [user]);
+  }
 
   useEffect(() => {
     if (likedShowsUpdated) {
@@ -147,15 +143,6 @@ export default function LiveSeriesBase() {
     fetchResource("watched-episodes/personal", {
       onSuccess: setWatchedEpisodes,
       useEpisodate: false,
-    });
-  }
-
-  function fetchDownloadedEpisodes() {
-    fetchResource("downloaded-episodes", {
-      useEpisodate: false,
-      onSuccess: (data) => {
-        setDownloadedEpisodes(data as DownloadedEpisode[]);
-      },
     });
   }
 

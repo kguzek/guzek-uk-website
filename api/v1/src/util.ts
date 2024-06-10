@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
 import { WhereOptions } from "sequelize";
 import { getLogger } from "./middleware/logging";
-import { ModelType } from "./models";
+import { ModelType, DownloadStatus, TorrentInfo } from "./models";
 import { Updated } from "./sequelize";
 
 const logger = getLogger(__filename);
+
+const DOWNLOAD_STATUS_MAP = { 4: DownloadStatus.PENDING, 6: DownloadStatus.COMPLETE } as const;
 
 const STATUS_CODES: { [code: number]: string } = {
   200: "OK",
@@ -15,6 +17,8 @@ const STATUS_CODES: { [code: number]: string } = {
   404: "Not Found",
   500: "Internal Server Error",
 };
+
+const TORRENT_NAME_PATTERN = /^(.+)(?:\.|\s|\+)S0?(\d+)E0?(\d+)/;
 
 /** Updates the 'timestamp' column for the given endpoint in the 'updated' table with the current Epoch time. */
 export async function updateEndpoint(endpointClass: ModelType) {
@@ -180,3 +184,27 @@ export const isInvalidDate = (date: Date) => date.toString() === "Invalid Date";
 /** Sets the Cache-Control header in the response so that browsers will be able to cache it for a maximum of `maxAgeMinutes` minutes. */
 export const setCacheControl = (res: Response, maxAgeMinutes: number) =>
   res.set("Cache-Control", `public, max-age=${maxAgeMinutes * 60}`);
+
+function getStatus(status: number) {
+  const val = DOWNLOAD_STATUS_MAP[status as keyof typeof DOWNLOAD_STATUS_MAP];
+  if (val != null) return val;
+  logger.warn(`Unknown torrent status code '${status}'.`);
+  return DownloadStatus.FAILED;
+}
+
+/** Converts the data into the form useful to the client application. */
+export function convertTorrentInfo(info: TorrentInfo) {
+  if (!info.name) throw new Error("Torrent info has no name attribute");
+  const match = info.name.match(TORRENT_NAME_PATTERN);
+  if (!match) throw new Error(`Torrent name doesn't match regex: '${info.name}'.`)
+  const [_, showName, season, episode] = match;
+  return {
+    status: getStatus(info.status),
+    showName: showName.replace(/\./g, " "),
+    season: +season,
+    episode: +episode,
+    progress: info.percentDone,
+    speed: info.rateDownload,
+    eta: info.eta,
+  };
+}

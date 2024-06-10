@@ -42,13 +42,16 @@ export default function TvShowPreview({
 
   if (!showDetails) return <TvShowPreviewSkeleton idx={idx} />;
 
+  const useIdNotPermalink = `${showDetails?.permalink}` === `${+showDetails?.permalink}`;
+  const link = `../tv-show/${useIdNotPermalink ? showDetails.id : showDetails?.permalink}`;
+
   return (
     <>
       {!ready && <TvShowPreviewSkeleton idx={idx} />}
       <div className={`preview ${ready ? "" : "display-none"}`}>
         <div className="preview-header flex">
           <Link
-            to={`../tv-show/${showDetails?.permalink}`}
+            to={link}
             title={showDetails?.name}
             className="no-overflow"
           >
@@ -67,10 +70,7 @@ export default function TvShowPreview({
             ></i>
           </div>
         </div>
-        <Link
-          to={`../tv-show/${showDetails?.permalink}`}
-          title={showDetails?.name}
-        >
+        <Link to={link} title={showDetails?.name}>
           <img
             className="thumbnail"
             src={showDetails?.image_thumbnail_path}

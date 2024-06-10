@@ -58,9 +58,8 @@ CREATE TABLE `guzek_uk`.`watched_episodes` (
   FOREIGN KEY (`user_uuid`) REFERENCES `users`(`uuid`)
 );
 CREATE TABLE `guzek_uk`.`downloaded_episodes` (
-  `torrent_id` INT NOT NULL UNIQUE PRIMARY KEY,
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `show_id` INT NOT NULL,
   `season` INT NOT NULL,
-  `episode` INT NOT NULL,
-  `status` INT NOT NULL
+  `episode` INT NOT NULL
 );

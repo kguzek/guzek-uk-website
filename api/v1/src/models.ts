@@ -50,7 +50,16 @@ export interface UserObj {
   admin?: boolean;
 }
 
-export const TorrentStatus = {
+export interface TorrentInfo {
+  id: number;
+  name: string;
+  status: number;
+  rateDownload?: number;
+  eta?: number;
+  percentDone?: number;
+}
+
+export const DownloadStatus = {
   STOPPED: 1,
   PENDING: 2,
   COMPLETE: 3,

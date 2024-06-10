@@ -1,5 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { getLogger } from "./middleware/logging";
+import { TorrentInfo } from "./models";
+import { convertTorrentInfo } from "./util";
 
 const API_URL = "https://transmission.guzek.uk/transmission/rpc";
 const SESSION_ID_HEADER_NAME = "X-Transmission-Session-Id";
@@ -8,6 +10,7 @@ const SESSION_ID_PATTERN = /<code>X-Transmission-Session-Id: (.+)<\/code>/;
 // leftUntilDone: Estimated download duration in microseconds (/1000 /1000 /60 for minutes)
 const FIELDS = [
   "id",
+  "name",
   "status",
   "rateDownload",
   "percentDone",
@@ -40,19 +43,12 @@ type Method =
 type TorrentResponse<T extends Method> = T extends "session-get"
   ? string
   : T extends "torrent-get"
-  ? { arguments: { torrents: Torrent[] } }
+  ? { arguments: { torrents: TorrentInfo[] } }
   : T extends "free-space"
   ? { arguments: { "size-bytes": number } }
   : T extends "torrent-add"
-  ? { arguments: { "torrent-added"?: Torrent } }
+  ? { arguments: { "torrent-added"?: TorrentInfo } }
   : { arguments: Record<string, any> };
-
-interface Torrent {
-  id: number;
-  rateDownload?: number;
-  eta?: number;
-  percentDone: number;
-}
 
 type ExemptMethod = "session-get" | "session-stats";
 
@@ -131,18 +127,24 @@ export class TorrentClient {
     return res.data;
   }
 
-  async getTorrentInfo(id?: number) {
+  async getTorrentInfo() {
     const response = await this.fetch("torrent-get", { fields: FIELDS });
     if (!response.arguments) {
       logger.error("Invalid response " + JSON.stringify(response));
       return [];
     }
-    const torrents = response.arguments.torrents;
-    if (!id) return torrents;
-    return torrents.find((torrent) => torrent.id === id);
+    return response.arguments.torrents.reduce((mapped, current) => {
+      try {
+        mapped.push(convertTorrentInfo(current));
+      } catch (error) {
+        if (!(error instanceof Error) || !error.message.includes("doesn't match regex"))
+          throw error;
+      }
+      return mapped;
+    }, [] as ReturnType<typeof convertTorrentInfo>[]);
   }
 
-  async addTorrent(link: string) {
+  async addTorrent(link: string, createDatabaseEntry?: () => Promise<any>) {
     const resFreeSpace = await this.fetch("free-space", {
       path: DOWNLOAD_PATH,
     });
@@ -163,27 +165,12 @@ export class TorrentClient {
     });
     const torrent = resTorrentAdd.arguments["torrent-added"];
     if (!torrent) {
-      logger.warn("Duplicate file; no torrents added.");
+      logger.info("Duplicate file; no torrents added. Creating database entry.");
+      if (createDatabaseEntry) await createDatabaseEntry();
       return null;
     }
     this.numTorrents++;
-    return torrent;
+    return convertTorrentInfo(torrent);
   }
 }
 
-// async function main() {
-//   await init();
-//   for (const torrent of await getTorrentInfo()) {
-//     logger.log(
-//       `Torrent id ${torrent.id}, status ${TORRENT_STATUSES[torrent.status]}`
-//     );
-//     const pending = torrent.leftUntilDone;
-//     const rate = (torrent.rateDownload / 1024 / 1024).toFixed(2);
-//     const msg = pending ? ` @ ${rate} MiB/s` : "";
-//     const done = Math.floor(torrent.percentDone * 100);
-//     logger.log(`Download progress: ${done}%${msg}`);
-//     const eta = Math.ceil(torrent.eta / 60);
-//     torrent.leftUntilDone && logger.log(`${eta} min remaining`);
-//     logger.log();
-//   }
-// }

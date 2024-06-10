@@ -251,12 +251,10 @@ WatchedEpisodes.init(
 
 DownloadedEpisode.init(
   {
-    torrentId: {
+    id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      unique: true,
-      field: "torrent_id",
       primaryKey: true,
+      autoIncrement: true,
     },
     showId: {
       type: DataTypes.INTEGER,
@@ -271,10 +269,6 @@ DownloadedEpisode.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    status: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    }
   },
   {
     sequelize,

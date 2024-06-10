@@ -87,10 +87,18 @@ export interface ShowData<T> {
   [showId: number]: T;
 }
 
+export const DownloadStatus = {
+  STOPPED: 1,
+  PENDING: 2,
+  COMPLETE: 3,
+  FAILED: 4,
+}
+
+export type DownloadStatusType = (typeof DownloadStatus)[keyof typeof DownloadStatus];
+
 export interface DownloadedEpisode {
-  torrentId: number;
-  status: 1 | 2 | 3 | 4;
-  showId: number;
+  status: DownloadStatusType;
+  showName: string;
   season: number;
   episode: number;
   progress?: number;

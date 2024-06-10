@@ -18,9 +18,15 @@
   padding: 5px 5px 0;
   border-top-left-radius: 10px;
   background-color: var(--color-background-soft);
+  border: 2px solid var(--color-background);
   z-index: 7;
   box-shadow: 0 0 15px 15px var(--color-background-dark);
   transition: opacity 300ms ease;
+  opacity: 0.8;
+}
+
+.downloads-widget:hover {
+  opacity: 1;
 }
 
 .downloads-widget.collapsed {
@@ -32,7 +38,7 @@
 }
 
 .downloads-card {
-  --card-width: 400px;
+  --card-width: 500px;
 
   flex-direction: column;
   align-items: start;
@@ -40,6 +46,10 @@
   padding: 10px;
   border-radius: 5px;
   width: var(--card-width);
+}
+
+.downloads-card .eta {
+  margin-left: auto;
 }
 
 .downloads-card:last-child {

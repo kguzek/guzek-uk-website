@@ -6,7 +6,7 @@
   top: 0;
   backdrop-filter: blur(6px);
   visibility: visible;
-  z-index: 1;
+  z-index: 10;
   transition: all 300ms ease;
   opacity: 1;
   transition: all 250ms ease;
