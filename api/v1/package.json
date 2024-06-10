@@ -37,7 +37,7 @@
     "express": "^4.17.3",
     "express-ws": "^5.0.2",
     "jsonwebtoken": "^9.0.0",
-    "mysql2": "^2.3.3",
+    "mysql2": "^3.9.8",
     "open": "^10.1.0",
     "request": "^2.88.2",
     "s-salt-pepper": "^3.0.4",
