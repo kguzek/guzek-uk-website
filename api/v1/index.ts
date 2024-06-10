@@ -32,8 +32,6 @@ const ENDPOINTS = [
   "auth",
   "updated",
   "tu-lalem",
-  "cocodentax-admin/allegro",
-  "cocodentax-admin/pocztex",
   "liveseries",
   "logs",
 ];

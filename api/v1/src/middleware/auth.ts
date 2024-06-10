@@ -22,15 +22,12 @@ const PERMISSIONS = {
     GET: [
       "/pages", // View all pages
       "/updated", // View site updates
-      "/cocodentax-admin/allegro/auth", // Login to Allegro
-      "/cocodentax-admin/allegro/api", // Make Allegro API requests
       "/liveseries/downloaded-episodes/ws/.websocket", // LiveSeries downloaded episode info
     ],
     POST: [
       "/auth/users", // Sign up
       "/auth/tokens", // Log in
       "/auth/access", // Regenerate access token
-      "/cocodentax-admin/pocztex/orders", // Submit Pocztex order
     ],
     PUT: [],
     DELETE: [],
