@@ -41,9 +41,7 @@ export default function TvShow() {
   }, [permalink]);
 
   useEffect(() => {
-    setTitle(
-      tvShowDetails ? tvShowDetails.name : data.liveSeries.tvShow.showDetails
-    );
+    setTitle(tvShowDetails?.name || data.liveSeries.tvShow.showDetails);
   }, [data, tvShowDetails]);
 
   function sortEpisodes(episodes: EpisodeType[]) {

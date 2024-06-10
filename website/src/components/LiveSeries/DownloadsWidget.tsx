@@ -13,6 +13,8 @@ export default function DownloadsWidget({
   const data = useContext(TranslationContext);
   const serialise = data.liveSeries.tvShow.serialiseEpisode
 
+  if (downloadedEpisodes.length === 0) return null;
+
   return <div className={`downloads-widget flex-column ${collapsed ? 'collapsed' : ''}`}>
     <div className="clickable collapser centred" onClick={() => setCollapsed((old) => !old)}>
       <i className={`fas fa-chevron-down ${collapsed ? 'rotated' : ''}`}></i>
@@ -22,14 +24,14 @@ export default function DownloadsWidget({
         {downloadedEpisodes.map((episode, idx) => {
           const downloadProgress = (100 * (episode.progress ?? 0)).toFixed(1) + "%";
           return <div key={`downloads-card-${idx}`} className="downloads-card flex">
-            <div className="flex">
-              <div>{episode.showId} {serialise(episode)}</div>
+            <div className="flex" style={{ width: "100%" }}>
+              <div>{episode.showName} {serialise(episode)}</div>
               <div className="serif">{downloadProgress}</div>
               {episode.speed != null && episode.status === 2 &&
                 <div className="serif">({bytesToReadable(episode.speed)}/s)</div>
               }
               {episode.eta != null && episode.eta > 0 &&
-                <div>{getDuration(episode.eta * 1000).formatted}</div>
+                <div className="eta">{getDuration(episode.eta * 1000).formatted}</div>
               }
             </div>
             <div className="progress-bar-container">

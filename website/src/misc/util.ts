@@ -4,7 +4,7 @@ import {
   clearStoredLoginInfo,
   updateAccessToken,
 } from "./backend";
-import { Episode, StateSetter, User } from "./models";
+import { Episode, StateSetter, User, DownloadedEpisode } from "./models";
 import { Translation } from "./translations";
 
 export const PAGE_NAME = "Guzek UK";
@@ -187,3 +187,8 @@ function _bytesToReadable(value: number) {
   return `${(value / divisor).toFixed(1)} ${unitPrefix}B`;
 }
 
+type EpisodeLike = Pick<DownloadedEpisode, "showName" | "season" | "episode">;
+
+/** Returns true if `a` and `b` reference the same episode. */
+export const compareEpisodes = (a: EpisodeLike, b: EpisodeLike) =>
+  a.showName === b.showName && a.season === b.season && a.episode === b.episode;

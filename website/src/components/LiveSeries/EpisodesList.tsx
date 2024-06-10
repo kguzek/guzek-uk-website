@@ -5,8 +5,9 @@ import {
   Episode as EpisodeType,
   TvShowDetails,
   DownloadedEpisode,
+  DownloadStatus,
 } from "../../misc/models";
-import { getEpisodeAirDate, hasEpisodeAired, bytesToReadable } from "../../misc/util";
+import { getEpisodeAirDate, hasEpisodeAired, bytesToReadable, compareEpisodes } from "../../misc/util";
 import { LiveSeriesOutletContext } from "../../pages/LiveSeries/Base";
 
 function Episode({
@@ -35,9 +36,7 @@ function Episode({
   const episodeString = `${tvShow.name} ${data.liveSeries.tvShow.serialiseEpisode(episode)}`;
 
   const episodePredicate = (check: DownloadedEpisode) => 
-    check.showId === tvShow.id &&
-    check.season === episode.season &&
-    check.episode === episode.episode;
+    compareEpisodes(check, {  ...episode, showName: tvShow.name });
 
   useEffect(() => {
     const downloadedEpisode = downloadedEpisodes.find(episodePredicate);
@@ -66,14 +65,14 @@ function Episode({
       onSuccess: (data) => monitorEpisodeDownloads(data, episodePredicate, episodeString),
       onError: () => {
         setModalError(data.liveSeries.downloadError.replace("{episode}", episodeString));
-        setMetadata((old) => old && ({...old, status: 4}));
+        setMetadata((old) => old && ({ ...old, status: DownloadStatus.FAILED }));
       },
     });
-    setMetadata((old) => old && ({...old, status: 2}));
+    setMetadata((old) => old && ({...old, status: DownloadStatus.PENDING }));
   }
 
-  let downloadTooltip = data.liveSeries.downloadStatus[metadata?.status ?? 1];
-  if (metadata?.status === 2) {
+  let downloadTooltip = data.liveSeries.downloadStatus[metadata?.status ?? DownloadStatus.STOPPED];
+  if (metadata?.status === DownloadStatus.PENDING) {
     if (metadata.progress != null)
       downloadTooltip += ` (${(metadata.progress * 100).toFixed(1)}%)`;
     if (metadata.speed != null)
@@ -97,15 +96,15 @@ function Episode({
           <div
             className="flex"
             title={downloadTooltip}
-            onClick={(metadata?.status ?? 1) === 1 ? startDownload : undefined}
+            onClick={(metadata?.status == null || metadata.status === DownloadStatus.STOPPED) ? startDownload : undefined}
           >
-            {metadata?.status === 2 && 
+            {metadata?.status === DownloadStatus.PENDING && 
               <i
                 className="fas fa-download status-progress-bar"
                 style={{ backgroundSize: `${100 * (metadata?.progress ?? 0)}%` }}
               ></i>
             }
-            <i className={`fas fa-download status-${metadata?.status ?? 1}`}></i>
+            <i className={`fas fa-download status-${metadata?.status ?? DownloadStatus.STOPPED}`}></i>
           </div>
         }
         {hasEpisodeAired(episode) ? (
