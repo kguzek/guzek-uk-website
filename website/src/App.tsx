@@ -82,9 +82,20 @@ export default function App() {
     setUserLanguage(newLang);
   }
 
+  async function clearPersonalCachedResponses() {
+    const cache = await getCache();
+    if (!cache) return;
+    const cachedResponses = await cache.matchAll();
+    for (const res of cachedResponses) {
+      if (/\/personal\/?[^\/]*$/.test(res.url))
+        await cache.delete(res.url);
+    }
+  }
+
   function logout() {
     setCurrentUser(null);
     setModalInfo(pageContent.loggedOut);
+    clearPersonalCachedResponses();
   }
 
   /** Checks if any of the saved caches is older than the version on the server.

@@ -19,29 +19,31 @@ export default function DownloadsWidget({
     <div className="clickable collapser centred" onClick={() => setCollapsed((old) => !old)}>
       <i className={`fas fa-chevron-down ${collapsed ? 'rotated' : ''}`}></i>
     </div>
-    <div className={`collapsible ${collapsed ? 'hidden' : ''}`}>
-      <div className="flex flex-column no-overflow">
-        {downloadedEpisodes.map((episode, idx) => {
-          const downloadProgress = (100 * (episode.progress ?? 0)).toFixed(1) + "%";
-          return <div key={`downloads-card-${idx}`} className="downloads-card flex">
-            <div className="flex" style={{ width: "100%" }}>
-              <div>{episode.showName} {serialise(episode)}</div>
-              <div className="serif">{downloadProgress}</div>
-              {episode.speed != null && episode.status === 2 &&
-                <div className="serif">({bytesToReadable(episode.speed)}/s)</div>
-              }
-              {episode.eta != null && episode.eta > 0 &&
-                <div className="eta">{getDuration(episode.eta * 1000).formatted}</div>
-              }
+    <div style={{ maxHeight: "90vh", overflowY: "scroll" }}>
+      <div className={`collapsible ${collapsed ? 'hidden' : ''}`}>
+        <div className="flex flex-column no-overflow">
+          {downloadedEpisodes.map((episode, idx) => {
+            const downloadProgress = (100 * (episode.progress ?? 0)).toFixed(1) + "%";
+            return <div key={`downloads-card-${idx}`} className="downloads-card flex">
+              <div className="flex" style={{ width: "100%" }}>
+                <div>{episode.showName} {serialise(episode)}</div>
+                <div className="serif">{downloadProgress}</div>
+                {episode.speed != null && episode.status === 2 &&
+                  <div className="serif">({bytesToReadable(episode.speed)}/s)</div>
+                }
+                {episode.eta != null && episode.eta > 0 &&
+                  <div className="eta">{getDuration(episode.eta * 1000).formatted}</div>
+                }
+              </div>
+              <div className="progress-bar-container">
+                <div
+                  className={`progress-bar ${episode.status === 3 ? 'done' : ''}`}
+                  style={{width: downloadProgress}}
+                ></div>
+              </div>
             </div>
-            <div className="progress-bar-container">
-              <div
-                className={`progress-bar ${episode.status === 3 ? 'done' : ''}`}
-                style={{width: downloadProgress}}
-              ></div>
-            </div>
-          </div>
-        })}
+          })}
+        </div>
       </div>
     </div>
   </div>;
