@@ -15,11 +15,11 @@ export default function DownloadsWidget({
 
   if (downloadedEpisodes.length === 0) return null;
 
-  return <div className={`downloads-widget flex-column ${collapsed ? 'collapsed' : ''}`}>
+  return <div className={`downloads-widget flex-column ${collapsed ? 'collapsed' : 'expanded'}`}>
     <div className="clickable collapser centred" onClick={() => setCollapsed((old) => !old)}>
       <i className={`fas fa-chevron-down ${collapsed ? 'rotated' : ''}`}></i>
     </div>
-    <div style={{ maxHeight: "90vh", overflowY: "scroll" }}>
+    <div className="collapsible-container">
       <div className={`collapsible ${collapsed ? 'hidden' : ''}`}>
         <div className="flex flex-column no-overflow">
           {downloadedEpisodes.map((episode, idx) => {
