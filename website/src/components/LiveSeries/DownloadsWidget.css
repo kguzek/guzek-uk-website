@@ -37,6 +37,11 @@
   opacity: 0.8;
 }
 
+.collapsible-container {
+  max-height: 90vh;
+  overflow-y: scroll;
+}
+
 .downloads-card {
   --card-width: 500px;
 
@@ -46,6 +51,9 @@
   padding: 10px;
   border-radius: 5px;
   width: var(--card-width);
+  box-sizing: border-box;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .downloads-card .eta {
@@ -71,6 +79,23 @@
 }
 
 .downloads-card .progress-bar.done {
-  background-color: var(--color-background-soft);
+  background-color: var(--color-accent);
+}
+
+@media screen and (max-width: 500px) {
+  body:has(.downloads-widget.expanded) {
+    overflow: hidden;
+  }
+
+
+  .downloads-widget {
+    border-top-right-radius: 10px;
+    opacity: 1;
+    left: 0;
+  }
+
+  .collapsible-container {
+    max-height: 85vh;
+  }
 }
 
