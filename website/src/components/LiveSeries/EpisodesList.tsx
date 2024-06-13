@@ -35,8 +35,8 @@ function Episode({
   const isWatched = watchedInSeason?.includes(episode.episode); 
   const episodeString = `${tvShow.name} ${data.liveSeries.tvShow.serialiseEpisode(episode)}`;
 
-  const episodePredicate = (check: DownloadedEpisode) => 
-    compareEpisodes(check, {  ...episode, showName: tvShow.name });
+  const episodePredicate = (check: DownloadedEpisode) => // Torrents filenames omit colons
+    compareEpisodes(check, {  ...episode, showName: tvShow.name.replace(/:/g, '') });
 
   useEffect(() => {
     const downloadedEpisode = downloadedEpisodes.find(episodePredicate);
