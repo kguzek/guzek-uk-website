@@ -24,6 +24,7 @@ import MostPopular from "./pages/LiveSeries/MostPopular";
 import Home from "./pages/LiveSeries/Home";
 import Search from "./pages/LiveSeries/Search";
 import TvShow from "./pages/LiveSeries/TvShow";
+import Watch from "./pages/LiveSeries/Watch";
 import Modal, { ModalHandler } from "./components/Modal/Modal";
 import AdminBase from "./pages/Admin/Base";
 import Users from "./pages/Admin/Users";
@@ -356,6 +357,7 @@ export default function App() {
                 <Route path="most-popular" element={<MostPopular />} />
                 <Route path="search" element={<Search />} />
                 <Route path="tv-show/:permalink" element={<TvShow />} />
+                <Route path="watch/:showName/:season/:episode" element={<Watch />} />
               </Route>
               <Route
                 path="*"

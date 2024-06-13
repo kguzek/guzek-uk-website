@@ -1,5 +1,5 @@
 import React, { ReactElement, useContext, useState, useEffect } from "react";
-import { useOutletContext } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 import { TranslationContext, useFetchContext, ModalContext, AuthContext } from "../../misc/context";
 import {
   Episode as EpisodeType,
@@ -79,6 +79,8 @@ function Episode({
       downloadTooltip = downloadTooltip.replace(")", ` @ ${bytesToReadable(metadata.speed)}/s)`);
   }
 
+  const downloadIcon = 
+    <i className={`fas fa-download status-${metadata?.status ?? DownloadStatus.STOPPED}`}></i>
 
   return (
     <div className="episode">
@@ -104,7 +106,12 @@ function Episode({
                 style={{ backgroundSize: `${100 * (metadata?.progress ?? 0)}%` }}
               ></i>
             }
-            <i className={`fas fa-download status-${metadata?.status ?? DownloadStatus.STOPPED}`}></i>
+            {metadata?.status === DownloadStatus.COMPLETE
+              ? <Link to={`/liveseries/watch/${tvShow.name}/${episode.season}/${episode.episode}`}>
+                  {downloadIcon}
+                </Link>
+              : downloadIcon
+            }
           </div>
         }
         {hasEpisodeAired(episode) ? (

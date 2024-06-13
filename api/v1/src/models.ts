@@ -66,3 +66,34 @@ export const DownloadStatus = {
   FAILED: 4,
 };
 
+type WatchedData = { [season: string]: number[] };
+
+export type WatchedShowData = { [showId: string]: WatchedData };
+
+export interface TvShow {
+  id: number;
+  name: string;
+  // ...
+  episodes: Episode[];
+}
+
+export interface Episode {
+  episode: number;
+  season: number;
+  name: string;
+  air_date: string;
+}
+
+export const TORRENT_DOWNLOAD_PATH = "/var/lib/transmission-daemon/downloads/";
+
+export const TORRENT_STATUSES = [
+  "Stopped",
+  "Unknown status 1",
+  "Unknown status 2",
+  "Unknown status 3",
+  "Downloading",
+  "Unknown status 5",
+  "Idle/Seeding",
+];
+
+

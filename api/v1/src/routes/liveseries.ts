@@ -13,7 +13,11 @@ import {
   sendOK,
   updateDatabaseEntry,
   updateEndpoint,
+  validateNaturalNumber,
+  validateNaturalList,
+  sendFileStream,
 } from "../util";
+import { WatchedShowData, Episode, TvShow, TORRENT_DOWNLOAD_PATH } from "../models";
 import { searchTorrent } from "../torrentIndexer";
 import { TorrentClient } from "../torrentClient";
 
@@ -24,30 +28,12 @@ const WS_RESPONSE_INTERVAL_MS = 1000;
 const logger = getLogger(__filename);
 let torrentClient: TorrentClient;
 
-type WatchedData = { [season: string]: number[] };
-
-type WatchedShowData = { [showId: string]: WatchedData };
-
-interface TvShow {
-  id: number;
-  name: string;
-  // ...
-  episodes: Episode[];
-}
-
-interface Episode {
-  episode: number;
-  season: number;
-  name: string;
-  air_date: string;
-}
-
 const EPISODATE_API_BASE = "https://episodate.com/api/show-details?q=";
 
 const hasEpisodeAired = (episode: Episode) =>
   new Date() > new Date(episode.air_date + " Z");
 
-const serialiseEpisode = (episode: Episode) =>
+const serialiseEpisode = (episode: Pick<Episode, "season" | "episode">) =>
   "S" +
   `${episode.season}`.padStart(2, "0") +
   "E" +
@@ -143,23 +129,6 @@ export function init() {
     true,
     "Europe/Warsaw"
   );
-}
-
-function validateNaturalNumber(value: any) {
-  if (!Number.isInteger(value)) return `Key '${value}' must be an integer.`;
-  if (value < 0) return `Key '${value} cannot be negative.`;
-}
-
-/** Ensures that the request body is an array of non-negative integers. */
-function validateNaturalList(list: any, res: Response) {
-  const reject = (message: string) => void sendError(res, 400, { message });
-
-  if (!Array.isArray(list)) return reject("Request body must be an array.");
-  for (const id of list) {
-    const errorMessage = validateNaturalNumber(id);
-    if (errorMessage) return reject(errorMessage);
-  }
-  return list as number[];
 }
 
 const getLikedShows = (req: Request, res: Response) =>
@@ -276,7 +245,12 @@ router.ws("/downloaded-episodes/ws", (ws, req) => {
     minNextResponseTimestamp = currentTimestamp + delayBeforeResponseMs + WS_RESPONSE_INTERVAL_MS;
 
     setTimeout(async () => {
-      const data = await action(evt.data);
+      let data = [];
+      try {
+        data = await action(evt.data);
+      } catch (error) {
+        logger.error((error as Error).message);
+      }
       ws.send(JSON.stringify({ data }));
     }, delayBeforeResponseMs);
   });
@@ -342,5 +316,31 @@ router.put("/watched-episodes/personal/:showId/:season", async (req, res) => {
     [showId]: { ...storedData[showId], [season]: req.body },
   };
   updateDatabaseEntry(WatchedEpisodes, req, res, { watchedEpisodes }, where);
+});
+
+router.get("/video/:showName/:season/:episode", async (req, res) => {
+  const showName = req.params.showName;
+  const season = +req.params.season;
+  const episode = +req.params.episode;
+  const errorMessage = validateNaturalNumber(season) ?? validateNaturalNumber(episode);
+  if (errorMessage) return sendError(res, 400, { message: errorMessage });
+  let torrentInfo: Awaited<ReturnType<typeof torrentClient.getTorrentInfo>> = [];
+  try {
+    torrentInfo = await torrentClient.getTorrentInfo();
+  } catch (error) {
+    const err = error as Error;
+    logger.error(err.message);
+    sendError(res, 500, err);
+  }
+  const torrent = torrentInfo.find((info) =>
+    info.showName === showName && info.season === season && info.episode === episode
+  );
+  if (!torrent) {
+    const serialised = serialiseEpisode({ season, episode });
+    return sendError(res, 404, {
+      message: `Episode ${showName} ${serialised} was not found in the downloads.`
+    });
+  }
+  sendFileStream(req, res, TORRENT_DOWNLOAD_PATH + torrent.filename);
 });
 

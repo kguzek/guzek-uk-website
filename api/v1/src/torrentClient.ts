@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios";
 import { getLogger } from "./middleware/logging";
-import { TorrentInfo } from "./models";
+import { TorrentInfo, TORRENT_DOWNLOAD_PATH } from "./models";
 import { convertTorrentInfo } from "./util";
 
 const API_URL = "https://transmission.guzek.uk/transmission/rpc";
@@ -19,19 +19,8 @@ const FIELDS = [
 ];
 /** The free space required for new torrents to be downloaded. Default: 100 MiB. */
 const MIN_REQUIRED_KEBIBYTES = 102400;
-const DOWNLOAD_PATH = "/var/lib/transmission-daemon/downloads";
 
 const logger = getLogger(__filename);
-
-export const TORRENT_STATUSES = [
-  "Stopped",
-  "Unknown status 1",
-  "Unknown status 2",
-  "Unknown status 3",
-  "Downloading",
-  "Unknown status 5",
-  "Idle/Seeding",
-];
 
 type Method =
   | "session-get"
@@ -112,7 +101,7 @@ export class TorrentClient {
     } catch (error) {
       res = (error as AxiosError).response;
       if (!res) {
-        console.error("Could not obtain a response from the torrent client.");
+        logger.error("Could not obtain a response from the torrent client.");
         throw error;
       }
       if (method !== "session-get") {
@@ -147,7 +136,7 @@ export class TorrentClient {
 
   async addTorrent(link: string, createDatabaseEntry?: () => Promise<any>) {
     const resFreeSpace = await this.fetch("free-space", {
-      path: DOWNLOAD_PATH,
+      path: TORRENT_DOWNLOAD_PATH,
     });
     const freeBytes = resFreeSpace.arguments["size-bytes"];
     if (!freeBytes) return null;
@@ -161,7 +150,7 @@ export class TorrentClient {
 
     const resTorrentAdd = await this.fetch("torrent-add", {
       filename: link,
-      "download-dir": DOWNLOAD_PATH,
+      "download-dir": TORRENT_DOWNLOAD_PATH,
       paused: false,
     });
     const torrent = resTorrentAdd.arguments["torrent-added"];

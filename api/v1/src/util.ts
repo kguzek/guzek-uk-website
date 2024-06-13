@@ -1,3 +1,4 @@
+import { promises as fs, createReadStream } from "fs";
 import { Request, Response } from "express";
 import { WhereOptions } from "sequelize";
 import { getLogger } from "./middleware/logging";
@@ -11,6 +12,7 @@ const DOWNLOAD_STATUS_MAP = { 4: DownloadStatus.PENDING, 6: DownloadStatus.COMPL
 export const STATUS_CODES: { [code: number]: string } = {
   200: "OK",
   201: "Created",
+  206: "Partial Content",
   400: "Bad Request",
   401: "Unauthorised",
   403: "Forbidden",
@@ -41,13 +43,16 @@ export const logResponse = (res: Response, message: string) =>
     ip: (res as any).ip,
   });
 
+export const getStatusText = (code: StatusCode) =>
+  `${code} ${STATUS_CODES[code]}`;
+
 /** Sends the response with a 200 status and JSON body containing the given data object. */
 export function sendOK(
   res: Response,
   data: object | object[] | null,
   code: StatusCode = 200
 ) {
-  logResponse(res, `${code} ${STATUS_CODES[code] ?? STATUS_CODES[200]}`);
+  logResponse(res, getStatusText(code));
   res.status(code).json(data);
 }
 
@@ -60,9 +65,9 @@ export function sendError(
   code: StatusCode,
   error: { message: string } = { message: "Unknown error." }
 ) {
-  const codeDescription = `${code} ${STATUS_CODES[code] ?? STATUS_CODES[500]}`;
-  const jsonRes = { [codeDescription]: error.message };
-  logResponse(res, `${codeDescription}: ${error.message}`);
+  const statusText = getStatusText(code);
+  const jsonRes = { [statusText]: error.message };
+  logResponse(res, `${statusText}: ${error.message}`);
   res.status(code).json(jsonRes);
 }
 
@@ -209,5 +214,98 @@ export function convertTorrentInfo(info: TorrentInfo) {
     progress: info.percentDone,
     speed: info.rateDownload,
     eta: info.eta,
+    filename: info.name,
   };
 }
+
+export function validateNaturalNumber(value: any) {
+  if (!Number.isInteger(value)) return `Key '${value}' must be an integer.`;
+  if (value < 0) return `Key '${value} cannot be negative.`;
+}
+
+/** Ensures that the request body is an array of non-negative integers. */
+export function validateNaturalList(list: any, res: Response) {
+  const reject = (message: string) => void sendError(res, 400, { message });
+
+  if (!Array.isArray(list)) return reject("Request body must be an array.");
+  for (const id of list) {
+    const errorMessage = validateNaturalNumber(id);
+    if (errorMessage) return reject(errorMessage);
+  }
+  return list as number[];
+}
+
+const getVideoExtension = (filename: string) => filename.match("\.(mkv|mp4)$")?.[1];
+
+export async function sendFileStream(req: Request, res: Response, path: string) {
+  let filename = path;
+  let fileExtension = getVideoExtension(filename);
+
+  if (!fileExtension) {
+    let filenames;
+    try {
+      filenames = await fs.readdir(filename);
+    } catch (error) {
+      sendError(res, 404, { message: `The path '${path}' was not found.` })
+      return;
+    }
+    //logger.debug(filenames.join(" | "));
+    for (const file of filenames) {
+      const extension = getVideoExtension(file);
+      if (extension) {     
+        filename = file;
+        fileExtension = extension;
+        break;
+      }
+    }
+  }
+  if (!filename) {
+    sendError(res, 400, { message: `Invalid file path '${path}'.` });
+    return;
+  }
+
+  if (fileExtension === "mkv") {
+    filename += ".mp4";
+    try {
+      await fs.access(filename);
+    } catch {
+      sendError(res, 500, { message: `The file has not yet been converted to MP4.` })
+      return;
+    }
+  }
+
+  let stat;
+  try {
+    stat = await fs.stat(filename); 
+  } catch (error) {
+    sendError(res, 500, error as Error);
+    return;  
+  }
+  let responseCode = 200;
+  const range = req.headers.range;
+  let file;
+
+  const headers: Record<string, string | number> = {
+    'Content-Type': 'video/mp4',
+  };
+  if (range) {
+    const match = range.match(/bytes=(\d+)-(\d*)/);
+    if (!match)
+      return sendError(res, 400, { message: `Malformed request header 'range': '${range}'.` });
+    const start = +match[1];
+    const end = match[2] ? +match[2] : stat.size - 1;
+    headers['Content-Range'] = `bytes ${start}-${end}/${stat.size}`;
+    headers['Accept-Ranges'] = 'bytes';
+    responseCode = 206;
+    headers['Content-Length'] = end - start + 1;
+    file = createReadStream(filename, { start, end });
+  } else {
+    headers['Content-Length'] = stat.size;
+    file = createReadStream(filename);
+  }
+
+  res.writeHead(responseCode, headers);
+  file.pipe(res);
+  logResponse(res, getStatusText(responseCode));
+}
+

@@ -23,6 +23,7 @@ const PERMISSIONS = {
       "/pages", // View all pages
       "/updated", // View site updates
       "/liveseries/downloaded-episodes/ws/.websocket", // LiveSeries downloaded episode info
+      "/liveseries/video", // Stream downloaded LiveSeries episode
     ],
     POST: [
       "/auth/users", // Sign up
@@ -64,7 +65,8 @@ export function authMiddleware(
   };
   // Check if the current endpoint is accessible using the request method to anonymous or logged in users
   for (const [level, routes] of Object.entries(PERMISSIONS)) {
-    const endpoints = routes[req.method as RequestMethod] ?? [];
+    const method = req.method === "HEAD" ? "GET" : req.method as RequestMethod;
+    const endpoints = routes[method] ?? [];
     endpointAccessibleBy[level as keyof typeof PERMISSIONS] = endpoints.some(
       (endpoint) => req.path.startsWith(endpoint)
     );
