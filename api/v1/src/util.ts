@@ -249,17 +249,15 @@ export async function sendFileStream(req: Request, res: Response, path: string) 
       sendError(res, 404, { message: `The path '${path}' was not found.` })
       return;
     }
-    //logger.debug(filenames.join(" | "));
     for (const file of filenames) {
-      const extension = getVideoExtension(file);
-      if (extension) {     
-        filename = file;
-        fileExtension = extension;
+      fileExtension = getVideoExtension(file);
+      if (fileExtension) {     
+        filename += `/${file}`;
         break;
       }
     }
   }
-  if (!filename) {
+  if (!filename || !fileExtension) {
     sendError(res, 400, { message: `Invalid file path '${path}'.` });
     return;
   }

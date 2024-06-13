@@ -19,7 +19,7 @@ import {
 } from "../util";
 import { WatchedShowData, Episode, TvShow, TORRENT_DOWNLOAD_PATH } from "../models";
 import { searchTorrent } from "../torrentIndexer";
-import { TorrentClient } from "../torrentClient";
+import { TorrentClient, ConvertedTorrentInfo } from "../torrentClient";
 
 export const router = express.Router() as expressWs.Router;
 
@@ -66,8 +66,13 @@ async function downloadEpisode(tvShow: TvShow, episode: Episode) {
     episode: episode.episode,
     season: episode.season,
   });
-
-  const torrentInfo = await torrentClient.addTorrent(magnetLink, createDatabaseEntry);
+  let torrentInfo;
+  try {
+    torrentInfo = await torrentClient.addTorrent(magnetLink, createDatabaseEntry);
+  } catch {
+    logger.error("The torrent client is unavailable");
+    return null;
+  }
   if (!torrentInfo) {
     logger.error(`Adding the torrent to the client failed.`);
     return null;
@@ -324,7 +329,7 @@ router.get("/video/:showName/:season/:episode", async (req, res) => {
   const episode = +req.params.episode;
   const errorMessage = validateNaturalNumber(season) ?? validateNaturalNumber(episode);
   if (errorMessage) return sendError(res, 400, { message: errorMessage });
-  let torrentInfo: Awaited<ReturnType<typeof torrentClient.getTorrentInfo>> = [];
+  let torrentInfo: ConvertedTorrentInfo = [];
   try {
     torrentInfo = await torrentClient.getTorrentInfo();
   } catch (error) {

@@ -290,6 +290,36 @@
   opacity: 0;
 }
 
+.video-container {
+  container-type: inline-size;
+  position: relative;
+}
+
+.video-icon {
+  --radius: 1.75em;
+
+  font-size: 9cqw;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: var(--radius);
+  height: var(--radius);
+  border-radius: 100%;
+  opacity: 0.5;
+  background: var(--color-background);
+  justify-content: center;
+  text-align: center;
+}
+
+.video-icon.hidden {
+  transition: opacity 500ms ease, visibility 500ms ease;
+  opacity: 0;
+  visibility: hidden;
+}
+
 @media screen and (max-width: 980px) {
   .episodes {
     justify-content: center;

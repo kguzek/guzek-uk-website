@@ -70,6 +70,12 @@ export default function LiveSeriesBase() {
     fetchWatchedEpisodes();
     if (!user?.admin) return;
     connectToWebsocket();
+    return () => {
+      if (!existingSocket) return;
+      const socket = existingSocket;
+      setExistingSocket(null);
+      socket.close();
+    }
   }, [user]);
 
   function connectToWebsocket() {
@@ -91,6 +97,7 @@ export default function LiveSeriesBase() {
     const poll = () => socket.send('{"type":"poll"}');
     socket.onopen = poll;
     socket.onclose = async () => {
+      if (existingSocket == null) return;
       setExistingSocket(null);
       const result = await setModalChoice("The websocket connection was forcefully closed. Reconnect?");
       if (result) connectToWebsocket();

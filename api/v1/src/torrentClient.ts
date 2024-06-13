@@ -41,6 +41,8 @@ type TorrentResponse<T extends Method> = T extends "session-get"
 
 type ExemptMethod = "session-get" | "session-stats";
 
+export type ConvertedTorrentInfo = ReturnType<typeof convertTorrentInfo>[];
+
 export class TorrentClient {
   auth?: { username: string; password: string };
   sessionId?: string;
@@ -131,7 +133,7 @@ export class TorrentClient {
           throw error;
       }
       return mapped;
-    }, [] as ReturnType<typeof convertTorrentInfo>[]);
+    }, [] as ConvertedTorrentInfo);
   }
 
   async addTorrent(link: string, createDatabaseEntry?: () => Promise<any>) {
