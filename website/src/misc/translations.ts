@@ -133,6 +133,9 @@ export type Translation = Readonly<{
     downloadStatus: Record<DownloadedEpisode["status"], string>;
     downloadComplete: string;
     downloadError: string;
+    watch: {
+      playbackError: string;
+    };
   };
   error: { [code in ErrorCode]: ErrorPageContent };
 }>;
@@ -279,6 +282,9 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
       },
       downloadComplete: "{episode} has finished downloading.",
       downloadError: "{episode} download has failed.",
+      watch: {
+        playbackError: "There was a problem playing that video. Please try again later.",
+      },
     },
   },
   PL: {
@@ -298,7 +304,7 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
     }),
     numberFormat: new Intl.NumberFormat("pl-PL"),
     networkError:
-      "Nastąpił błąd sieciowy podczas wykonywania tej czynności. Spróbuj ponownie wkrótce.",
+      "Nastąpił błąd sieciowy podczas wykonywania tej czynności. Spróbuj wkrótce ponownie.",
     unknownError:
       "Nastąpił nieoczekiwany bład. Proszę skontaktować się z konrad@guzek.uk",
     loggedOut: "Wylogowano z konta.",
@@ -420,6 +426,9 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
       },
       downloadComplete: "Pomyśłnie pobrano {episode}.",
       downloadError: "Pobieranie {episode} nie powiodło się.",
+      watch: {
+        playbackError: "Nastąpił błąd podczas odtwarzania tego filmu. Spróbuj wkrótce ponownie.",
+      },
     },
   },
 };

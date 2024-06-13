@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { TranslationContext } from "../../misc/context";
-import { DownloadedEpisode } from "../../misc/models";
+import { DownloadedEpisode, DownloadStatus } from "../../misc/models";
 import { bytesToReadable, getDuration } from "../../misc/util";
 import "./DownloadsWidget.css";
 
@@ -9,7 +9,9 @@ export default function DownloadsWidget({
 }: {
   downloadedEpisodes: DownloadedEpisode[];
 }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(downloadedEpisodes.find(
+      (episode) => episode.status === DownloadStatus.PENDING
+    ) == null);
   const data = useContext(TranslationContext);
   const serialise = data.liveSeries.tvShow.serialiseEpisode
 
@@ -28,7 +30,7 @@ export default function DownloadsWidget({
               <div className="flex" style={{ width: "100%" }}>
                 <div>{episode.showName} {serialise(episode)}</div>
                 <div className="serif">{downloadProgress}</div>
-                {episode.speed != null && episode.status === 2 &&
+                {episode.speed != null && episode.status === DownloadStatus.PENDING &&
                   <div className="serif">({bytesToReadable(episode.speed)}/s)</div>
                 }
                 {episode.eta != null && episode.eta > 0 &&
@@ -37,7 +39,7 @@ export default function DownloadsWidget({
               </div>
               <div className="progress-bar-container">
                 <div
-                  className={`progress-bar ${episode.status === 3 ? 'done' : ''}`}
+                  className={`progress-bar ${episode.status === DownloadStatus.COMPLETE ? 'done' : ''}`}
                   style={{width: downloadProgress}}
                 ></div>
               </div>
