@@ -1,4 +1,5 @@
 import { useState, useContext } from "react";
+import { Link } from "react-router-dom";
 import { TranslationContext } from "../../misc/context";
 import { DownloadedEpisode, DownloadStatus } from "../../misc/models";
 import { bytesToReadable, getDuration } from "../../misc/util";
@@ -26,7 +27,8 @@ export default function DownloadsWidget({
         <div className="flex flex-column no-overflow">
           {downloadedEpisodes.map((episode, idx) => {
             const downloadProgress = (100 * (episode.progress ?? 0)).toFixed(1) + "%";
-            return <div key={`downloads-card-${idx}`} className="downloads-card flex">
+            const episodeLink = `/liveseries/watch/${episode.showName}/${episode.season}/${episode.episode}`;
+            const card = <div key={`downloads-card-${idx}`} className="downloads-card flex">
               <div className="flex" style={{ width: "100%" }}>
                 <div>{episode.showName} {serialise(episode)}</div>
                 <div className="serif">{downloadProgress}</div>
@@ -43,7 +45,10 @@ export default function DownloadsWidget({
                   style={{width: downloadProgress}}
                 ></div>
               </div>
-            </div>
+            </div>;
+            return episode.status === DownloadStatus.COMPLETE
+              ? <Link to={episodeLink} onClick={() => setCollapsed(true)}>{card}</Link>
+              : card;
           })}
         </div>
       </div>
