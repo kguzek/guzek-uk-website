@@ -291,7 +291,8 @@ export async function sendFileStream(req: Request, res: Response, path: string) 
     if (!match)
       return sendError(res, 400, { message: `Malformed request header 'range': '${range}'.` });
     const start = +match[1];
-    const end = match[2] ? +match[2] : stat.size - 1;
+    const maxEnd = stat.size - 1;
+    const end = Math.min(maxEnd, match[2] ? +match[2] : maxEnd);
     headers['Content-Range'] = `bytes ${start}-${end}/${stat.size}`;
     headers['Accept-Ranges'] = 'bytes';
     responseCode = 206;
