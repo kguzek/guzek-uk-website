@@ -22,6 +22,7 @@ const logger = getLogger(__filename);
 // Initialise the application instance
 export const wsInstance = expressWs(express());
 const app = wsInstance.app;
+app.set('trust proxy', 1);
 
 // Determine the server port
 const PORT = process.env.NODE_PORT;

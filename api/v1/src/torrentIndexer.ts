@@ -56,7 +56,7 @@ const SOURCE_AMENDMENTS: { [key: string]: TorrentConfig } = {
 interface TorrentResult {
   fileName: string;
   seeders: number;
-  leechers?: number;
+  leechers: number;
   uploaded: string;
   uploader?: string;
   size: string;
@@ -97,11 +97,14 @@ export async function searchTorrent(search: string) {
     logger.error(`Search for '${search}' gave no results.`);
     return null;
   }
-
-  const results = data
-    .filter((torrent) => torrent.link?.startsWith("magnet:"))
-    .sort((a, b) => b.seeders - a.seeders);
-
-  return results[0].link as string;
+  
+  const resultsWithMagnets = data.filter((torrent) => torrent.link?.startsWith("magnet:"));
+  const resultsBySeeders = resultsWithMagnets.sort((a, b) => b.seeders - a.seeders);
+  if (resultsBySeeders[0].seeders === 0) {
+    return resultsWithMagnets.sort((a, b) => b.leechers - a.leechers)[0].link as string;
+  }
+  const topFiveResultsBySeeders = resultsBySeeders.slice(0, 5);
+  const resultsByFilesize = topFiveResultsBySeeders.sort((a, b) => +a.size - +b.size);
+  return resultsByFilesize[0].link as string;
 }
 

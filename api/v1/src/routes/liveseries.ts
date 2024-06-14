@@ -346,7 +346,7 @@ router.get("/video/:showName/:season/:episode", async (req, res) => {
   } catch (error) {
     const err = error as Error;
     logger.error(err.message);
-    sendError(res, 500, err);
+    return sendError(res, 500, err);
   }
   const torrent = torrentInfo.find((info) =>
     info.showName === showName && info.season === season && info.episode === episode
