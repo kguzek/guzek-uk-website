@@ -142,7 +142,7 @@ export default function Watch() {
         </div>
         <video
           ref={videoRef}
-          className={loadingFailed ? "hidden" : ""}
+          className={loadingFailed ? "" : ""}
           controls
           src={source}
           autoPlay
