@@ -17,13 +17,13 @@ import {
   validateNaturalList,
   sendFileStream,
 } from "../util";
-import { WatchedShowData, Episode, TvShow, TORRENT_DOWNLOAD_PATH } from "../models";
+import { WatchedShowData, Episode, TvShow, TORRENT_DOWNLOAD_PATH, DownloadStatus } from "../models";
 import { searchTorrent } from "../torrentIndexer";
 import { TorrentClient, ConvertedTorrentInfo } from "../torrentClient";
 
 export const router = express.Router() as expressWs.Router;
 
-const WS_RESPONSE_INTERVAL_MS = 1000;
+const WS_RESPONSE_INTERVAL_MS = 3000;
 
 const logger = getLogger(__filename);
 let torrentClient: TorrentClient;
@@ -236,9 +236,20 @@ router.ws("/downloaded-episodes/ws", (ws, req) => {
     /** The callback to call after a message event which should resolve to the data to be sent back. */
     let action: (data: any) => Promise<any>;
 
+    let delayMultiplier = 1;
+
     switch (evt.type) {
       case "poll":
         action = () => torrentClient.getTorrentInfo();
+        const torrentInfo = evt.data as ConvertedTorrentInfo;
+        // Enable longer response times if all downloads are complete
+        if (torrentInfo && Array.isArray(torrentInfo)) {
+          if (!torrentInfo.find((info) => info.status !== DownloadStatus.COMPLETE))
+            delayMultiplier = 20;
+        } else {
+          logger.warn(`Received invalid data argument for poll message: '${torrentInfo}'.`);
+          delayMultiplier = 5;
+        }
         break;
       default:
         logger.warn(`Unknown message type '${evt.type}' received in websocket connection.`);
@@ -246,7 +257,7 @@ router.ws("/downloaded-episodes/ws", (ws, req) => {
     }
 
     const currentTimestamp = new Date().getTime();
-    const delayBeforeResponseMs = Math.max(0, minNextResponseTimestamp - currentTimestamp);
+    const delayBeforeResponseMs = Math.max(0, minNextResponseTimestamp - currentTimestamp) * delayMultiplier;
     minNextResponseTimestamp = currentTimestamp + delayBeforeResponseMs + WS_RESPONSE_INTERVAL_MS;
 
     setTimeout(async () => {

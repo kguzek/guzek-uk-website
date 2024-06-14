@@ -93,9 +93,9 @@ export default function LiveSeriesBase() {
       console.error("Unknown error:", message);
       setModalError("An unknown error occured during websocket communication.")
     };
-    //const poll = (data: any) => socket.send(JSON.stringify({ type: "poll", data }));
-    const poll = () => socket.send('{"type":"poll"}');
-    socket.onopen = poll;
+    const poll = (data: DownloadedEpisode[]) =>
+      socket.send(JSON.stringify({ type: "poll", data }));
+    socket.onopen = () => poll([]);
     socket.onclose = async () => {
       if (existingSocket == null) return;
       setExistingSocket(null);
@@ -105,9 +105,8 @@ export default function LiveSeriesBase() {
     socket.onmessage = (message) => {
       const torrentInfo = JSON.parse(message.data).data as DownloadedEpisode[];
       let completedDownload = null;
-      poll();
       setDownloadedEpisodes((currentDownloadedEpisodes) => {
-        //console.log(torrentInfo);
+        poll(currentDownloadedEpisodes);
         const mapped = torrentInfo.map((val) => {
           const found = currentDownloadedEpisodes.find((info) => compareEpisodes(val, info));
           if (!found) return val;
