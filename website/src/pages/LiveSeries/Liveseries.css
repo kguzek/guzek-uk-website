@@ -295,6 +295,14 @@
   position: relative;
 }
 
+.video-container video {
+  border-radius: 10px;
+}
+
+.video-container:fullscreen video, .video-container video:fullscreen {
+  border-radius: 0;
+}
+
 .video-icon {
   --radius: 1.75em;
 
