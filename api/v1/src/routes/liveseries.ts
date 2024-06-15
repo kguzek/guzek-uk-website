@@ -18,6 +18,7 @@ import {
   validateNaturalNumber,
   validateNaturalList,
   sendFileStream,
+  serialiseEpisode,
 } from "../util";
 import {
   WatchedShowData,
@@ -28,7 +29,7 @@ import {
   TorrentInfo,
   BasicEpisode,
 } from "../models";
-import { searchTorrent } from "../torrentIndexer";
+import { TorrentIndexer } from "../torrentIndexer";
 import { TorrentClient, ConvertedTorrentInfo } from "../torrentClient";
 
 export const router = express.Router() as expressWs.Router;
@@ -37,6 +38,7 @@ const WS_MESSAGE_INTERVAL_MS = 3000;
 
 const logger = getLogger(__filename);
 let torrentClient: TorrentClient;
+const torrentIndexer = new TorrentIndexer();
 let lastMessageTimestamp = 0;
 const currentTimeouts: Record<number, () => Promise<void>> = {};
 
@@ -44,12 +46,6 @@ const EPISODATE_API_BASE = "https://episodate.com/api/show-details?q=";
 
 const hasEpisodeAired = (episode: Episode) =>
   new Date() > new Date(episode.air_date + " Z");
-
-const serialiseEpisode = (episode: Pick<Episode, "season" | "episode">) =>
-  "S" +
-  `${episode.season}`.padStart(2, "0") +
-  "E" +
-  `${episode.episode}`.padStart(2, "0");
 
 async function tryDownloadEpisode(tvShow: TvShow, episode: Episode) {
   const result = await DownloadedEpisode.findOne({ where: {
@@ -61,15 +57,11 @@ async function tryDownloadEpisode(tvShow: TvShow, episode: Episode) {
 }
 
 async function downloadEpisode(tvShow: TvShow, episode: Episode) {
-  const episodeSearchQuery = `${tvShow.name} ${serialiseEpisode(episode)}`;
-  const magnetLink = await searchTorrent(episodeSearchQuery);
+  const episodeSearchQuery = torrentIndexer.getSearchQuery({ ...episode, showName: tvShow.name });
   logger.debug(`Found unwatched episode, searching for '${episodeSearchQuery}'.`)
-  if (!magnetLink) {
+  const result = await torrentIndexer.search(episodeSearchQuery);
+  if (!result || !result.link) {
     logger.error("Search query turned up empty. Either no torrents available, or indexer is outdated.");
-    return null;
-  }
-  if (process.platform === "win32") {
-    exec(`start ${magnetLink}`);
     return null;
   }
 
@@ -81,7 +73,7 @@ async function downloadEpisode(tvShow: TvShow, episode: Episode) {
   });
   let torrentInfo;
   try {
-    torrentInfo = await torrentClient.addTorrent(magnetLink, createDatabaseEntry);
+    torrentInfo = await torrentClient.addTorrent(result.link, createDatabaseEntry);
   } catch {
     logger.error("The torrent client is unavailable");
     return null;

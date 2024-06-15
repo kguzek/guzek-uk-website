@@ -2,7 +2,7 @@ import { promises as fs, createReadStream } from "fs";
 import { Request, Response } from "express";
 import { WhereOptions } from "sequelize";
 import { getLogger } from "./middleware/logging";
-import { ModelType, DownloadStatus, TorrentInfo } from "./models";
+import { ModelType, DownloadStatus, TorrentInfo, Episode } from "./models";
 import { Updated } from "./sequelize";
 
 const logger = getLogger(__filename);
@@ -317,4 +317,11 @@ export async function sendFileStream(req: Request, res: Response, path: string) 
   file.pipe(res);
   logResponse(res, getStatusText(responseCode));
 }
+
+export const serialiseEpisode = (episode: Pick<Episode, "season" | "episode">) =>
+  "S" +
+  `${episode.season}`.padStart(2, "0") +
+  "E" +
+  `${episode.episode}`.padStart(2, "0");
+
 
