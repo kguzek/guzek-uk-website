@@ -240,8 +240,7 @@ export default function TvShow() {
                 <div className="centred">
                   {allEpisodesAired ? (
                     <div
-                      title={data.liveSeries.tvShow.markAllWatched.replace(
-                        "{UN}",
+                      title={data.liveSeries.tvShow.markAllWatched(
                         seasonWatched ? data.liveSeries.tvShow.un : ""
                       )}
                       onClick={() =>

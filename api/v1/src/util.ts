@@ -7,11 +7,16 @@ import { Updated } from "./sequelize";
 
 const logger = getLogger(__filename);
 
-const DOWNLOAD_STATUS_MAP = { 4: DownloadStatus.PENDING, 6: DownloadStatus.COMPLETE } as const;
+const DOWNLOAD_STATUS_MAP = {
+  2: DownloadStatus.VERIFYING,
+  4: DownloadStatus.PENDING,
+  6: DownloadStatus.COMPLETE
+} as const;
 
 export const STATUS_CODES: { [code: number]: string } = {
   200: "OK",
   201: "Created",
+  204: "No Content",
   206: "Partial Content",
   400: "Bad Request",
   401: "Unauthorised",
@@ -49,11 +54,17 @@ export const getStatusText = (code: StatusCode) =>
 /** Sends the response with a 200 status and JSON body containing the given data object. */
 export function sendOK(
   res: Response,
-  data: object | object[] | null,
+  data?: any,
   code: StatusCode = 200
 ) {
+  if (data) {
+    res.status(code).json(data);
+  }
+  else {
+    code = 204;
+    res.status(code).send();
+  }
   logResponse(res, getStatusText(code));
-  res.status(code).json(data);
 }
 
 /** Sends the response with the given code and the provided error object's message property, i.e.
@@ -193,11 +204,11 @@ export const isInvalidDate = (date: Date) => date.toString() === "Invalid Date";
 export const setCacheControl = (res: Response, maxAgeMinutes: number) =>
   res.set("Cache-Control", `public, max-age=${maxAgeMinutes * 60}`);
 
-function getStatus(status: number) {
+function getDownloadStatus(status: number) {
   const val = DOWNLOAD_STATUS_MAP[status as keyof typeof DOWNLOAD_STATUS_MAP];
   if (val != null) return val;
   logger.warn(`Unknown torrent status code '${status}'.`);
-  return DownloadStatus.FAILED;
+  return DownloadStatus.UNKNOWN;
 }
 
 /** Converts the data into the form useful to the client application. */
@@ -207,14 +218,13 @@ export function convertTorrentInfo(info: TorrentInfo) {
   if (!match) throw new Error(`Torrent name doesn't match regex: '${info.name}'.`)
   const [_, showName, season, episode] = match;
   return {
-    status: getStatus(info.status),
+    status: getDownloadStatus(info.status),
     showName: showName.replace(/\./g, " "),
     season: +season,
     episode: +episode,
     progress: info.percentDone,
     speed: info.rateDownload,
     eta: info.eta,
-    filename: info.name,
   };
 }
 

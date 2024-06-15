@@ -1,20 +1,38 @@
 import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
-import { TranslationContext } from "../../misc/context";
+import { LiveSeriesOutletContext } from "../../pages/LiveSeries/Base"
+import { TranslationContext, ModalContext } from "../../misc/context";
 import { DownloadedEpisode, DownloadStatus } from "../../misc/models";
 import { bytesToReadable, getDuration } from "../../misc/util";
 import "./DownloadsWidget.css";
 
 export default function DownloadsWidget({
   downloadedEpisodes,
+  fetchResource,
 }: {
   downloadedEpisodes: DownloadedEpisode[];
+  fetchResource: LiveSeriesOutletContext["fetchResource"];
 }) {
   const [collapsed, setCollapsed] = useState(downloadedEpisodes.find(
       (episode) => episode.status === DownloadStatus.PENDING
     ) == null);
   const data = useContext(TranslationContext);
-  const serialise = data.liveSeries.tvShow.serialiseEpisode
+  const { setModalInfo, setModalChoice } = useContext(ModalContext);
+  const serialise = data.liveSeries.episodes.serialise
+
+  async function handleDeleteEpisode(episode: DownloadedEpisode) {
+    const episodeString = `${episode.showName} ${serialise(episode)}`;
+    const question = data.liveSeries.episodes.confirmDelete(episodeString)
+    const answer = await setModalChoice(question);
+    if (!answer) return;
+    function onSuccess() {
+      setModalInfo(data.liveSeries.episodes.deleted(episodeString));
+    }
+    fetchResource(
+      `video/${episode.showName}/${episode.season}/${episode.episode}`,
+      { method: "DELETE", onSuccess, useEpisodate: false }
+    );
+  }
 
   if (downloadedEpisodes.length === 0) return null;
 
@@ -36,6 +54,9 @@ export default function DownloadsWidget({
                 {episode.speed != null && episode.status === DownloadStatus.PENDING &&
                   <div className="serif">({bytesToReadable(episode.speed)}/s)</div>
                 }
+                {episode.status === DownloadStatus.VERIFYING && 
+                  <div>{data.liveSeries.episodes.downloadStatus[DownloadStatus.VERIFYING]}...</div>
+                }
                 {episode.eta != null && episode.eta > 0 &&
                   <div className="eta">{getDuration(episode.eta * 1000).formatted}</div>
                 }
@@ -47,9 +68,29 @@ export default function DownloadsWidget({
                 ></div>
               </div>
             </div>;
-            return episode.status === DownloadStatus.COMPLETE
-              ? <Link key={key} to={episodeLink} onClick={() => setCollapsed(true)}>{card}</Link>
-              : <React.Fragment key={key}>{card}</React.Fragment>;
+            return <div className="downloads-card-container flex no-overflow" key={key}>
+              {episode.status === DownloadStatus.COMPLETE
+                ? <>
+                    <Link
+                      className="downloads-card-container flex no-overflow"
+                      to={episodeLink}
+                      onClick={() => setCollapsed(true)}
+                    >
+                      {card}
+                    </Link>
+                    <div
+                      className="clickable delete"
+                     onClick={() => handleDeleteEpisode(episode)}
+                    >
+                    <i className="fas fa-trash"></i>
+                  </div>
+                </>
+              : <>
+                  {card}
+                  <div className="delete"></div>
+                </>
+              }
+            </div>
           })}
         </div>
       </div>

@@ -1,12 +1,14 @@
 import express, { Request, Response } from "express";
 import expressWs from "express-ws";
+import { promises as fs } from "fs";
 import { CronJob } from "cron";
 import { exec } from "child_process";
 import { getLogger } from "../middleware/logging";
-import { LikedShows, User, WatchedEpisodes, DownloadedEpisode } from "../sequelize";
+import { LikedShows, User, WatchedEpisodes, DownloadedEpisode, sanitiseShowName } from "../sequelize";
 import axios from "axios";
 import {
   createDatabaseEntry,
+  deleteDatabaseEntry,
   readAllDatabaseEntries,
   readDatabaseEntry,
   sendError,
@@ -17,16 +19,26 @@ import {
   validateNaturalList,
   sendFileStream,
 } from "../util";
-import { WatchedShowData, Episode, TvShow, TORRENT_DOWNLOAD_PATH, DownloadStatus } from "../models";
+import {
+  WatchedShowData,
+  Episode,
+  TvShow,
+  TORRENT_DOWNLOAD_PATH,
+  DownloadStatus,
+  TorrentInfo,
+  BasicEpisode,
+} from "../models";
 import { searchTorrent } from "../torrentIndexer";
 import { TorrentClient, ConvertedTorrentInfo } from "../torrentClient";
 
 export const router = express.Router() as expressWs.Router;
 
-const WS_RESPONSE_INTERVAL_MS = 3000;
+const WS_MESSAGE_INTERVAL_MS = 3000;
 
 const logger = getLogger(__filename);
 let torrentClient: TorrentClient;
+let lastMessageTimestamp = 0;
+const currentTimeouts: Record<number, () => Promise<void>> = {};
 
 const EPISODATE_API_BASE = "https://episodate.com/api/show-details?q=";
 
@@ -63,6 +75,7 @@ async function downloadEpisode(tvShow: TvShow, episode: Episode) {
 
   const createDatabaseEntry = () => DownloadedEpisode.create({
     showId: tvShow.id,
+    showName: tvShow.name,
     episode: episode.episode,
     season: episode.season,
   });
@@ -80,6 +93,7 @@ async function downloadEpisode(tvShow: TvShow, episode: Episode) {
   await createDatabaseEntry();
   await updateEndpoint(DownloadedEpisode);
   logger.info(`Successfully added new torrent.`);
+  sendWebsocketMessage();
   return torrentInfo;
 }
 
@@ -112,7 +126,7 @@ async function checkUnwatchedEpisodes() {
         },
         (error) =>
           logger.error(
-            `Could not retrieve liked show ${likedShowId} details. ${error.name} ${error.message} ${error.code}`
+            `Could not retrieve liked show ${likedShowId} details. ${error}`
           )
       );
     }
@@ -179,6 +193,15 @@ async function modifyLikedShows(req: Request, res: Response, add: boolean) {
   );
 }
 
+function sendWebsocketMessage() {
+  logger.debug("Speeding up websocket message");
+  lastMessageTimestamp = 0;
+  for (const [timeout, callback] of Object.entries(currentTimeouts)) {  
+    clearTimeout(+timeout);
+    callback();
+  }
+}
+
 const getLikedShowsList = (likedShows: LikedShows[]) =>
   (likedShows[0]?.get("likedShows") as number[]) ?? [];
 
@@ -220,8 +243,8 @@ router.ws("/downloaded-episodes/ws", (ws, req) => {
     logger.error("Websocket connection established without active torrent client.");
     return;
   }
-  
-  let minNextResponseTimestamp = new Date().getTime();
+
+  lastMessageTimestamp = 0;
 
   ws.on("message", (msg) => {
     let evt: { type: string; data: any };
@@ -240,14 +263,14 @@ router.ws("/downloaded-episodes/ws", (ws, req) => {
 
     switch (evt.type) {
       case "poll":
-        action = () => torrentClient.getTorrentInfo();
-        const torrentInfo = evt.data as ConvertedTorrentInfo;
+        action = () => torrentClient.getAllTorrentInfos();
+        const torrents = evt.data as ConvertedTorrentInfo[];
         // Enable longer response times if all downloads are complete
-        if (torrentInfo && Array.isArray(torrentInfo)) {
-          if (!torrentInfo.find((info) => info.status !== DownloadStatus.COMPLETE))
+        if (torrents && Array.isArray(torrents)) {
+          if (!torrents.find((torrent) => torrent.status !== DownloadStatus.COMPLETE))
             delayMultiplier = 20;
         } else {
-          logger.warn(`Received invalid data argument for poll message: '${torrentInfo}'.`);
+          logger.warn(`Received invalid data argument for poll message: '${torrents}'.`);
           delayMultiplier = 5;
         }
         break;
@@ -257,18 +280,25 @@ router.ws("/downloaded-episodes/ws", (ws, req) => {
     }
 
     const currentTimestamp = new Date().getTime();
-    const delayBeforeResponseMs = Math.max(0, minNextResponseTimestamp - currentTimestamp) * delayMultiplier;
-    minNextResponseTimestamp = currentTimestamp + delayBeforeResponseMs + WS_RESPONSE_INTERVAL_MS;
+    const ping = Math.max(0, currentTimestamp - lastMessageTimestamp);
+    const delayMs = Math.max(0, WS_MESSAGE_INTERVAL_MS * delayMultiplier - ping);
+    lastMessageTimestamp = currentTimestamp + delayMs;
+    //logger.debug(`Sending message in ${delayMs / 1000} s`);
+    const currentTimeout = +global.setTimeout(nextMessageCallback, delayMs);
+    currentTimeouts[currentTimeout] = nextMessageCallback;
 
-    setTimeout(async () => {
+    async function nextMessageCallback() {
+      delete currentTimeouts[currentTimeout];
+
       let data = [];
       try {
         data = await action(evt.data);
       } catch (error) {
-        logger.error((error as Error).message);
+        logger.error(error);
       }
-      ws.send(JSON.stringify({ data }));
-    }, delayBeforeResponseMs);
+      const message = JSON.stringify({ data });
+      ws.send(message);
+    };  
   });
 });
 
@@ -334,29 +364,67 @@ router.put("/watched-episodes/personal/:showId/:season", async (req, res) => {
   updateDatabaseEntry(WatchedEpisodes, req, res, { watchedEpisodes }, where);
 });
 
-router.get("/video/:showName/:season/:episode", async (req, res) => {
+async function handleTorrentRequest(
+  req: Request,
+  res: Response,
+  callback: (torrent: TorrentInfo, episode: BasicEpisode) => void | Promise<void>
+) {
   const showName = req.params.showName;
   const season = +req.params.season;
   const episode = +req.params.episode;
   const errorMessage = validateNaturalNumber(season) ?? validateNaturalNumber(episode);
   if (errorMessage) return sendError(res, 400, { message: errorMessage });
-  let torrentInfo: ConvertedTorrentInfo = [];
+  let torrent: TorrentInfo | undefined;
   try {
-    torrentInfo = await torrentClient.getTorrentInfo();
+    torrent = await torrentClient.getTorrentInfo({ showName, season, episode });
   } catch (error) {
-    const err = error as Error;
-    logger.error(err.message);
-    return sendError(res, 500, err);
+    logger.error(error);
+    return sendError(res, 500, { message: "Could not obtain the current torrent list. Try again later." });
   }
-  const torrent = torrentInfo.find((info) =>
-    info.showName === showName && info.season === season && info.episode === episode
-  );
   if (!torrent) {
     const serialised = serialiseEpisode({ season, episode });
     return sendError(res, 404, {
-      message: `Episode ${showName} ${serialised} was not found in the downloads.`
+      message: `Episode '${showName} ${serialised}' was not found in the downloads.`
     });
   }
-  sendFileStream(req, res, TORRENT_DOWNLOAD_PATH + torrent.filename);
-});
+  callback(torrent, { showName, season, episode });
+}
+
+router.get("/video/:showName/:season/:episode", (req, res) =>
+  handleTorrentRequest(req, res, (torrent) => 
+    sendFileStream(req, res, TORRENT_DOWNLOAD_PATH + torrent.name)
+  )
+);
+
+router.delete("/video/:showName/:season/:episode", (req, res) =>
+  handleTorrentRequest(req, res, async (torrent, episode) => {
+    const showName = sanitiseShowName(episode.showName);
+    try {
+      await deleteDatabaseEntry(DownloadedEpisode, { ...episode, showName });
+    } catch (error) {
+      logger.error(error);
+      return sendError(res, 500, { message: "Could not delete the episode from the database." });
+    }
+    try {
+      await torrentClient.removeTorrent(torrent)
+    } catch (error) {
+      logger.error(error);
+      return sendError(res, 500, {
+        message: `An unknown error occured while removing the torrent. The database entry was removed.`
+      })
+    }
+    sendWebsocketMessage();
+
+    try {
+      await fs.rm(TORRENT_DOWNLOAD_PATH + torrent.name, { recursive: true });
+    } catch (error) {
+      logger.error(error);
+      return sendError(res, 500, {
+        message: `An unknown error occurred while removing the files. The torrent and database entry were removed.`
+      });
+    }
+
+    sendOK(res);
+  })
+);
 

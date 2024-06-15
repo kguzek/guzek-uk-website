@@ -1,4 +1,5 @@
 import { Page, PageContent, Token, TuLalem, User } from "./sequelize";
+import { ConvertedTorrentInfo } from "./torrentClient";
 
 export type RequestMethod = "GET" | "PUT" | "POST" | "DELETE" | "PATCH";
 
@@ -64,6 +65,8 @@ export const DownloadStatus = {
   PENDING: 2,
   COMPLETE: 3,
   FAILED: 4,
+  UNKNOWN: 5,
+  VERIFYING: 6,
 };
 
 type WatchedData = { [season: string]: number[] };
@@ -89,11 +92,12 @@ export const TORRENT_DOWNLOAD_PATH = "/var/lib/transmission-daemon/downloads/";
 export const TORRENT_STATUSES = [
   "Stopped",
   "Unknown status 1",
-  "Unknown status 2",
+  "Verifying",
   "Unknown status 3",
   "Downloading",
   "Unknown status 5",
   "Idle/Seeding",
 ];
 
+export type BasicEpisode = Pick<ConvertedTorrentInfo, "showName" | "season" | "episode">;
 

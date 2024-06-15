@@ -92,7 +92,9 @@ export const DownloadStatus = {
   PENDING: 2,
   COMPLETE: 3,
   FAILED: 4,
-}
+  UNKNOWN: 5,
+  VERIFYING: 6,
+};
 
 export type DownloadStatusType = (typeof DownloadStatus)[keyof typeof DownloadStatus];
 

@@ -1,6 +1,10 @@
 import axios, { AxiosError } from "axios";
 import { getLogger } from "./middleware/logging";
-import { TorrentInfo, TORRENT_DOWNLOAD_PATH } from "./models";
+import { 
+  TorrentInfo,
+  TORRENT_DOWNLOAD_PATH,
+  BasicEpisode,
+} from "./models";
 import { convertTorrentInfo } from "./util";
 
 const API_URL = "https://transmission.guzek.uk/transmission/rpc";
@@ -27,7 +31,8 @@ type Method =
   | "session-stats"
   | "torrent-get"
   | "free-space"
-  | "torrent-add";
+  | "torrent-add"
+  | "torrent-remove";
 
 type TorrentResponse<T extends Method> = T extends "session-get"
   ? string
@@ -37,11 +42,13 @@ type TorrentResponse<T extends Method> = T extends "session-get"
   ? { arguments: { "size-bytes": number } }
   : T extends "torrent-add"
   ? { arguments: { "torrent-added"?: TorrentInfo } }
+  : T extends "torrent-remove"
+  ? { arguments: {} }
   : { arguments: Record<string, any> };
 
 type ExemptMethod = "session-get" | "session-stats";
 
-export type ConvertedTorrentInfo = ReturnType<typeof convertTorrentInfo>[];
+export type ConvertedTorrentInfo = ReturnType<typeof convertTorrentInfo>;
 
 export class TorrentClient {
   auth?: { username: string; password: string };
@@ -119,13 +126,18 @@ export class TorrentClient {
     return res.data as TorrentResponse<T>;
   }
 
-  async getTorrentInfo() {
+  private async getTorrents() {
     const response = await this.fetch("torrent-get", { fields: FIELDS });
     if (!response.arguments) {
       logger.error("Invalid response " + JSON.stringify(response));
       return [];
     }
-    return response.arguments.torrents.reduce((mapped, current) => {
+    return response.arguments.torrents;
+  }
+
+  async getAllTorrentInfos() {
+    const torrents = await this.getTorrents();
+    return torrents.reduce((mapped, current) => {
       try {
         mapped.push(convertTorrentInfo(current));
       } catch (error) {
@@ -133,7 +145,18 @@ export class TorrentClient {
           throw error;
       }
       return mapped;
-    }, [] as ConvertedTorrentInfo);
+    }, [] as ConvertedTorrentInfo[]);
+  }
+
+  async getTorrentInfo(episode: BasicEpisode) {
+    const torrents = await this.getTorrents();
+    const showNameLower = episode.showName.toLowerCase();
+    return torrents.find((torrent) => {
+      const convertedTorrent = convertTorrentInfo(torrent);
+      return (convertedTorrent.season === episode.season &&
+        convertedTorrent.episode === episode.episode &&
+        convertedTorrent.showName.toLowerCase() === showNameLower);
+    });
   }
 
   async addTorrent(link: string, createDatabaseEntry?: () => Promise<any>) {
@@ -163,6 +186,11 @@ export class TorrentClient {
     }
     this.numTorrents++;
     return convertTorrentInfo(torrent);
+  }
+
+  async removeTorrent(torrent: TorrentInfo) {
+    const resRemoveTorrent = await this.fetch("torrent-remove", { id: torrent.id });
+    logger.debug(JSON.stringify(resRemoveTorrent));
   }
 }
 

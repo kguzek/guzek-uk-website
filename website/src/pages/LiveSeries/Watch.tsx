@@ -134,7 +134,7 @@ export default function Watch() {
 
   return (
     <div onKeyPress={onKeyPress}>
-      <h2>{showName} {data.liveSeries.tvShow.serialiseEpisode(episodeObject)}</h2>
+      <h2>{showName} {data.liveSeries.episodes.serialise(episodeObject)}</h2>
       {loadingFailed && <p className="centred">{data.liveSeries.watch.playbackError}</p>}
       <div ref={videoContainerRef} className="video-container">
         <div className={`video-icon ${iconVisibility} flex-column`}>

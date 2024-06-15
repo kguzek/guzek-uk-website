@@ -23,7 +23,7 @@ const SHORT_TIME_FORMAT = {
 // } as const;
 
 export type Translation = Readonly<{
-  footer: string;
+  footer: (year: string) => string;
   loading: string;
   language: string;
   loginShort: string;
@@ -59,7 +59,6 @@ export type Translation = Readonly<{
   };
   admin: {
     title: string;
-    confirmDelete: string;
     contentManager: {
       title: string;
       selectedPage: string;
@@ -75,6 +74,8 @@ export type Translation = Readonly<{
     };
     users: {
       title: string;
+      confirmDelete: string;
+      deleted: (username: string) => string;
     };
     logs: {
       title: string;
@@ -103,10 +104,9 @@ export type Translation = Readonly<{
       like: string;
       unlike: string;
       showDetails: string;
-      markWatched: string;
-      markAllWatched: string;
+      markWatched: (un: string) => string;
+      markAllWatched: (un: string) => string;
       un: string;
-      serialiseEpisode: (episode: Pick<Episode, "episode" | "season">) => string;
       unwatched: string;
     };
     search: {
@@ -130,9 +130,14 @@ export type Translation = Readonly<{
     mostPopular: {
       title: string;
     };
-    downloadStatus: Record<DownloadedEpisode["status"], string>;
-    downloadComplete: string;
-    downloadError: string;
+    episodes: {
+      downloadStatus: Record<DownloadedEpisode["status"], string>;
+      downloadComplete: (episode: string) => string;
+      downloadError: (episode: string) => string;
+      confirmDelete: (episode: string) => string;
+      deleted: (episode: string) => string;
+      serialise: (episode: Pick<Episode, "episode" | "season">) => string;
+    };
     watch: {
       playbackError: string;
     };
@@ -142,7 +147,7 @@ export type Translation = Readonly<{
 
 export const TRANSLATIONS: { [lang in Language]: Translation } = {
   EN: {
-    footer: "{YEAR} \u00a9 Konrad Guzek",
+    footer: (year) => `${year} \u00a9 Konrad Guzek`,
     loading: "Loading",
     language: "Language",
     loginShort: "Log in",
@@ -199,7 +204,6 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
     },
     admin: {
       title: "Admin Tools",
-      confirmDelete: "Are you sure you want to delete this user?",
       contentManager: {
         title: "Content Manager",
         selectedPage: "Selected page",
@@ -215,6 +219,8 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
       },
       users: {
         title: "Users",
+        confirmDelete: "Are you sure you want to delete this user?",
+        deleted: (username) => `User ${username} has been deleted.`,
       },
       logs: {
         title: "Logs",
@@ -243,13 +249,9 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
         like: "Like",
         unlike: "Unlike",
         showDetails: "Show Details",
-        markWatched: "Mark episode as {UN}watched",
-        markAllWatched: "Mark all episodes in season as {UN}watched",
+        markWatched: (un) => `Mark episode as ${un}watched`,
+        markAllWatched: (un) => `Mark all episodes in season as ${un}watched`,
         un: "un",
-        serialiseEpisode: (episode) =>
-          `S${episode.season.toString().padStart(2, "0")}E${episode.episode
-            .toString()
-            .padStart(2, "0")}`,
         unwatched: "Unwatched",
       },
       search: {
@@ -274,21 +276,32 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
       mostPopular: {
         title: "Most Popular",
       },
-      downloadStatus: {
-        1: "Force start download",
-        2: "Downloading",
-        3: "Open download",
-        4: "Download failed",
+      episodes: { 
+        downloadStatus: {
+          1: "Download",
+          2: "Downloading",
+          3: "Watch",
+          4: "Download failed",
+          5: "Unknown status",
+          6: "Verifying",
+        },
+        downloadComplete: (episode) => `${episode} has finished downloading.`,
+        downloadError: (episode) => `${episode} download has failed.`,
+        confirmDelete: (episode) => `Are you sure you want to delete ${episode} from the server?`,
+        deleted: (episode) => `Episode ${episode} was successfully deleted.`,
+        serialise: (episode) =>
+          `S${episode.season.toString().padStart(2, "0")}E${episode.episode
+            .toString()
+            .padStart(2, "0")}`,
+
       },
-      downloadComplete: "{episode} has finished downloading.",
-      downloadError: "{episode} download has failed.",
       watch: {
         playbackError: "There was a problem playing that video. Please try again later.",
       },
     },
   },
   PL: {
-    footer: "{YEAR} \u00a9 Konrad Guzek",
+    footer: (year) => `{year} \u00a9 Konrad Guzek`,
     loading: "Trwa ładowanie strony",
     language: "Język",
     loginShort: "Zaloguj",
@@ -346,7 +359,6 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
     },
     admin: {
       title: "Narzędzia Administracyjne",
-      confirmDelete: "Na pewno chcesz usunąć tego użytkownika?",
       contentManager: {
         title: "Edytor Treści",
         selectedPage: "Wybrana strona",
@@ -362,6 +374,8 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
       },
       users: {
         title: "Użytkownicy",
+        confirmDelete: "Na pewno chcesz usunąć tego użytkownika?",
+        deleted: (username) => `Pomyślnie usunięto użytkownika ${username}.`,
       },
       logs: {
         title: "Logi",
@@ -390,11 +404,10 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
         like: "Polub",
         unlike: "Odlub",
         showDetails: "Dane Serialu",
-        markWatched: "Zaznacz odcinek jako {UN}obejrzany",
-        markAllWatched:
-          "Zaznacz wszystkie odcinki w sezonie jako {UN}obejrzane",
+        markWatched: (un) => `Zaznacz odcinek jako ${un}obejrzany`,
+        markAllWatched: (un) =>
+          `Zaznacz wszystkie odcinki w sezonie jako ${un}obejrzane`,
         un: "nie",
-        serialiseEpisode: (episode) => `S${episode.season}:O${episode.episode}`,
         unwatched: "Nieobejrzane",
       },
       search: {
@@ -418,14 +431,21 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
       mostPopular: {
         title: "Najpopularniejsze",
       },
-      downloadStatus: {
-        1: "Rozpocznij pobieranie",
-        2: "W trakcie pobierania",
-        3: "Otwórz",
-        4: "Pobranie nie powiodło się",
+      episodes: {
+        downloadStatus: {
+          1: "Pobierz",
+          2: "W trakcie pobierania",
+          3: "Odtwórz",
+          4: "Pobranie nie powiodło się",
+          5: "Status pobierania nieznany",
+          6: "Trwa weryfikacja",
+        },
+        downloadComplete: (episode) => `Pomyśłnie pobrano ${episode}.`,
+        downloadError: (episode) => `Pobieranie ${episode} nie powiodło się.`,
+        confirmDelete: (episode) => `Na pewno chcesz usunąć ${episode} z serwera?`,
+        deleted: (episode) => `Pomyślnie usunięto odcinek ${episode}.`,
+        serialise: (episode) => `S${episode.season}:O${episode.episode}`,
       },
-      downloadComplete: "Pomyśłnie pobrano {episode}.",
-      downloadError: "Pobieranie {episode} nie powiodło się.",
       watch: {
         playbackError: "Nastąpił błąd podczas odtwarzania tego filmu. Spróbuj wkrótce ponownie.",
       },

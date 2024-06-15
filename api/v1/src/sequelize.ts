@@ -24,6 +24,9 @@ const sequelize = new Sequelize(
 const ensureJson = (dataValue: any) =>
   typeof dataValue === "string" ? JSON.parse(dataValue) : dataValue;
 
+export const sanitiseShowName = (showName: string) =>
+  showName.replace(/[.+]/g, " ").replace(/:/g, "");
+
 export class Page extends Model {}
 export class PageContent extends Model {}
 export class User extends Model {}
@@ -260,6 +263,15 @@ DownloadedEpisode.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       field: "show_id",
+    },
+    showName: {
+      type: DataTypes.STRING(32),
+      allowNull: false,
+      set(value: string) {
+        const sanitised = sanitiseShowName(value);
+        this.setDataValue("showName", sanitised);
+      },
+      field: "show_name",
     },
     season: {
       type: DataTypes.INTEGER,

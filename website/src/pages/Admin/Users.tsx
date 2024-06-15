@@ -25,7 +25,7 @@ export default function Users() {
   if (!users) return <LoadingScreen />;
 
   async function confirmDelete(user: User) {
-    const primary = await setModalChoice(data.admin.confirmDelete);
+    const primary = await setModalChoice(data.admin.users.confirmDelete);
     if (!primary) return;
     await deleteUser(user);
   }
@@ -36,7 +36,7 @@ export default function Users() {
         method: "DELETE",
       });
       if (res.ok) {
-        setModalInfo(`User '${user.username}' has been deleted.`);
+        setModalInfo(data.admin.users.deleted(user.username));
         setUsers(
           (old) => old?.filter((some) => some.uuid !== user.uuid) ?? null
         );
