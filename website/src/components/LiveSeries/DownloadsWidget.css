@@ -42,18 +42,21 @@
   overflow-y: scroll;
 }
 
-.downloads-card {
+.downloads-card-container {  
   --card-width: 500px;
-
-  flex-direction: column;
-  align-items: start;
-  background-color: var(--color-background);
-  padding: 10px;
-  border-radius: 5px;
-  width: var(--card-width);
-  box-sizing: border-box;
   max-width: 100%;
   box-sizing: border-box;
+  border-radius: 5px;
+  width: var(--card-width);
+  gap: 0;
+  background-color: var(--color-background);
+}
+
+.downloads-card {
+  flex-direction: column;
+  align-items: start;
+  padding: 10px;
+  width: 100%;
 }
 
 .downloads-card .eta {
@@ -76,6 +79,7 @@
   align-self: left;
   height: 100%;
   background-color: var(--color-success);
+  transition: width 400ms ease;
 }
 
 .downloads-card .progress-bar.done {

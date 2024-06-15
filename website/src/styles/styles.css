@@ -162,6 +162,23 @@ body {
   grid-template-rows: 0fr;
 }
 
+.delete {
+  color: var(--color-error);
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  background: linear-gradient(var(--color-error), var(--color-error)) no-repeat
+    right;
+  background-size: 0 100%;
+  transition: all 200ms ease;
+}
+
+.delete:hover {
+  background-size: 100% 100%;
+  color: var(--color-primary-strong);
+}
+
 [disabled] {
   filter: contrast(60%);
   cursor: not-allowed;

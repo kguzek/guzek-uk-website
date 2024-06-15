@@ -10,7 +10,7 @@ function Footer() {
       <hr />
       <Logo size={20} />
       <small>
-        {data.footer.replace("{YEAR}", new Date().getFullYear().toString())}
+        {data.footer(new Date().getFullYear().toString())}
       </small>
     </footer>
   );

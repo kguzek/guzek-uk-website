@@ -85,45 +85,47 @@ export default function LiveSeriesBase() {
       socket = new WebSocket(WEBSOCKET_URL);
     } catch (error) {
       console.error("Connection error:", error);
-      setModalError("Could not establish a connection with the websocket.");
+      setModalError("Could not establish a connection with the websocket. Try again later.");
       return;
     }
     setExistingSocket(socket);
     socket.onerror = (message) => {
+      // This usually means the server is online but hasn't yet set up the websocket listener
       console.error("Unknown error:", message);
-      setModalError("An unknown error occured during websocket communication.")
+      setModalError("An unknown error occured during websocket communication. Try again later.")
     };
     const poll = (data: DownloadedEpisode[]) =>
       socket.send(JSON.stringify({ type: "poll", data }));
     socket.onopen = () => poll([]);
-    socket.onclose = async () => {
-      if (existingSocket == null) return;
-      setExistingSocket(null);
-      const result = await setModalChoice("The websocket connection was forcefully closed. Reconnect?");
-      if (result) connectToWebsocket();
+    socket.onclose = async (evt) => {
+      if (evt.wasClean) return;
+      const answer = await setModalChoice("The websocket connection was forcefully closed. Reconnect?");
+      if (answer) connectToWebsocket();
     };
     socket.onmessage = (message) => {
       const torrentInfo = JSON.parse(message.data).data as DownloadedEpisode[];
-      let completedDownload = null;
+      let completedDownloadName = "";
       setDownloadedEpisodes((currentDownloadedEpisodes) => {
-        poll(currentDownloadedEpisodes);
         const mapped = torrentInfo.map((val) => {
           const found = currentDownloadedEpisodes.find((info) => compareEpisodes(val, info));
           if (!found) return val;
           // Check for episodes whose download status just changed
-          if (found.status === DownloadStatus.PENDING && val.status === DownloadStatus.COMPLETE) 
-            completedDownload = `${val.showName} ${data.liveSeries.tvShow.serialiseEpisode(val)}`;
+          if (found.status !== DownloadStatus.COMPLETE && val.status === DownloadStatus.COMPLETE) 
+            completedDownloadName = `${val.showName} ${data.liveSeries.episodes.serialise(val)}`;
           return val;
         });
         //for (const info of torrentInfo) {
           //if (currentDownloadedEpisodes.find((val) => compareEpisodes(val, info))) continue;
           //mapped.push(info);
         //}
-        return mapped.sort((a, b) => 
+        const sorted = mapped.sort((a, b) => 
           serialiseEpisodeForSorting(a).localeCompare(serialiseEpisodeForSorting(b), "en", { numeric: true })
         );
+        poll(sorted);
+        return sorted;
       });
-      if (completedDownload) setModalInfo(data.liveSeries.downloadComplete.replace("{episode}", completedDownload));
+      if (completedDownloadName)
+        setModalInfo(data.liveSeries.episodes.downloadComplete(completedDownloadName));
     } 
   }
 
@@ -185,6 +187,8 @@ export default function LiveSeriesBase() {
       const res = await (useEpisodate
         ? fetchFromEpisodate(endpoint, params ?? searchParams)
         : fetchFromAPI("liveseries/" + endpoint, { method, body }, !method));
+      if (res.status === 204)
+        return onSuccess(null);
       const json = await res.json();
       if (res.ok) {
         onSuccess(json);
@@ -237,7 +241,7 @@ export default function LiveSeriesBase() {
 
   return (
     <div className="text liveseries">
-      <DownloadsWidget downloadedEpisodes={downloadedEpisodes} />
+      <DownloadsWidget downloadedEpisodes={downloadedEpisodes} fetchResource={fetchResource} />
       <MiniNavBar
         pathBase="liveseries"
         pages={[
