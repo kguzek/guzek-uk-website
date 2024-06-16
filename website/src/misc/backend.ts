@@ -5,6 +5,7 @@ import { TryFetch } from "./util";
 const USE_LOCAL_API_URL = true;
 const CACHE_NAME = "guzek-uk-cache";
 const TOKEN_PENDING = "TOKEN_PENDING";
+const MAX_TOKEN_REFRESH_TIME_S = 30 // seconds
 
 interface RequestOptions {
   method: string;
@@ -41,7 +42,18 @@ export function getSearchParams(
   return `?${searchParams}`;
 }
 
-const isTokenPending = () => localStorage.getItem(TOKEN_PENDING) != null;
+function isTokenPending() {
+  const pendingStartTimestamp = localStorage.getItem(TOKEN_PENDING);
+  if (!pendingStartTimestamp) return false;
+  const now = new Date().getTime();
+  const diffSeconds = (now - +pendingStartTimestamp) * 1000;
+  if (diffSeconds > MAX_TOKEN_REFRESH_TIME_S) {
+    localStorage.removeItem(TOKEN_PENDING);
+    console.warn("Token refresh is taking more than 30 seconds. Retrying.");
+    return false;
+  }
+  return true;
+}
 
 let tokenPendingInThisTab = false;
 let accessTokenPromise: Promise<string | null> | undefined = undefined;
@@ -94,7 +106,7 @@ function getAccessToken(auth: Auth): Promise<null | string> {
 /* Sends a request to the API to refresh the access token using the refresh token. */
 async function refreshAccessToken(auth: Auth): Promise<null | string> {
   // Generate a new access token
-  localStorage.setItem(TOKEN_PENDING, TOKEN_PENDING);
+  localStorage.setItem(TOKEN_PENDING, `${new Date().getTime()}`);
   tokenPendingInThisTab = true;
   const refreshToken = localStorage.getItem("refreshToken") ?? "";
   if (!refreshToken) return null;
@@ -231,3 +243,4 @@ export type Fetch = {
   tryFetch: TryFetch;
   removeOldCaches: () => void;
 };
+

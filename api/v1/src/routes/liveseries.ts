@@ -1,11 +1,11 @@
 import express, { Request, Response } from "express";
 import expressWs from "express-ws";
-import { promises as fs } from "fs";
+import { createWriteStream, promises as fs } from "fs";
 import { CronJob } from "cron";
 import { exec } from "child_process";
 import { getLogger } from "../middleware/logging";
 import { LikedShows, User, WatchedEpisodes, DownloadedEpisode, sanitiseShowName } from "../sequelize";
-import axios from "axios";
+import axios, { AxiosError, AxiosResponse, AxiosInstance } from "axios";
 import {
   createDatabaseEntry,
   deleteDatabaseEntry,
@@ -19,6 +19,9 @@ import {
   validateNaturalList,
   sendFileStream,
   serialiseEpisode,
+  getStatusText,
+  logResponse,
+  setCacheControl,
 } from "../util";
 import {
   WatchedShowData,
@@ -28,6 +31,7 @@ import {
   DownloadStatus,
   TorrentInfo,
   BasicEpisode,
+  STATIC_CACHE_DURATION_MINS,
 } from "../models";
 import { TorrentIndexer } from "../torrentIndexer";
 import { TorrentClient, ConvertedTorrentInfo } from "../torrentClient";
@@ -35,14 +39,23 @@ import { TorrentClient, ConvertedTorrentInfo } from "../torrentClient";
 export const router = express.Router() as expressWs.Router;
 
 const WS_MESSAGE_INTERVAL_MS = 3000;
+const SUBTITLES_PATH = "/var/lib/guzek-uk/subtitles";
+const SUBTITLES_FILENAME = "subtitles.vtt";
+const SUBTITLES_API_URL = "https://api.opensubtitles.com/api/v1";
+const SUBTITLES_DEFAULT_LANGUAGE = "en";
+/** If set to `true`, doesn't use locally downloaded subtitles file. */
+const SUBTITLES_FORCE_DOWNLOAD_NEW = false;
+
+const EPISODATE_API_BASE = "https://episodate.com/api/show-details?q=";
 
 const logger = getLogger(__filename);
 let torrentClient: TorrentClient;
 const torrentIndexer = new TorrentIndexer();
+let subtitleClient: AxiosInstance | null = null;
+
 let lastMessageTimestamp = 0;
 const currentTimeouts: Record<number, () => Promise<void>> = {};
 
-const EPISODATE_API_BASE = "https://episodate.com/api/show-details?q=";
 
 const hasEpisodeAired = (episode: Episode) =>
   new Date() > new Date(episode.air_date + " Z");
@@ -125,7 +138,60 @@ async function checkUnwatchedEpisodes() {
   }
 }
 
+async function getSubtitleClient() {
+  const headers = {
+    "User-Agent": "Guzek UK LiveSeries API v1.0.0",
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  };
+  const apiKeyDev = process.env.SUBTITLES_API_KEY_DEV;
+  if (apiKeyDev) {
+    subtitleClient = axios.create({
+      baseURL: SUBTITLES_API_URL,
+      headers: { ...headers, 'Api-Key': apiKeyDev },
+    });
+    logger.debug("Logged in to OpenSubtitles API as developer");
+    return;
+  }
+  const apiKey = process.env.SUBTITLES_API_KEY;
+  const username = process.env.SUBTITLES_API_USER;
+  const password = process.env.SUBTITLES_API_PASSWORD;
+  if (!apiKey || !username || !password) {
+    logger.error("No SUBTITLES_API_KEY, SUBTITLES_API_USER or SUBTITLES_API_PASSWORD environment variable set");
+    return;
+  }
+  let res: AxiosResponse;
+  try {
+    res = await axios.post(`${SUBTITLES_API_URL}/login`, {
+      username,
+      password,
+    }, { headers });
+  } catch (error) {
+    logger.error(error);
+    (error instanceof AxiosError) && logger.debug(error.response?.data);
+    logger.error("Could not reach the OpenSubtitles API");
+    return;
+  }
+  const data = res.data as any;
+  if (!data?.base_url || !data.token) {
+    logger.error("Invalid OpenSubtitles API response");
+    logger.debug(data);
+    return;
+  }
+  subtitleClient = axios.create({
+    baseURL: `https://${data.base_url}/api/v1`,
+    headers: {
+      ...headers,
+      "Api-Key": apiKey,
+      "Authorization": `Bearer ${data.token}`,
+    },
+  });
+  logger.info("Logged in to OpenSubtitles API");
+  logger.debug(data.user);
+}
+
 export function init() {
+  getSubtitleClient();
   torrentClient = new TorrentClient();
   if (!torrentClient) {
     logger.error("Failed to initialise the torrent client. Aborting cron job.");
@@ -379,7 +445,8 @@ async function handleTorrentRequest(
       message: `Episode '${showName} ${serialised}' was not found in the downloads.`
     });
   }
-  callback(torrent, { showName, season, episode });
+  const sanitised = sanitiseShowName(showName);
+  callback(torrent, { showName: sanitised, season, episode });
 }
 
 router.get("/video/:showName/:season/:episode", (req, res) =>
@@ -390,9 +457,8 @@ router.get("/video/:showName/:season/:episode", (req, res) =>
 
 router.delete("/video/:showName/:season/:episode", (req, res) =>
   handleTorrentRequest(req, res, async (torrent, episode) => {
-    const showName = sanitiseShowName(episode.showName);
     try {
-      await deleteDatabaseEntry(DownloadedEpisode, { ...episode, showName });
+      await deleteDatabaseEntry(DownloadedEpisode, episode);
     } catch (error) {
       logger.error(error);
       return sendError(res, 500, { message: "Could not delete the episode from the database." });
@@ -418,5 +484,134 @@ router.delete("/video/:showName/:season/:episode", (req, res) =>
 
     sendOK(res);
   })
+);
+
+async function downloadSubtitles(
+  directory: string,
+  filepath: string,
+  torrent: TorrentInfo,
+  episode: BasicEpisode,
+  language: string,
+): Promise<string>{
+  if (!subtitleClient) return "Subtitles are currently unavailable. Try again later.";
+
+  let res: AxiosResponse;
+  const query = torrent.name.split("[")[0];
+  if (!query) {
+    logger.error(`Invalid torrent filename '${torrent.name}'.`);
+    return "It looks like subtitles for this TV show are unavailable.";
+  }
+  logger.info(`Searching for subtitles '${query}'...`);
+  try {
+    res = await subtitleClient.get("/subtitles", {
+      params: { 
+        query,
+        type: "episode",
+        season_number: episode.season,
+        episode_number: episode.episode,
+      },
+    });
+  } catch (error) {
+    logger.error(error);
+    (error instanceof AxiosError) && logger.debug(error.response?.data);
+    return "The subtitle service is temporarily unavailable.";
+  }
+  const data = res?.data as any;
+  const resultCount = data?.total_count;
+  const results = data?.data as any[];
+  if (!Array.isArray(results)) {
+    logger.error("Received malformatted response from OpenSubtitles");
+    logger.debug(res.data);
+    return "Subtitles for this episode are temporarily unavailable.";
+  }
+  if (!resultCount || !results?.length) {
+    return "There are no subtitles for this episode.";
+  }
+  const sorted = results.sort((a, b) => a.attributes.download_count - a.attributes.download_count);
+  const [closeMatches, farMatches] = sorted.reduce(([close, far], result) => 
+    // The 'release' and 'comments' fields  provide torrent names that they are suitable for; these are 'close' matches
+    result.attributes.comments.includes(query) || result.attributes.release.includes(query)
+      ? [[...close, result], far]
+      // The 'far' matches don't specify our exact torrent name, but they should be for the same show/season/episode
+      // This means that there might be some synchronisation errors, which is why the 'far' results are put to the end
+      : [close, [...far, result]],
+    [[], []]
+  );
+  // Ensure the close matches are prioritised, but don't throw away the 'far' matches if no close ones have the queried language
+  const matches = [...closeMatches, ...farMatches];
+  const result = matches.find((result) => result.attributes.language === language)
+    // None of the matches have the right language, so send the default language (English)
+    ?? matches.find((result) => result.attributes.language === SUBTITLES_DEFAULT_LANGUAGE)
+    // Maybe some foreign shows don't even have subtitles in English, so send the most downloaded file there is
+    ?? matches[0];
+  const fileId = result.attributes.files[0]?.file_id;
+  logger.debug(`Downloading subtitles with id '${fileId}'`);
+  try {
+    res = await subtitleClient.post("/download", {
+      file_id: +fileId,
+      file_name: `${episode.showName} ${serialiseEpisode(episode)}`,
+      sub_format: "webvtt",
+    });
+  } catch (error) {
+    logger.error(error);
+    (error instanceof AxiosError) && logger.debug(error.response?.data);
+    return "Subtitles for this episode were found but could not be downloaded. Try again later.";
+  }
+  const url = res.data.link;
+  if (!url) {
+    return "Subtitles for this episode were found but malformatted. Try again later.";
+  }
+  try {
+    res = await axios({
+      url,
+      method: "GET",
+      responseType: "stream",
+    })
+  } catch (error) {
+    logger.error(error);
+    return "Downloading the subtitles failed. Try again later.";
+  }
+  try {
+    await fs.mkdir(directory, { recursive: true });
+  } catch (error) {
+    logger.error(error);
+    return "Could not save the subtitles to the server.";
+  }
+  const writer = createWriteStream(filepath);
+  return new Promise((resolve) => {
+    res.data.pipe(writer);
+    let errorMessage = "";
+    writer.on("error", (error) => {
+      logger.error(error);
+      errorMessage = "Could not save the subtitle file.";
+      writer.close();
+    });
+    writer.on("close", () => {
+      resolve(errorMessage);
+    });
+  });
+}
+
+router.get("/subtitles/:showName/:season/:episode", (req, res) => 
+  handleTorrentRequest(req, res, async (torrent, episode) => {
+    const directory = `${SUBTITLES_PATH}/${episode.showName}/${episode.season}/${episode.episode}`;
+    const filepath = `${directory}/${SUBTITLES_FILENAME}`;
+    try {
+      await fs.access(filepath);
+      if (process.env.SUBTITLES_API_KEY_DEV && SUBTITLES_FORCE_DOWNLOAD_NEW) {
+        throw new Error("Force fresh download of subtitles");
+      }
+    } catch (error) {
+      const language = `${req.query.lang || SUBTITLES_DEFAULT_LANGUAGE}`.toLowerCase();
+      const errorMessage = await downloadSubtitles(directory, filepath, torrent, episode, language);
+      if (errorMessage) {
+        sendError(res, 400, { message: errorMessage });
+        return;
+      }
+    }
+    setCacheControl(res, STATIC_CACHE_DURATION_MINS);
+    res.status(200).sendFile(filepath);
+    logResponse(res, `${getStatusText(200)} (${SUBTITLES_FILENAME})`);
+  })       
 );
 

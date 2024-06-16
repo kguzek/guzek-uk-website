@@ -25,7 +25,7 @@ const ensureJson = (dataValue: any) =>
   typeof dataValue === "string" ? JSON.parse(dataValue) : dataValue;
 
 export const sanitiseShowName = (showName: string) =>
-  showName.replace(/[.+]/g, " ").replace(/:/g, "");
+  showName.replace(/[.+]/g, " ").replace(/:\//g, "").trim();
 
 export class Page extends Model {}
 export class PageContent extends Model {}

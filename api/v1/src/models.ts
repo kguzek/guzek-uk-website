@@ -101,3 +101,4 @@ export const TORRENT_STATUSES = [
 
 export type BasicEpisode = Pick<ConvertedTorrentInfo, "showName" | "season" | "episode">;
 
+export const STATIC_CACHE_DURATION_MINS = 30 * 24 * 60; // 30 days in minutes

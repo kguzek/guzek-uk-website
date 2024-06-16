@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useContext, useState } from "react";
 import { useParams } from "react-router-dom";
 import ErrorPage from "../ErrorPage";
-import { ErrorCode } from "../../misc/models";
+import { Language, ErrorCode } from "../../misc/models";
 import { TranslationContext, ModalContext } from "../../misc/context";
 import { API_BASE } from "../../misc/backend";
 
@@ -12,7 +12,7 @@ function isNumber(val: string | undefined): val is string {
 const VIDEO_FRAME_RATE = 25; // frames per second
 const VIDEO_FRAME_LENGTH = 1 / VIDEO_FRAME_RATE; // seconds per frame
 
-export default function Watch() {
+export default function Watch({ lang }: { lang: Language }) {
   const videoContainerRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const { showName, season, episode } = useParams();
@@ -35,7 +35,7 @@ export default function Watch() {
   }  
   
   const showNameEncoded = encodeURIComponent(showName);
-  const source = `${API_BASE}liveseries/video/${showNameEncoded}/${season}/${episode}`;
+  const path = `${showNameEncoded}/${season}/${episode}`;
   const episodeObject = { episode: +episode, season: +season };
 
   function onLoadStart() {
@@ -130,8 +130,6 @@ export default function Watch() {
     // Synchronise player fullscreen button and actual state
   }
 
-  //const subtitleSource = "/subtitles.vtt";
-
   return (
     <div onKeyPress={onKeyPress}>
       <h2>{showName} {data.liveSeries.episodes.serialise(episodeObject)}</h2>
@@ -144,13 +142,20 @@ export default function Watch() {
           ref={videoRef}
           className={loadingFailed ? "" : ""}
           controls
-          src={source}
+          src={`${API_BASE}liveseries/video/${path}`}
           autoPlay
           onError={onError}
           onLoadStart={onLoadStart}
           onLoadedData={onLoad}
+          crossOrigin="anonymous"
         >
-          {/*<track label="English" kind="subtitles" srcLang="en" src={subtitleSource} default />*/}
+          <track
+            label="English"
+            kind="subtitles"
+            srcLang="en"
+            src={`${API_BASE}liveseries/subtitles/${path}?lang=${lang}`}
+            default
+        />
         </video>
       </div>
     </div>

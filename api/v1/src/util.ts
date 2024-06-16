@@ -2,7 +2,13 @@ import { promises as fs, createReadStream } from "fs";
 import { Request, Response } from "express";
 import { WhereOptions } from "sequelize";
 import { getLogger } from "./middleware/logging";
-import { ModelType, DownloadStatus, TorrentInfo, Episode } from "./models";
+import {
+  ModelType,
+  DownloadStatus,
+  TorrentInfo,
+  Episode,
+  STATIC_CACHE_DURATION_MINS,
+} from "./models";
 import { Updated } from "./sequelize";
 
 const logger = getLogger(__filename);
@@ -313,6 +319,7 @@ export async function sendFileStream(req: Request, res: Response, path: string) 
     file = createReadStream(filename);
   }
 
+  setCacheControl(res, STATIC_CACHE_DURATION_MINS);
   res.writeHead(responseCode, headers);
   file.pipe(res);
   logResponse(res, getStatusText(responseCode));

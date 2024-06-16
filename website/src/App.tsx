@@ -76,7 +76,7 @@ export default function App() {
 
   function setLanguage(langString: string) {
     if (!(langString in Language)) {
-      throw Error("Invalid language name.");
+      throw new Error("Invalid language name.");
     }
     const newLang = Language[langString as keyof typeof Language];
     localStorage.setItem("userLanguage", langString);
@@ -357,7 +357,7 @@ export default function App() {
                 <Route path="most-popular" element={<MostPopular />} />
                 <Route path="search" element={<Search />} />
                 <Route path="tv-show/:permalink" element={<TvShow />} />
-                <Route path="watch/:showName/:season/:episode" element={<Watch />} />
+                <Route path="watch/:showName/:season/:episode" element={<Watch lang={userLanguage} />} />
               </Route>
               <Route
                 path="*"
