@@ -71,7 +71,7 @@ async function tryDownloadEpisode(tvShow: TvShow, episode: Episode) {
 
 async function downloadEpisode(tvShow: TvShow, episode: Episode) {
   const episodeSearchQuery = torrentIndexer.getSearchQuery({ ...episode, showName: tvShow.name });
-  logger.debug(`Found unwatched episode, searching for '${episodeSearchQuery}'.`)
+  logger.info(`Found unwatched episode, searching for '${episodeSearchQuery}'.`)
   const result = await torrentIndexer.search(episodeSearchQuery);
   if (!result || !result.link) {
     logger.error("Search query turned up empty. Either no torrents available, or indexer is outdated.");

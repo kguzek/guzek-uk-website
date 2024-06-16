@@ -251,7 +251,7 @@ export function validateNaturalList(list: any, res: Response) {
   return list as number[];
 }
 
-const getVideoExtension = (filename: string) => filename.match("\.(mkv|mp4)$")?.[1];
+const getVideoExtension = (filename: string) => filename.match(/\.(mkv|mp4)$/)?.[1];
 
 export async function sendFileStream(req: Request, res: Response, path: string) {
   let filename = path;
