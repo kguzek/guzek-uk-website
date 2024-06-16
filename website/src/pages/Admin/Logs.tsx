@@ -28,7 +28,7 @@ type LogLevel = keyof typeof ICONS;
 interface LogEntry {
   label: string;
   level: LogLevel;
-  message: string;
+  message: string | NodeJS.ErrnoException;
   metadata: any;
   timestamp: string;
 }
@@ -253,7 +253,12 @@ function Log({
   setFilter: StateSetter<Filter>;
 }) {
   const [collapsed, setCollapsed] = useState(true);
-
+  
+  let message = data.message;
+  if (typeof message !== 'string' && data.level === "error") {
+    message = "[See log body for error details]";
+    data.metadata.body = data.message;
+  }
   const showBody = entryHasBody(data);
 
   return (
@@ -297,17 +302,17 @@ function Log({
                   <div
                     className="message flex"
                     title={
-                      (collapsed ? "Expand" : "Collapse") + " request body"
+                      (collapsed ? "Expand" : "Collapse") + " log entry body"
                     }
                   >
                     <i className="fas fa-code"></i>
                     <i
-                      className={`fas fa-caret-${collapsed ? "down" : "up"}`}
+                      className={`fas fa-caret-up ${collapsed ? "rotated" : ""}`}
                     ></i>
                   </div>
                 </div>
               )}
-              <code className="message">{data.message + ""}</code>
+              <code className="message">{message.toString()}</code>
             </div>
           </div>
         </div>

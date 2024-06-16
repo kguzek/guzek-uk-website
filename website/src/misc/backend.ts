@@ -1,8 +1,8 @@
 import { Auth } from "./context";
 import { TryFetch } from "./util";
 
-//const USE_LOCAL_API_URL = false;
-const USE_LOCAL_API_URL = true;
+const USE_LOCAL_API_URL = false;
+//const USE_LOCAL_API_URL = true;
 const CACHE_NAME = "guzek-uk-cache";
 const TOKEN_PENDING = "TOKEN_PENDING";
 const MAX_TOKEN_REFRESH_TIME_S = 30 // seconds

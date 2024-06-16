@@ -39,7 +39,7 @@ import { TorrentClient, ConvertedTorrentInfo } from "../torrentClient";
 export const router = express.Router() as expressWs.Router;
 
 const WS_MESSAGE_INTERVAL_MS = 3000;
-const SUBTITLES_PATH = "/var/lib/guzek-uk/subtitles";
+const SUBTITLES_PATH = "/var/cache/guzek-uk/subtitles";
 const SUBTITLES_FILENAME = "subtitles.vtt";
 const SUBTITLES_API_URL = "https://api.opensubtitles.com/api/v1";
 const SUBTITLES_DEFAULT_LANGUAGE = "en";

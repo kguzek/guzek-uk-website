@@ -1,28 +1,26 @@
 import { Response, Router } from "express";
 import { readdir, readFile } from "fs/promises";
-import { getLogger } from "../middleware/logging";
+import { getLogger, LOG_DIRECTORY } from "../middleware/logging";
 import { isInvalidDate, sendError, sendOK, setCacheControl } from "../util";
 
 export const router = Router();
 const logger = getLogger(__filename);
 
-const BASE_DIR = "logs";
-
 async function getLogDates(path: string = "") {
   let filenames;
   try {
-    filenames = await readdir(BASE_DIR + path);
+    filenames = await readdir(LOG_DIRECTORY + path);
   } catch (error) {
     logger.error(`Could not read log filenames: ${error}`);
     return [];
   }
-  return filenames.map((filename) => filename.replace(/.log$/, ""));
+  return filenames.map((filename) => filename.replace(/\.log$/, ""));
 }
 
 async function readLogFile(res: Response, date: string) {
   let buffer: Buffer;
   try {
-    buffer = await readFile(`${BASE_DIR}/${date}.log`);
+    buffer = await readFile(`${LOG_DIRECTORY}/${date}.log`);
   } catch (error) {
     logger.error(error);
     return sendError(res, 500, error as Error);

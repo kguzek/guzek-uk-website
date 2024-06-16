@@ -7,10 +7,6 @@
   transition: transform 200ms ease;
 }
 
-.collapser i.rotated {
-  transform: rotate(-180deg);
-}
-
 .downloads-widget {
   position: fixed;
   bottom: 0;

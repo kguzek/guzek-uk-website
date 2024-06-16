@@ -9,6 +9,8 @@ import {
 } from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 
+export const LOG_DIRECTORY = "/var/log/guzek-uk";
+
 const c = {
   clear: "\x1b[0m",
   bright: "\x1b[1m",
@@ -87,14 +89,14 @@ const jsonFormat = format.combine(format.json());
 
 const defaultFileTransport = new DailyRotateFile({
   filename: "%DATE%",
-  dirname: "logs",
+  dirname: LOG_DIRECTORY,
   extension: ".log",
   maxFiles: "14d",
   format: jsonFormat,
 });
 
 const errorFileTransport = new transports.File({
-  filename: "logs/error.log",
+  filename: `${LOG_DIRECTORY}/error.log`,
   level: "error",
   format: jsonFormat,
 });
