@@ -151,6 +151,10 @@ body {
   display: none;
 }
 
+.rotated {
+  transform: rotate(-180deg);
+}
+
 .collapsible {
   display: grid;
   grid-template-rows: 1fr;

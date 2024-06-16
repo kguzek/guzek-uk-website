@@ -13,7 +13,13 @@ import "./SyntaxHighlighted.css";
 // https://stackoverflow.com/questions/4810841/pretty-print-json-using-javascript
 function syntaxHighlight(json: any) {
   if (typeof json !== "string") {
-    json = JSON.stringify(json, undefined, 2);
+    try {
+      json = JSON.stringify(json, undefined, 2);
+    } catch (error) {
+      console.error(error);
+      console.debug(json);
+      json = `{\n  [Circular]\n}`;
+    }
   }
   json = json
     .replace(/&/g, "&amp;")
