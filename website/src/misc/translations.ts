@@ -1,4 +1,10 @@
-import { Episode, ErrorCode, ErrorPageContent, Language, DownloadedEpisode } from "./models";
+import {
+  Episode,
+  ErrorCode,
+  ErrorPageContent,
+  Language,
+  DownloadedEpisode,
+} from "./models";
 
 const LONG_DATE_FORMAT = {
   day: "2-digit",
@@ -276,7 +282,7 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
       mostPopular: {
         title: "Most Popular",
       },
-      episodes: { 
+      episodes: {
         downloadStatus: {
           1: "Download",
           2: "Downloading",
@@ -287,21 +293,22 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
         },
         downloadComplete: (episode) => `${episode} has finished downloading.`,
         downloadError: (episode) => `${episode} download has failed.`,
-        confirmDelete: (episode) => `Are you sure you want to delete ${episode} from the server?`,
+        confirmDelete: (episode) =>
+          `Are you sure you want to delete ${episode} from the server?`,
         deleted: (episode) => `Episode ${episode} was successfully deleted.`,
         serialise: (episode) =>
           `S${episode.season.toString().padStart(2, "0")}E${episode.episode
             .toString()
             .padStart(2, "0")}`,
-
       },
       watch: {
-        playbackError: "There was a problem playing that video. Please try again later.",
+        playbackError:
+          "There was a problem playing that video. Please try again later.",
       },
     },
   },
   PL: {
-    footer: (year) => `{year} \u00a9 Konrad Guzek`,
+    footer: (year) => `${year} \u00a9 Konrad Guzek`,
     loading: "Trwa ładowanie strony",
     language: "Język",
     loginShort: "Zaloguj",
@@ -442,12 +449,14 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
         },
         downloadComplete: (episode) => `Pomyśłnie pobrano ${episode}.`,
         downloadError: (episode) => `Pobieranie ${episode} nie powiodło się.`,
-        confirmDelete: (episode) => `Na pewno chcesz usunąć ${episode} z serwera?`,
+        confirmDelete: (episode) =>
+          `Na pewno chcesz usunąć ${episode} z serwera?`,
         deleted: (episode) => `Pomyślnie usunięto odcinek ${episode}.`,
         serialise: (episode) => `S${episode.season}:O${episode.episode}`,
       },
       watch: {
-        playbackError: "Nastąpił błąd podczas odtwarzania tego filmu. Spróbuj wkrótce ponownie.",
+        playbackError:
+          "Nastąpił błąd podczas odtwarzania tego filmu. Spróbuj wkrótce ponownie.",
       },
     },
   },
