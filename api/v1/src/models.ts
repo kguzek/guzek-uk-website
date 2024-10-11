@@ -1,3 +1,4 @@
+import { Request } from "express";
 import { Page, PageContent, Token, TuLalem, User } from "./sequelize";
 import { ConvertedTorrentInfo } from "./torrentClient";
 
@@ -51,6 +52,10 @@ export interface UserObj {
   admin?: boolean;
 }
 
+export interface CustomRequest extends Request {
+  user?: UserObj;
+}
+
 export interface TorrentInfo {
   id: number;
   name: string;
@@ -99,6 +104,9 @@ export const TORRENT_STATUSES = [
   "Idle/Seeding",
 ];
 
-export type BasicEpisode = Pick<ConvertedTorrentInfo, "showName" | "season" | "episode">;
+export type BasicEpisode = Pick<
+  ConvertedTorrentInfo,
+  "showName" | "season" | "episode"
+>;
 
 export const STATIC_CACHE_DURATION_MINS = 30 * 24 * 60; // 30 days in minutes

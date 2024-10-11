@@ -8,7 +8,7 @@ import {
   sendError,
 } from "../util";
 import { getDistanceBetweenTwoPoints } from "../maths";
-import { LatLngArr } from "../models";
+import { CustomRequest, LatLngArr } from "../models";
 export const router = express.Router();
 
 /** The minimum distance a point has to be apart from all other points on the map. */
@@ -55,7 +55,7 @@ async function validateCoordinates(coords?: number[], userUUID?: string) {
 
 router
   // POST new coordinates
-  .post("/", async (req, res) => {
+  .post("/", async (req: CustomRequest, res) => {
     const coords = req.body.coordinates;
     const errorMessage = await validateCoordinates(coords, req.user?.uuid);
     if (errorMessage) {

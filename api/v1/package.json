@@ -11,6 +11,7 @@
   "main": "index.ts",
   "scripts": {
     "dev": "NODE_ENV=development NODE_PORT=5017 nodemon --exec ts-node --files index.ts",
+    "start": "NODE_ENV=development NODE_PORT=5017 ts-node index.ts",
     "prod": "NODE_ENV=production NODE_PORT=5017 node --max-old-space-size=192 dist/index.js",
     "compile": "tsc"
   },

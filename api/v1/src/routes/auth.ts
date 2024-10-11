@@ -13,7 +13,7 @@ import {
 } from "../util";
 import { LikedShows, Token, User, WatchedEpisodes } from "../sequelize";
 import { getTokenSecret } from "../middleware/auth";
-import { UserObj } from "../models";
+import { CustomRequest, UserObj } from "../models";
 import { getLogger } from "../middleware/logging";
 const password = require("s-salt-pepper");
 
@@ -145,7 +145,7 @@ router
   })
 
   // UPDATE existing user details
-  .put("/users/:uuid/details", async (req: Request, res: Response) => {
+  .put("/users/:uuid/details", async (req: CustomRequest, res: Response) => {
     for (const property in req.body) {
       if (MODIFIABLE_USER_PROPERTIES.includes(property)) continue;
       if (!req.user?.admin) {
@@ -164,7 +164,7 @@ router
   })
 
   // UPDATE existing user password
-  .put("/users/:uuid/password", async (req: Request, res: Response) => {
+  .put("/users/:uuid/password", async (req: CustomRequest, res: Response) => {
     const reject = (message: string) => sendError(res, 400, { message });
 
     if (!req.user?.admin) {

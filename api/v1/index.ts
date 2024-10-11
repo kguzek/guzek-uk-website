@@ -1,7 +1,7 @@
 // Initialise dependencies
 import cors from "cors";
 import express from "express";
-import expressWs from "express-ws"
+import expressWs from "express-ws";
 import path from "path";
 import dotenv from "dotenv";
 const DEBUG_MODE = process.env.NODE_ENV === "development";
@@ -22,7 +22,7 @@ const logger = getLogger(__filename);
 // Initialise the application instance
 export const wsInstance = expressWs(express());
 const app = wsInstance.app;
-app.set('trust proxy', 1);
+app.set("trust proxy", 1);
 
 // Determine the server port
 const PORT = process.env.NODE_PORT;

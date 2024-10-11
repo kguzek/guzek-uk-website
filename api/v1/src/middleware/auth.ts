@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { getLogger } from "./logging";
 import { sendError } from "../util";
-import { RequestMethod, UserObj } from "../models";
+import { CustomRequest, RequestMethod, UserObj } from "../models";
 
 const logger = getLogger(__filename);
 
@@ -56,7 +56,7 @@ const PERMISSIONS = {
 } as const;
 
 export function authMiddleware(
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction
 ) {
@@ -66,7 +66,8 @@ export function authMiddleware(
   };
   // Check if the current endpoint is accessible using the request method to anonymous or logged in users
   for (const [level, routes] of Object.entries(PERMISSIONS)) {
-    const method = req.method === "HEAD" ? "GET" : req.method as RequestMethod;
+    const method =
+      req.method === "HEAD" ? "GET" : (req.method as RequestMethod);
     const endpoints = routes[method] ?? [];
     endpointAccessibleBy[level as keyof typeof PERMISSIONS] = endpoints.some(
       (endpoint) => req.path.startsWith(endpoint)
