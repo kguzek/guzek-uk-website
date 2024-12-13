@@ -73,7 +73,7 @@ export async function getSubtitleClient() {
 export async function downloadSubtitles(
   directory: string,
   filepath: string,
-  torrent: TorrentInfo,
+  filename: string,
   episode: BasicEpisode,
   language: string
 ): Promise<string> {
@@ -81,9 +81,11 @@ export async function downloadSubtitles(
     return "Subtitles are currently unavailable. Try again later.";
 
   let res: AxiosResponse;
-  const query = torrent.name.split("[")[0];
+  // Get the substring up until the first slash or opening square bracket, exclusive
+  // E.g. "The Simpsons [720p]/The Simpsons S01E01" -> "The Simpsons"
+  const query = filename.replace(/[\/\\\[].+$/, "").trim();
   if (!query) {
-    logger.error(`Invalid torrent filename '${torrent.name}'.`);
+    logger.error(`Invalid torrent filename '${filename}'.`);
     return "It looks like subtitles for this TV show are unavailable.";
   }
   logger.info(`Searching for subtitles '${query}'...`);

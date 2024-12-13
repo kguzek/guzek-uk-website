@@ -446,8 +446,20 @@ async function handleTorrentRequest(
   }
   if (!torrent) {
     const serialised = serialiseEpisode({ season, episode });
-    if (torrentNotFoundCallback)
-      return void torrentNotFoundCallback(basicEpisode);
+    if (torrentNotFoundCallback) {
+      try {
+        const promise = torrentNotFoundCallback(basicEpisode);
+        if (promise) await promise;
+        return;
+      } catch (error) {
+        if (
+          !(error instanceof Error) ||
+          error.message !== "Backup episode search failed"
+        )
+          logger.error(error);
+        // Continue to the 404 response
+      }
+    }
     return sendError(res, 404, {
       message: `Episode '${showName} ${serialised}' was not found in the downloads.`,
     });
@@ -459,8 +471,12 @@ async function handleTorrentRequest(
 const parseFilename = (filename: string) =>
   sanitiseShowName(filename).toLowerCase();
 
+/**
+ * Searches the downloads folder for a filename which matches the episode.
+ * Sends a 500 response if the folder could not be read.
+ * Throws an `Error` if the episode is not found, which must be handled.
+ */
 async function searchForDownloadedEpisode(
-  req: Request,
   res: Response,
   episode: BasicEpisode
 ) {
@@ -482,10 +498,8 @@ async function searchForDownloadedEpisode(
     (file) =>
       parseFilename(file).startsWith(searchLowerCase) && file.endsWith(".mp4")
   );
-  if (match) return sendFileStream(req, res, TORRENT_DOWNLOAD_PATH + match);
-  return sendError(res, 404, {
-    message: `Episode '${search}' was not found in the downloads.`,
-  });
+  if (match) return TORRENT_DOWNLOAD_PATH + match;
+  throw new Error("Backup episode search failed");
 }
 
 router.get("/video/:showName/:season/:episode", (req, res) =>
@@ -493,7 +507,12 @@ router.get("/video/:showName/:season/:episode", (req, res) =>
     req,
     res,
     (torrent) => sendFileStream(req, res, TORRENT_DOWNLOAD_PATH + torrent.name),
-    (episode) => searchForDownloadedEpisode(req, res, episode)
+
+    async (episode) => {
+      const filename = await searchForDownloadedEpisode(res, episode);
+      if (!filename) return;
+      sendFileStream(req, res, filename);
+    }
   )
 );
 
@@ -530,33 +549,54 @@ router.delete("/video/:showName/:season/:episode", (req, res) =>
   })
 );
 
-router.get("/subtitles/:showName/:season/:episode", (req, res) =>
-  handleTorrentRequest(req, res, async (torrent, episode) => {
-    const directory = `${SUBTITLES_PATH}/${episode.showName}/${episode.season}/${episode.episode}`;
-    const filepath = `${directory}/${SUBTITLES_FILENAME}`;
-    try {
-      await fs.access(filepath);
-      if (process.env.SUBTITLES_API_KEY_DEV && SUBTITLES_FORCE_DOWNLOAD_NEW) {
-        throw new Error("Force fresh download of subtitles");
-      }
-    } catch (error) {
-      const language = `${
-        req.query.lang || SUBTITLES_DEFAULT_LANGUAGE
-      }`.toLowerCase();
-      const errorMessage = await downloadSubtitles(
-        directory,
-        filepath,
-        torrent,
-        episode,
-        language
-      );
-      if (errorMessage) {
-        sendError(res, 400, { message: errorMessage });
-        return;
-      }
+async function getSubtitles(
+  req: Request,
+  res: Response,
+  episode: BasicEpisode,
+  filename: string
+) {
+  const directory = `${SUBTITLES_PATH}/${episode.showName}/${episode.season}/${episode.episode}`;
+  const filepath = `${directory}/${SUBTITLES_FILENAME}`;
+  try {
+    await fs.access(filepath);
+    if (process.env.SUBTITLES_API_KEY_DEV && SUBTITLES_FORCE_DOWNLOAD_NEW) {
+      throw new Error("Force fresh download of subtitles");
     }
-    setCacheControl(res, STATIC_CACHE_DURATION_MINS);
-    res.status(200).sendFile(filepath);
-    logResponse(res, `${getStatusText(200)} (${SUBTITLES_FILENAME})`);
-  })
+  } catch (error) {
+    const language = `${
+      req.query.lang || SUBTITLES_DEFAULT_LANGUAGE
+    }`.toLowerCase();
+    const errorMessage = await downloadSubtitles(
+      directory,
+      filepath,
+      filename,
+      episode,
+      language
+    );
+    if (errorMessage) {
+      sendError(res, 400, { message: errorMessage });
+      return;
+    }
+  }
+  setCacheControl(res, STATIC_CACHE_DURATION_MINS);
+  res.status(200).sendFile(filepath);
+  logResponse(res, `${getStatusText(200)} (${SUBTITLES_FILENAME})`);
+}
+
+router.get("/subtitles/:showName/:season/:episode", (req, res) =>
+  handleTorrentRequest(
+    req,
+    res,
+    (torrent, episode) => getSubtitles(req, res, episode, torrent.name),
+    async (episode) => {
+      const filename = await searchForDownloadedEpisode(res, episode);
+      if (!filename) return;
+      getSubtitles(
+        req,
+        res,
+        episode,
+        filename.replace(TORRENT_DOWNLOAD_PATH, "")
+      );
+    }
+  )
 );
