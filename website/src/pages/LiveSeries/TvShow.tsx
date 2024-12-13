@@ -7,7 +7,11 @@ import {
   ErrorCode,
   TvShowDetails,
 } from "../../misc/models";
-import { TranslationContext, useFetchContext } from "../../misc/context";
+import {
+  AuthContext,
+  TranslationContext,
+  useFetchContext,
+} from "../../misc/context";
 import {
   getEpisodeAirDate,
   hasEpisodeAired,
@@ -17,6 +21,7 @@ import {
 import ErrorPage from "../ErrorPage";
 import { LiveSeriesOutletContext } from "./Base";
 import TvShowSkeleton from "../../components/LiveSeries/TvShowSkeleton";
+import InputBox from "../../components/Forms/InputBox";
 
 export default function TvShow() {
   const [numImagesLoaded, setNumImagesLoaded] = useState(0);
@@ -24,7 +29,11 @@ export default function TvShow() {
   const [tvShowDetails, setTvShowDetails] = useState<
     null | TvShowDetails | undefined
   >(null);
+  const [autoDownload, setAutoDownload] = useState<boolean | undefined>(
+    undefined
+  );
   const data = useContext(TranslationContext);
+  const { user } = useContext(AuthContext);
   const { likedShowIds, watchedEpisodes, setWatchedEpisodes, fetchResource } =
     useOutletContext<LiveSeriesOutletContext>();
   const { removeOldCaches } = useFetchContext();
@@ -43,6 +52,12 @@ export default function TvShow() {
   useEffect(() => {
     setTitle(tvShowDetails?.name || data.liveSeries.tvShow.showDetails);
   }, [data, tvShowDetails]);
+
+  useEffect(() => {
+    setAutoDownload(undefined);
+    // TODO: Implement auto-download user setting reading
+    setAutoDownload(true);
+  }, [user]);
 
   function sortEpisodes(episodes: EpisodeType[]) {
     const seasons: { [season: number]: EpisodeType[] } = {};
@@ -109,6 +124,11 @@ export default function TvShow() {
     }));
   }
 
+  function onAutoDownloadChange(value: boolean) {
+    // TODO: Implement auto-download user setting saving
+    console.log("Auto downloading is now", value ? "enabled" : "disabled");
+  }
+
   if (
     tvShowDetails === undefined ||
     (Array.isArray(tvShowDetails) && tvShowDetails.length === 0)
@@ -116,7 +136,7 @@ export default function TvShow() {
     return <ErrorPage errorCode={ErrorCode.NotFound} />;
   }
 
-  if (!tvShowDetails) return <TvShowSkeleton />;
+  if (!tvShowDetails || autoDownload === undefined) return <TvShowSkeleton />;
 
   const isLikedOld = tvShowDetails && likedShowIds?.includes(tvShowDetails.id);
   const isLiked = flipped ? !isLikedOld : isLikedOld;
@@ -224,6 +244,19 @@ export default function TvShow() {
           </>
         )}
         <h3>{data.liveSeries.tvShow.episodes}</h3>
+        {user?.admin && (
+          <div style={{ width: "fit-content" }}>
+            <InputBox
+              type="checkbox"
+              label="Automatically download unwatched episodes"
+              value={autoDownload}
+              setValue={(value: boolean) => {
+                onAutoDownloadChange(value);
+                setAutoDownload(value);
+              }}
+            ></InputBox>
+          </div>
+        )}
         {tvShowDetails.episodes.length === 0 ? (
           <p>No episodes to list.</p>
         ) : null}

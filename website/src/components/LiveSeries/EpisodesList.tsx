@@ -1,13 +1,23 @@
 import React, { ReactElement, useContext, useState, useEffect } from "react";
 import { Link, useOutletContext } from "react-router-dom";
-import { TranslationContext, useFetchContext, ModalContext, AuthContext } from "../../misc/context";
+import {
+  TranslationContext,
+  useFetchContext,
+  ModalContext,
+  AuthContext,
+} from "../../misc/context";
 import {
   Episode as EpisodeType,
   TvShowDetails,
   DownloadedEpisode,
   DownloadStatus,
 } from "../../misc/models";
-import { getEpisodeAirDate, hasEpisodeAired, bytesToReadable, compareEpisodes } from "../../misc/util";
+import {
+  getEpisodeAirDate,
+  hasEpisodeAired,
+  bytesToReadable,
+  compareEpisodes,
+} from "../../misc/util";
 import { LiveSeriesOutletContext } from "../../pages/LiveSeries/Base";
 
 function Episode({
@@ -32,11 +42,18 @@ function Episode({
 
   const airDate = data.dateTimeFormat.format(getEpisodeAirDate(episode));
   const watchedInSeason = watchedEpisodes?.[tvShow.id]?.[+episode.season];
-  const isWatched = watchedInSeason?.includes(episode.episode); 
-  const episodeString = `${tvShow.name} ${data.liveSeries.episodes.serialise(episode)}`;
+  const isWatched = watchedInSeason?.includes(episode.episode);
+  const episodeString = `${tvShow.name} ${data.liveSeries.episodes.serialise(
+    episode
+  )}`;
 
-  const episodePredicate = (check: DownloadedEpisode) => // Torrents filenames omit colons
-    compareEpisodes(check, {  ...episode, showName: tvShow.name.replace(/:/g, '') });
+  const episodePredicate = (
+    check: DownloadedEpisode // Torrents filenames omit colons
+  ) =>
+    compareEpisodes(check, {
+      ...episode,
+      showName: tvShow.name.replace(/:/g, ""),
+    });
 
   useEffect(() => {
     const downloadedEpisode = downloadedEpisodes.find(episodePredicate);
@@ -62,28 +79,34 @@ function Episode({
       method: "POST",
       useEpisodate: false,
       body: { tvShow, episode },
-      onSuccess: (data) => monitorEpisodeDownloads(data, episodePredicate, episodeString),
+      onSuccess: (data) =>
+        monitorEpisodeDownloads(data, episodePredicate, episodeString),
       onError: () => {
         setModalError(data.liveSeries.episodes.downloadError(episodeString));
-        setMetadata((old) => old && ({ ...old, status: DownloadStatus.FAILED }));
+        setMetadata((old) => old && { ...old, status: DownloadStatus.FAILED });
       },
     });
-    setMetadata((old) => old && ({...old, status: DownloadStatus.PENDING }));
+    setMetadata((old) => old && { ...old, status: DownloadStatus.PENDING });
   }
 
   const downloadStatus = metadata?.status ?? DownloadStatus.STOPPED;
   let downloadTooltip = data.liveSeries.episodes.downloadStatus[downloadStatus];
-  const showProgress = metadata && [DownloadStatus.PENDING, DownloadStatus.VERIFYING].includes(downloadStatus);
+  const showProgress =
+    metadata &&
+    [DownloadStatus.PENDING, DownloadStatus.VERIFYING].includes(downloadStatus);
   if (showProgress) {
     if (metadata.progress != null)
       downloadTooltip += ` (${(metadata.progress * 100).toFixed(1)}%)`;
     if (metadata.speed != null)
-      downloadTooltip = downloadTooltip.replace(")", ` @ ${bytesToReadable(metadata.speed)}/s)`);
+      downloadTooltip = downloadTooltip.replace(
+        ")",
+        ` @ ${bytesToReadable(metadata.speed)}/s)`
+      );
   }
-  const downloadIcon = 
-    <i
-      className={`fas fa-${downloadStatus === DownloadStatus.COMPLETE ? "play" : "download"} status-${downloadStatus}`}
-    ></i>
+  const downloadIcon = (
+    <i className={`fas fa-download status-${downloadStatus}`}></i>
+  );
+  const playIcon = <i className={`fas fa-play status-${downloadStatus}`}></i>;
 
   return (
     <div className="episode">
@@ -97,27 +120,38 @@ function Episode({
         <small>{airDate}</small>
       </div>
       <div className="flex gap-10 noshrink">
-        {user?.admin &&
-          <div
-            className="flex flex-column"
-            title={downloadTooltip}
-            style={{ minWidth: 20 }}
-            onClick={downloadStatus === DownloadStatus.STOPPED ? startDownload : undefined}
-          >
-            {showProgress && 
-              <i
-                className="fas fa-download status-progress-bar"
-                style={{ backgroundSize: `${100 * (metadata?.progress ?? 0)}%` }}
-              ></i>
-            }
-            {metadata?.status === DownloadStatus.COMPLETE
-              ? <Link to={`/liveseries/watch/${tvShow.name}/${episode.season}/${episode.episode}`}>
-                  {downloadIcon}
-                </Link>
-              : downloadIcon
-            }
-          </div>
-        }
+        {user?.admin && (
+          <>
+            <div
+              className="flex flex-column"
+              title={downloadTooltip}
+              style={{ minWidth: 20 }}
+              onClick={
+                downloadStatus === DownloadStatus.STOPPED
+                  ? startDownload
+                  : undefined
+              }
+            >
+              {showProgress && (
+                <i
+                  className="fas fa-download status-progress-bar"
+                  style={{
+                    backgroundSize: `${100 * (metadata?.progress ?? 0)}%`,
+                  }}
+                ></i>
+              )}
+              {downloadStatus !== DownloadStatus.COMPLETE && downloadIcon}
+            </div>
+            <Link
+              to={`/liveseries/watch/${tvShow.name}/${episode.season}/${episode.episode}`}
+              title={
+                data.liveSeries.episodes.downloadStatus[DownloadStatus.COMPLETE]
+              }
+            >
+              {playIcon}
+            </Link>
+          </>
+        )}
         {hasEpisodeAired(episode) ? (
           <div
             className="watched centred"
@@ -189,4 +223,3 @@ export default function EpisodesList({
     </>
   );
 }
-

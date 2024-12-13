@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useContext, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import ErrorPage from "../ErrorPage";
 import { Language, ErrorCode } from "../../misc/models";
 import { TranslationContext, ModalContext } from "../../misc/context";
 import { API_BASE } from "../../misc/backend";
 
 function isNumber(val: string | undefined): val is string {
-  return val != null && `${+val}` === val;
+  return val != null && `${+val}` === val && +val > 0;
 }
 
 const VIDEO_FRAME_RATE = 25; // frames per second
@@ -18,22 +18,25 @@ export default function Watch({ lang }: { lang: Language }) {
   const { showName, season, episode } = useParams();
   const data = useContext(TranslationContext);
   const { setModalError } = useContext(ModalContext);
-  const [loadingFailed, setLoadingFailed] = useState<boolean | undefined>(false);
-  const [currentIcon, setCurrentIcon] = useState('');
-  const [iconVisibility, setIconVisibility] = useState('hidden');
+  const [loadingFailed, setLoadingFailed] = useState<boolean | undefined>(
+    false
+  );
+  const [currentIcon, setCurrentIcon] = useState("");
+  const [iconVisibility, setIconVisibility] = useState("hidden");
   const [currentTimeout, setCurrentTimeout] = useState<null | number>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    window.addEventListener("fullscreenchange", onFullscreenChange);  
+    window.addEventListener("fullscreenchange", onFullscreenChange);
     return () => {
       window.removeEventListener("fullscreenchange", onFullscreenChange);
-    }
-  }, [])
+    };
+  }, []);
 
   if (!showName || !isNumber(season) || !isNumber(episode)) {
     return <ErrorPage errorCode={ErrorCode.NotFound} />;
-  }  
-  
+  }
+
   const showNameEncoded = encodeURIComponent(showName);
   const path = `${showNameEncoded}/${season}/${episode}`;
   const episodeObject = { episode: +episode, season: +season };
@@ -57,16 +60,19 @@ export default function Watch({ lang }: { lang: Language }) {
   function setIcon(icon: string, faClass: string = "fa-solid") {
     setCurrentIcon(`${faClass} fa-${icon}`);
     if (!icon) return;
-    if (currentTimeout != null)
-      clearTimeout(currentTimeout);
-    setIconVisibility('visible');
-    setCurrentTimeout(window.setTimeout(() => {
-      setIconVisibility('hidden');
-      setCurrentTimeout(window.setTimeout(() => {
-        setCurrentIcon('');
-        setCurrentTimeout(null);
-      }, 500));
-    }, 500));
+    if (currentTimeout != null) clearTimeout(currentTimeout);
+    setIconVisibility("visible");
+    setCurrentTimeout(
+      window.setTimeout(() => {
+        setIconVisibility("hidden");
+        setCurrentTimeout(
+          window.setTimeout(() => {
+            setCurrentIcon("");
+            setCurrentTimeout(null);
+          }, 500)
+        );
+      }, 500)
+    );
   }
 
   function onKeyPress(evt: React.KeyboardEvent<HTMLDivElement>) {
@@ -76,14 +82,14 @@ export default function Watch({ lang }: { lang: Language }) {
     if (!video || !videoContainer) return;
     switch (evt.key) {
       case "f": // Toggle fullscreen
-        (document.fullscreenElement == null)
+        document.fullscreenElement == null
           ? videoContainer.requestFullscreen()
           : document.exitFullscreen();
         break;
       case "j": // Skip behind 10 s
         video.currentTime = Math.max(0, video.currentTime - 10);
-          setIcon("chevron-left");
-        break;  
+        setIcon("chevron-left");
+        break;
       case "k": // Toggle pause
         if (video.paused || video.ended) {
           video.play();
@@ -104,7 +110,10 @@ export default function Watch({ lang }: { lang: Language }) {
         video.currentTime = Math.max(0, video.currentTime - VIDEO_FRAME_LENGTH);
         break;
       case ".": // Skip forward 1 frame
-        video.currentTime = Math.min(video.duration, video.currentTime + VIDEO_FRAME_LENGTH);
+        video.currentTime = Math.min(
+          video.duration,
+          video.currentTime + VIDEO_FRAME_LENGTH
+        );
         break;
       case "c": // Toggle subtitles
         const subtitleTrack = video.textTracks[0];
@@ -114,10 +123,11 @@ export default function Watch({ lang }: { lang: Language }) {
           subtitleTrack.mode = "hidden";
         } else {
           setIcon("closed-captioning");
-          subtitleTrack.mode = "showing"; 
+          subtitleTrack.mode = "showing";
         }
         break;
-      default: return;
+      default:
+        return;
     }
   }
 
@@ -126,14 +136,57 @@ export default function Watch({ lang }: { lang: Language }) {
     const video = videoRef.current;
     const videoContainer = videoContainerRef.current;
     if (!video || !videoContainer || evt.target !== video) return;
-    // ... 
     // Synchronise player fullscreen button and actual state
+    // This feature probably won't be implemented, but I'm leaving the boilerplate here
+    // ...
+  }
+
+  function onEnded() {
+    if (episode == null) {
+      throw new Error("Episode number is nullish");
+    }
+    navigate(`/liveseries/watch/${showNameEncoded}/${season}/${+episode + 1}`);
   }
 
   return (
     <div onKeyPress={onKeyPress}>
-      <h2>{showName} {data.liveSeries.episodes.serialise(episodeObject)}</h2>
-      {loadingFailed && <p className="centred">{data.liveSeries.watch.playbackError}</p>}
+      <h2>
+        {showName} {data.liveSeries.episodes.serialise(episodeObject)}
+      </h2>
+      <div className="flex gap-15" style={{ marginBottom: "10px" }}>
+        {+season > 1 && (
+          <>
+            <Link to={`/liveseries/watch/${showNameEncoded}/${+season - 1}/1`}>
+              Previous Season
+            </Link>
+            |
+          </>
+        )}
+        <Link to={`/liveseries/watch/${showNameEncoded}/${+season + 1}/1`}>
+          Next Season
+        </Link>
+        |
+        {+episode > 1 && (
+          <>
+            <Link
+              to={`/liveseries/watch/${showNameEncoded}/${season}/${
+                +episode - 1
+              }`}
+            >
+              Previous Episode
+            </Link>
+            |
+          </>
+        )}
+        <Link
+          to={`/liveseries/watch/${showNameEncoded}/${season}/${+episode + 1}`}
+        >
+          Next Episode
+        </Link>
+      </div>
+      {loadingFailed && (
+        <p className="centred">{data.liveSeries.watch.playbackError}</p>
+      )}
       <div ref={videoContainerRef} className="video-container">
         <div className={`video-icon ${iconVisibility} flex-column`}>
           <i className={currentIcon}></i>
@@ -148,6 +201,7 @@ export default function Watch({ lang }: { lang: Language }) {
           onLoadStart={onLoadStart}
           onLoadedData={onLoad}
           crossOrigin="anonymous"
+          onEnded={onEnded}
         >
           <track
             label="English"
@@ -155,10 +209,9 @@ export default function Watch({ lang }: { lang: Language }) {
             srcLang="en"
             src={`${API_BASE}liveseries/subtitles/${path}?lang=${lang}`}
             default
-        />
+          />
         </video>
       </div>
     </div>
   );
 }
-
