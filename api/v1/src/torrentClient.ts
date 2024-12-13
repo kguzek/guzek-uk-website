@@ -1,10 +1,6 @@
 import axios, { AxiosError } from "axios";
 import { getLogger } from "./middleware/logging";
-import { 
-  TorrentInfo,
-  TORRENT_DOWNLOAD_PATH,
-  BasicEpisode,
-} from "./models";
+import { TorrentInfo, TORRENT_DOWNLOAD_PATH, BasicEpisode } from "./models";
 import { convertTorrentInfo } from "./util";
 
 const API_URL = "https://transmission.guzek.uk/transmission/rpc";
@@ -21,8 +17,8 @@ const FIELDS = [
   "leftUntilDone",
   "eta",
 ];
-/** The free space required for new torrents to be downloaded. Default: 100 MiB. */
-const MIN_REQUIRED_KEBIBYTES = 102400;
+/** The free space required for new torrents to be downloaded. Default: 1 GiB. */
+const MIN_REQUIRED_KEBIBYTES = 1048576;
 
 const logger = getLogger(__filename);
 
@@ -85,9 +81,7 @@ export class TorrentClient {
 
   private async fetch<T extends Method>(
     method: T,
-    ...[args]: T extends ExemptMethod
-      ? []
-      : [args: Record<string, any>]
+    ...[args]: T extends ExemptMethod ? [] : [args: Record<string, any>]
   ): Promise<TorrentResponse<T>> {
     if (this.initPromise != null && !method.startsWith("session")) {
       // Wait until the client has completed initialisation
@@ -116,7 +110,9 @@ export class TorrentClient {
       if (method !== "session-get") {
         if (res.status === 409) {
           this.updateSessionId(res.data as string);
-          const passed = [args] as T extends ExemptMethod ? [] : [args: Record<string, any>];
+          const passed = [args] as T extends ExemptMethod
+            ? []
+            : [args: Record<string, any>];
           logger.warn("Recursing due to 409 client response");
           return await this.fetch(method, ...passed);
         }
@@ -141,7 +137,10 @@ export class TorrentClient {
       try {
         mapped.push(convertTorrentInfo(current));
       } catch (error) {
-        if (!(error instanceof Error) || !error.message.includes("doesn't match regex"))
+        if (
+          !(error instanceof Error) ||
+          !error.message.includes("doesn't match regex")
+        )
           throw error;
       }
       return mapped;
@@ -153,9 +152,11 @@ export class TorrentClient {
     const showNameLower = episode.showName.toLowerCase();
     return torrents.find((torrent) => {
       const convertedTorrent = convertTorrentInfo(torrent);
-      return (convertedTorrent.season === episode.season &&
+      return (
+        convertedTorrent.season === episode.season &&
         convertedTorrent.episode === episode.episode &&
-        convertedTorrent.showName.toLowerCase() === showNameLower);
+        convertedTorrent.showName.toLowerCase() === showNameLower
+      );
     });
   }
 
@@ -180,7 +181,9 @@ export class TorrentClient {
     });
     const torrent = resTorrentAdd.arguments["torrent-added"];
     if (!torrent) {
-      logger.info("Duplicate file; no torrents added. Creating database entry.");
+      logger.info(
+        "Duplicate file; no torrents added. Creating database entry."
+      );
       if (createDatabaseEntry) await createDatabaseEntry();
       return null;
     }
@@ -189,8 +192,9 @@ export class TorrentClient {
   }
 
   async removeTorrent(torrent: TorrentInfo) {
-    const resRemoveTorrent = await this.fetch("torrent-remove", { id: torrent.id });
+    const resRemoveTorrent = await this.fetch("torrent-remove", {
+      id: torrent.id,
+    });
     logger.debug(JSON.stringify(resRemoveTorrent));
   }
 }
-

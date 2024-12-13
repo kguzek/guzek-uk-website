@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import expressWs from "express-ws";
-import { promises as fs } from "fs";
+import { ObjectEncodingOptions, promises as fs } from "fs";
 import { CronJob } from "cron";
 import { getLogger } from "../middleware/logging";
 import {
@@ -57,6 +57,12 @@ const SUBTITLES_FILENAME = "subtitles.vtt";
 const SUBTITLES_FORCE_DOWNLOAD_NEW = false;
 
 const EPISODATE_API_BASE = "https://episodate.com/api/show-details?q=";
+
+// For some reason TypeScript doesn't recognise the `recursive` option provided in the fs docs
+const RECURSIVE_READ_OPTIONS = {
+  encoding: "utf-8",
+  recursive: true,
+} as ObjectEncodingOptions;
 
 const logger = getLogger(__filename);
 let torrentClient: TorrentClient;
@@ -409,23 +415,29 @@ router.put(
   }
 );
 
+/**
+ * Parses the requested torrent from the request object and either calls the callback with
+ * information related to the torrent, or sends an error response if the torrent is not found.
+ */
 async function handleTorrentRequest(
   req: Request,
   res: Response,
   callback: (
     torrent: TorrentInfo,
     episode: BasicEpisode
-  ) => void | Promise<void>
+  ) => void | Promise<void>,
+  torrentNotFoundCallback?: (episode: BasicEpisode) => void | Promise<void>
 ) {
   const showName = req.params.showName;
   const season = +req.params.season;
   const episode = +req.params.episode;
+  const basicEpisode: BasicEpisode = { showName, season, episode };
   const errorMessage =
     validateNaturalNumber(season) ?? validateNaturalNumber(episode);
   if (errorMessage) return sendError(res, 400, { message: errorMessage });
   let torrent: TorrentInfo | undefined;
   try {
-    torrent = await torrentClient.getTorrentInfo({ showName, season, episode });
+    torrent = await torrentClient.getTorrentInfo(basicEpisode);
   } catch (error) {
     logger.error(error);
     return sendError(res, 500, {
@@ -434,6 +446,8 @@ async function handleTorrentRequest(
   }
   if (!torrent) {
     const serialised = serialiseEpisode({ season, episode });
+    if (torrentNotFoundCallback)
+      return void torrentNotFoundCallback(basicEpisode);
     return sendError(res, 404, {
       message: `Episode '${showName} ${serialised}' was not found in the downloads.`,
     });
@@ -442,9 +456,44 @@ async function handleTorrentRequest(
   callback(torrent, { showName: sanitised, season, episode });
 }
 
+const parseFilename = (filename: string) =>
+  sanitiseShowName(filename).toLowerCase();
+
+async function searchForDownloadedEpisode(
+  req: Request,
+  res: Response,
+  episode: BasicEpisode
+) {
+  const search = `${sanitiseShowName(episode.showName)} ${serialiseEpisode(
+    episode
+  )}`;
+  const searchLowerCase = search.toLowerCase();
+
+  let files;
+  try {
+    files = await fs.readdir(TORRENT_DOWNLOAD_PATH, RECURSIVE_READ_OPTIONS);
+  } catch (e) {
+    logger.error(e);
+    return sendError(res, 500, {
+      message: "Could not load the downloaded episodes.",
+    });
+  }
+  const match = files.find(
+    (file) =>
+      parseFilename(file).startsWith(searchLowerCase) && file.endsWith(".mp4")
+  );
+  if (match) return sendFileStream(req, res, TORRENT_DOWNLOAD_PATH + match);
+  return sendError(res, 404, {
+    message: `Episode '${search}' was not found in the downloads.`,
+  });
+}
+
 router.get("/video/:showName/:season/:episode", (req, res) =>
-  handleTorrentRequest(req, res, (torrent) =>
-    sendFileStream(req, res, TORRENT_DOWNLOAD_PATH + torrent.name)
+  handleTorrentRequest(
+    req,
+    res,
+    (torrent) => sendFileStream(req, res, TORRENT_DOWNLOAD_PATH + torrent.name),
+    (episode) => searchForDownloadedEpisode(req, res, episode)
   )
 );
 

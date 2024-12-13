@@ -113,7 +113,7 @@ export async function downloadSubtitles(
     return "There are no subtitles for this episode.";
   }
   const sorted = results.sort(
-    (a, b) => a.attributes.download_count - a.attributes.download_count
+    (a, b) => b.attributes.download_count - a.attributes.download_count
   );
   const [closeMatches, farMatches] = sorted.reduce(
     ([close, far], result) =>
@@ -183,4 +183,3 @@ export async function downloadSubtitles(
     });
   });
 }
-

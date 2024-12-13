@@ -24,6 +24,7 @@ const sequelize = new Sequelize(
 const ensureJson = (dataValue: any) =>
   typeof dataValue === "string" ? JSON.parse(dataValue) : dataValue;
 
+/** Converts periods and plus symbols into spaces, and removes `:/` sequences. */
 export const sanitiseShowName = (showName: string) =>
   showName.replace(/[.+]/g, " ").replace(/:\//g, "").trim();
 
@@ -286,7 +287,7 @@ DownloadedEpisode.init(
     sequelize,
     timestamps: false,
     modelName: "DownloadedEpisode",
-    tableName: "downloaded_episodes"
+    tableName: "downloaded_episodes",
   }
 );
 
