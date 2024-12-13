@@ -1,5 +1,3 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 node_modules
 .pnp
@@ -12,9 +10,6 @@ coverage
 build
 api/v1/dist
 
-# Firebase directory
-firebase
-
 # misc
 .DS_Store
 .env.local
@@ -23,12 +18,6 @@ firebase
 .env.production.local
 
 npm-debug.log*
-
-logs
-.env
-orderDraft.json
-orderTemplate.json
-!.gitignore
 
 # Yarn
 yarn-debug.log*
@@ -47,3 +36,12 @@ yarn-error.log*
 
 # Visual Studio Code settings
 # .vscode
+
+# Shell scripts
+*.sh
+
+# Application files
+logs/
+.env
+orderDraft.json
+orderTemplate.json
