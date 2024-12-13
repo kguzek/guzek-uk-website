@@ -11,7 +11,7 @@
   "private": true,
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build || react-scripts build || react-scripts build"
+    "build": "rm -r build; react-scripts build || react-scripts build || react-scripts build"
   },
   "resolutions": {
     "@babel/traverse": "^7.23.2",
