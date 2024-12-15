@@ -23,7 +23,7 @@ function LikedShowsCarousel({
   likedShows,
   readyToRenderPreviews,
 }: {
-  likedShowIds: null | number[];
+  likedShowIds?: number[];
   likedShows: LikedShows;
   readyToRenderPreviews: boolean;
 }) {
@@ -130,7 +130,7 @@ export default function Home() {
   const [likedShows, setLikedShows] = useState<LikedShows>({});
   const data = useContext(TranslationContext);
   const title = getLiveSeriesTitle("home");
-  const { likedShowIds, watchedEpisodes, loading, fetchResource } =
+  const { userShows, watchedEpisodes, loading, fetchResource } =
     useOutletContext<LiveSeriesOutletContext>();
 
   useEffect(() => {
@@ -138,10 +138,10 @@ export default function Home() {
   }, [data]);
 
   useEffect(() => {
-    if (!likedShowIds) return;
-    if (likedShowIds.length === Object.keys(likedShows).length) return;
+    if (userShows?.likedShows == null) return;
+    if (userShows.likedShows.length === Object.keys(likedShows).length) return;
     setLikedShows({});
-    for (const showId of likedShowIds) {
+    for (const showId of userShows.likedShows) {
       fetchResource("show-details", {
         params: { q: `${showId}` },
         onSuccess: (showData) => {
@@ -152,7 +152,7 @@ export default function Home() {
         },
       });
     }
-  }, [likedShowIds]);
+  }, [userShows]);
 
   function getUnwatchedEpisodes(showId: number) {
     const unwatched = likedShows[showId].episodes.filter(
@@ -165,28 +165,44 @@ export default function Home() {
   }
 
   const readyToRenderPreviews =
-    Object.keys(likedShows).length === likedShowIds?.length;
+    Object.keys(likedShows).length === userShows?.likedShows?.length;
 
   const unwatchedEpisodesByShowId: { [showId: number]: Episode[] } = {};
 
   return (
     <>
       <h2>{title}</h2>
-      <h3>Your Liked Shows {likedShowIds ? `(${likedShowIds.length})` : ""}</h3>
-      {loading.length > 0 || likedShowIds?.length !== 0 ? (
+      <h3>
+        Your Liked Shows{" "}
+        {userShows?.likedShows ? `(${userShows.likedShows.length})` : ""}
+      </h3>
+      {loading.length === 0 && userShows?.likedShows?.length === 0 ? (
+        <>
+          <p>{data.liveSeries.home.noLikes}</p>
+          <p>
+            <Link to="search">{data.liveSeries.search.label}</Link>
+          </p>
+          <p>
+            <Link to="most-popular">
+              {data.liveSeries.home.explore} {data.liveSeries.mostPopular.title}{" "}
+              {data.liveSeries.home.shows}
+            </Link>
+          </p>
+        </>
+      ) : (
         <>
           <LikedShowsCarousel
-            likedShowIds={likedShowIds}
+            likedShowIds={userShows?.likedShows}
             likedShows={likedShows}
             readyToRenderPreviews={readyToRenderPreviews}
           />
-          {likedShowIds && readyToRenderPreviews && (
+          {userShows?.likedShows && readyToRenderPreviews && (
             <>
               <h3>
                 {data.liveSeries.tvShow.unwatched}{" "}
                 {data.liveSeries.tvShow.episodes}
               </h3>
-              {likedShowIds.map((showId, idx) => {
+              {userShows.likedShows.map((showId, idx) => {
                 const unwatchedEpisodes = getUnwatchedEpisodes(showId);
                 if (unwatchedEpisodes.length === 0) return null;
                 return (
@@ -204,19 +220,6 @@ export default function Home() {
               )}
             </>
           )}
-        </>
-      ) : (
-        <>
-          <p>{data.liveSeries.home.noLikes}</p>
-          <p>
-            <Link to="search">{data.liveSeries.search.label}</Link>
-          </p>
-          <p>
-            <Link to="most-popular">
-              {data.liveSeries.home.explore} {data.liveSeries.mostPopular.title}{" "}
-              {data.liveSeries.home.shows}
-            </Link>
-          </p>
         </>
       )}
     </>
