@@ -244,7 +244,11 @@ router.get("/shows", (_req, res) => readAllDatabaseEntries(UserShows, res));
 // GET own liked & subscribed TV shows
 router.get("/shows/personal", async (req: CustomRequest, res) => {
   const uuid = req.user?.uuid;
-  sendOK(res, await getUserShows(uuid));
+  const { likedShows, subscribedShows } = await getUserShows(uuid);
+  sendOK(res, {
+    likedShows: likedShows ?? [],
+    subscribedShows: subscribedShows ?? [],
+  });
 });
 
 // GET all users' watched episodes
