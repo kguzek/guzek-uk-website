@@ -211,7 +211,7 @@ export default function LiveSeriesBase() {
         setModalError(data.liveSeries.home.login);
         onError();
       } else {
-        setUserShows({});
+        setUserShows({ likedShows: [], subscribedShows: [] });
         setWatchedEpisodes({});
       }
       return;

@@ -191,17 +191,24 @@ nav.mini-navbar {
 }
 
 @media screen and (max-width: 750px) {
-  .mini-navbar {
+  nav.mini-navbar {
     justify-content: center;
   }
 }
 
 @media screen and (max-width: 550px) {
-  .mini-navbar {
+  nav.mini-navbar {
     font-size: medium;
   }
 
   .nav-items .skeleton {
     margin-top: 0;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  nav.mini-navbar {
+    font-size: small;
+    gap: 10px;
   }
 }

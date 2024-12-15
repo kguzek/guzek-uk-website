@@ -162,13 +162,13 @@ export default function TvShow() {
     <>
       {imagesLoading && <TvShowSkeleton />}
       <div className={`details ${imagesLoading ? "display-none" : ""}`}>
-        <h2>
+        <h2 className="flex gap-10 flex-wrap">
           <i
             className={`clickable fa-${isLiked ? "solid" : "regular"} fa-heart`}
             title={data.liveSeries.tvShow[isLiked ? "unlike" : "like"]}
             onClick={handleLike}
-          ></i>{" "}
-          {tvShowDetails.name}{" "}
+          ></i>
+          <span>{tvShowDetails.name}</span>
           <small className="regular">
             ({formatDate("start")} – {formatDate("end")})
           </small>
