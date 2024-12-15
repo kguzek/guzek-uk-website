@@ -311,7 +311,8 @@
   border-radius: 10px;
 }
 
-.video-container:fullscreen video, .video-container video:fullscreen {
+.video-container:fullscreen video,
+.video-container video:fullscreen {
   border-radius: 0;
 }
 
@@ -379,6 +380,14 @@
   .embed iframe {
     width: 100%;
   }
+
+  .details h2 {
+    font-size: x-large;
+  }
+
+  .genres {
+    font-size: medium;
+  }
 }
 
 @media screen and (max-width: 550px) {
@@ -388,5 +397,23 @@
 
   .search {
     gap: 10px;
+  }
+
+  .details h2 {
+    font-size: large;
+  }
+
+  .genres {
+    font-size: small;
+  }
+
+  .stars {
+    font-size: medium;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .stars {
+    font-size: small;
   }
 }

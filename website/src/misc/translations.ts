@@ -273,7 +273,10 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
       },
       home: {
         title: "Home",
-        noLikes: "You have no liked shows.",
+        noLikes:
+          "Welcome to LiveSeries! To get started, find a show to watch. \n\
+Use the search bar to find your favourite TV shows, or explore the most popular ones. \n\
+Once you find a show you like, click the heart icon to add it to your liked shows—you will then find it here!",
         explore: "Explore",
         shows: "Shows",
         login: "You must be logged in to use that function.",
@@ -429,10 +432,13 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
       },
       home: {
         title: "Główna",
-        noLikes: "Nie masz żadnych polubionych seriali.",
+        noLikes:
+          "Witaj w serwisie LiveSeries! Aby zacząć, znajdź serial do obejrzenia. \n\
+Użyj wyszukiwarki, aby znaleźć swój ulubiony serial, lub przeglądaj najpopularniejsze seriale. \n\
+Gdy znajdziesz serial, który Ci się podoba, kliknij ikonę serca, aby dodać go do ulubionych—znajdziesz go potem tutaj!",
         explore: "Przeglądaj",
         shows: "Seriale",
-        login: "Żeby skorzystać z tej funkcji, musisz się zalogować.",
+        login: "Z tej funkcji mogą korzystać tylko użytkownicy zalogowani.",
         noUnwatched: "Nie masz żadnych nieobjerzanych odcinków!",
       },
       mostPopular: {

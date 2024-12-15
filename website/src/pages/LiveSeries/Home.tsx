@@ -178,7 +178,9 @@ export default function Home() {
       </h3>
       {loading.length === 0 && userShows?.likedShows?.length === 0 ? (
         <>
-          <p>{data.liveSeries.home.noLikes}</p>
+          <p style={{ whiteSpace: "pre-wrap" }}>
+            {data.liveSeries.home.noLikes}
+          </p>
           <p>
             <Link to="search">{data.liveSeries.search.label}</Link>
           </p>
