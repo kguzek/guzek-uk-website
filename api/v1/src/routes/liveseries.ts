@@ -4,7 +4,7 @@ import { ObjectEncodingOptions, promises as fs } from "fs";
 import { CronJob } from "cron";
 import { getLogger } from "../middleware/logging";
 import {
-  LikedShows,
+  UserShows,
   User,
   WatchedEpisodes,
   DownloadedEpisode,
@@ -95,7 +95,7 @@ async function downloadEpisode(tvShow: TvShow, episode: Episode) {
     return null;
   }
 
-  const createDatabaseEntry = () =>
+  const createEntry = () =>
     DownloadedEpisode.create({
       showId: tvShow.id,
       showName: tvShow.name,
@@ -104,10 +104,7 @@ async function downloadEpisode(tvShow: TvShow, episode: Episode) {
     });
   let torrentInfo;
   try {
-    torrentInfo = await torrentClient.addTorrent(
-      result.link,
-      createDatabaseEntry
-    );
+    torrentInfo = await torrentClient.addTorrent(result.link, createEntry);
   } catch {
     logger.error("The torrent client is unavailable");
     return null;
@@ -116,7 +113,7 @@ async function downloadEpisode(tvShow: TvShow, episode: Episode) {
     logger.error(`Adding the torrent to the client failed.`);
     return null;
   }
-  await createDatabaseEntry();
+  await createEntry();
   await updateEndpoint(DownloadedEpisode);
   logger.info(`Successfully added new torrent.`);
   sendWebsocketMessage();
@@ -134,13 +131,11 @@ async function checkUnwatchedEpisodes() {
     const watchedShowData = watchedEpisodes.get(
       "watchedEpisodes"
     ) as WatchedShowData;
-    const likedShowsData = await LikedShows.findByPk(uuid);
-    if (!likedShowsData) continue;
-    const likedShows = likedShowsData.get("likedShows");
-
-    for (const likedShowId of likedShows as number[]) {
-      const watchedData = watchedShowData[likedShowId];
-      axios.get(EPISODATE_API_BASE + likedShowId).then(
+    const { subscribedShows } = await getUserShows(uuid);
+    if (!subscribedShows) continue;
+    for (const showId of subscribedShows) {
+      const watchedData = watchedShowData[showId];
+      axios.get(EPISODATE_API_BASE + showId).then(
         (res) => {
           const tvShow = res.data.tvShow as TvShow;
           for (const episode of tvShow.episodes) {
@@ -152,7 +147,7 @@ async function checkUnwatchedEpisodes() {
         },
         (error) =>
           logger.error(
-            `Could not retrieve liked show ${likedShowId} details. ${error}`
+            `Could not retrieve liked show ${showId} details. ${error}`
           )
       );
     }
@@ -177,48 +172,58 @@ export function init() {
   );
 }
 
-const getLikedShows = (req: CustomRequest, res: Response) =>
-  readDatabaseEntry(
-    LikedShows,
-    res,
-    { userUUID: req.user?.uuid },
-    undefined,
-    true
-  );
+/**
+ * Obtains the requesting user's liked and subscribed shows from the database.
+ * `likedShows` and `subscribedShows` are returned as arrays of show IDs.
+ * If the user has no entries in the database, these values are `undefined`.
+ */
+async function getUserShows(userUuid?: string) {
+  const entry = userUuid ? await UserShows.findByPk(userUuid) : null;
+  return {
+    likedShows: entry?.get("likedShows") as undefined | number[],
+    subscribedShows: entry?.get("subscribedShows") as undefined | number[],
+  };
+}
 
-async function modifyLikedShows(
+async function modifyUserShows(
   req: CustomRequest,
   res: Response,
-  add: boolean
+  add: boolean,
+  liked: boolean
 ) {
   const showId = +req.params.showId;
   const errorMessage = validateNaturalNumber(showId);
   if (errorMessage) return sendError(res, 400, { message: errorMessage });
-  const likedShows = await getLikedShows(req, res);
-  if (!likedShows) return;
-  if (likedShows.length === 0) {
-    await createDatabaseEntry(LikedShows, req, res, {
-      userUUID: req.user?.uuid,
-      likedShows: add ? [showId] : [],
+  const userUUID = req.user?.uuid;
+  const { likedShows, subscribedShows } = await getUserShows(userUUID);
+  if (likedShows == null || subscribedShows == null) {
+    const success = await createDatabaseEntry(
+      UserShows,
+      req,
+      res,
+      { userUUID, likedShows: [], subscribedShows: [] },
+      () => {}
+    );
+    if (!success) return;
+  }
+  const collection = (liked ? likedShows : subscribedShows) ?? [];
+  // Trying to add if already present, or trying to remove if not present
+  if (add === collection.includes(showId)) {
+    return sendError(res, 409, {
+      message: `Show with id '${showId}' is ${add ? "already" : "not"} ${
+        liked ? "liked" : "subscribed"
+      }.`,
     });
-    return;
   }
-  const likedShowsList = getLikedShowsList(likedShows);
-  if (add) {
-    if (likedShowsList.includes(showId)) {
-      return sendError(res, 400, {
-        message: `Show with id '${showId}' is already liked.`,
-      });
-    }
-  }
+  const key = liked ? "likedShows" : "subscribedShows";
   await updateDatabaseEntry(
-    LikedShows,
+    UserShows,
     req,
     res,
     {
-      likedShows: add
-        ? [...likedShowsList, showId]
-        : likedShowsList.filter((id) => id !== showId),
+      [key]: add
+        ? [...collection, showId]
+        : collection.filter((id) => id !== showId),
     },
     { userUUID: req.user?.uuid }
   );
@@ -233,19 +238,13 @@ function sendWebsocketMessage() {
   }
 }
 
-const getLikedShowsList = (likedShows: LikedShows[]) =>
-  (likedShows[0]?.get("likedShows") as number[]) ?? [];
+// GET all users' liked & subscribed TV shows
+router.get("/shows", (_req, res) => readAllDatabaseEntries(UserShows, res));
 
-// GET all users' liked TV shows
-router.get("/liked-shows", (_req, res) =>
-  readAllDatabaseEntries(LikedShows, res)
-);
-
-// GET own liked TV shows
-router.get("/liked-shows/personal", async (req, res) => {
-  const likedShows = await getLikedShows(req, res);
-  if (!likedShows) return;
-  sendOK(res, getLikedShowsList(likedShows));
+// GET own liked & subscribed TV shows
+router.get("/shows/personal", async (req: CustomRequest, res) => {
+  const uuid = req.user?.uuid;
+  sendOK(res, await getUserShows(uuid));
 });
 
 // GET all users' watched episodes
@@ -371,13 +370,23 @@ router.post("/downloaded-episodes", async (req, res) => {
 });
 
 // ADD liked TV show
-router.post("/liked-shows/personal/:showId", (req, res) =>
-  modifyLikedShows(req, res, true)
+router.post("/shows/personal/liked/:showId", (req, res) =>
+  modifyUserShows(req, res, true, true)
 );
 
 // DELETE liked TV show
-router.delete("/liked-shows/personal/:showId", (req, res) =>
-  modifyLikedShows(req, res, false)
+router.delete("/shows/personal/liked/:showId", (req, res) =>
+  modifyUserShows(req, res, false, true)
+);
+
+// ADD subscribed TV show
+router.post("/shows/personal/subscribed/:showId", (req, res) =>
+  modifyUserShows(req, res, true, false)
+);
+
+// DELETE subscribed TV show
+router.delete("/shows/personal/subscribed/:showId", (req, res) =>
+  modifyUserShows(req, res, false, false)
 );
 
 // UPDATE own watched episodes

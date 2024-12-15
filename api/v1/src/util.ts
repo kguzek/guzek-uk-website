@@ -16,7 +16,7 @@ const logger = getLogger(__filename);
 const DOWNLOAD_STATUS_MAP = {
   2: DownloadStatus.VERIFYING,
   4: DownloadStatus.PENDING,
-  6: DownloadStatus.COMPLETE
+  6: DownloadStatus.COMPLETE,
 } as const;
 
 export const STATUS_CODES: { [code: number]: string } = {
@@ -28,6 +28,7 @@ export const STATUS_CODES: { [code: number]: string } = {
   401: "Unauthorised",
   403: "Forbidden",
   404: "Not Found",
+  409: "Conflict",
   429: "Too Many Requests",
   500: "Internal Server Error",
 } as const;
@@ -58,15 +59,10 @@ export const getStatusText = (code: StatusCode) =>
   `${code} ${STATUS_CODES[code]}`;
 
 /** Sends the response with a 200 status and JSON body containing the given data object. */
-export function sendOK(
-  res: Response,
-  data?: any,
-  code: StatusCode = 200
-) {
+export function sendOK(res: Response, data?: any, code: StatusCode = 200) {
   if (data) {
     res.status(code).json(data);
-  }
-  else {
+  } else {
     code = 204;
     res.status(code).send();
   }
@@ -90,6 +86,7 @@ export function sendError(
 
 /** Creates a new database entry in the database table model derivative provided.
  *  Sends a response containing the created data, unless `sendMethod` is specified.
+ *  Returns `true` if the operation succeeded, else `false` if a 500 response was sent.
  */
 export async function createDatabaseEntry(
   model: ModelType,
@@ -107,10 +104,12 @@ export async function createDatabaseEntry(
         message: "Cannot create duplicate entries.",
       });
     logger.error("Error while creating database entry: " + error);
-    return sendError(res, 500, error as Error);
+    sendError(res, 500, error as Error);
+    return false;
   }
   await updateEndpoint(model);
   (sendMethod ?? sendOK)(res, obj, 201);
+  return true;
 }
 
 /** Retrieves all entries in the database table model derivative provided. */
@@ -221,7 +220,8 @@ function getDownloadStatus(status: number) {
 export function convertTorrentInfo(info: TorrentInfo) {
   if (!info.name) throw new Error("Torrent info has no name attribute");
   const match = info.name.match(TORRENT_NAME_PATTERN);
-  if (!match) throw new Error(`Torrent name doesn't match regex: '${info.name}'.`)
+  if (!match)
+    throw new Error(`Torrent name doesn't match regex: '${info.name}'.`);
   const [_, showName, season, episode] = match;
   return {
     status: getDownloadStatus(info.status),
@@ -251,9 +251,14 @@ export function validateNaturalList(list: any, res: Response) {
   return list as number[];
 }
 
-const getVideoExtension = (filename: string) => filename.match(/\.(mkv|mp4)$/)?.[1];
+const getVideoExtension = (filename: string) =>
+  filename.match(/\.(mkv|mp4)$/)?.[1];
 
-export async function sendFileStream(req: Request, res: Response, path: string) {
+export async function sendFileStream(
+  req: Request,
+  res: Response,
+  path: string
+) {
   let filename = path;
   let fileExtension = getVideoExtension(filename);
 
@@ -262,12 +267,12 @@ export async function sendFileStream(req: Request, res: Response, path: string) 
     try {
       filenames = await fs.readdir(filename);
     } catch (error) {
-      sendError(res, 404, { message: `The path '${path}' was not found.` })
+      sendError(res, 404, { message: `The path '${path}' was not found.` });
       return;
     }
     for (const file of filenames) {
       fileExtension = getVideoExtension(file);
-      if (fileExtension) {     
+      if (fileExtension) {
         filename += `/${file}`;
         break;
       }
@@ -283,39 +288,43 @@ export async function sendFileStream(req: Request, res: Response, path: string) 
     try {
       await fs.access(filename);
     } catch {
-      sendError(res, 500, { message: `The file has not yet been converted to MP4.` })
+      sendError(res, 500, {
+        message: `The file has not yet been converted to MP4.`,
+      });
       return;
     }
   }
 
   let stat;
   try {
-    stat = await fs.stat(filename); 
+    stat = await fs.stat(filename);
   } catch (error) {
     sendError(res, 500, error as Error);
-    return;  
+    return;
   }
   let responseCode = 200;
   const range = req.headers.range;
   let file;
 
   const headers: Record<string, string | number> = {
-    'Content-Type': 'video/mp4',
+    "Content-Type": "video/mp4",
   };
   if (range) {
     const match = range.match(/bytes=(\d+)-(\d*)/);
     if (!match)
-      return sendError(res, 400, { message: `Malformed request header 'range': '${range}'.` });
+      return sendError(res, 400, {
+        message: `Malformed request header 'range': '${range}'.`,
+      });
     const maxEnd = stat.size - 1;
     const end = Math.min(maxEnd, match[2] ? +match[2] : maxEnd);
     const start = Math.min(end, +match[1]);
-    headers['Content-Range'] = `bytes ${start}-${end}/${stat.size}`;
-    headers['Accept-Ranges'] = 'bytes';
+    headers["Content-Range"] = `bytes ${start}-${end}/${stat.size}`;
+    headers["Accept-Ranges"] = "bytes";
     responseCode = 206;
-    headers['Content-Length'] = end - start + 1;
+    headers["Content-Length"] = end - start + 1;
     file = createReadStream(filename, { start, end });
   } else {
-    headers['Content-Length'] = stat.size;
+    headers["Content-Length"] = stat.size;
     file = createReadStream(filename);
   }
 
@@ -325,10 +334,10 @@ export async function sendFileStream(req: Request, res: Response, path: string) 
   logResponse(res, getStatusText(responseCode));
 }
 
-export const serialiseEpisode = (episode: Pick<Episode, "season" | "episode">) =>
+export const serialiseEpisode = (
+  episode: Pick<Episode, "season" | "episode">
+) =>
   "S" +
   `${episode.season}`.padStart(2, "0") +
   "E" +
   `${episode.episode}`.padStart(2, "0");
-
-
