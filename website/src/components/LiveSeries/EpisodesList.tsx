@@ -200,7 +200,11 @@ export default function EpisodesList({
           className="clickable flex gap-15"
           onClick={() => setCollapsed((old) => !old)}
         >
-          <i className={`fas fa-caret-${collapsed ? "down" : "up"}`}></i>
+          <i
+            className={`fas fa-caret-right transition-transform ${
+              collapsed ? "" : "rotate-90"
+            }`}
+          ></i>
           <h4>{heading}</h4>
         </div>
         {children}

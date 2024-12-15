@@ -253,9 +253,9 @@ function Log({
   setFilter: StateSetter<Filter>;
 }) {
   const [collapsed, setCollapsed] = useState(true);
-  
+
   let message = data.message;
-  if (typeof message !== 'string' && data.level === "error") {
+  if (typeof message !== "string" && data.level === "error") {
     message = "[See log body for error details]";
     data.metadata.body = data.message;
   }
@@ -307,7 +307,9 @@ function Log({
                   >
                     <i className="fas fa-code"></i>
                     <i
-                      className={`fas fa-caret-up ${collapsed ? "rotated" : ""}`}
+                      className={`fas transition-transform fa-caret-up ${
+                        collapsed ? "rotate-180" : ""
+                      }`}
                     ></i>
                   </div>
                 </div>
@@ -329,4 +331,3 @@ function Log({
     </div>
   );
 }
-
