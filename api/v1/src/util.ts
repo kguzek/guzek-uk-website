@@ -288,8 +288,8 @@ export async function sendFileStream(
     try {
       await fs.access(filename);
     } catch {
-      sendError(res, 500, {
-        message: `The file has not yet been converted to MP4.`,
+      sendError(res, 429, {
+        message: `The file has not yet been converted to MP4. Check back later.`,
       });
       return;
     }
