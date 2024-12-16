@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 import { Fetch } from "./backend";
-import { StateSetter, User } from "./models";
+import { StateSetter, User } from "guzek-uk-common/models";
 import { Translation, TRANSLATIONS } from "./translations";
 
 export interface Auth {
@@ -37,4 +37,3 @@ export const ModalContext = createContext<ModalContextObject>({
 });
 
 export const TranslationContext = createContext<Translation>(TRANSLATIONS.EN);
-

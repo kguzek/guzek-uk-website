@@ -1,5 +1,5 @@
 import { Auth } from "./context";
-import { TryFetch } from "./util";
+import { TryFetch } from "guzek-uk-common/util";
 
 const USE_LOCAL_API_URL = false;
 // const USE_LOCAL_API_URL = true;

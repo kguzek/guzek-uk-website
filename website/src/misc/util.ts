@@ -4,7 +4,12 @@ import {
   clearStoredLoginInfo,
   updateAccessToken,
 } from "./backend";
-import { Episode, StateSetter, User, DownloadedEpisode } from "./models";
+import {
+  Episode,
+  StateSetter,
+  User,
+  DownloadedEpisode,
+} from "guzek-uk-common/models";
 import { Translation } from "./translations";
 
 export const PAGE_NAME = "Guzek UK";
