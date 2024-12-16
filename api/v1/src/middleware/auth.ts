@@ -25,6 +25,7 @@ const PERMISSIONS = {
       "/liveseries/downloaded-episodes/ws/.websocket", // LiveSeries downloaded episode info
       "/liveseries/video", // Stream downloaded LiveSeries episode
       "/liveseries/subtitles", // Fetch episode subtitles
+      "/torrents", // Search for torrents using scraper
     ],
     POST: [
       "/auth/users", // Sign up

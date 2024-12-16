@@ -3,7 +3,7 @@
 import axios from "axios";
 import parse, { HTMLElement, Node } from "node-html-parser";
 import { getLogger } from "../middleware/logging";
-import { BasicEpisode, Episode, TvShow } from "../models";
+import { BasicEpisode } from "../models";
 import { sanitiseShowName } from "../sequelize";
 import { serialiseEpisode } from "../util";
 
@@ -24,6 +24,7 @@ export interface SearchResult {
   type: string;
   files: number;
   size: number;
+  sizeHuman: string;
   seeders: number;
   leechers: number;
 }
@@ -118,7 +119,7 @@ export abstract class TorrentIndexer {
    *  Arguments:
    *  `results`: A list of `SearchResult`s sorted by seeder count in descending order.
    */
-  private getTopResult(results: SearchResult[]) {
+  public selectTopResult(results: SearchResult[]) {
     const topSevenResults = results.slice(0, 7);
     const resultsByFilesize = topSevenResults.sort((a, b) => b.size - a.size);
     const topResultByFilesize = resultsByFilesize[0];
@@ -131,18 +132,26 @@ export abstract class TorrentIndexer {
     return resultsByLeechers[0];
   }
 
-  async search(tvShow: TvShow, episode: Episode) {
-    const showName = sanitiseShowName(tvShow.name);
+  async search(episode: BasicEpisode) {
+    const showName = sanitiseShowName(episode.showName);
     const serialisedEpisode = serialiseEpisode(episode);
     const query = `${showName}-${serialisedEpisode}`
       .replace(/\s/g, "-")
       .toLowerCase();
     logger.info(`Searching for '${query}'.`);
     const data = await this.fetchRawResults(query);
-    if (null == data) return null;
-    const results = this.parseSearchResults(data);
-    if (results.length === 0) return null;
-    return this.getTopResult(results);
+    if (null == data) return [];
+    return this.parseSearchResults(data);
+  }
+
+  /** Finds the top torrent result from the API, using `TorrentIndexer.selectTopResult`. */
+  async findTopResult(episode: BasicEpisode) {
+    const results = await this.search(episode);
+    if (!results) {
+      logger.warn("No search results found.");
+      return null;
+    }
+    return this.selectTopResult(results);
   }
 }
 
@@ -208,6 +217,7 @@ export abstract class TableStyledTorrentIndexer extends TorrentIndexer {
               logger.warn(`Obtained null numeric size value: ${value}`);
               return;
             }
+            result.sizeHuman = value;
             result.size = size;
             break;
           default:
@@ -226,4 +236,3 @@ export abstract class TableStyledTorrentIndexer extends TorrentIndexer {
     return results;
   }
 }
-

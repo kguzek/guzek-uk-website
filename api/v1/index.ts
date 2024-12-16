@@ -35,6 +35,7 @@ const ENDPOINTS = [
   "tu-lalem",
   "liveseries",
   "logs",
+  "torrents",
 ];
 
 if (DEBUG_MODE) {
