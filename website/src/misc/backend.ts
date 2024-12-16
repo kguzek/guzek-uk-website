@@ -2,10 +2,10 @@ import { Auth } from "./context";
 import { TryFetch } from "./util";
 
 const USE_LOCAL_API_URL = false;
-//const USE_LOCAL_API_URL = true;
+// const USE_LOCAL_API_URL = true;
 const CACHE_NAME = "guzek-uk-cache";
 const TOKEN_PENDING = "TOKEN_PENDING";
-const MAX_TOKEN_REFRESH_TIME_S = 30 // seconds
+const MAX_TOKEN_REFRESH_TIME_S = 30; // seconds
 
 interface RequestOptions {
   method: string;
@@ -58,22 +58,26 @@ function isTokenPending() {
 let tokenPendingInThisTab = false;
 let accessTokenPromise: Promise<string | null> | undefined = undefined;
 
-function getAccessTokenInfo(): null | { accessToken?: string; expiresAt: string } {
+function getAccessTokenInfo(): null | {
+  accessToken?: string;
+  expiresAt: string;
+} {
   const accessTokenInfo = localStorage.getItem("accessTokenInfo");
   return accessTokenInfo ? JSON.parse(accessTokenInfo) : null;
 }
 
-const listenForTokenUpdate = (): Promise<string | null> => new Promise((resolve) => {
-  function listener(evt: StorageEvent) {
-    if (evt.key !== TOKEN_PENDING) return;
-    if (isTokenPending()) return;
-    window.removeEventListener("storage", listener);
-    const accessTokenInfo = getAccessTokenInfo();
-    const accessToken = accessTokenInfo?.accessToken || null;
-    resolve(accessToken);
-  }
-  window.addEventListener("storage", listener);
-});
+const listenForTokenUpdate = (): Promise<string | null> =>
+  new Promise((resolve) => {
+    function listener(evt: StorageEvent) {
+      if (evt.key !== TOKEN_PENDING) return;
+      if (isTokenPending()) return;
+      window.removeEventListener("storage", listener);
+      const accessTokenInfo = getAccessTokenInfo();
+      const accessToken = accessTokenInfo?.accessToken || null;
+      resolve(accessToken);
+    }
+    window.addEventListener("storage", listener);
+  });
 
 const toPromise = async <T>(resolvesTo: T): Promise<T> => resolvesTo;
 
@@ -88,10 +92,11 @@ function getAccessToken(auth: Auth): Promise<null | string> {
     return toPromise(tokenInfo.accessToken as string);
   }
   // Token expired
-  if (isTokenPending()) { 
+  if (isTokenPending()) {
     // Token being refreshed currently
     if (tokenPendingInThisTab) {
-      if (!accessTokenPromise) throw new Error("Token pending but no promise set");
+      if (!accessTokenPromise)
+        throw new Error("Token pending but no promise set");
     } else {
       // Wait until it completes in other tab
       accessTokenPromise = listenForTokenUpdate();
@@ -122,12 +127,16 @@ async function refreshAccessToken(auth: Auth): Promise<null | string> {
   try {
     res = await fetch(req);
   } catch {
-    console.error("Could not fulfil request to refresh access token (API is probably offline).");
+    console.error(
+      "Could not fulfil request to refresh access token (API is probably offline)."
+    );
     localStorage.removeItem(TOKEN_PENDING);
     return null;
   }
   if (!res.ok) {
-    console.error("Failed to refresh the access token (token probably invalid). Logging out.");
+    console.error(
+      "Failed to refresh the access token (token probably invalid). Logging out."
+    );
     clearStoredLoginInfo();
     localStorage.removeItem(TOKEN_PENDING);
     auth.logout();
@@ -177,7 +186,10 @@ async function createRequest(
   return new Request(url, options);
 }
 
-export const getFetchFromAPI = (auth: Auth, filterCaches: null | Promise<void>) =>
+export const getFetchFromAPI = (
+  auth: Auth,
+  filterCaches: null | Promise<void>
+) =>
   /** Performs an HTTPS request to the API using the provided values and the stored access token. */
   async function fetchFromAPI(
     path: string,
@@ -192,7 +204,7 @@ export const getFetchFromAPI = (auth: Auth, filterCaches: null | Promise<void>) 
     },
     useCache: boolean = false
   ) {
-    if(filterCaches) await filterCaches;
+    if (filterCaches) await filterCaches;
     const request = await createRequest(auth, path, method, { params, body });
     const func = useCache ? fetchWithCache : fetch;
     return await func(request);
@@ -243,4 +255,3 @@ export type Fetch = {
   tryFetch: TryFetch;
   removeOldCaches: () => void;
 };
-

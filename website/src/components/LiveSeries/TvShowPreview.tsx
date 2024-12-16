@@ -18,12 +18,14 @@ export default function TvShowPreview({
 }) {
   const [flipped, setFlipped] = useState(false);
   const data = useContext(TranslationContext);
-  const { likedShowIds, fetchResource } =
+  const { userShows, fetchResource } =
     useOutletContext<LiveSeriesOutletContext>();
   const { removeOldCaches } = useFetchContext();
 
   const isLikedOld =
-    showDetails && likedShowIds ? likedShowIds.includes(showDetails.id) : false;
+    showDetails && userShows?.likedShows
+      ? userShows.likedShows.includes(showDetails.id)
+      : false;
   const isLiked = flipped ? !isLikedOld : isLikedOld;
 
   async function handleHeart(clickEvent: MouseEvent) {
@@ -32,7 +34,7 @@ export default function TvShowPreview({
 
     setFlipped(!flipped);
 
-    await fetchResource("liked-shows/personal/" + showDetails.id, {
+    await fetchResource("shows/personal/liked/" + showDetails.id, {
       method: isLiked ? "DELETE" : "POST",
       onSuccess: () => removeOldCaches(),
       onError: () => setFlipped((old) => !old),

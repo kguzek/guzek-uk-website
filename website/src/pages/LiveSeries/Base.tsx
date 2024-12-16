@@ -9,12 +9,19 @@ import {
   useFetchContext,
 } from "../../misc/context";
 import { fetchFromEpisodate } from "../../misc/episodate";
-import { ShowData, StateSetter, WatchedEpisodes, DownloadedEpisode, DownloadStatus } from "../../misc/models";
+import {
+  ShowData,
+  StateSetter,
+  WatchedEpisodes,
+  DownloadedEpisode,
+  DownloadStatus,
+} from "../../misc/models";
 import { getErrorMessage, compareEpisodes } from "../../misc/util";
 import { API_BASE } from "../../misc/backend";
 import "./Liveseries.css";
 
-const WEBSOCKET_URL = API_BASE.replace("http", "ws") + "liveseries/downloaded-episodes/ws";
+const WEBSOCKET_URL =
+  API_BASE.replace("http", "ws") + "liveseries/downloaded-episodes/ws";
 
 export type LiveSeriesOutletContext = {
   loading: string[];
@@ -35,38 +42,46 @@ export type LiveSeriesOutletContext = {
       useEpisodate?: boolean;
     }
   ) => Promise<void>;
-  likedShowIds: null | number[];
+  userShows: null | UserShows;
   watchedEpisodes: null | ShowData<WatchedEpisodes>;
   setWatchedEpisodes: StateSetter<null | ShowData<WatchedEpisodes>>;
   downloadedEpisodes: DownloadedEpisode[];
   monitorEpisodeDownloads: (
     data: DownloadedEpisode,
     episodePredicate: (val: DownloadedEpisode) => boolean,
-    episodeString: string,
-  ) => void,
+    episodeString: string
+  ) => void;
 };
 
 const serialiseEpisodeForSorting = (episode: DownloadedEpisode) =>
   `${episode.showName}.${episode.season}.${episode.episode}`;
 
+interface UserShows {
+  likedShows?: number[];
+  subscribedShows?: number[];
+}
+
 export default function LiveSeriesBase() {
   const [loading, setLoading] = useState<string[]>([]);
-  const [likedShowsUpdated, setLikedShowsUpdated] = useState(false);
+  const [likedShowsUpdated, setUserShowsUpdated] = useState(false);
   const [watchedEpisodesUpdated, setWatchedEpisodesUpdated] = useState(false);
-  const [likedShowIds, setLikedShowIds] = useState<null | number[]>(null);
+  const [userShows, setUserShows] = useState<null | UserShows>(null);
   const [existingSocket, setExistingSocket] = useState<null | WebSocket>(null);
   const [watchedEpisodes, setWatchedEpisodes] =
     useState<null | ShowData<WatchedEpisodes>>(null);
-  const [downloadedEpisodes, setDownloadedEpisodes] = useState<DownloadedEpisode[]>([]);
+  const [downloadedEpisodes, setDownloadedEpisodes] = useState<
+    DownloadedEpisode[]
+  >([]);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const data = useContext(TranslationContext);
   const { user } = useContext(AuthContext);
   const { fetchFromAPI } = useFetchContext();
-  const { setModalInfo, setModalError, setModalChoice } = useContext(ModalContext);
+  const { setModalInfo, setModalError, setModalChoice } =
+    useContext(ModalContext);
 
   useEffect(() => {
-    if (!likedShowIds?.length) fetchLikedShows();
+    if (!userShows?.likedShows || !userShows?.subscribedShows) fetchUserShows();
     fetchWatchedEpisodes();
     if (!user?.admin) return;
     connectToWebsocket();
@@ -75,7 +90,7 @@ export default function LiveSeriesBase() {
       const socket = existingSocket;
       setExistingSocket(null);
       socket.close();
-    }
+    };
   }, [user]);
 
   function connectToWebsocket() {
@@ -85,21 +100,27 @@ export default function LiveSeriesBase() {
       socket = new WebSocket(WEBSOCKET_URL);
     } catch (error) {
       console.error("Connection error:", error);
-      setModalError("Could not establish a connection with the websocket. Try again later.");
+      setModalError(
+        "Could not establish a connection with the websocket. Try again later."
+      );
       return;
     }
     setExistingSocket(socket);
     socket.onerror = (message) => {
       // This usually means the server is online but hasn't yet set up the websocket listener
       console.error("Unknown error:", message);
-      setModalError("An unknown error occured during websocket communication. Try again later.")
+      setModalError(
+        "An unknown error occured during websocket communication. Try again later."
+      );
     };
     const poll = (data: DownloadedEpisode[]) =>
       socket.send(JSON.stringify({ type: "poll", data }));
     socket.onopen = () => poll([]);
     socket.onclose = async (evt) => {
       if (evt.wasClean) return;
-      const answer = await setModalChoice("The websocket connection was forcefully closed. Reconnect?");
+      const answer = await setModalChoice(
+        "The websocket connection was forcefully closed. Reconnect?"
+      );
       if (answer) connectToWebsocket();
     };
     socket.onmessage = (message) => {
@@ -107,32 +128,45 @@ export default function LiveSeriesBase() {
       let completedDownloadName = "";
       setDownloadedEpisodes((currentDownloadedEpisodes) => {
         const mapped = torrentInfo.map((val) => {
-          const found = currentDownloadedEpisodes.find((info) => compareEpisodes(val, info));
+          const found = currentDownloadedEpisodes.find((info) =>
+            compareEpisodes(val, info)
+          );
           if (!found) return val;
           // Check for episodes whose download status just changed
-          if (found.status !== DownloadStatus.COMPLETE && val.status === DownloadStatus.COMPLETE) 
-            completedDownloadName = `${val.showName} ${data.liveSeries.episodes.serialise(val)}`;
+          if (
+            found.status !== DownloadStatus.COMPLETE &&
+            val.status === DownloadStatus.COMPLETE
+          )
+            completedDownloadName = `${
+              val.showName
+            } ${data.liveSeries.episodes.serialise(val)}`;
           return val;
         });
         //for (const info of torrentInfo) {
-          //if (currentDownloadedEpisodes.find((val) => compareEpisodes(val, info))) continue;
-          //mapped.push(info);
+        //if (currentDownloadedEpisodes.find((val) => compareEpisodes(val, info))) continue;
+        //mapped.push(info);
         //}
-        const sorted = mapped.sort((a, b) => 
-          serialiseEpisodeForSorting(a).localeCompare(serialiseEpisodeForSorting(b), "en", { numeric: true })
+        const sorted = mapped.sort((a, b) =>
+          serialiseEpisodeForSorting(a).localeCompare(
+            serialiseEpisodeForSorting(b),
+            "en",
+            { numeric: true }
+          )
         );
         poll(sorted);
         return sorted;
       });
       if (completedDownloadName)
-        setModalInfo(data.liveSeries.episodes.downloadComplete(completedDownloadName));
-    } 
+        setModalInfo(
+          data.liveSeries.episodes.downloadComplete(completedDownloadName)
+        );
+    };
   }
 
   useEffect(() => {
     if (likedShowsUpdated) {
-      setLikedShowsUpdated(false);
-      fetchLikedShows();
+      setUserShowsUpdated(false);
+      fetchUserShows();
     }
     if (watchedEpisodesUpdated) {
       setWatchedEpisodesUpdated(false);
@@ -140,9 +174,9 @@ export default function LiveSeriesBase() {
     }
   }, [location]);
 
-  function fetchLikedShows() {
-    fetchResource("liked-shows/personal", {
-      onSuccess: setLikedShowIds,
+  function fetchUserShows() {
+    fetchResource("shows/personal", {
+      onSuccess: setUserShows,
       useEpisodate: false,
     });
   }
@@ -177,7 +211,7 @@ export default function LiveSeriesBase() {
         setModalError(data.liveSeries.home.login);
         onError();
       } else {
-        setLikedShowIds([]);
+        setUserShows({ likedShows: [], subscribedShows: [] });
         setWatchedEpisodes({});
       }
       return;
@@ -187,15 +221,14 @@ export default function LiveSeriesBase() {
       const res = await (useEpisodate
         ? fetchFromEpisodate(endpoint, params ?? searchParams)
         : fetchFromAPI("liveseries/" + endpoint, { method, body }, !method));
-      if (res.status === 204)
-        return onSuccess(null);
+      if (res.status === 204) return onSuccess(null);
       const json = await res.json();
       if (res.ok) {
         onSuccess(json);
         if (method) {
           switch (endpoint.split("/")[0]) {
-            case "liked-shows":
-              setLikedShowsUpdated(true);
+            case "shows":
+              setUserShowsUpdated(true);
               break;
             case "watched-episodes":
               setWatchedEpisodesUpdated(true);
@@ -221,18 +254,19 @@ export default function LiveSeriesBase() {
   function monitorEpisodeDownloads(
     data: DownloadedEpisode,
     episodePredicate: (val: DownloadedEpisode) => boolean,
-    _episodeString: string,
+    _episodeString: string
   ) {
-    setDownloadedEpisodes((old) => old.find(episodePredicate)
-      ? old.map((val) => episodePredicate(val) ? data : val)
-      : [...old, data]
+    setDownloadedEpisodes((old) =>
+      old.find(episodePredicate)
+        ? old.map((val) => (episodePredicate(val) ? data : val))
+        : [...old, data]
     );
   }
 
   const context: LiveSeriesOutletContext = {
     loading,
     fetchResource,
-    likedShowIds,
+    userShows,
     watchedEpisodes,
     setWatchedEpisodes,
     downloadedEpisodes,
@@ -241,7 +275,10 @@ export default function LiveSeriesBase() {
 
   return (
     <div className="text liveseries">
-      <DownloadsWidget downloadedEpisodes={downloadedEpisodes} fetchResource={fetchResource} />
+      <DownloadsWidget
+        downloadedEpisodes={downloadedEpisodes}
+        fetchResource={fetchResource}
+      />
       <MiniNavBar
         pathBase="liveseries"
         pages={[

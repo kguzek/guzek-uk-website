@@ -25,16 +25,14 @@ import InputBox from "../../components/Forms/InputBox";
 
 export default function TvShow() {
   const [numImagesLoaded, setNumImagesLoaded] = useState(0);
-  const [flipped, setFlipped] = useState(false);
+  const [likedFlipped, setLikedFlipped] = useState(false);
+  const [subscribedFlipped, setSubscribedFlipped] = useState(false);
   const [tvShowDetails, setTvShowDetails] = useState<
     null | TvShowDetails | undefined
   >(null);
-  const [autoDownload, setAutoDownload] = useState<boolean | undefined>(
-    undefined
-  );
   const data = useContext(TranslationContext);
   const { user } = useContext(AuthContext);
-  const { likedShowIds, watchedEpisodes, setWatchedEpisodes, fetchResource } =
+  const { userShows, watchedEpisodes, setWatchedEpisodes, fetchResource } =
     useOutletContext<LiveSeriesOutletContext>();
   const { removeOldCaches } = useFetchContext();
   const { permalink } = useParams();
@@ -52,12 +50,6 @@ export default function TvShow() {
   useEffect(() => {
     setTitle(tvShowDetails?.name || data.liveSeries.tvShow.showDetails);
   }, [data, tvShowDetails]);
-
-  useEffect(() => {
-    setAutoDownload(undefined);
-    // TODO: Implement auto-download user setting reading
-    setAutoDownload(true);
-  }, [user]);
 
   function sortEpisodes(episodes: EpisodeType[]) {
     const seasons: { [season: number]: EpisodeType[] } = {};
@@ -94,13 +86,24 @@ export default function TvShow() {
     return data.dateShortFormat.format(date);
   }
 
-  async function handleHeart() {
-    setFlipped(!flipped);
+  async function handleLike() {
+    setLikedFlipped((old) => !old);
 
-    await fetchResource("liked-shows/personal/" + tvShowDetails?.id, {
+    await fetchResource("shows/personal/liked/" + tvShowDetails?.id, {
       method: isLiked ? "DELETE" : "POST",
       onSuccess: () => removeOldCaches(),
-      onError: () => setFlipped((old) => !old),
+      onError: () => setLikedFlipped((old) => !old),
+      useEpisodate: false,
+    });
+  }
+
+  async function handleSubscribe() {
+    setSubscribedFlipped((old) => !old);
+
+    await fetchResource("shows/personal/subscribed/" + tvShowDetails?.id, {
+      method: isSubscribed ? "DELETE" : "POST",
+      onSuccess: () => removeOldCaches(),
+      onError: () => setSubscribedFlipped((old) => !old),
       useEpisodate: false,
     });
   }
@@ -124,11 +127,6 @@ export default function TvShow() {
     }));
   }
 
-  function onAutoDownloadChange(value: boolean) {
-    // TODO: Implement auto-download user setting saving
-    console.log("Auto downloading is now", value ? "enabled" : "disabled");
-  }
-
   if (
     tvShowDetails === undefined ||
     (Array.isArray(tvShowDetails) && tvShowDetails.length === 0)
@@ -136,10 +134,24 @@ export default function TvShow() {
     return <ErrorPage errorCode={ErrorCode.NotFound} />;
   }
 
-  if (!tvShowDetails || autoDownload === undefined) return <TvShowSkeleton />;
+  if (!tvShowDetails) return <TvShowSkeleton />;
 
-  const isLikedOld = tvShowDetails && likedShowIds?.includes(tvShowDetails.id);
-  const isLiked = flipped ? !isLikedOld : isLikedOld;
+  const isLikedOld =
+    tvShowDetails && userShows?.likedShows?.includes(tvShowDetails.id);
+  const isLiked = likedFlipped ? !isLikedOld : isLikedOld ?? false;
+  const isSubscribedOld =
+    tvShowDetails && userShows?.subscribedShows?.includes(tvShowDetails.id);
+  const isSubscribed = subscribedFlipped
+    ? !isSubscribedOld
+    : isSubscribedOld ?? false;
+  console.log({
+    tvShowDetails,
+    userShows,
+    isLikedOld,
+    isLiked,
+    isSubscribedOld,
+    isSubscribed,
+  });
   const watchedInShow = watchedEpisodes?.[tvShowDetails.id] ?? {};
   const isSeasonWatched = (season: string, episodes: EpisodeType[]) =>
     watchedInShow[+season]?.length === episodes.length;
@@ -150,13 +162,13 @@ export default function TvShow() {
     <>
       {imagesLoading && <TvShowSkeleton />}
       <div className={`details ${imagesLoading ? "display-none" : ""}`}>
-        <h2>
+        <h2 className="flex gap-10 flex-wrap">
           <i
             className={`clickable fa-${isLiked ? "solid" : "regular"} fa-heart`}
             title={data.liveSeries.tvShow[isLiked ? "unlike" : "like"]}
-            onClick={handleHeart}
-          ></i>{" "}
-          {tvShowDetails.name}{" "}
+            onClick={handleLike}
+          ></i>
+          <span>{tvShowDetails.name}</span>
           <small className="regular">
             ({formatDate("start")} – {formatDate("end")})
           </small>
@@ -248,12 +260,9 @@ export default function TvShow() {
           <div style={{ width: "fit-content" }}>
             <InputBox
               type="checkbox"
-              label="Automatically download unwatched episodes"
-              value={autoDownload}
-              setValue={(value: boolean) => {
-                onAutoDownloadChange(value);
-                setAutoDownload(value);
-              }}
+              label="Subscribe to automatic downloads"
+              value={isSubscribed}
+              setValue={handleSubscribe}
             ></InputBox>
           </div>
         )}

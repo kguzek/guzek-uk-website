@@ -151,8 +151,16 @@ body {
   display: none;
 }
 
-.rotated {
-  transform: rotate(-180deg);
+.rotate-90 {
+  transform: rotate(90deg);
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+.transition-transform {
+  transition: transform 300ms ease;
 }
 
 .collapsible {
@@ -181,6 +189,21 @@ body {
 .delete:hover {
   background-size: 100% 100%;
   color: var(--color-primary-strong);
+}
+
+.hover-underline {
+  background: linear-gradient(
+      to right,
+      var(--color-primary),
+      var(--color-primary)
+    )
+    no-repeat bottom;
+  background-size: 0 2px;
+  transition: background-size 200ms;
+}
+
+.hover-underline:hover {
+  background-size: 100% 2px;
 }
 
 [disabled] {

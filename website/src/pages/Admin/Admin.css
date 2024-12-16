@@ -109,10 +109,6 @@
   color: var(--color-background);
 }
 
-.message i {
-  transition: transform 300ms ease;
-}
-
 .error .message {
   color: var(--color-error);
   background-color: var(--color-background);
@@ -136,4 +132,3 @@
     font-size: medium;
   }
 }
-
