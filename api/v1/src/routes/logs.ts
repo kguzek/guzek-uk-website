@@ -33,7 +33,8 @@ async function readLogFile(res: Response, date: string) {
       const trimmed = log.trim();
       try {
         return JSON.parse(trimmed);
-      } catch (error) {
+      } catch (err) {
+        const error = err as Error;
         return {
           label: "logs.js",
           level: "error",
@@ -41,7 +42,11 @@ async function readLogFile(res: Response, date: string) {
           metadata: {
             body: {
               badMessage: trimmed,
-              error,
+              error: {
+                name: error.name,
+                message: error.message,
+                stack: error.stack,
+              },
             },
           },
           timestamp: date,
