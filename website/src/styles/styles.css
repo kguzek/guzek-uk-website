@@ -191,6 +191,21 @@ body {
   color: var(--color-primary-strong);
 }
 
+.hover-underline {
+  background: linear-gradient(
+      to right,
+      var(--color-primary),
+      var(--color-primary)
+    )
+    no-repeat bottom;
+  background-size: 0 2px;
+  transition: background-size 200ms;
+}
+
+.hover-underline:hover {
+  background-size: 100% 2px;
+}
+
 [disabled] {
   filter: contrast(60%);
   cursor: not-allowed;

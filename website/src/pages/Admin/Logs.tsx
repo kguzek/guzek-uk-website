@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useOutletContext, useSearchParams } from "react-router-dom";
+import { Link, useOutletContext, useSearchParams } from "react-router-dom";
 import InputBox from "../../components/Forms/InputBox";
 import LoadingScreen from "../../components/LoadingScreen/LoadingScreen";
 import { NumericValue } from "../../components/NumericValue";
@@ -9,6 +9,8 @@ import { StateSetter } from "../../misc/models";
 import { TRANSLATIONS } from "../../misc/translations";
 import { scrollToElement } from "../../misc/util";
 import { AdminContext } from "./Base";
+
+const IP_LOOKUP_URL = "https://www.ip-tracker.org/locator/ip-lookup.php?ip=";
 
 const DEFAULT_RESPONSE: LogResponse = {
   date: new Date().toISOString(),
@@ -83,6 +85,7 @@ export default function Logs() {
   useEffect(() => {
     const date = search.get("date") || getTodayString();
     if (dateLogs?.date === date) return;
+    setDateLogs(null);
 
     fetchLogs(date);
   }, [search]);
@@ -145,9 +148,44 @@ export default function Logs() {
 
   if (!dateLogs || !errorLogs) return <LoadingScreen />;
 
+  const logDate = new Date(dateLogs.date);
+  const previousDate = new Date(logDate.getTime() - 86400000);
+  const nextDate = new Date(logDate.getTime() + 86400000);
+
   return (
     <div>
-      <h3>{data.admin.logs.title}</h3>
+      <div
+        className="flex"
+        style={{
+          marginBottom: "15px",
+          width: "100%",
+          position: "relative",
+        }}
+      >
+        <h3 style={{ position: "absolute" }}>{data.admin.logs.title}</h3>
+        <div
+          className="flex gap-10"
+          style={{
+            margin: "0 auto",
+          }}
+        >
+          <Link
+            to={`/admin/logs?date=${getUTCDateString(previousDate)}`}
+            className="clickable"
+          >
+            <i className="fa fa-arrow-left"></i>
+          </Link>
+          <Link to={`/admin/logs`} className="clickable">
+            {logDate.toLocaleDateString()}
+          </Link>
+          <Link
+            to={`/admin/logs?date=${getUTCDateString(nextDate)}`}
+            className="clickable"
+          >
+            <i className="fa fa-arrow-right"></i>
+          </Link>
+        </div>
+      </div>
       <div className="logs flex-column">
         <div className="cards flex-column stretch gap-10">
           <div className="flex gap-10">
@@ -280,7 +318,17 @@ function Log({
                 <code className="flex gap-10">
                   {data.timestamp}
                   {data.metadata?.ip && (
-                    <span className="clickable">({data.metadata.ip})</span>
+                    <span>
+                      (
+                      <a
+                        href={IP_LOOKUP_URL + data.metadata.ip}
+                        target="_blank"
+                        className="clickable hover-underline"
+                      >
+                        {data.metadata.ip}
+                      </a>
+                      )
+                    </span>
                   )}
                 </code>
               </small>
