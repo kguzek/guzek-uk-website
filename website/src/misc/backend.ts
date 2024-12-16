@@ -1,5 +1,5 @@
 import { Auth } from "./context";
-import { TryFetch } from "guzek-uk-common/util";
+import { TryFetch } from "./util";
 
 const USE_LOCAL_API_URL = false;
 // const USE_LOCAL_API_URL = true;
@@ -13,10 +13,19 @@ interface RequestOptions {
   body?: string;
 }
 
-export const API_BASE =
-  process.env.NODE_ENV === "development" && USE_LOCAL_API_URL
-    ? "http://localhost:5017/"
-    : "https://api.guzek.uk/";
+const useLocalUrl = process.env.NODE_ENV === "development" && USE_LOCAL_API_URL;
+
+export const API_BASE = useLocalUrl
+  ? "http://localhost:5017/"
+  : "https://api.guzek.uk/";
+
+export const API_BASE_AUTH = useLocalUrl
+  ? "http://localhost:5019/"
+  : "https://auth.guzek.uk/";
+
+export const API_BASE_VIDEO = useLocalUrl
+  ? "http://localhost:5021/"
+  : "https://v.guzek.uk/";
 
 /** Gets the application's root cache storage. If the operation fails, returns `null`. */
 export async function getCache() {
@@ -117,7 +126,7 @@ async function refreshAccessToken(auth: Auth): Promise<null | string> {
   if (!refreshToken) return null;
   const req = await createRequest(
     auth,
-    "auth/access",
+    "auth/refresh",
     "POST",
     { body: { token: refreshToken } },
     false
@@ -166,7 +175,8 @@ async function createRequest(
   },
   useAccessToken: boolean = true
 ) {
-  const url = API_BASE + path + getSearchParams(params);
+  const base = path.startsWith("auth/") ? API_BASE_AUTH : API_BASE;
+  const url = base + path + getSearchParams(params);
   const options: RequestOptions = {
     method,
     headers: {},

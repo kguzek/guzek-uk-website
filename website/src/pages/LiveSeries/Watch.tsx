@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import ErrorPage from "../ErrorPage";
 import { Language, ErrorCode } from "../../misc/models";
 import { TranslationContext, ModalContext } from "../../misc/context";
-import { API_BASE } from "../../misc/backend";
+import { API_BASE, API_BASE_VIDEO } from "../../misc/backend";
 
 function isNumber(val: string | undefined): val is string {
   return val != null && `${+val}` === val && +val > 0;
@@ -195,7 +195,7 @@ export default function Watch({ lang }: { lang: Language }) {
           ref={videoRef}
           className={loadingFailed ? "" : ""}
           controls
-          src={`${API_BASE}liveseries/video/${path}`}
+          src={`${API_BASE_VIDEO}liveseries/video/${path}`}
           autoPlay
           onError={onError}
           onLoadStart={onLoadStart}

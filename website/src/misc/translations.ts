@@ -4,7 +4,7 @@ import {
   ErrorPageContent,
   Language,
   DownloadedEpisode,
-} from "guzek-uk-common/models";
+} from "./models";
 
 const LONG_DATE_FORMAT = {
   day: "2-digit",

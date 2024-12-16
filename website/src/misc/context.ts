@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 import { Fetch } from "./backend";
-import { StateSetter, User } from "guzek-uk-common/models";
+import { StateSetter, User } from "./models";
 import { Translation, TRANSLATIONS } from "./translations";
 
 export interface Auth {
