@@ -146,6 +146,8 @@ export type Translation = Readonly<{
     };
     watch: {
       playbackError: string;
+      previous: string;
+      next: string;
     };
   };
   error: { [code in ErrorCode]: ErrorPageContent };
@@ -307,6 +309,8 @@ Once you find a show you like, click the heart icon to add it to your liked show
       watch: {
         playbackError:
           "There was a problem playing that video. Please try again later.",
+        previous: "Previous",
+        next: "Next",
       },
     },
   },
@@ -463,6 +467,8 @@ Gdy znajdziesz serial, który Ci się podoba, kliknij ikonę serca, aby dodać g
       watch: {
         playbackError:
           "Nastąpił błąd podczas odtwarzania tego filmu. Spróbuj wkrótce ponownie.",
+        previous: "Poprzedni",
+        next: "Kolejny",
       },
     },
   },
