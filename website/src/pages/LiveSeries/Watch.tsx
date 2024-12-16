@@ -157,13 +157,13 @@ export default function Watch({ lang }: { lang: Language }) {
         {+season > 1 && (
           <>
             <Link to={`/liveseries/watch/${showNameEncoded}/${+season - 1}/1`}>
-              Previous Season
+              {data.liveSeries.watch.previous} {data.liveSeries.tvShow.season}
             </Link>
             |
           </>
         )}
         <Link to={`/liveseries/watch/${showNameEncoded}/${+season + 1}/1`}>
-          Next Season
+          {data.liveSeries.watch.next} {data.liveSeries.tvShow.season}
         </Link>
         |
         {+episode > 1 && (
@@ -173,7 +173,7 @@ export default function Watch({ lang }: { lang: Language }) {
                 +episode - 1
               }`}
             >
-              Previous Episode
+              {data.liveSeries.watch.previous} {data.liveSeries.tvShow.episode}
             </Link>
             |
           </>
@@ -181,7 +181,7 @@ export default function Watch({ lang }: { lang: Language }) {
         <Link
           to={`/liveseries/watch/${showNameEncoded}/${season}/${+episode + 1}`}
         >
-          Next Episode
+          {data.liveSeries.watch.next} {data.liveSeries.tvShow.episode}
         </Link>
       </div>
       {loadingFailed && (
