@@ -29,7 +29,30 @@ async function readLogFile(res: Response, date: string) {
 
   const logs = logStrings
     .filter((log) => log.trim())
-    .map((log) => JSON.parse(log.trim()));
+    .map((log) => {
+      const trimmed = log.trim();
+      try {
+        return JSON.parse(trimmed);
+      } catch (err) {
+        const error = err as Error;
+        return {
+          label: "logs.js",
+          level: "error",
+          message: "[Could not parse log line]",
+          metadata: {
+            body: {
+              badMessage: trimmed,
+              error: {
+                name: error.name,
+                message: error.message,
+                stack: error.stack,
+              },
+            },
+          },
+          timestamp: date,
+        };
+      }
+    });
   setCacheControl(res, 60);
   sendOK(res, { date, logs });
 }
@@ -53,4 +76,3 @@ router.get("/date/:date", async (req, res) => {
   if (!dates.includes(date)) return sendOK(res, { date, logs: [] });
   readLogFile(res, date);
 });
-

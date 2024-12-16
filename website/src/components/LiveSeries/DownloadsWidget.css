@@ -3,10 +3,6 @@
   color: var(--color-primary-strong);
 }
 
-.collapser i {
-  transition: transform 200ms ease;
-}
-
 .downloads-widget {
   position: fixed;
   bottom: 0;
@@ -38,7 +34,7 @@
   overflow-y: scroll;
 }
 
-.downloads-card-container {  
+.downloads-card-container {
   --card-width: 500px;
   max-width: 100%;
   box-sizing: border-box;
@@ -87,7 +83,6 @@
     overflow: hidden;
   }
 
-
   .downloads-widget {
     border-top-right-radius: 10px;
     opacity: 1;
@@ -98,4 +93,3 @@
     max-height: 85vh;
   }
 }
-

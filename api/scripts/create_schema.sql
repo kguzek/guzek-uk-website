@@ -47,9 +47,10 @@ CREATE TABLE `guzek_uk`.`tu_lalem` (
   PRIMARY KEY (`id`),
   FOREIGN KEY (`user_uuid`) REFERENCES `users`(`uuid`)
 );
-CREATE TABLE `guzek_uk`.`liked_shows` (
+CREATE TABLE `guzek_uk`.`user_shows` (
   `user_uuid` VARCHAR(36) NOT NULL UNIQUE PRIMARY KEY,
   `liked_shows` JSON NOT NULL,
+  `subscribed_shows` JSON NOT NULL,
   FOREIGN KEY (`user_uuid`) REFERENCES `users`(`uuid`)
 );
 CREATE TABLE `guzek_uk`.`watched_episodes` (

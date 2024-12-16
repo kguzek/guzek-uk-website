@@ -34,7 +34,7 @@ export class User extends Model {}
 export class Token extends Model {}
 export class Updated extends Model {}
 export class TuLalem extends Model {}
-export class LikedShows extends Model {}
+export class UserShows extends Model {}
 export class WatchedEpisodes extends Model {}
 export class DownloadedEpisode extends Model {}
 
@@ -199,7 +199,7 @@ TuLalem.init(
   }
 );
 
-LikedShows.init(
+UserShows.init(
   {
     userUUID: {
       type: DataTypes.STRING(36),
@@ -217,12 +217,20 @@ LikedShows.init(
         return ensureJson(this.getDataValue("likedShows"));
       },
     },
+    subscribedShows: {
+      type: DataTypes.JSON(),
+      allowNull: false,
+      field: "subscribed_shows",
+      get() {
+        return ensureJson(this.getDataValue("subscribedShows"));
+      },
+    },
   },
   {
     sequelize,
     timestamps: false,
-    modelName: "LikedShows",
-    tableName: "liked_shows",
+    modelName: "UserShows",
+    tableName: "user_shows",
   }
 );
 
@@ -307,6 +315,6 @@ User.hasMany(TuLalem, {
   },
 });
 
-User.hasOne(LikedShows, { foreignKey: "userUUID" });
+User.hasOne(UserShows, { foreignKey: "userUUID" });
 
 User.hasOne(WatchedEpisodes, { foreignKey: "userUUID" });

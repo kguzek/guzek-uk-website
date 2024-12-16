@@ -11,7 +11,7 @@ import {
   sendError,
   sendOK,
 } from "../util";
-import { LikedShows, Token, User, WatchedEpisodes } from "../sequelize";
+import { UserShows, Token, User, WatchedEpisodes } from "../sequelize";
 import { getTokenSecret } from "../middleware/auth";
 import { CustomRequest, UserObj } from "../models";
 import { getLogger } from "../middleware/logging";
@@ -203,7 +203,7 @@ router
         message: "User UUID must be provided in request path.",
       });
     try {
-      await deleteDatabaseEntry(LikedShows, { userUUID: uuid });
+      await deleteDatabaseEntry(UserShows, { userUUID: uuid });
       await deleteDatabaseEntry(WatchedEpisodes, { userUUID: uuid });
     } catch (error) {
       logger.error(`Could not delete user-associated entries: ${error}`);
