@@ -15,11 +15,12 @@ LiveSeries started out as a personal project back in 2019 in the form of a C con
 
 LiveSeries is now considered a finished product; I personally use it and it satisfies my needs. However, the limitations of a centralised server are now becoming apparent: in order to allow other users to download content, they would need unrestricted access to my own personal server, which is not fesible as the storage space doesn't allow it. This is why the episode downloading functionality is currently limited to whitelisted accounts, but I will be looking into allowing public access in some form (e.g. a local server download to be able to set up decentralised servers, while still allowing the web client interface to access it).
 
-## API
+## Backend
 
-The website features a back-end hosted on [api.guzek.uk](https://api.guzek.uk/), with JWT authentication and custom authorisation middleware. It provides user registration, website content editing, user profile and detail editing, and of course the LiveSeries API.
+The website features a REST API on [api.guzek.uk](https://api.guzek.uk/), and an authentication server hosted on [auth.guzek.uk](https://auth.guzek.uk/). These are also open-source, and you can find them on GitHub.
 
-Fun fact: its first implementation was as a JSON file serving as the database, and raw Node.JS http server code. It's now a MySQL (specifically mariadb) database operated by [Sequelize](https://sequelize.org/), an ORM for JS/TS -- yes, it's still based on Node.JS.
+- [https://github.com/kguzek/guzek-uk-api](https://github.com/kguzek/guzek-uk-api)
+- [https://github.com/kguzek/guzek-uk-auth-server](https://github.com/kguzek/guzek-uk-auth-server)
 
 ## Usage
 
