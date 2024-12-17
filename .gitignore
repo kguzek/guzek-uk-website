@@ -1,10 +1,5 @@
 # dependencies
 node_modules
-.pnp
-.pnp.js
-
-# testing
-coverage
 
 # production
 build
@@ -12,36 +7,11 @@ api/v1/dist
 
 # misc
 .DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-npm-debug.log*
-
-# Yarn
-yarn-debug.log*
-yarn-error.log*
-!.yarnrc.yml
-.pnp.*
-**/.yarn/*
-!**/.yarn/patches
-!**/.yarn/plugins
-!**/.yarn/releases
-!**/.yarn/sdks
-!**/.yarn/versions
-
-# development REST files
-*.rest
-
-# Visual Studio Code settings
-# .vscode
+.env
 
 # Shell scripts
 *.sh
 
 # Application files
-logs/
-.env
 orderDraft.json
 orderTemplate.json
