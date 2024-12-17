@@ -1,12 +1,12 @@
 {
   "name": "guzek-uk-website",
   "homepage": "https://www.guzek.uk/",
-  "version": "0.1.0",
+  "version": "3.0.0",
   "engines": {
     "node": "^18.4.0"
   },
   "author": "Konrad Guzek",
-  "license": "ISC",
+  "license": "AGPL-3.0-only",
   "description": "The front end of the \"guzek.uk\" website.",
   "private": true,
   "scripts": {
