@@ -2,8 +2,11 @@ import React, { useEffect, useRef, useContext, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ErrorPage from "../ErrorPage";
 import { Language, ErrorCode } from "../../misc/models";
-import { TranslationContext, ModalContext } from "../../misc/context";
-import { API_BASE, API_BASE_VIDEO } from "../../misc/backend";
+import {
+  TranslationContext,
+  ModalContext,
+  useFetchContext,
+} from "../../misc/context";
 
 function isNumber(val: string | undefined): val is string {
   return val != null && `${+val}` === val && +val > 0;
@@ -24,7 +27,10 @@ export default function Watch({ lang }: { lang: Language }) {
   const [currentIcon, setCurrentIcon] = useState("");
   const [iconVisibility, setIconVisibility] = useState("hidden");
   const [currentTimeout, setCurrentTimeout] = useState<null | number>(null);
+  const [videoUrl, setVideoUrl] = useState<string | undefined>();
+  const [subtitlesUrl, setSubtitlesUrl] = useState<string | undefined>();
   const navigate = useNavigate();
+  const { fetchFromAPI } = useFetchContext();
 
   useEffect(() => {
     window.addEventListener("fullscreenchange", onFullscreenChange);
@@ -148,8 +154,30 @@ export default function Watch({ lang }: { lang: Language }) {
     navigate(`/liveseries/watch/${showNameEncoded}/${season}/${+episode + 1}`);
   }
 
+  async function fetchFile(
+    file: "video" | "subtitles",
+    setUrl: (url: string) => void
+  ) {
+    const res = await fetchFromAPI(
+      `liveseries/${file}/${path}?lang=${lang}`,
+      {}
+    );
+    if (!res.ok) {
+      console.error(await res.json());
+      return;
+    }
+    const blob = await res.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    setUrl(objectUrl);
+  }
+
+  useEffect(() => {
+    fetchFile("video", setVideoUrl);
+    fetchFile("subtitles", setSubtitlesUrl);
+  }, []);
+
   return (
-    <div onKeyPress={onKeyPress}>
+    <div onKeyDown={onKeyPress}>
       <h2>
         {showName} {data.liveSeries.episodes.serialise(episodeObject)}
       </h2>
@@ -195,7 +223,7 @@ export default function Watch({ lang }: { lang: Language }) {
           ref={videoRef}
           className={loadingFailed ? "" : ""}
           controls
-          src={`${API_BASE_VIDEO}liveseries/video/${path}`}
+          src={videoUrl}
           autoPlay
           onError={onError}
           onLoadStart={onLoadStart}
@@ -207,7 +235,7 @@ export default function Watch({ lang }: { lang: Language }) {
             label="English"
             kind="subtitles"
             srcLang="en"
-            src={`${API_BASE}liveseries/subtitles/${path}?lang=${lang}`}
+            src={subtitlesUrl}
             default
           />
         </video>

@@ -17,11 +17,7 @@ import {
   DownloadStatus,
 } from "../../misc/models";
 import { getErrorMessage, compareEpisodes } from "../../misc/util";
-import { API_BASE } from "../../misc/backend";
 import "./Liveseries.css";
-
-const WEBSOCKET_URL =
-  API_BASE.replace("http", "ws") + "liveseries/downloaded-episodes/ws";
 
 export type LiveSeriesOutletContext = {
   loading: string[];
@@ -81,7 +77,8 @@ export default function LiveSeriesBase() {
     useContext(ModalContext);
 
   useEffect(() => {
-    if (!userShows?.likedShows || !userShows?.subscribedShows) fetchUserShows();
+    if (!userShows?.likedShows?.length || !userShows?.subscribedShows?.length)
+      fetchUserShows();
     fetchWatchedEpisodes();
     if (!user?.admin) return;
     connectToWebsocket();
@@ -93,11 +90,20 @@ export default function LiveSeriesBase() {
     };
   }, [user]);
 
+  const hasDecentralisedServer = user?.serverUrl?.startsWith("http");
+
   function connectToWebsocket() {
     if (existingSocket) return;
+    if (!hasDecentralisedServer) {
+      console.warn("No decentralised server URL provided.");
+      return;
+    }
     let socket: WebSocket;
+    const websocketUrlBase = user?.serverUrl?.replace("http", "ws");
     try {
-      socket = new WebSocket(WEBSOCKET_URL);
+      socket = new WebSocket(
+        websocketUrlBase + "liveseries/downloaded-episodes/ws"
+      );
     } catch (error) {
       console.error("Connection error:", error);
       setModalError(

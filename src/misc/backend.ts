@@ -19,13 +19,18 @@ export const API_BASE = useLocalUrl
   ? "http://localhost:5017/"
   : "https://api.guzek.uk/";
 
-export const API_BASE_AUTH = useLocalUrl
+const API_BASE_AUTH = useLocalUrl
   ? "http://localhost:5019/"
   : "https://auth.guzek.uk/";
 
-export const API_BASE_VIDEO = useLocalUrl
-  ? "http://localhost:5021/"
-  : "https://v.guzek.uk/";
+const API_BASE_LIVESERIES_LOCAL = "http://localhost:5021/";
+
+const DECENTRALISED_ROUTES = [
+  "liveseries/downloaded-episodes",
+  "liveseries/subtitles",
+  "liveseries/video",
+  "torrents",
+];
 
 /** Gets the application's root cache storage. If the operation fails, returns `null`. */
 export async function getCache() {
@@ -158,6 +163,14 @@ async function refreshAccessToken(auth: Auth): Promise<null | string> {
   return body.accessToken as string;
 }
 
+function getDecentralisedApiUrl(auth: Auth) {
+  if (auth.user?.serverUrl) {
+    return auth.user.serverUrl;
+  }
+  console.warn("No decentralised server URL set for user. Using local URL.");
+  return API_BASE_LIVESERIES_LOCAL;
+}
+
 /** Instantiates a `Request` object with the attributes provided.
  *  Automatically applies the user access token to the `Authorization` header
  *  as well as determining the `Content-Type` and URL search query parameters.
@@ -175,7 +188,11 @@ async function createRequest(
   },
   useAccessToken: boolean = true
 ) {
-  const base = path.startsWith("auth/") ? API_BASE_AUTH : API_BASE;
+  const base = DECENTRALISED_ROUTES.find((route) => path.startsWith(route))
+    ? getDecentralisedApiUrl(auth)
+    : path.startsWith("auth/")
+    ? API_BASE_AUTH
+    : API_BASE;
   const url = base + path + getSearchParams(params);
   const options: RequestOptions = {
     method,

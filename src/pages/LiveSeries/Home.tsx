@@ -85,6 +85,7 @@ function LikedShowsCarousel({
     return `${direction} fa-arrow-${direction} ${visible ? "" : "hidden"}`;
   }
 
+  const toMap = likedShowIds ?? Array<number>(SKELETON_CARDS_COUNT).fill(0);
   return (
     <div className="flex-column home">
       <div className="flex home-carousel">
@@ -93,22 +94,20 @@ function LikedShowsCarousel({
           onClick={previousImage}
         ></i>
         <ul className="previews flex scroll-x">
-          {(likedShowIds ?? Array(SKELETON_CARDS_COUNT).fill(0)).map(
-            (showId, idx) => (
-              <li key={`home-preview ${showId} ${idx}`}>
-                <TvShowPreview
-                  idx={idx}
-                  showDetails={likedShowIds ? likedShows[showId] : undefined}
-                  onLoad={() =>
-                    setCardsToLoad((old) =>
-                      old.filter((value) => value !== showId)
-                    )
-                  }
-                  ready={cardsToLoad.length === 0 && readyToRenderPreviews}
-                />
-              </li>
-            )
-          )}
+          {toMap.map((showId, idx) => (
+            <li key={`home-preview ${showId} ${idx}`}>
+              <TvShowPreview
+                idx={idx}
+                showDetails={likedShowIds ? likedShows[showId] : undefined}
+                onLoad={() =>
+                  setCardsToLoad((old) =>
+                    old.filter((value) => value !== showId)
+                  )
+                }
+                ready={cardsToLoad.length === 0 && readyToRenderPreviews}
+              />
+            </li>
+          ))}
         </ul>
         <i
           className={`carousel-scroller fas ${getScrollerClassName("right")}`}

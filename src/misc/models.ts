@@ -20,6 +20,7 @@ export interface User {
   admin: boolean;
   created_at: string;
   modified_at: string;
+  serverUrl?: string;
 }
 
 export enum ErrorCode {
@@ -96,7 +97,8 @@ export const DownloadStatus = {
   VERIFYING: 6,
 };
 
-export type DownloadStatusType = (typeof DownloadStatus)[keyof typeof DownloadStatus];
+export type DownloadStatusType =
+  (typeof DownloadStatus)[keyof typeof DownloadStatus];
 
 export interface DownloadedEpisode {
   status: DownloadStatusType;
