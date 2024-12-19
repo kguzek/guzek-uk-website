@@ -33,6 +33,23 @@
   transition: transform 300ms ease;
 }
 
+.modal a {
+  color: var(--color-accent);
+  --underline-color: var(--color-accent);
+  transition: background-size 300ms ease;
+  background-image: linear-gradient(
+    var(--underline-color),
+    var(--underline-color)
+  );
+  background-size: 0% 2px;
+  background-position: left bottom;
+  background-repeat: no-repeat;
+}
+
+.modal a:hover {
+  background-size: 100% 2px;
+}
+
 .hidden .modal {
   transform: translateY(calc(-100% - var(--offset-y)));
 }
@@ -107,4 +124,3 @@ button.btn-secondary {
     border-radius: 10px;
   }
 }
-

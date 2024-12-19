@@ -7,6 +7,10 @@
   justify-content: center;
 }
 
+.whats-this {
+  color: var(--color-primary-strong);
+}
+
 .shows-list {
   gap: 10px;
 }

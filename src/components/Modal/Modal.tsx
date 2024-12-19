@@ -5,6 +5,8 @@ export type ModalHandler = (primary: boolean) => void;
 
 // const MODAL_DISAPPEARS_AFTER_MS = 10_000;
 
+const VALUE_URL_PATTERN = /^(.+)(https:\/\/[^\s]+)(\s.+)?$/g;
+
 export default function Modal({
   value,
   onClick,
@@ -28,10 +30,26 @@ export default function Modal({
     }
   }, [value]);
 
+  let before = (value || oldValue) ?? "";
+  let url = "";
+  let after = "";
+  const match = VALUE_URL_PATTERN.exec(before);
+  if (match) {
+    [before, url, after] = match.slice(1);
+  }
+
   return (
     <div className={`modal-background ${value ? "" : "hidden"}`}>
       <div className={`modal ${className}`}>
-        <p>{value || oldValue}</p>
+        <p>
+          {before}
+          {url && (
+            <a href={url} target="_blank">
+              {url}
+            </a>
+          )}
+          {after || (url && ".")}
+        </p>
         <div className="modal-buttons">
           <button
             type="button"
@@ -54,4 +72,3 @@ export default function Modal({
     </div>
   );
 }
-

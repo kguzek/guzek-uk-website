@@ -125,7 +125,7 @@ function Episode({
         <small>{airDate}</small>
       </div>
       <div className="flex gap-10 noshrink">
-        {user?.admin && (
+        {user?.serverUrl?.length && (
           <>
             <div
               className="flex flex-column"

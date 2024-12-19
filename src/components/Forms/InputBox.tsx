@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react";
+import { ChangeEvent, ReactNode } from "react";
 
 export default function InputBox({
   label,
@@ -10,6 +10,7 @@ export default function InputBox({
   placeholder,
   name,
   autofocus = false,
+  info,
 }: {
   label: string;
   value: string | number | boolean;
@@ -20,6 +21,7 @@ export default function InputBox({
   placeholder?: string;
   name?: string;
   autofocus?: boolean;
+  info?: ReactNode;
 }) {
   const isDropdown = type === "dropdown";
   const isCheckbox = type === "checkbox";
@@ -42,12 +44,13 @@ export default function InputBox({
 
   return (
     <label className={`input-box input-${type} ${isCheckbox ? "nowrap" : ""}`}>
-      <span>
+      <div className="flex gap-10">
         {required && value === "" && (
           <span className="required-asterisk">*</span>
         )}
-        {label}
-      </span>
+        <span>{label}</span>
+        {info}
+      </div>
       {isDropdown ? (
         <select
           value={value as string | number}

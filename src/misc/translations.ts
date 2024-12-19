@@ -28,6 +28,9 @@ const SHORT_TIME_FORMAT = {
 //   second: "2-digit",
 // } as const;
 
+const LIVESERIES_SERVER_HOMEPAGE =
+  "https://github.com/kguzek/guzek-uk-liveseries-server";
+
 export type Translation = Readonly<{
   footer: (year: string) => string;
   loading: string;
@@ -95,7 +98,9 @@ export type Translation = Readonly<{
     no: string;
   };
   liveSeries: {
-    title: "LiveSeries";
+    title: string;
+    whatsThis: string;
+    explanation: string;
     tvShowList: {
       showing: string;
       of: string;
@@ -247,6 +252,8 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
     },
     liveSeries: {
       title: "LiveSeries",
+      whatsThis: "What's this?",
+      explanation: `In order to search for and download TV show torrents, you must set up a LiveSeries server. This server will be used to fetch torrent files and stream video content. Find out more at ${LIVESERIES_SERVER_HOMEPAGE}`,
       tvShowList: {
         showing: "Showing",
         of: "of",
@@ -412,6 +419,8 @@ Once you find a show you like, click the heart icon to add it to your liked show
     },
     liveSeries: {
       title: "LiveSeries",
+      whatsThis: "Co to?",
+      explanation: `Aby móc wyszukiwać i pobierać torrenty seriali, musisz skonfigurować serwer LiveSeries. Serwer ten będzie używany do pobierania torrentów i przesyłania do przeglądarki filmów. Dowiedz się więcej na ${LIVESERIES_SERVER_HOMEPAGE}`,
       tvShowList: {
         showing: "Wynik",
         of: "z",

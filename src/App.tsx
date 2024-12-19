@@ -277,6 +277,15 @@ export default function App() {
           }}
         >
           <TranslationContext.Provider value={pageContent}>
+            <Modal
+              value={modalChoice}
+              labelPrimary={pageContent.modal.yes}
+              labelSecondary={pageContent.modal.no}
+              onClick={(primary) => {
+                modalChoiceResolve(primary);
+                setModalChoice("");
+              }}
+            />
             <Modal value={modalInfo} onClick={() => setModalInfo("")} />
             <Modal
               className="error"

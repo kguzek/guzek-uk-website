@@ -88,6 +88,22 @@ function Profile() {
             value={serverUrl}
             setValue={setServerUrl}
             required={false}
+            info={
+              <button
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "inherit",
+                  cursor: "help",
+                }}
+                onClick={(evt) => {
+                  evt.preventDefault();
+                  setModalInfo(data.liveSeries.explanation);
+                }}
+              >
+                <i className="whats-this">{data.liveSeries.whatsThis}</i>
+              </button>
+            }
           />
         </div>
         <button
