@@ -106,28 +106,28 @@ export default function LiveSeriesBase() {
       );
     } catch (error) {
       console.error("Connection error:", error);
-      setModalError(
-        "Could not establish a connection with the websocket. Try again later."
-      );
+      setModalError(data.liveSeries.websockets.connectionFailed);
       return;
     }
     setExistingSocket(socket);
     socket.onerror = (message) => {
       // This usually means the server is online but hasn't yet set up the websocket listener
       console.error("Unknown error:", message);
-      setModalError(
-        "An unknown error occured during websocket communication. Try again later."
-      );
+      setModalError(data.liveSeries.websockets.error);
     };
     const poll = (data: DownloadedEpisode[]) =>
       socket.send(JSON.stringify({ type: "poll", data }));
     socket.onopen = () => poll([]);
     socket.onclose = async (evt) => {
-      if (evt.wasClean) return;
-      const answer = await setModalChoice(
-        "The websocket connection was forcefully closed. Reconnect?"
+      if (evt.wasClean) {
+        // The server URL is probably misconfigured
+        setModalError(data.liveSeries.websockets.connectionFailed);
+        return;
+      }
+      const reconnect = await setModalChoice(
+        data.liveSeries.websockets.askReconnect
       );
-      if (answer) connectToWebsocket();
+      if (reconnect) connectToWebsocket();
     };
     socket.onmessage = (message) => {
       const torrentInfo = JSON.parse(message.data).data as DownloadedEpisode[];

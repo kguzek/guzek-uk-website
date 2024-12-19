@@ -117,6 +117,8 @@ export type Translation = Readonly<{
       season: string;
       like: string;
       unlike: string;
+      subscribe: string;
+      confirmSubscribe: (unwatched: number) => string;
       showDetails: string;
       markWatched: (un: string) => string;
       markAllWatched: (un: string) => string;
@@ -156,6 +158,11 @@ export type Translation = Readonly<{
       playbackError: string;
       previous: string;
       next: string;
+    };
+    websockets: {
+      connectionFailed: string;
+      error: string;
+      askReconnect: string;
     };
   };
   error: { [code in ErrorCode]: ErrorPageContent };
@@ -270,6 +277,9 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
         season: "Season",
         like: "Like",
         unlike: "Unlike",
+        subscribe: "Subscribe to automatic downloads",
+        confirmSubscribe: (unwatched) =>
+          `Warning: Are you sure you want to automatically download unwatched episodes for this show? You have ${unwatched} unwatched episodes.`,
         showDetails: "Show Details",
         markWatched: (un) => `Mark episode as ${un}watched`,
         markAllWatched: (un) => `Mark all episodes in season as ${un}watched`,
@@ -325,6 +335,14 @@ Once you find a show you like, click the heart icon to add it to your liked show
           "There was a problem playing that video. Please try again later.",
         previous: "Previous",
         next: "Next",
+      },
+      websockets: {
+        connectionFailed:
+          "Could not establish a connection with the websocket. Ensure the LiveSeries server URL is configured correctly and try again later.",
+        error:
+          "An unknown error occured during websocket communication. Try again later.",
+        askReconnect:
+          "The websocket connection with the LiveSeries server was forcefully closed. Reconnect?",
       },
     },
   },
@@ -437,6 +455,9 @@ Once you find a show you like, click the heart icon to add it to your liked show
         season: "Sezon",
         like: "Polub",
         unlike: "Odlub",
+        subscribe: "Włącz automatyczne pobieranie odcinków",
+        confirmSubscribe: (unwatched) =>
+          `Uwaga: Czy na pewno chcesz automatycznie pobierać wszystkie nieobejrzane odcinki dla tego serialu? Ilość nieobejrzanych odcinków: ${unwatched}.`,
         showDetails: "Dane Serialu",
         markWatched: (un) => `Zaznacz odcinek jako ${un}obejrzany`,
         markAllWatched: (un) =>
@@ -489,6 +510,14 @@ Gdy znajdziesz serial, który Ci się podoba, kliknij ikonę serca, aby dodać g
           "Nastąpił błąd podczas odtwarzania tego filmu. Spróbuj wkrótce ponownie.",
         previous: "Poprzedni",
         next: "Kolejny",
+      },
+      websockets: {
+        connectionFailed:
+          "Nie udało się nawiązać połączenia z serwerem. Upewnij się że URL serwera LiveSeries zostało skonfigurowane poprawnie i spróbuj ponownie później.",
+        error:
+          "Nastąpił nieoczekiwany błąd podczas komunikacji z serwerem LiveSeries. Spróbuj ponownie później.",
+        askReconnect:
+          "Połączenie z serwerem LiveSeries zostało przerwane. Ponowić próbę połączenia?",
       },
     },
   },

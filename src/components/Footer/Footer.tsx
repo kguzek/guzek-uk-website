@@ -10,7 +10,13 @@ function Footer() {
       <hr />
       <Logo size={20} />
       <small>
-        {data.footer(new Date().getFullYear().toString())}
+        <a
+          className="hover-underline"
+          href="https://github.com/kguzek"
+          target="_blank"
+        >
+          {data.footer(new Date().getFullYear().toString())}
+        </a>
       </small>
     </footer>
   );

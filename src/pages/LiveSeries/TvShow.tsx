@@ -9,6 +9,7 @@ import {
 } from "../../misc/models";
 import {
   AuthContext,
+  ModalContext,
   TranslationContext,
   useFetchContext,
 } from "../../misc/context";
@@ -23,6 +24,9 @@ import { LiveSeriesOutletContext } from "./Base";
 import TvShowSkeleton from "../../components/LiveSeries/TvShowSkeleton";
 import InputBox from "../../components/Forms/InputBox";
 
+// Will issue a warning when trying to subscribe with more than 10 unwatched episodes
+const UNWATCHED_EPISODES_THRESHOLD = 10;
+
 export default function TvShow() {
   const [numImagesLoaded, setNumImagesLoaded] = useState(0);
   const [likedFlipped, setLikedFlipped] = useState(false);
@@ -36,6 +40,7 @@ export default function TvShow() {
     useOutletContext<LiveSeriesOutletContext>();
   const { removeOldCaches } = useFetchContext();
   const { permalink } = useParams();
+  const { setModalChoice } = useContext(ModalContext);
 
   useEffect(() => {
     if (!permalink) return;
@@ -48,7 +53,11 @@ export default function TvShow() {
   }, [permalink]);
 
   useEffect(() => {
-    setTitle(tvShowDetails?.name || data.liveSeries.tvShow.showDetails);
+    setTitle(
+      `${tvShowDetails?.name || data.liveSeries.tvShow.showDetails} – ${
+        data.liveSeries.title
+      }`
+    );
   }, [data, tvShowDetails]);
 
   function sortEpisodes(episodes: EpisodeType[]) {
@@ -98,6 +107,16 @@ export default function TvShow() {
   }
 
   async function handleSubscribe() {
+    if (
+      !isSubscribed &&
+      unwatchedEpisodesCount > UNWATCHED_EPISODES_THRESHOLD
+    ) {
+      const proceed = await setModalChoice(
+        data.liveSeries.tvShow.confirmSubscribe(unwatchedEpisodesCount)
+      );
+      if (!proceed) return;
+    }
+
     setSubscribedFlipped((old) => !old);
 
     await fetchResource("shows/personal/subscribed/" + tvShowDetails?.id, {
@@ -156,6 +175,13 @@ export default function TvShow() {
   const isSeasonWatched = (season: string, episodes: EpisodeType[]) =>
     watchedInShow[+season]?.length === episodes.length;
 
+  const totalEpisodes = tvShowDetails?.episodes?.length ?? 0;
+  const watchedEpisodesCount = Object.values(watchedInShow).reduce(
+    (acc, episodes) => acc + episodes.length,
+    0
+  );
+  const unwatchedEpisodesCount = totalEpisodes - watchedEpisodesCount;
+
   const imagesLoading = numImagesLoaded < tvShowDetails.pictures.length;
 
   return (
@@ -176,7 +202,11 @@ export default function TvShow() {
         <div className="flex flex-wrap">
           <div className="genres flex">
             {tvShowDetails.genres.map((genre, idx) => (
-              <div key={`genre-${genre}-${idx}`} className="genre nowrap">
+              <div
+                key={`genre-${genre}-${idx}`}
+                className="genre nowrap"
+                style={{ cursor: "default" }}
+              >
                 {genre}
               </div>
             ))}
@@ -256,11 +286,11 @@ export default function TvShow() {
           </>
         )}
         <h3>{data.liveSeries.tvShow.episodes}</h3>
-        {user?.admin && (
+        {user?.serverUrl?.length && (
           <div style={{ width: "fit-content" }}>
             <InputBox
               type="checkbox"
-              label="Subscribe to automatic downloads"
+              label={data.liveSeries.tvShow.subscribe}
               value={isSubscribed}
               setValue={handleSubscribe}
             ></InputBox>
