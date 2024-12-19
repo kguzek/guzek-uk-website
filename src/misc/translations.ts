@@ -48,6 +48,7 @@ export type Translation = Readonly<{
     invalidCredentials: string;
     passwordMismatch: string;
     passwordLength: string;
+    serverUrlUpdated: (url: string) => string;
     formDetails: {
       username: string;
       email: string;
@@ -62,6 +63,7 @@ export type Translation = Readonly<{
       or: string;
       haveAccountAlready: string;
       logout: string;
+      serverUrl: string;
     };
   };
   admin: {
@@ -182,6 +184,8 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
       invalidCredentials: "Invalid credentials.",
       passwordMismatch: "Passwords do not match.",
       passwordLength: "Password must be at least 8 characters long.",
+      serverUrlUpdated: (url) =>
+        `LiveSeries Server URL successfully updated to '${url}'.`,
       formDetails: {
         username: "Username",
         email: "Email",
@@ -196,6 +200,7 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
         or: "or",
         haveAccountAlready: "have an account already?",
         logout: "Log out",
+        serverUrl: "LiveSeries Server URL",
       },
     },
     error: {
@@ -344,6 +349,8 @@ Once you find a show you like, click the heart icon to add it to your liked show
       invalidCredentials: "Niepoprawne dane loginowe.",
       passwordMismatch: "Hasła się nie zgadzają.",
       passwordLength: "Hasło musi zawierać co najmniej 8 znaków.",
+      serverUrlUpdated: (url) =>
+        `Pomyślnie zaktualizowano URL serwera LiveSeries na '${url}'.`,
       formDetails: {
         username: "Nazwa użytkownika",
         email: "Email",
@@ -358,6 +365,7 @@ Once you find a show you like, click the heart icon to add it to your liked show
         or: "lub",
         haveAccountAlready: "masz już konto?",
         logout: "Wyloguj się",
+        serverUrl: "URL serwera LiveSeries",
       },
     },
     error: {

@@ -55,7 +55,8 @@ export default function App() {
   const [menuItems, setMenuItems] = useState<MenuItem[] | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [reload, setReload] = useState(false);
-  const [filterCachesPromise, setFilterCachesPromise] = useState<null | Promise<void>>(null);
+  const [filterCachesPromise, setFilterCachesPromise] =
+    useState<null | Promise<void>>(null);
 
   const pageContent = TRANSLATIONS[userLanguage];
 
@@ -88,8 +89,7 @@ export default function App() {
     if (!cache) return;
     const cachedResponses = await cache.matchAll();
     for (const res of cachedResponses) {
-      if (/\/personal\/?[^\/]*$/.test(res.url))
-        await cache.delete(res.url);
+      if (/\/personal\/?[^\/]*$/.test(res.url)) await cache.delete(res.url);
     }
   }
 
@@ -121,44 +121,48 @@ export default function App() {
     const cachedResponses = await cache.matchAll();
     for (let i = 0; i < cachedResponses.length; i++) {
       const res = cachedResponses[i];
-        LOG_CACHE_INVALIDATION && console.debug(
-         "Checking cached response",
-         i + 1,
-         "/",
-         cachedResponses.length,
-         `'${res.url}'`,
-         // Object.fromEntries(res.headers.entries()),
-         "..."
-       );
+      LOG_CACHE_INVALIDATION &&
+        console.debug(
+          "Checking cached response",
+          i + 1,
+          "/",
+          cachedResponses.length,
+          `'${res.url}'`,
+          // Object.fromEntries(res.headers.entries()),
+          "..."
+        );
       const resTimestamp = parseInt(res.headers.get("Pragma") ?? "0");
       if (!res.url) {
         continue;
       }
       const url = new URL(res.url);
       // Extract the base path (only first subdirectory of URL path)
-      const endpoint =
-        /^\/(?:liveseries\/|auth\/)?([^\/]*)(?:\/.*)?$/.exec(url.pathname)?.[1];
+      const endpoint = /^\/(?:liveseries\/|auth\/)?([^\/]*)(?:\/.*)?$/.exec(
+        url.pathname
+      )?.[1];
       if (!endpoint) {
         console.debug("Cache does not match regex:", url.pathname);
         return;
       }
-      LOG_CACHE_INVALIDATION && console.debug(
-        "Cache date:",
-        resTimestamp,
-        `| Endpoint '${endpoint}' last updated:`,
-        updated[endpoint]
-      );
+      LOG_CACHE_INVALIDATION &&
+        console.debug(
+          "Cache date:",
+          resTimestamp,
+          `| Endpoint '${endpoint}' last updated:`,
+          updated[endpoint]
+        );
       if (
         resTimestamp > updated[endpoint] ||
         (IGNORE_INVALID_RESPONSE_DATES && !resTimestamp)
       ) {
         const diff = getDuration(resTimestamp - updated[endpoint]);
 
-        LOG_CACHE_INVALIDATION && console.debug(
-          "Cache was created",
-          diff.formatted,
-          "after the last change on the server."
-        );
+        LOG_CACHE_INVALIDATION &&
+          console.debug(
+            "Cache was created",
+            diff.formatted,
+            "after the last change on the server."
+          );
         continue;
       }
       updatedEndpoints.add(endpoint);
@@ -357,7 +361,10 @@ export default function App() {
                 <Route path="most-popular" element={<MostPopular />} />
                 <Route path="search" element={<Search />} />
                 <Route path="tv-show/:permalink" element={<TvShow />} />
-                <Route path="watch/:showName/:season/:episode" element={<Watch lang={userLanguage} />} />
+                <Route
+                  path="watch/:showName/:season/:episode"
+                  element={<Watch lang={userLanguage} />}
+                />
               </Route>
               <Route
                 path="*"

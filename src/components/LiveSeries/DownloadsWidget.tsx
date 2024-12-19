@@ -115,19 +115,16 @@ export default function DownloadsWidget({
                       >
                         {card}
                       </Link>
-                      <div
-                        className="clickable delete"
-                        onClick={() => handleDeleteEpisode(episode)}
-                      >
-                        <i className="fas fa-trash"></i>
-                      </div>
                     </>
                   ) : (
-                    <>
-                      {card}
-                      <div className="delete"></div>
-                    </>
+                    <>{card}</>
                   )}
+                  <div
+                    className="clickable delete"
+                    onClick={() => handleDeleteEpisode(episode)}
+                  >
+                    <i className="fas fa-trash"></i>
+                  </div>
                 </div>
               );
             })}

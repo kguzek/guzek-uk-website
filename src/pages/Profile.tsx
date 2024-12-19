@@ -1,17 +1,22 @@
-import React, { MouseEvent, useContext, useEffect } from "react";
+import { MouseEvent, useContext, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { clearStoredLoginInfo } from "../misc/backend";
 import {
   AuthContext,
+  ModalContext,
   TranslationContext,
   useFetchContext,
 } from "../misc/context";
-import { setTitle } from "../misc/util";
+import { getErrorMessage, setTitle } from "../misc/util";
+import InputBox from "../components/Forms/InputBox";
 
 function Profile() {
   const data = useContext(TranslationContext);
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout, setUser } = useContext(AuthContext);
   const { fetchFromAPI } = useFetchContext();
+  const [serverUrl, setServerUrl] = useState("");
+  const [updating, setUpdating] = useState(false);
+  const { setModalError, setModalInfo } = useContext(ModalContext);
 
   useEffect(() => {
     setTitle(data.profile.title);
@@ -24,9 +29,44 @@ function Profile() {
     logout();
   }
 
+  useEffect(() => {
+    if (!user) return;
+    setServerUrl(user.serverUrl ?? "");
+  }, [user]);
+
   if (!user) {
     return <Navigate to="/login" replace={true} />;
   }
+
+  const isServerUrlValid = () =>
+    !updating &&
+    serverUrl &&
+    serverUrl !== "" &&
+    serverUrl !== (user.serverUrl ?? "") &&
+    serverUrl.match(/^https?:\/\/.+/);
+
+  async function handleUpdateServerUrl(evt: MouseEvent<HTMLButtonElement>) {
+    evt.preventDefault();
+    if (!user) return;
+    setUpdating(true);
+    const newServerUrl = serverUrl.endsWith("/") ? serverUrl : serverUrl + "/";
+    const res = await fetchFromAPI(`auth/users/${user.uuid}/details`, {
+      method: "PUT",
+      body: { serverUrl: newServerUrl },
+    });
+    const json = await res.json();
+    if (res.ok) {
+      setServerUrl(json.serverUrl);
+      setModalInfo(data.profile.serverUrlUpdated(newServerUrl));
+      const newUser = { ...user, serverUrl: newServerUrl };
+      setUser(newUser);
+      localStorage.setItem("user", JSON.stringify(newUser));
+    } else {
+      setModalError(getErrorMessage(res, json, data));
+    }
+    setUpdating(false);
+  }
+
   const userCreatedAt = new Date(user.created_at);
   return (
     <div className="text">
@@ -41,14 +81,35 @@ function Profile() {
       <p>
         {data.profile.formDetails.email}: "{user.email}"
       </p>
-      <small>
-        UUID: <code>{user.uuid}</code>
-      </small>
-      <br />
-      <small>
-        {data.profile.formDetails.creationDate}:{" "}
-        <code>{data.dateTimeFormat.format(userCreatedAt)}</code>
-      </small>
+      <form className="flex gap-10">
+        <div style={{ width: "100%" }}>
+          <InputBox
+            label={data.profile.formDetails.serverUrl}
+            value={serverUrl}
+            setValue={setServerUrl}
+            required={false}
+          />
+        </div>
+        <button
+          role="submit"
+          className="btn"
+          disabled={!isServerUrlValid()}
+          style={{ alignSelf: "flex-end" }}
+          onClick={handleUpdateServerUrl}
+        >
+          {data.admin.contentManager.formDetails.update}
+        </button>
+      </form>
+      <p>
+        <small>
+          UUID: <code>{user.uuid}</code>
+        </small>
+        <br />
+        <small>
+          {data.profile.formDetails.creationDate}:{" "}
+          <code>{data.dateTimeFormat.format(userCreatedAt)}</code>
+        </small>
+      </p>
       <div className="centred">
         <button className="btn btn-submit" onClick={handleLogOut}>
           {data.profile.formDetails.logout}

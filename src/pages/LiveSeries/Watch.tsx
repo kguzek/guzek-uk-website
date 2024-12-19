@@ -5,8 +5,10 @@ import { Language, ErrorCode } from "../../misc/models";
 import {
   TranslationContext,
   ModalContext,
-  useFetchContext,
+  AuthContext,
 } from "../../misc/context";
+import { getAccessToken, getDecentralisedApiUrl } from "../../misc/backend";
+import LoadingScreen from "../../components/LoadingScreen/LoadingScreen";
 
 function isNumber(val: string | undefined): val is string {
   return val != null && `${+val}` === val && +val > 0;
@@ -27,10 +29,9 @@ export default function Watch({ lang }: { lang: Language }) {
   const [currentIcon, setCurrentIcon] = useState("");
   const [iconVisibility, setIconVisibility] = useState("hidden");
   const [currentTimeout, setCurrentTimeout] = useState<null | number>(null);
-  const [videoUrl, setVideoUrl] = useState<string | undefined>();
-  const [subtitlesUrl, setSubtitlesUrl] = useState<string | undefined>();
+  const [accessToken, setAccessToken] = useState<string | null | undefined>();
   const navigate = useNavigate();
-  const { fetchFromAPI } = useFetchContext();
+  const authContext = useContext(AuthContext);
 
   useEffect(() => {
     window.addEventListener("fullscreenchange", onFullscreenChange);
@@ -39,12 +40,21 @@ export default function Watch({ lang }: { lang: Language }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!authContext.user) return;
+    updateAccessToken();
+  }, [authContext.user]);
+
+  async function updateAccessToken() {
+    const token = await getAccessToken(authContext);
+    setAccessToken(token);
+  }
+
   if (!showName || !isNumber(season) || !isNumber(episode)) {
     return <ErrorPage errorCode={ErrorCode.NotFound} />;
   }
 
   const showNameEncoded = encodeURIComponent(showName);
-  const path = `${showNameEncoded}/${season}/${episode}`;
   const episodeObject = { episode: +episode, season: +season };
 
   function onLoadStart() {
@@ -154,27 +164,17 @@ export default function Watch({ lang }: { lang: Language }) {
     navigate(`/liveseries/watch/${showNameEncoded}/${season}/${+episode + 1}`);
   }
 
-  async function fetchFile(
-    file: "video" | "subtitles",
-    setUrl: (url: string) => void
-  ) {
-    const res = await fetchFromAPI(
-      `liveseries/${file}/${path}?lang=${lang}`,
-      {}
-    );
-    if (!res.ok) {
-      console.error(await res.json());
-      return;
-    }
-    const blob = await res.blob();
-    const objectUrl = URL.createObjectURL(blob);
-    setUrl(objectUrl);
+  if (accessToken === undefined) {
+    return <LoadingScreen />;
   }
 
-  useEffect(() => {
-    fetchFile("video", setVideoUrl);
-    fetchFile("subtitles", setSubtitlesUrl);
-  }, []);
+  if (!accessToken || !authContext.user) {
+    return <ErrorPage errorCode={ErrorCode.Unauthorized} />;
+  }
+
+  const path = `${showNameEncoded}/${season}/${episode}?access_token=${accessToken}`;
+
+  const urlBase = getDecentralisedApiUrl(authContext);
 
   return (
     <div onKeyDown={onKeyPress}>
@@ -223,7 +223,7 @@ export default function Watch({ lang }: { lang: Language }) {
           ref={videoRef}
           className={loadingFailed ? "" : ""}
           controls
-          src={videoUrl}
+          src={`${urlBase}/liveseries/video/${path}`}
           autoPlay
           onError={onError}
           onLoadStart={onLoadStart}
@@ -235,7 +235,7 @@ export default function Watch({ lang }: { lang: Language }) {
             label="English"
             kind="subtitles"
             srcLang="en"
-            src={subtitlesUrl}
+            src={`${urlBase}/liveseries/subtitles/${path}`}
             default
           />
         </video>

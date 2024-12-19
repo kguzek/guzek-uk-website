@@ -78,7 +78,12 @@ function Episode({
     fetchResource("downloaded-episodes", {
       method: "POST",
       useEpisodate: false,
-      body: { tvShow, episode },
+      body: {
+        showId: tvShow.id,
+        showName: tvShow.name,
+        episode: episode.episode,
+        season: episode.season,
+      },
       onSuccess: (data) =>
         monitorEpisodeDownloads(data, episodePredicate, episodeString),
       onError: () => {

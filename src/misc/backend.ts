@@ -96,7 +96,7 @@ const listenForTokenUpdate = (): Promise<string | null> =>
 const toPromise = async <T>(resolvesTo: T): Promise<T> => resolvesTo;
 
 /** Determines the API access token and generates a new one if it is out of date. */
-function getAccessToken(auth: Auth): Promise<null | string> {
+export function getAccessToken(auth: Auth): Promise<null | string> {
   const tokenInfo = getAccessTokenInfo();
   if (!tokenInfo) return toPromise(null);
   // Check if it's expired
@@ -163,7 +163,7 @@ async function refreshAccessToken(auth: Auth): Promise<null | string> {
   return body.accessToken as string;
 }
 
-function getDecentralisedApiUrl(auth: Auth) {
+export function getDecentralisedApiUrl(auth: Auth) {
   if (auth.user?.serverUrl) {
     return auth.user.serverUrl;
   }

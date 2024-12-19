@@ -14,6 +14,7 @@ const USER_REQUIRED_PROPERTIES = [
   "username",
   "email",
   "admin",
+  "serverUrl",
   "created_at",
   "modified_at",
 ];
@@ -125,8 +126,24 @@ export const getEpisodeAirDate = (episode: Episode, addSpace = false): Date => {
 export const hasEpisodeAired = (episode: Episode) =>
   new Date() > getEpisodeAirDate(episode);
 
+const STATUS_CODES: Record<number, string> = {
+  200: "OK",
+  201: "Created",
+  204: "No Content",
+  206: "Partial Content",
+  400: "Bad Request",
+  401: "Unauthorised",
+  403: "Forbidden",
+  404: "Not Found",
+  409: "Conflict",
+  429: "Too Many Requests",
+  500: "Internal Server Error",
+  503: "Service Unavailable",
+};
+
 export const getErrorMessage = (res: Response, json: any, data: Translation) =>
-  (json[`${res.status} ${res.statusText}`] ?? JSON.stringify(json)) ||
+  (json[`${res.status} ${res.statusText || STATUS_CODES[res.status]}`] ??
+    JSON.stringify(json)) ||
   data.unknownError;
 
 export function getUserFromResponse(json: any) {

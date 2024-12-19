@@ -136,7 +136,7 @@ function UserWidget({
     : "";
   return (
     <Link
-      to="/profile"
+      to={user ? "/profile" : "/login"}
       className={`${active} clickable ${displayStyle} nav-link user-widget`}
       onClick={() => setMenuOpen(false)}
     >
