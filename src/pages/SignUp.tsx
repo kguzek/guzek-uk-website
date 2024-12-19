@@ -34,6 +34,10 @@ export default function SignUp() {
 
   async function handleSignUp(evt: FormEvent<HTMLFormElement>) {
     evt.preventDefault();
+    if (password.length < 8) {
+      setModalError(data.profile.passwordLength);
+      return;
+    }
     if (password !== repeatPassword) {
       setModalError(data.profile.passwordMismatch);
       return;

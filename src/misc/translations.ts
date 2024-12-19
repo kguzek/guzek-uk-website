@@ -47,6 +47,7 @@ export type Translation = Readonly<{
     loading: string;
     invalidCredentials: string;
     passwordMismatch: string;
+    passwordLength: string;
     formDetails: {
       username: string;
       email: string;
@@ -180,6 +181,7 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
       loading: "Validating",
       invalidCredentials: "Invalid credentials.",
       passwordMismatch: "Passwords do not match.",
+      passwordLength: "Password must be at least 8 characters long.",
       formDetails: {
         username: "Username",
         email: "Email",
@@ -341,6 +343,7 @@ Once you find a show you like, click the heart icon to add it to your liked show
       loading: "Trwa walidacja",
       invalidCredentials: "Niepoprawne dane loginowe.",
       passwordMismatch: "Hasła się nie zgadzają.",
+      passwordLength: "Hasło musi zawierać co najmniej 8 znaków.",
       formDetails: {
         username: "Nazwa użytkownika",
         email: "Email",
