@@ -17,10 +17,11 @@ LiveSeries is now considered a finished product; I personally use it and it sati
 
 ## Backend
 
-The website features a REST API on [api.guzek.uk](https://api.guzek.uk/), and an authentication server hosted on [auth.guzek.uk](https://auth.guzek.uk/). These are also open-source, and you can find them on GitHub.
+The website features an authentication server hosted on [auth.guzek.uk](https://auth.guzek.uk/), a REST API on [api.guzek.uk](https://api.guzek.uk/), and a self-hosted LiveSeries server, which every user can host for themself. These are all open-source, and you can find them on GitHub.
 
 - [https://github.com/kguzek/guzek-uk-api](https://github.com/kguzek/guzek-uk-api)
 - [https://github.com/kguzek/guzek-uk-auth-server](https://github.com/kguzek/guzek-uk-auth-server)
+- [https://github.com/kguzek/guzek-uk-liveseries-server](https://github.com/kguzek/guzek-uk-liveseries-server)
 
 ## Usage
 
