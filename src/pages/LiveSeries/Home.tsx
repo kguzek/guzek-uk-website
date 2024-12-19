@@ -172,7 +172,7 @@ export default function Home() {
     <>
       <h2>{title}</h2>
       <h3>
-        Your Liked Shows{" "}
+        {data.liveSeries.home.likedShows}{" "}
         {userShows?.likedShows ? `(${userShows.likedShows.length})` : ""}
       </h3>
       {loading.length === 0 && userShows?.likedShows?.length === 0 ? (

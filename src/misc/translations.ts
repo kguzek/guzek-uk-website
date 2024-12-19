@@ -137,6 +137,7 @@ export type Translation = Readonly<{
     };
     home: {
       title: string;
+      likedShows: string;
       noLikes: string;
       explore: string;
       shows: string;
@@ -299,6 +300,7 @@ export const TRANSLATIONS: { [lang in Language]: Translation } = {
       },
       home: {
         title: "Home",
+        likedShows: "Your Liked Shows",
         noLikes:
           "Welcome to LiveSeries! To get started, find a show to watch. \n\
 Use the search bar to find your favourite TV shows, or explore the most popular ones. \n\
@@ -477,6 +479,7 @@ Once you find a show you like, click the heart icon to add it to your liked show
       },
       home: {
         title: "Główna",
+        likedShows: "Polubione Seriale",
         noLikes:
           "Witaj w serwisie LiveSeries! Aby zacząć, znajdź serial do obejrzenia. \n\
 Użyj wyszukiwarki, aby znaleźć swój ulubiony serial, lub przeglądaj najpopularniejsze seriale. \n\
