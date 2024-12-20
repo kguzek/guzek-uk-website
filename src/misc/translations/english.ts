@@ -34,7 +34,7 @@ export const ENGLISH: Translation = {
     passwordMismatch: "Passwords do not match.",
     passwordLength: "Password must be at least 8 characters long.",
     serverUrlUpdated: (url) =>
-      `LiveSeries Server URL successfully updated to '${url}'.`,
+      `LiveSeries Server URL successfully updated to ${url}`,
     formDetails: {
       username: "Username",
       email: "Email",

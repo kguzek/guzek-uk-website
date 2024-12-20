@@ -29,10 +29,23 @@
   width: 60%;
 }
 
+.profile-form .btn {
+  align-self: flex-end;
+}
+
 @media screen and (max-width: 750px) {
   .form-editor > label,
   .form-checkboxes {
     width: 100%;
+  }
+
+  .profile-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .profile-form .btn {
+    align-self: unset;
   }
 }
 

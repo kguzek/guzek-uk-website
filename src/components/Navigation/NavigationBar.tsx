@@ -3,6 +3,8 @@ import React, {
   useEffect,
   MouseEventHandler,
   useContext,
+  useRef,
+  CSSProperties,
 } from "react";
 import { Link } from "react-router-dom";
 import Logo from "../../media/Logo";
@@ -102,13 +104,44 @@ function LangSelector({
   changeLang: MouseEventHandler<HTMLButtonElement>;
 }) {
   const data = TRANSLATIONS[selectedLanguage];
+
+  const [markerStyle, setMarkerStyle] = useState<CSSProperties>({});
+  const initialSelectedRef = useRef<HTMLButtonElement>(null);
+
+  const updateMarkerStyle = (button: HTMLButtonElement | null) =>
+    setMarkerStyle({
+      width: button?.offsetWidth,
+      height: button?.offsetHeight,
+      left: button?.offsetLeft,
+      top: button?.offsetTop,
+    });
+
+  useEffect(() => {
+    const updateStyle = () => updateMarkerStyle(initialSelectedRef.current);
+    updateStyle();
+    window.addEventListener("resize", updateStyle);
+    window.addEventListener("load", updateStyle);
+
+    return () => {
+      window.removeEventListener("resize", updateStyle);
+      window.removeEventListener("load", updateStyle);
+    };
+  }, [initialSelectedRef]);
+
+  function onChangeLang(event: React.MouseEvent<HTMLButtonElement>) {
+    changeLang(event);
+    updateMarkerStyle(event.currentTarget);
+  }
+
   return (
     <div className="centred lang-selector">
+      <div className="lang-selector-marker" style={markerStyle}></div>
       {Object.keys(TRANSLATIONS).map((lang) => (
         <button
           key={lang}
-          onClick={changeLang}
-          className={selectedLanguage === lang ? "active" : "clickable"}
+          onClick={onChangeLang}
+          className={selectedLanguage === lang ? "" : "clickable"}
+          ref={selectedLanguage === lang ? initialSelectedRef : null}
         >
           {lang}
         </button>
@@ -154,7 +187,7 @@ function Hamburger({
   onClick: MouseEventHandler;
 }) {
   return (
-    <div onClick={onClick} className="hamburger">
+    <div onClick={onClick} className="clickable hamburger">
       <p className={menuOpen ? "fas fa-times" : "fas fa-bars"}></p>
     </div>
   );

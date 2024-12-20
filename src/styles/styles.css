@@ -206,6 +206,15 @@ body {
   background-size: 100% 2px;
 }
 
+.profile-page .field {
+  background: var(--color-background-soft);
+  color: var(--color-primary-strong);
+  padding: 2px 4px;
+  border-radius: 5px;
+  white-space: nowrap;
+  user-select: all;
+}
+
 [disabled] {
   filter: contrast(60%);
   cursor: not-allowed;
@@ -229,5 +238,9 @@ body {
 @media screen and (max-width: 550px) {
   body {
     padding: 10px 1em;
+  }
+
+  .profile-page {
+    font-size: 1rem;
   }
 }

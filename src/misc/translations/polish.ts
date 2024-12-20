@@ -35,7 +35,7 @@ export const POLISH: Translation = {
     passwordMismatch: "Hasła się nie zgadzają.",
     passwordLength: "Hasło musi zawierać co najmniej 8 znaków.",
     serverUrlUpdated: (url) =>
-      `Pomyślnie zaktualizowano URL serwera LiveSeries na '${url}'.`,
+      `Pomyślnie zaktualizowano URL serwera LiveSeries na ${url}`,
     formDetails: {
       username: "Nazwa użytkownika",
       email: "Email",

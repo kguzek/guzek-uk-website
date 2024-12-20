@@ -69,19 +69,27 @@ function Profile() {
 
   const userCreatedAt = new Date(user.created_at);
   return (
-    <div className="text">
+    <div className="text profile-page">
       <h3>{data.profile.body}</h3>
       <p>
         {data.profile.formDetails.type}:{" "}
-        {data.profile.formDetails[user.admin ? "administrator" : "regularUser"]}
+        <span className="clickable genre">
+          {
+            data.profile.formDetails[
+              user.admin ? "administrator" : "regularUser"
+            ]
+          }
+        </span>
       </p>
       <p>
-        {data.profile.formDetails.username}: "{user.username}"
+        {data.profile.formDetails.username}:{" "}
+        <span className="clickable genre">{user.username}</span>
       </p>
       <p>
-        {data.profile.formDetails.email}: "{user.email}"
+        {data.profile.formDetails.email}:{" "}
+        <span className="clickable genre">{user.email}</span>
       </p>
-      <form className="flex gap-10">
+      <form className="flex gap-10 profile-form">
         <div style={{ width: "100%" }}>
           <InputBox
             label={data.profile.formDetails.serverUrl}
@@ -90,6 +98,7 @@ function Profile() {
             required={false}
             info={
               <button
+                type="button"
                 style={{
                   background: "none",
                   border: "none",
@@ -107,25 +116,29 @@ function Profile() {
           />
         </div>
         <button
-          role="submit"
+          type="submit"
           className="btn"
           disabled={!isServerUrlValid()}
-          style={{ alignSelf: "flex-end" }}
           onClick={handleUpdateServerUrl}
         >
           {data.admin.contentManager.formDetails.update}
         </button>
       </form>
-      <p>
-        <small>
-          UUID: <code>{user.uuid}</code>
-        </small>
-        <br />
-        <small>
-          {data.profile.formDetails.creationDate}:{" "}
-          <code>{data.dateTimeFormat.format(userCreatedAt)}</code>
-        </small>
-      </p>
+      <div>
+        <p>
+          <small>
+            UUID: <code className="clickable field">{user.uuid}</code>
+          </small>
+        </p>
+        <p>
+          <small>
+            {data.profile.formDetails.creationDate}:{" "}
+            <code className="clickable field">
+              {data.dateTimeFormat.format(userCreatedAt)}
+            </code>
+          </small>
+        </p>
+      </div>
       <div className="centred">
         <button className="btn btn-submit" onClick={handleLogOut}>
           {data.profile.formDetails.logout}
