@@ -181,36 +181,48 @@ export default function Watch({ lang }: { lang: Language }) {
       <h2>
         {showName} {data.liveSeries.episodes.serialise(episodeObject)}
       </h2>
-      <div className="flex gap-15" style={{ marginBottom: "10px" }}>
-        {+season > 1 && (
-          <>
-            <Link to={`/liveseries/watch/${showNameEncoded}/${+season - 1}/1`}>
-              {data.liveSeries.watch.previous} {data.liveSeries.tvShow.season}
-            </Link>
-            |
-          </>
-        )}
-        <Link to={`/liveseries/watch/${showNameEncoded}/${+season + 1}/1`}>
-          {data.liveSeries.watch.next} {data.liveSeries.tvShow.season}
-        </Link>
-        |
-        {+episode > 1 && (
-          <>
-            <Link
-              to={`/liveseries/watch/${showNameEncoded}/${season}/${
-                +episode - 1
-              }`}
-            >
-              {data.liveSeries.watch.previous} {data.liveSeries.tvShow.episode}
-            </Link>
-            |
-          </>
-        )}
-        <Link
-          to={`/liveseries/watch/${showNameEncoded}/${season}/${+episode + 1}`}
-        >
-          {data.liveSeries.watch.next} {data.liveSeries.tvShow.episode}
-        </Link>
+      <div
+        className="flex gap-15 episode-controls"
+        style={{ marginBottom: "10px" }}
+      >
+        <div className="flex gap-10">
+          {+season > 1 && (
+            <>
+              <Link
+                to={`/liveseries/watch/${showNameEncoded}/${+season - 1}/1`}
+              >
+                {data.liveSeries.watch.previous} {data.liveSeries.tvShow.season}
+              </Link>
+              |
+            </>
+          )}
+          <Link to={`/liveseries/watch/${showNameEncoded}/${+season + 1}/1`}>
+            {data.liveSeries.watch.next} {data.liveSeries.tvShow.season}
+          </Link>
+        </div>
+        <span className="separator">|</span>
+        <div className="flex gap-10">
+          {+episode > 1 && (
+            <>
+              <Link
+                to={`/liveseries/watch/${showNameEncoded}/${season}/${
+                  +episode - 1
+                }`}
+              >
+                {data.liveSeries.watch.previous}{" "}
+                {data.liveSeries.tvShow.episode}
+              </Link>
+              |
+            </>
+          )}
+          <Link
+            to={`/liveseries/watch/${showNameEncoded}/${season}/${
+              +episode + 1
+            }`}
+          >
+            {data.liveSeries.watch.next} {data.liveSeries.tvShow.episode}
+          </Link>
+        </div>
       </div>
       {loadingFailed && (
         <p className="centred">{data.liveSeries.watch.playbackError}</p>

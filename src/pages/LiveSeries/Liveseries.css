@@ -370,6 +370,10 @@
   .home-carousel .carousel-scroller.hidden {
     opacity: 0;
   }
+
+  .episode-controls {
+    font-size: 1rem;
+  }
 }
 
 @media screen and (max-width: 750px) {
@@ -391,6 +395,17 @@
 
   .genres {
     font-size: medium;
+  }
+
+  .episode-controls {
+    justify-content: center;
+    font-size: 0.9rem;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .episode-controls .separator {
+    display: none;
   }
 }
 
