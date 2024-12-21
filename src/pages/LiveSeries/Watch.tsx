@@ -125,6 +125,7 @@ export default function Watch({ lang }: { lang: Language }) {
           playerLanguage={LanguagesPlayer.en}
           src={`${urlBase}liveseries/video/${sourcePath}`}
           fullPlayer={false}
+          autoPlay={true}
           onErrorVideo={() => onError()}
           backButton={() =>
             navigate(
