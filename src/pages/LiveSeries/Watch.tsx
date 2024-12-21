@@ -223,7 +223,7 @@ export default function Watch({ lang }: { lang: Language }) {
           ref={videoRef}
           className={loadingFailed ? "" : ""}
           controls
-          src={`${urlBase}/liveseries/video/${path}`}
+          src={`${urlBase}liveseries/video/${path}`}
           autoPlay
           onError={onError}
           onLoadStart={onLoadStart}
@@ -235,7 +235,7 @@ export default function Watch({ lang }: { lang: Language }) {
             label="English"
             kind="subtitles"
             srcLang="en"
-            src={`${urlBase}/liveseries/subtitles/${path}`}
+            src={`${urlBase}liveseries/subtitles/${path}`}
             default
           />
         </video>
