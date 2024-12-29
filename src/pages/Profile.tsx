@@ -56,7 +56,7 @@ function Profile() {
     });
     const json = await res.json();
     if (res.ok) {
-      setServerUrl(json.serverUrl);
+      setServerUrl(newServerUrl);
       setModalInfo(data.profile.serverUrlUpdated(newServerUrl));
       const newUser = { ...user, serverUrl: newServerUrl };
       setUser(newUser);

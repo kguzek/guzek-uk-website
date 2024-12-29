@@ -163,14 +163,14 @@ export default function TvShow() {
   const isSubscribed = subscribedFlipped
     ? !isSubscribedOld
     : isSubscribedOld ?? false;
-  console.log({
-    tvShowDetails,
-    userShows,
-    isLikedOld,
-    isLiked,
-    isSubscribedOld,
-    isSubscribed,
-  });
+  // console.log({
+  //   tvShowDetails,
+  //   userShows,
+  //   isLikedOld,
+  //   isLiked,
+  //   isSubscribedOld,
+  //   isSubscribed,
+  // });
   const watchedInShow = watchedEpisodes?.[tvShowDetails.id] ?? {};
   const isSeasonWatched = (season: string, episodes: EpisodeType[]) =>
     watchedInShow[+season]?.length === episodes.length;
