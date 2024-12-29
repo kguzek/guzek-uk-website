@@ -41,9 +41,6 @@ export default function App() {
           }
         />
       )}
-      <Route path="profile" element={<Profile />} />
-      <Route path="login" element={<LogIn />} />
-      <Route path="signup" element={<SignUp />} />
       <Route
         path="admin"
         element={
@@ -58,10 +55,7 @@ export default function App() {
           )
         }
       >
-        <Route
-          path="content-manager"
-          element={<ContentManager menuItems={menuItems} />}
-        />
+        <Route path="content-manager" element={<ContentManager />} />
         <Route path="users">
           <Route index element={<Users />} />
           <Route path=":uuid" element={<UserPage />} />
@@ -75,7 +69,7 @@ export default function App() {
         <Route path="tv-show/:permalink" element={<TvShow />} />
         <Route path="watch/:showName/:season/:episode" element={<Watch />} />
       </Route>
-      <Route path="*" element={<ErrorPage errorCode={ErrorCode.NotFound} />} />
+      <Route path="*" element={} />
     </Routes>
   );
 }

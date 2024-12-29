@@ -1,5 +1,4 @@
 import React, { FormEvent, useEffect, useState } from "react";
-import { EditorValue } from "react-rte";
 import InputArea, {
   getEmptyMarkdown,
   parseMarkdown,
@@ -16,15 +15,10 @@ import { AdminContext } from ".";
 const TEXT_PAGE_PROPERTIES = ["title", "url"] as const;
 const BOOL_PAGE_PROPERTIES = ["adminOnly", "localUrl", "shouldFetch"] as const;
 
-export default function ContentManager({
-  lang,
-  menuItems,
-}: {
-  lang: string;
-  menuItems: null | MenuItem[];
-}) {
+export default function ContentManager() {
   const [selectedPageID, setSelectedPageID] = useState(0);
-  const { data } = useTranslations();
+  const { data, userLanguage } = useTranslations();
+  const { menuItems } = useFetch();
   const { setTitle } = useOutletContext<AdminContext>();
 
   useEffect(() => {
@@ -65,7 +59,7 @@ export default function ContentManager({
             />
             {selectedPage && (
               <PagesEditor
-                lang={lang}
+                lang={userLanguage}
                 originalPage={selectedPage as MenuItem}
               />
             )}

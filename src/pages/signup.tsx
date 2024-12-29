@@ -7,21 +7,22 @@ import { useTranslations } from "@/context/translation-context";
 import { useAuth } from "@/context/auth-context";
 import { useFetch } from "@/context/fetch-context";
 import { useModals } from "@/context/modal-context";
+import { useRouter } from "next/router";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const [username, setUsername] = useState("");
-
   const [loading, setLoading] = useState(false);
   const { data } = useTranslations();
+  const router = useRouter();
   const { user, setUser } = useAuth();
   const { fetchFromAPI } = useFetch();
   const { setModalError } = useModals();
 
   useEffect(() => {
-    if (user) navigate("/profile");
+    if (user) router.replace("/profile");
   }, [user]);
 
   useEffect(() => {

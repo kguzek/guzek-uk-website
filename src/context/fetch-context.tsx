@@ -23,6 +23,7 @@ interface FetchData {
   tryFetch: TryFetch;
   removeOldCaches: () => void;
   menuItems: MenuItem[] | null;
+  reload: boolean;
 }
 
 const FetchContext = createContext<FetchData | undefined>(undefined);
@@ -160,6 +161,7 @@ export function FetchProvider({ children }: { children: ReactNode }) {
     tryFetch: getTryFetch(fetchFromAPI, setModalError, data),
     removeOldCaches: filterCaches,
     menuItems,
+    reload,
   };
 
   return (

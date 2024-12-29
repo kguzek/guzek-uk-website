@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { DEFAULT_PAGE_DATA, MenuItem, PageContent } from "@/lib/models";
 import { setTitle } from "@/lib/util";
 import { useFetch } from "@/context/fetch-context";
+import { useTranslations } from "@/context/translation-context";
 
 const EVENT_DISPATCHER = "document.dispatchEvent(new Event('onImageLoad'));";
 const imageInjection = `onload="${EVENT_DISPATCHER}" onerror="${EVENT_DISPATCHER} "`;
@@ -32,23 +33,16 @@ export function PageSkeleton() {
   );
 }
 
-export default function PageTemplate({
-  pageData,
-  reload,
-  lang,
-}: {
-  pageData: MenuItem;
-  reload: boolean;
-  lang: string;
-}) {
+export default function PageTemplate({ pageData }: { pageData: MenuItem }) {
   const [pageContent, setPageContent] = useState<PageContent | null>(null);
   const [imagesToLoad, setImagesToLoad] = useState(0);
-  const { tryFetch } = useFetch();
+  const { userLanguage } = useTranslations();
+  const { tryFetch, reload } = useFetch();
   const router = useRouter();
 
   async function fetchContent() {
     const url = `pages/${pageData.id}`;
-    const body = await tryFetch(url, { lang }, DEFAULT_PAGE_DATA);
+    const body = await tryFetch(url, { lang: userLanguage }, DEFAULT_PAGE_DATA);
     const numImages = (body.content.match(/\<img/g) || []).length;
     setImagesToLoad(numImages);
     // Inject code which makes images emit an `onImageLoad` event when they are loaded
@@ -64,7 +58,7 @@ export default function PageTemplate({
 
   useEffect(() => {
     fetchContent();
-  }, [lang, router.pathname]);
+  }, [userLanguage, router.pathname]);
 
   useEffect(() => {
     setTitle(pageData.title);

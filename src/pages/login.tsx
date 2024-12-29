@@ -7,18 +7,20 @@ import { useTranslations } from "@/context/translation-context";
 import { useAuth } from "@/context/auth-context";
 import { useFetch } from "@/context/fetch-context";
 import { useModals } from "@/context/modal-context";
+import { useRouter } from "next/router";
 
 export default function LogIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const { data } = useTranslations();
   const { user, setUser } = useAuth();
   const { fetchFromAPI } = useFetch();
   const { setModalError } = useModals();
 
   useEffect(() => {
-    if (user) navigate("/profile");
+    if (user) router.replace("/profile");
   }, [user]);
 
   async function handleLogin(evt: FormEvent<HTMLFormElement>) {

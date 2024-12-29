@@ -6,11 +6,13 @@ import { useTranslations } from "@/context/translation-context";
 import { useAuth } from "@/context/auth-context";
 import { useFetch } from "@/context/fetch-context";
 import { useModals } from "@/context/modal-context";
+import { useRouter } from "next/router";
 
 function Profile() {
   const [serverUrl, setServerUrl] = useState("");
   const [updating, setUpdating] = useState(false);
   const { data } = useTranslations();
+  const router = useRouter();
   const { user, logout, setUser } = useAuth();
   const { fetchFromAPI } = useFetch();
   const { setModalError, setModalInfo } = useModals();
@@ -32,7 +34,8 @@ function Profile() {
   }, [user]);
 
   if (!user) {
-    return <Navigate to="/login" replace={true} />;
+    router.replace("/login");
+    return null;
   }
 
   const isServerUrlValid = () =>

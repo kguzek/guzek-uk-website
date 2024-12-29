@@ -4,13 +4,7 @@ import {
   clearStoredLoginInfo,
   updateAccessToken,
 } from "./backend";
-import {
-  Episode,
-  StateSetter,
-  User,
-  DownloadedEpisode,
-  TryFetch,
-} from "./models";
+import { Episode, User, DownloadedEpisode, TryFetch } from "./models";
 import { Translation } from "./translations";
 
 export const PAGE_NAME = "Guzek UK";
@@ -30,7 +24,7 @@ export const setTitle = (title: string) =>
 
 export const getTryFetch = (
   fetchFromAPI: ReturnType<typeof getFetchFromAPI>,
-  setModalError: StateSetter<string | undefined>,
+  setModalError: (message: string | undefined) => void,
   data: Translation
 ): TryFetch =>
   /** Attempts to fetch the data from local cache or from the API.
@@ -140,7 +134,13 @@ const STATUS_CODES: Record<number, string> = {
   503: "Service Unavailable",
 };
 
-export const getErrorMessage = (res: Response, json: any, data: Translation) =>
+/** Formats the response's JSON body into a user-readable error message, with a fallback to simply displaying the JSON,
+ * with another fallback to displaying a generic error message in the user's language. */
+export const getErrorMessage = (
+  res: Response,
+  json: any,
+  data: Translation
+): string =>
   (json[`${res.status} ${res.statusText || STATUS_CODES[res.status]}`] ??
     JSON.stringify(json)) ||
   data.unknownError;

@@ -9,6 +9,7 @@ import {
 } from "react";
 import { useTranslations } from "./translation-context";
 import { getLocalUser } from "@/lib/util";
+import { useModalInfo } from "./modal/modal-info-context";
 
 export interface AuthInfo {
   user: User | null;
@@ -31,8 +32,9 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const { data } = useTranslations();
   const [currentUser, setCurrentUser] = useState<User | null | undefined>();
+  const { data } = useTranslations();
+  const { setModalInfo } = useModalInfo();
 
   useEffect(() => {
     const localUser = getLocalUser();
