@@ -64,31 +64,31 @@ export default function DownloadsWidget({
               const key = `downloads-card-${idx}`;
               const card = (
                 <div className="downloads-card flex">
-                  <div className="flex" style={{ width: "100%" }}>
-                    <div>
+                  <div style={{ width: "100%" }}>
+                    <span>
                       {episode.showName} {serialise(episode)}
-                    </div>
-                    <div className="serif">{downloadProgress}</div>
+                    </span>
+                    <span className="serif"> {downloadProgress}</span>
                     {episode.speed != null &&
                       episode.status === DownloadStatus.PENDING && (
-                        <div className="serif">
+                        <span className="serif">
+                          {" "}
                           ({bytesToReadable(episode.speed)}/s)
-                        </div>
+                        </span>
                       )}
                     {episode.status === DownloadStatus.VERIFYING && (
-                      <div>
-                        {
+                      <span>
+                        {" " +
                           data.liveSeries.episodes.downloadStatus[
                             DownloadStatus.VERIFYING
-                          ]
-                        }
+                          ]}
                         ...
-                      </div>
+                      </span>
                     )}
                     {episode.eta != null && episode.eta > 0 && (
-                      <div className="eta">
-                        {getDuration(episode.eta * 1000).formatted}
-                      </div>
+                      <span className="eta">
+                        {" " + getDuration(episode.eta * 1000).formatted}
+                      </span>
                     )}
                   </div>
                   <div className="progress-bar-container">
