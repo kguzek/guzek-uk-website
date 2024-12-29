@@ -31,7 +31,7 @@ export default function DownloadsWidget({
       setModalInfo(data.liveSeries.episodes.deleted(episodeString));
     }
     fetchResource(
-      `video/${episode.showName}/${episode.season}/${episode.episode}`,
+      `downloaded-episodes/${episode.showName}/${episode.season}/${episode.episode}`,
       { method: "DELETE", onSuccess, useEpisodate: false }
     );
   }
