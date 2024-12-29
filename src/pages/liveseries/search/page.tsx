@@ -3,16 +3,19 @@ import InputBox from "@/components/forms/input-box";
 import TvShowPreviewList from "@/components/liveseries/tv-show-preview-list";
 import { TvShowList } from "@/lib/models";
 import { setTitle } from "@/lib/util";
-import { getLiveSeriesTitle, LiveSeriesOutletContext } from ".";
+import { getLiveSeriesTitle } from "@/pages/liveseries/layout";
 import { useTranslations } from "@/context/translation-context";
 import { useSearchParams } from "next/navigation";
+import { useLiveSeries } from "@/context/liveseries-context";
+import { useRouter } from "next/router";
 
 export default function Search() {
   const [inputValue, setInputValue] = useState("");
   const [results, setResults] = useState<null | TvShowList>(null);
+  const router = useRouter();
   const searchParams = useSearchParams();
   const { data } = useTranslations();
-  const { fetchResource } = useOutletContext<LiveSeriesOutletContext>();
+  const { fetchResource } = useLiveSeries();
 
   const searchQuery = searchParams.get("q");
   const title = getLiveSeriesTitle("search");
@@ -38,7 +41,8 @@ export default function Search() {
   function submitForm(evt: FormEvent) {
     evt.preventDefault();
     const query = { q: inputValue.trim() };
-    setSearchParams(query);
+    // TODO: test this???
+    router.push({ query });
     setResults(null);
   }
 

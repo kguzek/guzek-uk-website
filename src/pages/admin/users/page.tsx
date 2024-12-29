@@ -6,13 +6,13 @@ import { getErrorMessage } from "@/lib/util";
 import { useTranslations } from "@/context/translation-context";
 import { useModals } from "@/context/modal-context";
 import { useFetch } from "@/context/fetch-context";
-import { AdminContext } from ".";
+import { useAdmin } from "@/context/admin-context";
 
 export default function Users() {
   const { data } = useTranslations();
   const { setModalChoice, setModalError, setModalInfo } = useModals();
   const { fetchFromAPI } = useFetch();
-  const { users, setUsers, setTitle } = useOutletContext<AdminContext>();
+  const { users, setUsers, setTitle } = useAdmin();
 
   useEffect(() => {
     setTitle(data.admin.users.title);

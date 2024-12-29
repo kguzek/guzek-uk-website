@@ -16,7 +16,7 @@ import { useTranslations } from "@/context/translation-context";
 import { useAuth } from "@/context/auth-context";
 import { useFetch } from "@/context/fetch-context";
 import { useModals } from "@/context/modal-context";
-import { LiveSeriesOutletContext } from ".";
+import { useLiveSeries } from "@/context/liveseries-context";
 
 // Will issue a warning when trying to subscribe with more than 10 unwatched episodes
 const UNWATCHED_EPISODES_THRESHOLD = 10;
@@ -31,7 +31,7 @@ export default function TvShow() {
   const { data } = useTranslations();
   const { user } = useAuth();
   const { userShows, watchedEpisodes, setWatchedEpisodes, fetchResource } =
-    useOutletContext<LiveSeriesOutletContext>();
+    useLiveSeries();
   const { removeOldCaches } = useFetch();
   const { permalink } = useParams();
   const { setModalChoice } = useModals();

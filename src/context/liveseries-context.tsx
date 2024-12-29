@@ -1,25 +1,29 @@
-import React, { useEffect, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useRouter } from "next/router";
 import { useSearchParams } from "next/navigation";
-import { MiniNavBar } from "@/components/navigation/navigation-bar";
-import DownloadsWidget from "@/components/liveseries/downloads-widget";
-import { fetchFromEpisodate } from "@/lib/episodate";
 import {
-  ShowData,
-  StateSetter,
-  WatchedEpisodes,
   DownloadedEpisode,
   DownloadStatus,
+  ShowData,
+  StateSetter,
+  UserShows,
+  WatchedEpisodes,
 } from "@/lib/models";
-import { getErrorMessage, compareEpisodes } from "@/lib/util";
+import { fetchFromEpisodate } from "@/lib/episodate";
+import { compareEpisodes, getErrorMessage } from "@/lib/util";
 import { getAccessToken } from "@/lib/backend";
-import { useTranslations } from "@/context/translation-context";
-import { useAuth } from "@/context/auth-context";
-import { useFetch } from "@/context/fetch-context";
-import { useModals } from "@/context/modal-context";
-import "./liveseries.css";
+import { useAuth } from "./auth-context";
+import { useModals } from "./modal-context";
+import { useFetch } from "./fetch-context";
+import { useTranslations } from "./translation-context";
 
-export type LiveSeriesOutletContext = {
+interface LiveSeriesContextType {
   loading: string[];
   fetchResource: (
     endpoint: string,
@@ -47,34 +51,135 @@ export type LiveSeriesOutletContext = {
     episodePredicate: (val: DownloadedEpisode) => boolean,
     episodeString: string
   ) => void;
-};
+}
+
+const LiveSeriesContext = createContext<LiveSeriesContextType>({
+  loading: [],
+  fetchResource: async () => {},
+  userShows: null,
+  watchedEpisodes: null,
+  setWatchedEpisodes: () => {},
+  downloadedEpisodes: [],
+  monitorEpisodeDownloads: () => {},
+});
+
+export function useLiveSeries() {
+  const context = useContext(LiveSeriesContext);
+  if (!context) {
+    throw new Error("useLiveSeries must be used within a LiveSeriesProvider.");
+  }
+  return context;
+}
 
 const serialiseEpisodeForSorting = (episode: DownloadedEpisode) =>
   `${episode.showName}.${episode.season}.${episode.episode}`;
 
-interface UserShows {
-  likedShows?: number[];
-  subscribedShows?: number[];
-}
-
-export default function LiveSeriesBase() {
+export function LiveSeriesProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState<string[]>([]);
+  const [watchedEpisodes, setWatchedEpisodes] =
+    useState<null | ShowData<WatchedEpisodes>>(null);
   const [likedShowsUpdated, setUserShowsUpdated] = useState(false);
   const [watchedEpisodesUpdated, setWatchedEpisodesUpdated] = useState(false);
   const [userShows, setUserShows] = useState<null | UserShows>(null);
   const [existingSocket, setExistingSocket] = useState<null | WebSocket>(null);
-  const [watchedEpisodes, setWatchedEpisodes] =
-    useState<null | ShowData<WatchedEpisodes>>(null);
   const [downloadedEpisodes, setDownloadedEpisodes] = useState<
     DownloadedEpisode[]
   >([]);
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data } = useTranslations();
-  const authContext = useAuth();
-  const { user } = authContext;
   const { fetchFromAPI } = useFetch();
+  const authContext = useAuth();
   const { setModalInfo, setModalError, setModalChoice } = useModals();
+
+  const { user } = authContext;
+
+  useEffect(() => {
+    if (likedShowsUpdated) {
+      setUserShowsUpdated(false);
+      fetchUserShows();
+    }
+    if (watchedEpisodesUpdated) {
+      setWatchedEpisodesUpdated(false);
+      fetchWatchedEpisodes();
+    }
+  }, [router.pathname]);
+
+  function fetchUserShows() {
+    fetchResource("shows/personal", {
+      onSuccess: setUserShows,
+      useEpisodate: false,
+    });
+  }
+
+  function fetchWatchedEpisodes() {
+    fetchResource("watched-episodes/personal", {
+      onSuccess: setWatchedEpisodes,
+      useEpisodate: false,
+    });
+  }
+
+  async function fetchResource(
+    endpoint: string,
+    {
+      method,
+      params,
+      body,
+      onSuccess = () => {},
+      onError = () => {},
+      useEpisodate = true,
+    }: {
+      method?: string;
+      params?: Record<string, string>;
+      body?: Record<string, any>;
+      onSuccess?: (data: any) => void;
+      onError?: () => void;
+      useEpisodate?: boolean;
+    }
+  ) {
+    if (!user && !useEpisodate) {
+      if (method) {
+        setModalError(data.liveSeries.home.login);
+        onError();
+      } else {
+        setUserShows({ likedShows: [], subscribedShows: [] });
+        setWatchedEpisodes({});
+      }
+      return;
+    }
+    method || setLoading((old) => [...old, endpoint]);
+    try {
+      const res = await (useEpisodate
+        ? fetchFromEpisodate(endpoint, params ?? searchParams)
+        : fetchFromAPI("liveseries/" + endpoint, { method, body }, !method));
+      if (res.status === 204) return onSuccess(null);
+      const json = await res.json();
+      if (res.ok) {
+        onSuccess(json);
+        if (method) {
+          switch (endpoint.split("/")[0]) {
+            case "shows":
+              setUserShowsUpdated(true);
+              break;
+            case "watched-episodes":
+              setWatchedEpisodesUpdated(true);
+              break;
+            default:
+              break;
+          }
+        }
+      } else {
+        setModalError(getErrorMessage(res, json, data));
+        router.push(router.pathname);
+        onError();
+      }
+    } catch (error) {
+      console.error(error);
+      router.push(router.pathname);
+      onError();
+    }
+    method || setLoading((old) => old.filter((value) => value !== endpoint));
+  }
 
   useEffect(() => {
     if (!userShows?.likedShows?.length || !userShows?.subscribedShows?.length)
@@ -186,94 +291,6 @@ export default function LiveSeriesBase() {
     };
   }
 
-  useEffect(() => {
-    if (likedShowsUpdated) {
-      setUserShowsUpdated(false);
-      fetchUserShows();
-    }
-    if (watchedEpisodesUpdated) {
-      setWatchedEpisodesUpdated(false);
-      fetchWatchedEpisodes();
-    }
-  }, [router.pathname]);
-
-  function fetchUserShows() {
-    fetchResource("shows/personal", {
-      onSuccess: setUserShows,
-      useEpisodate: false,
-    });
-  }
-
-  function fetchWatchedEpisodes() {
-    fetchResource("watched-episodes/personal", {
-      onSuccess: setWatchedEpisodes,
-      useEpisodate: false,
-    });
-  }
-
-  async function fetchResource(
-    endpoint: string,
-    {
-      method,
-      params,
-      body,
-      onSuccess = () => {},
-      onError = () => {},
-      useEpisodate = true,
-    }: {
-      method?: string;
-      params?: Record<string, string>;
-      body?: Record<string, any>;
-      onSuccess?: (data: any) => void;
-      onError?: () => void;
-      useEpisodate?: boolean;
-    }
-  ) {
-    if (!user && !useEpisodate) {
-      if (method) {
-        setModalError(data.liveSeries.home.login);
-        onError();
-      } else {
-        setUserShows({ likedShows: [], subscribedShows: [] });
-        setWatchedEpisodes({});
-      }
-      return;
-    }
-    method || setLoading((old) => [...old, endpoint]);
-    try {
-      const res = await (useEpisodate
-        ? fetchFromEpisodate(endpoint, params ?? searchParams)
-        : fetchFromAPI("liveseries/" + endpoint, { method, body }, !method));
-      if (res.status === 204) return onSuccess(null);
-      const json = await res.json();
-      if (res.ok) {
-        onSuccess(json);
-        if (method) {
-          switch (endpoint.split("/")[0]) {
-            case "shows":
-              setUserShowsUpdated(true);
-              break;
-            case "watched-episodes":
-              setWatchedEpisodesUpdated(true);
-              break;
-            default:
-              break;
-          }
-        }
-      } else {
-        setModalError(getErrorMessage(res, json, data));
-        setSearchParams("");
-        onError();
-      }
-    } catch (error) {
-      console.error(error);
-      setModalError(data.networkError);
-      setSearchParams("");
-      onError();
-    }
-    method || setLoading((old) => old.filter((value) => value !== endpoint));
-  }
-
   function monitorEpisodeDownloads(
     data: DownloadedEpisode,
     episodePredicate: (val: DownloadedEpisode) => boolean,
@@ -286,7 +303,7 @@ export default function LiveSeriesBase() {
     );
   }
 
-  const context: LiveSeriesOutletContext = {
+  const context: LiveSeriesContextType = {
     loading,
     fetchResource,
     userShows,
@@ -297,27 +314,8 @@ export default function LiveSeriesBase() {
   };
 
   return (
-    <div className="text liveseries">
-      <DownloadsWidget
-        downloadedEpisodes={downloadedEpisodes}
-        fetchResource={fetchResource}
-      />
-      <MiniNavBar
-        pathBase="liveseries"
-        pages={[
-          { link: "", label: data.liveSeries.home.title },
-          { link: "search", label: data.liveSeries.search.title },
-          { link: "most-popular", label: data.liveSeries.mostPopular.title },
-        ]}
-      />
-      <Outlet context={context} />
-    </div>
+    <LiveSeriesContext.Provider value={context}>
+      {children}
+    </LiveSeriesContext.Provider>
   );
-}
-
-export function getLiveSeriesTitle(
-  page: "home" | "mostPopular" | "search" | "tvShow"
-) {
-  const { data } = useTranslations();
-  return `${data.liveSeries[page].title} – ${data.liveSeries.title}`;
 }

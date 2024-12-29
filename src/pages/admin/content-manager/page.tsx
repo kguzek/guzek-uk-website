@@ -10,7 +10,7 @@ import { getErrorMessage } from "@/lib/util";
 import { useTranslations } from "@/context/translation-context";
 import { useModals } from "@/context/modal-context";
 import { useFetch } from "@/context/fetch-context";
-import { AdminContext } from ".";
+import { useAdmin } from "@/context/admin-context";
 
 const TEXT_PAGE_PROPERTIES = ["title", "url"] as const;
 const BOOL_PAGE_PROPERTIES = ["adminOnly", "localUrl", "shouldFetch"] as const;
@@ -19,7 +19,7 @@ export default function ContentManager() {
   const [selectedPageID, setSelectedPageID] = useState(0);
   const { data, userLanguage } = useTranslations();
   const { menuItems } = useFetch();
-  const { setTitle } = useOutletContext<AdminContext>();
+  const { setTitle } = useAdmin();
 
   useEffect(() => {
     setTitle(data.admin.contentManager.title);

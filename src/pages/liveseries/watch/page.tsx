@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useParams } from "next/navigation";
 import ErrorPage from "@/components/error-page";
 import { ErrorCode } from "@/lib/models";
@@ -27,6 +28,7 @@ export default function Watch() {
   const [currentTimeout, setCurrentTimeout] = useState<null | number>(null);
   const [accessToken, setAccessToken] = useState<string | null | undefined>();
   const { showName, season, episode } = useParams();
+  const router = useRouter();
   const { data } = useTranslations();
   const { setModalError } = useModals();
   const authContext = useAuth();
@@ -164,7 +166,9 @@ export default function Watch() {
     if (episode == null) {
       throw new Error("Episode number is nullish");
     }
-    navigate(`/liveseries/watch/${showNameEncoded}/${season}/${+episode + 1}`);
+    router.push(
+      `/liveseries/watch/${showNameEncoded}/${season}/${+episode + 1}`
+    );
   }
 
   if (accessToken === undefined) {

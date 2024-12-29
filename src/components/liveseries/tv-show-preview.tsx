@@ -1,10 +1,10 @@
 import React, { MouseEvent, useState } from "react";
+import Link from "next/link";
 import { TvShowDetailsShort } from "@/lib/models";
-import { LiveSeriesOutletContext } from "@/pages/liveseries";
 import TvShowPreviewSkeleton from "./tv-show-preview-skeleton";
 import { useTranslations } from "@/context/translation-context";
 import { useFetch } from "@/context/fetch-context";
-import Link from "next/link";
+import { useLiveSeries } from "@/context/liveseries-context";
 
 export default function TvShowPreview({
   idx,
@@ -20,8 +20,7 @@ export default function TvShowPreview({
   const [flipped, setFlipped] = useState(false);
   const { data } = useTranslations();
   const { removeOldCaches } = useFetch();
-  const { userShows, fetchResource } =
-    useOutletContext<LiveSeriesOutletContext>();
+  const { userShows, fetchResource } = useLiveSeries();
 
   const isLikedOld =
     showDetails && userShows?.likedShows

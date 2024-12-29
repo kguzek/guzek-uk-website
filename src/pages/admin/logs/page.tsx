@@ -10,7 +10,7 @@ import { TRANSLATIONS } from "@/lib/translations";
 import { scrollToElement } from "@/lib/util";
 import { useFetch } from "@/context/fetch-context";
 import { useTranslations } from "@/context/translation-context";
-import { AdminContext } from ".";
+import { useAdmin } from "@/context/admin-context";
 
 const IP_LOOKUP_URL = "https://www.ip-tracker.org/locator/ip-lookup.php?ip=";
 
@@ -77,7 +77,7 @@ export default function Logs() {
   const searchParams = useSearchParams();
   const { tryFetch } = useFetch();
   const { data } = useTranslations();
-  const { setTitle } = useOutletContext<AdminContext>();
+  const { setTitle } = useAdmin();
 
   useEffect(() => {
     if (errorLogs) return;

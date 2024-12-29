@@ -4,13 +4,14 @@ import TvShowPreviewList from "@/components/liveseries/tv-show-preview-list";
 import { TvShowList } from "@/lib/models";
 import { setTitle } from "@/lib/util";
 import { useTranslations } from "@/context/translation-context";
-import { getLiveSeriesTitle, LiveSeriesOutletContext } from ".";
+import { useLiveSeries } from "@/context/liveseries-context";
+import { getLiveSeriesTitle } from "../layout";
 
 export default function MostPopular() {
   const [results, setResults] = useState<TvShowList | null>(null);
   const searchParams = useSearchParams();
   const { data } = useTranslations();
-  const { fetchResource } = useOutletContext<LiveSeriesOutletContext>();
+  const { fetchResource } = useLiveSeries();
 
   const title = getLiveSeriesTitle("mostPopular");
 

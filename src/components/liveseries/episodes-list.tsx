@@ -1,4 +1,5 @@
-import React, { ReactElement, useState, useEffect } from "react";
+import { ReactElement, useState, useEffect } from "react";
+import Link from "next/link";
 import {
   Episode as EpisodeType,
   TvShowDetails,
@@ -11,12 +12,11 @@ import {
   bytesToReadable,
   compareEpisodes,
 } from "@/lib/util";
-import { LiveSeriesOutletContext } from "@/pages/liveseries";
 import { useTranslations } from "@/context/translation-context";
 import { useAuth } from "@/context/auth-context";
 import { useModals } from "@/context/modal-context";
 import { useFetch } from "@/context/fetch-context";
-import Link from "next/link";
+import { useLiveSeries } from "@/context/liveseries-context";
 
 function Episode({
   episode,
@@ -36,7 +36,7 @@ function Episode({
     fetchResource,
     downloadedEpisodes,
     monitorEpisodeDownloads,
-  } = useOutletContext<LiveSeriesOutletContext>();
+  } = useLiveSeries();
 
   const airDate = data.dateTimeFormat.format(getEpisodeAirDate(episode));
   const watchedInSeason = watchedEpisodes?.[tvShow.id]?.[+episode.season];

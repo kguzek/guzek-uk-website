@@ -1,6 +1,6 @@
-import { useTranslations } from "@/context/translation-context";
-import { LiveSeriesOutletContext } from "@/pages/liveseries";
 import Link from "next/link";
+import { useLiveSeries } from "@/context/liveseries-context";
+import { useTranslations } from "@/context/translation-context";
 import { useSearchParams } from "next/navigation";
 
 const pagePattern = /page=\d+/;
@@ -18,7 +18,13 @@ export default function PageIndicator({
 }) {
   const searchParams = useSearchParams();
   const { data } = useTranslations();
-  const { loading } = useOutletContext<LiveSeriesOutletContext>();
+  let loading = [];
+  try {
+    ({ loading } = useLiveSeries());
+  } catch (error) {
+    console.warn("PageIndicator is not inside a LiveSeriesProvider");
+    console.error(error);
+  }
 
   function getNewSearchParams() {
     const search = searchParams.toString();

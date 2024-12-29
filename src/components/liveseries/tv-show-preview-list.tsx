@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { TvShowList } from "@/lib/models";
-import { LiveSeriesOutletContext } from "@/pages/liveseries";
-import Paginator from "../pagination/paginator";
+import Paginator from "@/components/pagination/paginator";
+import { NumericValue } from "@/components/numeric-value";
 import TvShowPreview from "./tv-show-preview";
-import { NumericValue } from "../numeric-value";
 import { useTranslations } from "@/context/translation-context";
+import { useLiveSeries } from "@/context/liveseries-context";
 
 const RESULTS_PER_PAGE = 20;
 
@@ -22,7 +22,7 @@ export default function TvShowPreviewList({
 }) {
   const [cardsToLoad, setCardsToLoad] = useState<number[]>([]);
   const { data } = useTranslations();
-  const { loading } = useOutletContext<LiveSeriesOutletContext>();
+  const { loading } = useLiveSeries();
 
   useEffect(() => {
     if (!tvShowsRaw) return;

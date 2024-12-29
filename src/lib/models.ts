@@ -46,6 +46,11 @@ export interface ErrorPageContent {
   body: string;
 }
 
+export interface UserShows {
+  likedShows?: number[];
+  subscribedShows?: number[];
+}
+
 export interface TvShowList {
   total: string;
   page: number;

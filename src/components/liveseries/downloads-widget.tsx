@@ -1,19 +1,14 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { LiveSeriesOutletContext } from "@/pages/liveseries";
 import { DownloadedEpisode, DownloadStatus } from "@/lib/models";
 import { bytesToReadable, getDuration } from "@/lib/util";
 import { useModals } from "@/context/modal-context";
 import { useTranslations } from "@/context/translation-context";
+import { useLiveSeries } from "@/context/liveseries-context";
 import "./downloads-widget.css";
 
-export default function DownloadsWidget({
-  downloadedEpisodes,
-  fetchResource,
-}: {
-  downloadedEpisodes: DownloadedEpisode[];
-  fetchResource: LiveSeriesOutletContext["fetchResource"];
-}) {
+export default function DownloadsWidget() {
+  const { downloadedEpisodes, fetchResource } = useLiveSeries();
   const [collapsed, setCollapsed] = useState(
     downloadedEpisodes.find(
       (episode) => episode.status === DownloadStatus.PENDING

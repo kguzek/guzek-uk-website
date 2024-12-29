@@ -11,7 +11,8 @@ import {
   useScroll,
 } from "@/lib/util";
 import { useTranslations } from "@/context/translation-context";
-import { getLiveSeriesTitle, LiveSeriesOutletContext } from ".";
+import { getLiveSeriesTitle } from "./layout";
+import { useLiveSeries } from "@/context/liveseries-context";
 
 // Number of skeleton cards to display when loading liked show ids
 const SKELETON_CARDS_COUNT = 4;
@@ -130,7 +131,7 @@ export default function Home() {
   const { data } = useTranslations();
   const title = getLiveSeriesTitle("home");
   const { userShows, watchedEpisodes, loading, fetchResource } =
-    useOutletContext<LiveSeriesOutletContext>();
+    useLiveSeries();
 
   useEffect(() => {
     setTitle(title);

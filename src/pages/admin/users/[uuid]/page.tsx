@@ -8,17 +8,17 @@ import { getErrorMessage } from "@/lib/util";
 import { useTranslations } from "@/context/translation-context";
 import { useModals } from "@/context/modal-context";
 import { useFetch } from "@/context/fetch-context";
-import { AdminContext } from ".";
+import { useAdmin } from "@/context/admin-context";
 
 export default function UserPage() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | undefined>();
   const params = useParams();
-  const { users, setUsers, setTitle } = useOutletContext<AdminContext>();
+  const { users, setUsers, setTitle } = useAdmin();
 
   useEffect(() => {
     if (!users) return;
-    const user = users.find((user) => user.uuid === params.uuid);
+    const user = users.find((user) => user.uuid === params?.uuid);
     if (user) {
       setUser(user);
       setTitle("@" + user.username);

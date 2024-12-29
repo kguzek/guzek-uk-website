@@ -7,16 +7,16 @@ import LogIn from "./pages/login";
 import SignUp from "./pages/signup";
 import { ErrorCode } from "./lib/models";
 import ContentManager from "./pages/admin/content-manager";
-import LiveSeriesBase from "./pages/liveseries";
-import MostPopular from "./pages/liveseries/most-popular";
-import Home from "./pages/liveseries/home";
+import LiveSeriesLayout from "./pages/liveseries/layout";
+import MostPopular from "./pages/liveseries/most-popular/page";
+import Home from "./pages/liveseries/page";
 import Search from "./pages/liveseries/search";
 import TvShow from "./pages/liveseries/tv-show";
 import Watch from "./pages/liveseries/watch";
-import AdminBase from "./pages/admin";
+import AdminBase from "./pages/admin/layout";
 import Users from "./pages/admin/users";
 import Logs from "./pages/admin/logs";
-import UserPage from "./pages/admin/user";
+import UserPage from "./pages/admin/users/[uuid]/page";
 
 export default function App() {
   return (
@@ -62,7 +62,7 @@ export default function App() {
         </Route>
         <Route path="logs" element={<Logs />} />
       </Route>
-      <Route path="liveseries" element={<LiveSeriesBase />}>
+      <Route path="liveseries" element={<LiveSeriesLayout />}>
         <Route index element={<Home />} />
         <Route path="most-popular" element={<MostPopular />} />
         <Route path="search" element={<Search />} />
