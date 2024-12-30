@@ -2,6 +2,8 @@ import { Metadata, Viewport } from "next";
 import { ReactNode } from "react";
 import { Footer } from "@/components/footer";
 import { AppProviders } from "@/providers/AppProviders";
+import "./globals.css";
+import "./forms.css";
 
 export const metadata: Metadata = {
   title: "Guzek UK",
@@ -29,7 +31,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+        <link rel="icon" href="/favicon.ico" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -37,11 +39,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           crossOrigin="anonymous"
         />
         <script
+          async
           src="https://kit.fontawesome.com/b70d905b1a.js"
           crossOrigin="anonymous"
         ></script>
-        <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-        <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+        <link rel="apple-touch-icon" href="/logo192.png" />
+        <link rel="manifest" href="/manifest.json" />
         <title>Guzek UK</title>
       </head>
       <body>

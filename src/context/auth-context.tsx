@@ -1,3 +1,5 @@
+"use client";
+
 import { getCache } from "@/lib/backend";
 import { StateSetter, User } from "@/lib/models";
 import {
@@ -12,7 +14,7 @@ import { getLocalUser } from "@/lib/util";
 import { useModalInfo } from "./modal/modal-info-context";
 
 export interface AuthInfo {
-  user: User | null;
+  user: User | null | undefined;
   setUser: StateSetter<User | null | undefined>;
   logout: () => void;
 }
@@ -32,7 +34,9 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [currentUser, setCurrentUser] = useState<User | null | undefined>();
+  const [currentUser, setCurrentUser] = useState<User | null | undefined>(
+    undefined
+  );
   const { data } = useTranslations();
   const { setModalInfo } = useModalInfo();
 
@@ -63,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const auth: AuthInfo = {
-    user: currentUser ?? null,
+    user: currentUser,
     setUser: setCurrentUser,
     logout,
   };

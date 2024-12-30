@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { TvShowList } from "@/lib/models";
 import Paginator from "@/components/pagination/paginator";

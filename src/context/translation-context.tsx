@@ -1,3 +1,5 @@
+"use client";
+
 import { Language } from "@/lib/models";
 import { Translation, TRANSLATIONS } from "@/lib/translations";
 import {

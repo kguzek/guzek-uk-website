@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+
 import Logo from "@/media/logo";
 import { useTranslations } from "@/context/translation-context";
 import "./footer.css";

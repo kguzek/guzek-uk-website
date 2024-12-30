@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, ReactNode, useContext, useState } from "react";
 import Modal, { ModalHandler } from "@/components/modal/modal";
 import { useTranslations } from "@/context/translation-context";

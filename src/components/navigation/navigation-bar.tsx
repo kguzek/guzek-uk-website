@@ -1,3 +1,5 @@
+"use client";
+
 import React, {
   useState,
   useEffect,
@@ -9,22 +11,22 @@ import React, {
 import Link from "next/link";
 import Logo from "@/media/logo";
 import { TRANSLATIONS } from "@/lib/translations";
-import { Language, MenuItem, User } from "@/lib/models";
+import { Language, MenuItem } from "@/lib/models";
 import { PAGE_NAME } from "@/lib/util";
 import { useTranslations } from "@/context/translation-context";
 import "./navigation.css";
+import { usePathname } from "next/navigation";
+import { useAuth } from "@/context/auth-context";
 
-function NavigationBar({
-  user,
+export default function NavigationBar({
   selectedLanguage,
   menuItems,
 }: {
-  user?: User | null;
   selectedLanguage: Language;
   menuItems?: MenuItem[];
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const winDims = useWindowDimensions();
+  const windowDimensions = useWindowDimensions();
   const { setLanguage } = useTranslations();
 
   // Create the array of nav bar page elements
@@ -35,14 +37,14 @@ function NavigationBar({
   ));
 
   const displayStyle =
-    winDims.width > 980 ? "desktop" : winDims.width > 550 ? "medium" : "mobile";
+    windowDimensions.width > 980
+      ? "desktop"
+      : windowDimensions.width > 550
+      ? "medium"
+      : "mobile";
 
   const userWidget = (
-    <UserWidget
-      user={user}
-      displayStyle={displayStyle}
-      setMenuOpen={setMenuOpen}
-    />
+    <UserWidget displayStyle={displayStyle} setMenuOpen={setMenuOpen} />
   );
 
   /** Event handler for when the user selects one of the lanugage options. */
@@ -58,6 +60,10 @@ function NavigationBar({
       console.error(error as Error);
     }
   }
+
+  // Waiting for the page to load on the client
+  if (windowDimensions.width === 0 || windowDimensions.height === 0)
+    return null;
 
   return (
     <div className="ribbon">
@@ -92,10 +98,11 @@ function NavBarItem({
   item: MenuItem;
   setMenuOpen: Function;
 }) {
-  // Check if the active page name is provided
-  const path = window.location.pathname;
+  const pathname = usePathname();
+
   // Handle edge case for index page ("/")
-  const isActive = item.url === "/" ? path === "/" : path.startsWith(item.url);
+  const isActive =
+    item.url === "/" ? pathname === "/" : pathname?.startsWith(item.url);
   const onClick = () => setMenuOpen(false);
   const className = "clickable nav-link" + (isActive ? " active" : "");
   return item.localUrl ? (
@@ -165,21 +172,23 @@ function LangSelector({
 }
 
 function UserWidget({
-  user,
   displayStyle,
   setMenuOpen,
 }: {
-  user: any;
   displayStyle: string;
   setMenuOpen: Function;
 }) {
+  const pathname = usePathname();
   const { data } = useTranslations();
+  const { user } = useAuth();
+  //  add user.url
   const imgUrl =
-    (user && user.url) ||
+    (user && Object.hasOwn(user, "url") && (user as any).url) ||
     "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/default-avatar.png";
-  const active = ["/profile", "/login"].includes(window.location.pathname)
-    ? "active"
-    : "";
+  const active =
+    pathname != null && ["/profile", "/login"].includes(pathname)
+      ? "active"
+      : "";
   return (
     <Link
       href={user ? "/profile" : "/login"}
@@ -211,23 +220,22 @@ function useWindowDimensions() {
     return { width: window.innerWidth, height: window.innerHeight };
   }
 
-  const [windowDimensions, setWindowDimensions] = useState(
-    getWindowDimensions()
-  );
+  const [windowDimensions, setWindowDimensions] = useState({
+    width: 0,
+    height: 0,
+  });
 
   useEffect(() => {
     function handleResize() {
       setWindowDimensions(getWindowDimensions());
     }
-
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return windowDimensions;
 }
-
-export default NavigationBar;
 
 interface Page {
   link: string;
@@ -241,11 +249,13 @@ export function MiniNavBar({
   pathBase: string;
   pages: Page[];
 }) {
+  const pathname = usePathname();
+
   const getClassName = (path: string) =>
     (
       path
-        ? location.pathname.startsWith(`/${pathBase}/` + path)
-        : [`/${pathBase}`, `/${pathBase}/`].includes(location.pathname)
+        ? pathname.startsWith(`/${pathBase}/` + path)
+        : [`/${pathBase}`, `/${pathBase}/`].includes(pathname)
     )
       ? " active"
       : "";
@@ -256,7 +266,7 @@ export function MiniNavBar({
         <Link
           key={idx}
           className={"clickable nav-link" + getClassName(link)}
-          href={link}
+          href={`/${pathBase}/${link}`}
         >
           {label}
         </Link>

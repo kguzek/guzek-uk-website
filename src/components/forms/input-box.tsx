@@ -1,4 +1,6 @@
-import { ChangeEvent, ReactNode } from "react";
+"use client";
+
+import { ChangeEvent, createRef, ReactNode, useEffect } from "react";
 
 export default function InputBox({
   label,
@@ -23,6 +25,7 @@ export default function InputBox({
   autofocus?: boolean;
   info?: ReactNode;
 }) {
+  const ref = createRef<HTMLInputElement>();
   const isDropdown = type === "dropdown";
   const isCheckbox = type === "checkbox";
 
@@ -41,6 +44,10 @@ export default function InputBox({
       "'options' prop must be provided when using 'dropdown' InputBox type."
     );
   }
+
+  useEffect(() => {
+    if (autofocus) ref.current?.select();
+  }, []);
 
   return (
     <label className={`input-box input-${type} ${isCheckbox ? "nowrap" : ""}`}>
@@ -64,6 +71,7 @@ export default function InputBox({
         </select>
       ) : isCheckbox ? (
         <input
+          ref={ref}
           checked={value as boolean}
           type={type}
           onChange={(evt) => handleChange(evt, (val: string) => val)}
@@ -72,6 +80,7 @@ export default function InputBox({
         />
       ) : (
         <input
+          ref={ref}
           value={value as string | number}
           type={type}
           onChange={(evt) => handleChange(evt, (val: string) => val)}

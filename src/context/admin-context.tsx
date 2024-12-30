@@ -1,5 +1,13 @@
+"use client";
+
 import { StateSetter, User } from "@/lib/models";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useTranslations } from "./translation-context";
 import { useFetch } from "./fetch-context";
 import { setTitle } from "@/lib/util";
@@ -21,7 +29,7 @@ export function useAdmin() {
   return context;
 }
 
-export function AdminProvider() {
+export function AdminProvider({ children }: { children: ReactNode }) {
   const [users, setUsers] = useState<User[] | null>(null);
   const pathname = usePathname();
   const { data } = useTranslations();
@@ -33,7 +41,7 @@ export function AdminProvider() {
   }, []);
 
   useEffect(() => {
-    if (!["/admin", "/admin/"].includes(pathname)) return;
+    if (pathname != null && !["/admin", "/admin/"].includes(pathname)) return;
     setTitle(data.admin.title);
   }, [pathname, data]);
 
@@ -48,5 +56,7 @@ export function AdminProvider() {
     setTitle: (title) => setTitle(`${title} –  ${data.admin.title}`),
   };
 
-  return <AdminContext.Provider value={context} />;
+  return (
+    <AdminContext.Provider value={context}>{children}</AdminContext.Provider>
+  );
 }

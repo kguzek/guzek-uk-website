@@ -1,18 +1,23 @@
-import RichTextEditor, { EditorValue } from "react-rte";
+"use client";
 
-export const getEmptyMarkdown = RichTextEditor.createEmptyValue;
-export const parseMarkdown = RichTextEditor.createValueFromString;
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
 
 export default function InputArea({
   value,
   setValue,
 }: {
-  value: EditorValue;
+  value: string;
   setValue: Function;
 }) {
-  function handleChange(newValue: any) {
-    setValue(newValue);
-  }
+  const editor = useEditor({
+    extensions: [StarterKit],
+    content: value,
+    immediatelyRender: false,
+    onUpdate: ({ editor }) => {
+      setValue(editor.getHTML());
+    },
+  });
 
-  return <RichTextEditor value={value} onChange={handleChange} />;
+  return <EditorContent editor={editor} />;
 }

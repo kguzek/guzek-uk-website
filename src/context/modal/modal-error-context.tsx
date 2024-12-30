@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, ReactNode, useContext, useState } from "react";
 import Modal from "@/components/modal/modal";
 import { clearStoredLoginInfo } from "@/lib/backend";

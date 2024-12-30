@@ -1,3 +1,5 @@
+"use client";
+
 import {
   createContext,
   ReactNode,
@@ -5,7 +7,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useRouter } from "next/router";
+import { usePathname, useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import {
   DownloadedEpisode,
@@ -86,6 +88,7 @@ export function LiveSeriesProvider({ children }: { children: ReactNode }) {
     DownloadedEpisode[]
   >([]);
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const { data } = useTranslations();
   const { fetchFromAPI } = useFetch();
@@ -103,7 +106,7 @@ export function LiveSeriesProvider({ children }: { children: ReactNode }) {
       setWatchedEpisodesUpdated(false);
       fetchWatchedEpisodes();
     }
-  }, [router.pathname]);
+  }, [pathname]);
 
   function fetchUserShows() {
     fetchResource("shows/personal", {
@@ -150,7 +153,7 @@ export function LiveSeriesProvider({ children }: { children: ReactNode }) {
     method || setLoading((old) => [...old, endpoint]);
     try {
       const res = await (useEpisodate
-        ? fetchFromEpisodate(endpoint, params ?? searchParams)
+        ? fetchFromEpisodate(endpoint, params ?? searchParams ?? undefined)
         : fetchFromAPI("liveseries/" + endpoint, { method, body }, !method));
       if (res.status === 204) return onSuccess(null);
       const json = await res.json();
@@ -170,12 +173,12 @@ export function LiveSeriesProvider({ children }: { children: ReactNode }) {
         }
       } else {
         setModalError(getErrorMessage(res, json, data));
-        router.push(router.pathname);
+        router.push(pathname);
         onError();
       }
     } catch (error) {
       console.error(error);
-      router.push(router.pathname);
+      router.push(pathname);
       onError();
     }
     method || setLoading((old) => old.filter((value) => value !== endpoint));

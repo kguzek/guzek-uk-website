@@ -1,3 +1,5 @@
+"use client";
+
 import React, { MouseEvent, useState } from "react";
 import Link from "next/link";
 import { TvShowDetailsShort } from "@/lib/models";
