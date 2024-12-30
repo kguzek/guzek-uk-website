@@ -14,18 +14,6 @@
     "build": "next build",
     "start": "next start"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
   "dependencies": {
     "@tiptap/pm": "^2.10.4",
     "@tiptap/react": "^2.10.4",
@@ -36,6 +24,7 @@
   "devDependencies": {
     "@types/next": "^8.0.7",
     "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",

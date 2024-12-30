@@ -1,6 +1,7 @@
 "use client";
 
 import { MouseEvent, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { clearStoredLoginInfo } from "@/lib/backend";
 import { getErrorMessage, setTitle } from "@/lib/util";
 import InputBox from "@/components/forms/input-box";
@@ -8,7 +9,6 @@ import { useTranslations } from "@/context/translation-context";
 import { useAuth } from "@/context/auth-context";
 import { useFetch } from "@/context/fetch-context";
 import { useModals } from "@/context/modal-context";
-import { useRouter } from "next/navigation";
 
 function Profile() {
   const [serverUrl, setServerUrl] = useState("");
@@ -31,14 +31,14 @@ function Profile() {
   }
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      router.replace("/login");
+      return;
+    }
     setServerUrl(user.serverUrl ?? "");
   }, [user]);
 
-  if (!user) {
-    router.replace("/login");
-    return null;
-  }
+  if (!user) return null;
 
   const isServerUrlValid = () =>
     !updating &&

@@ -2,7 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { DEFAULT_PAGE_DATA, MenuItem, PageContent } from "@/lib/models";
+import ErrorPage from "@/components/error-page";
+import { PageSkeleton } from "./skeleton";
+import {
+  DEFAULT_PAGE_DATA,
+  MenuItem,
+  PageContent,
+  ErrorCode,
+} from "@/lib/models";
 import { setTitle } from "@/lib/util";
 import { useFetch } from "@/context/fetch-context";
 import { useTranslations } from "@/context/translation-context";
@@ -10,42 +17,12 @@ import { useTranslations } from "@/context/translation-context";
 const EVENT_DISPATCHER = "document.dispatchEvent(new Event('onImageLoad'));";
 const imageInjection = `onload="${EVENT_DISPATCHER}" onerror="${EVENT_DISPATCHER} "`;
 
-export function PageSkeleton() {
-  return (
-    <div className="skeleton">
-      <h1 className="skeleton-text" style={{ height: 45 }}></h1>
-      <br />
-      <h2
-        className="skeleton-text"
-        style={{ height: 34, width: "20%", minWidth: "8em" }}
-      ></h2>
-      <p
-        className="skeleton-text"
-        style={{ height: 26, width: "50%", minWidth: "16em" }}
-      ></p>
-      <p
-        className="skeleton-text"
-        style={{ width: "45%", minWidth: "14em" }}
-      ></p>
-      <p
-        className="skeleton-text"
-        style={{ height: "50vh", width: "100%" }}
-      ></p>
-    </div>
-  );
-}
-
-export default function PageTemplate({ pageData }: { pageData: MenuItem }) {
+function DynamicPage({ pageData }: { pageData: MenuItem }) {
   const [pageContent, setPageContent] = useState<PageContent | null>(null);
   const [imagesToLoad, setImagesToLoad] = useState(0);
   const pathname = usePathname();
   const { userLanguage } = useTranslations();
   const { tryFetch, reload } = useFetch();
-
-  if (!pageData) {
-    console.error("WTF IS GOING ON");
-    return null;
-  }
 
   async function fetchContent() {
     const url = `pages/${pageData.id}`;
@@ -92,4 +69,23 @@ export default function PageTemplate({ pageData }: { pageData: MenuItem }) {
       )}
     </div>
   );
+}
+
+export function DynamicPageLoader({ page }: { page: string }) {
+  const { menuItems } = useFetch();
+
+  if (menuItems == null) {
+    return (
+      <div className="text">
+        <PageSkeleton />
+      </div>
+    );
+  }
+  console.log(page, menuItems);
+
+  const currentPage =
+    page && menuItems.find((item) => item.shouldFetch && item.url === page);
+
+  if (!currentPage) return <ErrorPage errorCode={ErrorCode.NotFound} />;
+  return <DynamicPage pageData={currentPage} />;
 }

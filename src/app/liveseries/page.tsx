@@ -13,8 +13,8 @@ import {
   useScroll,
 } from "@/lib/util";
 import { useTranslations } from "@/context/translation-context";
-import { getLiveSeriesTitle } from "./layout";
 import { useLiveSeries } from "@/context/liveseries-context";
+import { getLiveSeriesTitle } from "./layout";
 
 // Number of skeleton cards to display when loading liked show ids
 const SKELETON_CARDS_COUNT = 4;

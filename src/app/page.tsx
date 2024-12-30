@@ -1,3 +1,5 @@
-import { Page } from "./[...page]/page";
+import { DynamicPageLoader } from "@/components/pages/dynamic-page";
 
-export default Page;
+export default function Index() {
+  return <DynamicPageLoader page="/" />;
+}

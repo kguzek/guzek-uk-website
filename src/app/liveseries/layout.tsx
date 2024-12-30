@@ -1,8 +1,9 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 import { MiniNavBar } from "@/components/navigation/navigation-bar";
 import DownloadsWidget from "@/components/liveseries/downloads-widget";
+import { PageSkeleton } from "@/components/pages/skeleton";
 import { useTranslations } from "@/context/translation-context";
 import "./liveseries.css";
 import { LiveSeriesProvider } from "@/context/liveseries-context";
@@ -23,18 +24,23 @@ export default function LiveSeriesLayout({
 
   return (
     <div className="text liveseries">
-      <LiveSeriesProvider>
-        <DownloadsWidget />
-        <MiniNavBar
-          pathBase="liveseries"
-          pages={[
-            { link: "", label: data.liveSeries.home.title },
-            { link: "search", label: data.liveSeries.search.title },
-            { link: "most-popular", label: data.liveSeries.mostPopular.title },
-          ]}
-        />
-        {children}
-      </LiveSeriesProvider>
+      <Suspense fallback={<PageSkeleton />}>
+        <LiveSeriesProvider>
+          <DownloadsWidget />
+          <MiniNavBar
+            pathBase="liveseries"
+            pages={[
+              { link: "", label: data.liveSeries.home.title },
+              { link: "search", label: data.liveSeries.search.title },
+              {
+                link: "most-popular",
+                label: data.liveSeries.mostPopular.title,
+              },
+            ]}
+          />
+          {children}
+        </LiveSeriesProvider>
+      </Suspense>
     </div>
   );
 }

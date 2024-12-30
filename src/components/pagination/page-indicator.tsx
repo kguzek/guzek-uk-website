@@ -1,22 +1,29 @@
+"use client";
+
 import Link from "next/link";
 import { useLiveSeries } from "@/context/liveseries-context";
 import { useTranslations } from "@/context/translation-context";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 const pagePattern = /page=\d+/;
 
-export default function PageIndicator({
-  page,
-  currentPage,
-  direction,
-  disabled = false,
-}: {
+interface PageIndicatorProps {
   page?: number;
   currentPage: number;
   direction?: "PREVIOUS" | "NEXT";
   disabled?: boolean;
+}
+
+function PageIndicator({
+  page,
+  currentPage,
+  direction,
+  disabled = false,
+  search = "",
+}: PageIndicatorProps & {
+  search?: string;
 }) {
-  const searchParams = useSearchParams();
   const { data } = useTranslations();
   let loading = [];
   try {
@@ -27,7 +34,6 @@ export default function PageIndicator({
   }
 
   function getNewSearchParams() {
-    const search = searchParams.toString();
     const newFragment = `page=${page}`;
     if (!search) return newFragment;
     if (search.match(pagePattern))
@@ -45,7 +51,6 @@ export default function PageIndicator({
   } else {
     displayValue = data.numberFormat.format(page);
   }
-
   return (
     <Link
       href={disabled ? "#" : "?" + getNewSearchParams()}
@@ -58,5 +63,13 @@ export default function PageIndicator({
     >
       {displayValue}
     </Link>
+  );
+}
+
+export default function SuspendedPageIndicator(props: PageIndicatorProps) {
+  return (
+    <Suspense fallback={<PageIndicator {...props} />}>
+      <PageIndicator {...props} search={useSearchParams().toString()} />
+    </Suspense>
   );
 }
