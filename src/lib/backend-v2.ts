@@ -18,6 +18,8 @@ const API_BASE_AUTH = useLocalUrl
 
 const API_BASE_LIVESERIES_LOCAL = "http://localhost:5021/";
 
+const EPISODATE_URL = "https://www.episodate.com/api/";
+
 const DECENTRALISED_ROUTES = [
   "liveseries/downloaded-episodes",
   "liveseries/subtitles",
@@ -60,9 +62,11 @@ export async function serverToApi<T>(
     params,
     body,
     method,
+    api,
   }: {
     useAuth?: boolean;
     params?: Record<string, string>;
+    api?: "episodate";
   } & (
     | { body: Record<string, any>; method: "POST" | "PUT" | "PATCH" }
     | { body?: never; method?: "GET" | "DELETE" }
@@ -72,12 +76,21 @@ export async function serverToApi<T>(
   let res;
   const options: RequestInit = {
     method,
-    next: { revalidate: !method || method === "GET" ? 120 : useAuth ? 0 : 5 },
+    next: {
+      revalidate:
+        api === "episodate"
+          ? 3600
+          : !method || method === "GET"
+            ? 120
+            : useAuth
+              ? 0
+              : 5,
+    },
   };
   const headers: HeadersInit = {
     Accept: "*",
   };
-  if (useAuth) {
+  if (useAuth && !api) {
     const token = await getAccessToken(cookieStore);
     if (token) {
       headers.Authorization = `Bearer ${token}`;
@@ -95,7 +108,7 @@ export async function serverToApi<T>(
       params = { ...params, lang };
     }
   }
-  const url = `${getUrlBase(path)}${path}${getSearchParams(params)}`;
+  const url = `${api === "episodate" ? EPISODATE_URL : getUrlBase(path)}${path}${getSearchParams(params)}`;
   console.debug("", options.method ?? "GET", url);
   try {
     res = await fetch(url, options);

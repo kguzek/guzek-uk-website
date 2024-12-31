@@ -19,7 +19,8 @@ const USER_REQUIRED_PROPERTIES = [
   "modified_at",
 ];
 
-export const getTitle = (title: string) => `${title} | ${PAGE_NAME}`;
+export const getTitle = (title: string, suffix?: string) =>
+  `${title}${suffix ? ` – ${suffix}` : ""} | ${PAGE_NAME}`;
 
 export const setTitle = (title: string) =>
   void (document.title = getTitle(title));
@@ -27,7 +28,7 @@ export const setTitle = (title: string) =>
 export const getTryFetch = (
   fetchFromAPI: ReturnType<typeof getFetchFromAPI>,
   setModalError: (message: string | undefined) => void,
-  data: Translation
+  data: Translation,
 ): TryFetch =>
   /** Attempts to fetch the data from local cache or from the API.
    *  On success, returns the consumed response's body.
@@ -37,7 +38,7 @@ export const getTryFetch = (
     path: string,
     params: Record<string, string>,
     defaultData: T,
-    useCache: boolean = true
+    useCache: boolean = true,
   ) {
     let res;
     try {
@@ -76,7 +77,7 @@ export function getDuration(milliseconds: number) {
 
 export function scrollToElement(
   selector: string,
-  inline: ScrollLogicalPosition = "center"
+  inline: ScrollLogicalPosition = "center",
 ) {
   document.querySelector(selector)?.scrollIntoView({
     behavior: "smooth",
@@ -121,7 +122,7 @@ const STATUS_CODES: Record<number, string> = {
 export const getErrorMessage = (
   res: Response,
   json: any,
-  data: Translation
+  data: Translation,
 ): string =>
   (json[`${res.status} ${STATUS_CODES[res.status] || res.statusText}`] ??
     JSON.stringify(json)) ||
@@ -137,7 +138,7 @@ export function getUserFromResponse(json: any) {
 function rejectSavedUser(user: any) {
   console.warn(
     "Cleared fake user set in localStorage. If you're reading this, nice try!",
-    user
+    user,
   );
   clearStoredLoginInfo();
 }

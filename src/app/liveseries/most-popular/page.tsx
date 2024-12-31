@@ -7,7 +7,7 @@ import { TvShowList } from "@/lib/types";
 import { setTitle } from "@/lib/util";
 import { useTranslations } from "@/context/translation-context";
 import { useLiveSeries } from "@/context/liveseries-context";
-import { getLiveSeriesTitle } from "../layout";
+import { getLiveSeriesTitle } from "../layout-client";
 
 export default function MostPopular() {
   const [results, setResults] = useState<TvShowList | null>(null);

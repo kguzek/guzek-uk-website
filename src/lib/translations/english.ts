@@ -65,6 +65,10 @@ export const ENGLISH: Translation = {
       title: "Not Found",
       body: "The requested resource was not found.",
     },
+    500: {
+      title: "Server Error",
+      body: "An error occurred while processing your request.",
+    },
   },
   admin: {
     title: "Admin Tools",

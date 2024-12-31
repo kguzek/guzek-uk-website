@@ -12,11 +12,10 @@ export function NavBarItem({ item }: { item: MenuItem }) {
   // Handle edge case for index page ("/")
   const isActive =
     item.url === "/" ? pathname === "/" : pathname?.startsWith(item.url);
-  const onClick = () => {};
   const className = "clickable nav-link" + (isActive ? " active" : "");
   const A = item.localUrl ? Link : "a";
   return (
-    <A href={item.url} onClick={onClick} className={className}>
+    <A href={item.url} className={className}>
       {item.title}
     </A>
   );
@@ -64,18 +63,18 @@ export function MiniNavBar({
   const getClassName = (path: string) =>
     (
       path
-        ? pathname.startsWith(`/${pathBase}/` + path)
+        ? pathname.startsWith(`/${pathBase}/${path}`)
         : [`/${pathBase}`, `/${pathBase}/`].includes(pathname)
     )
       ? " active"
       : "";
 
   return (
-    <nav className="mini-navbar serif flex">
+    <nav className="mini-navbar serif mt-2 flex">
       {pages.map(({ link, label }, idx) => (
         <Link
           key={idx}
-          className={"clickable nav-link" + getClassName(link)}
+          className={`clickable nav-link ${getClassName(link)}`}
           href={`/${pathBase}/${link}`}
         >
           {label}

@@ -66,6 +66,10 @@ export const POLISH: Translation = {
       title: "Nie Znaleziono",
       body: "Nie znaleziono zasobu, którego szukasz.",
     },
+    500: {
+      title: "Błąd Serwera",
+      body: "Nastąpił błąd serwera. Spróbuj ponownie później.",
+    },
   },
   admin: {
     title: "Narzędzia Administracyjne",

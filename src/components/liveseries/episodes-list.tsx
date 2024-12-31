@@ -44,11 +44,11 @@ function Episode({
   const watchedInSeason = watchedEpisodes?.[tvShow.id]?.[+episode.season];
   const isWatched = watchedInSeason?.includes(episode.episode);
   const episodeString = `${tvShow.name} ${data.liveSeries.episodes.serialise(
-    episode
+    episode,
   )}`;
 
   const episodePredicate = (
-    check: DownloadedEpisode // Torrents filenames omit colons
+    check: DownloadedEpisode, // Torrents filenames omit colons
   ) =>
     compareEpisodes(check, {
       ...episode,
@@ -105,7 +105,7 @@ function Episode({
     if (metadata.speed != null)
       downloadTooltip = downloadTooltip.replace(
         ")",
-        ` @ ${bytesToReadable(metadata.speed)}/s)`
+        ` @ ${bytesToReadable(metadata.speed)}/s)`,
       );
   }
   const downloadIcon = (
@@ -124,11 +124,11 @@ function Episode({
         </div>
         <small>{airDate}</small>
       </div>
-      <div className="flex gap-10 noshrink">
+      <div className="noshrink flex gap-10">
         {user?.serverUrl?.length && (
           <>
             <div
-              className="flex flex-column"
+              className="flex-column flex"
               title={downloadTooltip}
               style={{ minWidth: 20 }}
               onClick={
@@ -161,15 +161,15 @@ function Episode({
           <div
             className="watched centred"
             title={data.liveSeries.tvShow.markWatched(
-              isWatched ? data.liveSeries.tvShow.un : ""
+              isWatched ? data.liveSeries.tvShow.un : "",
             )}
             onClick={() =>
               updateWatchedEpisodes(
                 isWatched
-                  ? watchedInSeason?.filter(
-                      (value) => value !== episode.episode
-                    ) ?? []
-                  : [...(watchedInSeason ?? []), episode.episode]
+                  ? (watchedInSeason?.filter(
+                      (value) => value !== episode.episode,
+                    ) ?? [])
+                  : [...(watchedInSeason ?? []), episode.episode],
               )
             }
           >
@@ -185,7 +185,7 @@ function Episode({
   );
 }
 
-export default function EpisodesList({
+export function EpisodesList({
   tvShow,
   heading,
   episodes,
@@ -202,7 +202,7 @@ export default function EpisodesList({
     <>
       <div className="episodes-header gap-15">
         <div
-          className="clickable flex gap-15"
+          className="clickable gap-15 flex"
           onClick={() => setCollapsed((old) => !old)}
         >
           <i
@@ -219,7 +219,7 @@ export default function EpisodesList({
           collapsed ? "hidden" : ""
         }`}
       >
-        <div className="episodes flex-wrap gap-10 no-overflow">
+        <div className="episodes no-overflow flex-wrap gap-10">
           {episodes.map((episode, idx) => (
             <Episode
               key={`episode-unwatched-${idx}`}

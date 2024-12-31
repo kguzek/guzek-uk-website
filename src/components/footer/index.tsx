@@ -1,24 +1,23 @@
-"use client";
-
 import Logo from "@/media/logo";
-import { useTranslations } from "@/context/translation-context";
-import "./footer.css";
+import { useTranslations } from "@/providers/translation-provider";
 
-export function Footer() {
-  const { data } = useTranslations();
+export async function Footer() {
+  const { data } = await useTranslations();
   return (
-    <footer className="centred">
+    <footer className="mt-10">
       <hr />
-      <Logo size={20} />
-      <small>
-        <a
-          className="hover-underline"
-          href="https://github.com/kguzek"
-          target="_blank"
-        >
-          {data.footer(new Date().getFullYear().toString())}
-        </a>
-      </small>
+      <div className="mt-2 flex items-center justify-center">
+        <Logo size={20} />
+        <small className="text-xs">
+          <a
+            className="hover-underline"
+            href="https://github.com/kguzek"
+            target="_blank"
+          >
+            {data.footer(new Date().getFullYear().toString())}
+          </a>
+        </small>
+      </div>
     </footer>
   );
 }

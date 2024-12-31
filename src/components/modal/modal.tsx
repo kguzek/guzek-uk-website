@@ -41,8 +41,8 @@ export default function Modal({
   }
 
   return (
-    <div className={`modal-background ${value ? "" : "hidden"}`}>
-      <div className={`modal ${className}`}>
+    <div className={`modal-background ${value ? "" : "hidden"} z-30`}>
+      <div className={`modal ${className} z-40`}>
         <p>
           {before}
           {url && (

@@ -8,7 +8,7 @@ import { useTranslations } from "@/context/translation-context";
 import { useFetch } from "@/context/fetch-context";
 import { useLiveSeries } from "@/context/liveseries-context";
 
-export default function TvShowPreview({
+export function TvShowPreview({
   idx,
   showDetails,
   onLoad,

@@ -18,7 +18,7 @@ export type TryFetch = <T>(
   path: string,
   params: Record<string, string>,
   defaultData: T,
-  useCache?: boolean
+  useCache?: boolean,
 ) => Promise<T>;
 
 export interface User {
@@ -35,6 +35,7 @@ export enum ErrorCode {
   Unauthorized = 401,
   Forbidden = 403,
   NotFound = 404,
+  ServerError = 500,
 }
 
 export enum Language {
@@ -70,6 +71,8 @@ export interface TvShowDetailsShort {
   status: string;
   image_thumbnail_path: string;
 }
+
+export type LikedShows = Record<number, TvShowDetails>;
 
 export interface TvShowDetails extends TvShowDetailsShort {
   url: string;
@@ -132,11 +135,11 @@ export const DEFAULT_PAGE_DATA: PageContent = {
 };
 
 export type CustomMiddleware = (
-  req: CustomRequest
+  req: CustomRequest,
 ) => ReturnType<NextMiddleware>;
 
 export type MiddlewareFactory = (
-  middleware: CustomMiddleware
+  middleware: CustomMiddleware,
 ) => CustomMiddleware;
 
 export interface CustomRequest extends NextRequest {}

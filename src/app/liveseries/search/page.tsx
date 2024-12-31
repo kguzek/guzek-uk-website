@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import InputBox from "@/components/forms/input-box";
 import { useTranslations } from "@/context/translation-context";
 import { SearchResults } from "./results";
-import { getLiveSeriesTitle } from "../layout";
+import { getLiveSeriesTitle } from "../layout-client";
 
 export default function Search() {
   const router = useRouter();

@@ -8,8 +8,9 @@ const MAX_TOKEN_REFRESH_TIME_S = 30; // seconds
 
 const useLocalUrl = process.env.NODE_ENV === "development" && USE_LOCAL_API_URL;
 
-export const API_BASE =
-  useLocalUrl && false ? "http://localhost:5017/" : "https://api.guzek.uk/";
+export const API_BASE = useLocalUrl
+  ? "http://localhost:5017/"
+  : "https://api.guzek.uk/";
 
 const API_BASE_AUTH = useLocalUrl
   ? "http://localhost:5019/"
