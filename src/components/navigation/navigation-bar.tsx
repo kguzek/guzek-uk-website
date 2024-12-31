@@ -1,173 +1,41 @@
-"use client";
-
-import { useState, MouseEventHandler } from "react";
-import Link from "next/link";
-import Logo from "@/media/logo";
+import { serverToApi } from "@/lib/backend-v2";
+import { NavBarItem, UserWidget } from "./navigation-bar-client";
 import { MenuItem } from "@/lib/types";
+import { getCurrentUser } from "@/providers/auth-provider";
+import Logo from "@/media/logo";
 import { PAGE_NAME } from "@/lib/util";
-import { useTranslations } from "@/context/translation-context";
-import "./navigation.css";
-import { usePathname } from "next/navigation";
-import { useAuth } from "@/context/auth-context";
 import { LanguageSelector } from "./language-selector";
-import { useWindowDimensions } from "@/hooks/window-dimensions";
 
-export default function NavigationBar({
-  menuItems,
-}: {
-  menuItems?: MenuItem[];
-}) {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const windowDimensions = useWindowDimensions();
-
-  // Create the array of nav bar page elements
-  const menuItemElements = menuItems?.map((item, index) => (
-    <li key={index}>
-      <NavBarItem item={item} setMenuOpen={setMenuOpen} />
-    </li>
-  ));
-
-  const displayStyle =
-    windowDimensions.width > 980
-      ? "desktop"
-      : windowDimensions.width > 550
-      ? "medium"
-      : "mobile";
-
-  const userWidget = (
-    <UserWidget displayStyle={displayStyle} setMenuOpen={setMenuOpen} />
-  );
-
-  // Waiting for the page to load on the client
-  if (windowDimensions.width === 0 || windowDimensions.height === 0)
-    return null;
-
+export async function NavBar() {
+  const result = await serverToApi<MenuItem[]>("pages");
+  const user = await getCurrentUser();
+  const menuItems = result.ok && result.hasBody ? result.data : [];
   return (
     <div className="ribbon">
-      <nav className="navigation">
+      <nav className="flex gap-10 px-4 py-2">
         <Logo size={80} />
         <h1>{PAGE_NAME}</h1>
-        <ul className={`${menuOpen ? "open" : "closed"} no-select nav-items `}>
-          {displayStyle === "mobile" && userWidget}
-          {menuItemElements ?? (
-            <div className="skeleton flex">
-              <p className="skeleton-text" style={{ width: "25vw" }}></p>
-            </div>
-          )}
-          <LanguageSelector />
-          {displayStyle === "desktop" && userWidget}
-        </ul>
-        {displayStyle === "medium" && userWidget}
-        <Hamburger menuOpen={menuOpen} onClick={() => setMenuOpen(!menuOpen)} />
+        <div className="ml-auto flex flex-row-reverse lg:flex-row">
+          {/* Hamburger */}
+          <label className="peer block cursor-pointer p-4 lg:hidden">
+            <input type="checkbox" className="peer hidden" />
+            <div className="mb-1 h-1 w-6 transform bg-primary transition-transform peer-checked:translate-y-2 peer-checked:rotate-45"></div>
+            <div className="mb-1 h-1 w-6 bg-primary opacity-100 transition-opacity peer-checked:opacity-0"></div>
+            <div className="h-1 w-6 transform bg-primary transition-transform peer-checked:-translate-y-2 peer-checked:-rotate-45"></div>
+          </label>
+          {/* Menu */}
+          <ul className="absolute right-0 top-20 z-10 w-full origin-top-right scale-0 transform select-none items-center rounded-lg border-2 border-solid border-background-soft bg-background shadow-lg transition-transform peer-has-[:checked]:scale-100 sm:w-[50%] lg:static lg:flex lg:w-full lg:transform-none lg:border-none lg:bg-transparent lg:shadow-none">
+            {menuItems.map((item, index) => (
+              <li className="p-4 text-center" key={index}>
+                <NavBarItem item={item} />
+              </li>
+            ))}
+            <LanguageSelector />
+          </ul>
+          <UserWidget user={user} />
+        </div>
       </nav>
       <hr />
     </div>
-  );
-}
-
-function NavBarItem({
-  item,
-  setMenuOpen,
-}: {
-  item: MenuItem;
-  setMenuOpen: Function;
-}) {
-  const pathname = usePathname();
-
-  // Handle edge case for index page ("/")
-  const isActive =
-    item.url === "/" ? pathname === "/" : pathname?.startsWith(item.url);
-  const onClick = () => setMenuOpen(false);
-  const className = "clickable nav-link" + (isActive ? " active" : "");
-  return item.localUrl ? (
-    <Link href={item.url} onClick={onClick} className={className}>
-      {item.title}
-    </Link>
-  ) : (
-    <a href={item.url} onClick={onClick} className={className}>
-      {item.title}
-    </a>
-  );
-}
-
-function UserWidget({
-  displayStyle,
-  setMenuOpen,
-}: {
-  displayStyle: string;
-  setMenuOpen: Function;
-}) {
-  const pathname = usePathname();
-  const { data } = useTranslations();
-  const { user } = useAuth();
-  //  add user.url
-  const imgUrl =
-    (user && Object.hasOwn(user, "url") && (user as any).url) ||
-    "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/default-avatar.png";
-  const active =
-    pathname != null && ["/profile", "/login"].includes(pathname)
-      ? "active"
-      : "";
-  return (
-    <Link
-      href={user ? "/profile" : "/login"}
-      className={`${active} clickable ${displayStyle} nav-link user-widget`}
-      onClick={() => setMenuOpen(false)}
-    >
-      <img alt="User avatar" className="user-avatar" src={imgUrl} />
-      <b className={"user-name"}>{user?.username || data.loginShort}</b>
-    </Link>
-  );
-}
-
-function Hamburger({
-  menuOpen,
-  onClick,
-}: {
-  menuOpen: boolean;
-  onClick: MouseEventHandler;
-}) {
-  return (
-    <div onClick={onClick} className="clickable hamburger">
-      <p className={menuOpen ? "fas fa-times" : "fas fa-bars"}></p>
-    </div>
-  );
-}
-
-interface Page {
-  link: string;
-  label: string;
-}
-
-export function MiniNavBar({
-  pathBase,
-  pages,
-}: {
-  pathBase: string;
-  pages: Page[];
-}) {
-  const pathname = usePathname();
-
-  const getClassName = (path: string) =>
-    (
-      path
-        ? pathname.startsWith(`/${pathBase}/` + path)
-        : [`/${pathBase}`, `/${pathBase}/`].includes(pathname)
-    )
-      ? " active"
-      : "";
-
-  return (
-    <nav className="flex mini-navbar serif">
-      {pages.map(({ link, label }, idx) => (
-        <Link
-          key={idx}
-          className={"clickable nav-link" + getClassName(link)}
-          href={`/${pathBase}/${link}`}
-        >
-          {label}
-        </Link>
-      ))}
-    </nav>
   );
 }

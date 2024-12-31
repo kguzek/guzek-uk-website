@@ -22,12 +22,12 @@ export type TryFetch = <T>(
 ) => Promise<T>;
 
 export interface User {
-  uuid: string;
+  uuid?: string;
   username: string;
   email: string;
   admin: boolean;
-  created_at: string;
-  modified_at: string;
+  created_at?: string;
+  modified_at?: string;
   serverUrl?: string;
 }
 

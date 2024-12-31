@@ -6,15 +6,11 @@ import { CarouselIndicator } from "@/components/carousel";
 import EpisodesList from "@/components/liveseries/episodes-list";
 import TvShowPreview from "@/components/liveseries/tv-show-preview";
 import { Episode, TvShowDetails } from "@/lib/types";
-import {
-  hasEpisodeAired,
-  scrollToElement,
-  setTitle,
-  useScroll,
-} from "@/lib/util";
+import { hasEpisodeAired, scrollToElement, setTitle } from "@/lib/util";
 import { useTranslations } from "@/context/translation-context";
 import { useLiveSeries } from "@/context/liveseries-context";
 import { getLiveSeriesTitle } from "./layout";
+import { useScroll } from "@/hooks/scroll";
 
 // Number of skeleton cards to display when loading liked show ids
 const SKELETON_CARDS_COUNT = 4;

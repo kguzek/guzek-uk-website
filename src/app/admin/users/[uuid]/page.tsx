@@ -3,7 +3,8 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import InputBox from "@/components/forms/input-box";
-import LoadingScreen, { LoadingButton } from "@/components/loading-screen";
+import { LoadingScreen } from "@/components/loading/screen";
+import { LoadingButton } from "@/components/loading/loading-button";
 import { ErrorComponent } from "@/components/error-component";
 import { ErrorCode, User } from "@/lib/types";
 import { getErrorMessage } from "@/lib/util";

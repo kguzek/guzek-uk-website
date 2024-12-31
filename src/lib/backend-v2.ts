@@ -1,12 +1,16 @@
+import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { cookies } from "next/headers";
+import { getSearchParams } from "./backend";
+import { User } from "./types";
 
-const USE_LOCAL_API_URL = false;
-// const USE_LOCAL_API_URL = true;
+// const USE_LOCAL_API_URL = false;
+const USE_LOCAL_API_URL = true;
 
 const useLocalUrl = process.env.NODE_ENV === "development" && USE_LOCAL_API_URL;
 
-export const API_BASE =
-  useLocalUrl && false ? "http://localhost:5017/" : "https://api.guzek.uk/";
+export const API_BASE = useLocalUrl
+  ? "http://localhost:5017/"
+  : "https://api.guzek.uk/";
 
 const API_BASE_AUTH = useLocalUrl
   ? "http://localhost:5019/"
@@ -53,22 +57,28 @@ export async function serverToApi<T>(
   path: string,
   {
     useAuth = true,
+    params,
     body,
     method,
   }: {
     useAuth?: boolean;
+    params?: Record<string, string>;
   } & (
     | { body: Record<string, any>; method: "POST" | "PUT" | "PATCH" }
     | { body?: never; method?: "GET" | "DELETE" }
-  ) = {}
+  ) = {},
 ) {
+  const cookieStore = await cookies();
   let res;
-  const options: RequestInit = { method };
+  const options: RequestInit = {
+    method,
+    next: { revalidate: !method || method === "GET" ? 120 : useAuth ? 0 : 5 },
+  };
   const headers: HeadersInit = {
     Accept: "*",
   };
   if (useAuth) {
-    const token = await getAccessToken();
+    const token = await getAccessToken(cookieStore);
     if (token) {
       headers.Authorization = `Bearer ${token}`;
     }
@@ -79,8 +89,16 @@ export async function serverToApi<T>(
     headers["Content-Type"] = "application/json";
   }
   options.headers = headers;
+  if (!params?.lang) {
+    const lang = cookieStore.get("lang")?.value;
+    if (lang) {
+      params = { ...params, lang };
+    }
+  }
+  const url = `${getUrlBase(path)}${path}${getSearchParams(params)}`;
+  console.debug("", options.method ?? "GET", url);
   try {
-    res = await fetch(`${getUrlBase(path)}${path}`, options);
+    res = await fetch(url, options);
   } catch (error) {
     console.error(error);
     return { failed: true, hasBody: false, ok: false, data: null } as const;
@@ -92,6 +110,7 @@ export async function serverToApi<T>(
     console.error(error);
     return { failed: false, hasBody: false, ok: false, data: null } as const;
   }
+  console.debug("...", res.status, res.statusText);
   if (res.ok) {
     return { failed: false, hasBody: true, ok: true, data } as const;
   }
@@ -104,33 +123,41 @@ export async function serverToApi<T>(
 }
 
 /** Gets the access token from cookies, refreshing it if needed. */
-export async function getAccessToken() {
-  const cookieStore = await cookies();
+export async function getAccessToken(
+  cookieStore: ReadonlyRequestCookies,
+): Promise<string | null> {
   const token = cookieStore.get("access_token")?.value;
   if (token) return token;
-  const refreshedSuccessfully = await refreshAccessToken();
-  if (!refreshedSuccessfully) return null;
-  return getAccessToken();
+  return (await refreshAccessToken()).token;
 }
 
 /** Refreshes the access token using the refresh token.
  *
- * @returns `true` if the access token was successfully refreshed, `false` otherwise.
+ * @returns an object containing the user & access token if refresh was successful, otherwise the fields are `null`.
  */
 export async function refreshAccessToken() {
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get("refresh_token")?.value;
-  if (!refreshToken) return false;
+  if (!refreshToken) return { token: null, user: null };
+  if (cookieStore.get("access_token")?.value) {
+    throw new Error(
+      "Refusing to refresh access token since it is still valid.",
+    );
+  }
   console.info("Refreshing access token...");
-  const result = await serverToApi<{ accessToken: string; expiresAt: number }>(
-    "auth/refresh",
-    { useAuth: false, body: { token: refreshToken }, method: "POST" }
-  );
-  console.log("result:", result);
-  return (
-    result.ok &&
+  const result = await serverToApi<{
+    accessToken: string;
+    expiresAt: number;
+    user: User;
+  }>("auth/refresh", {
+    useAuth: false,
+    body: { token: refreshToken },
+    method: "POST",
+  });
+  return result.ok &&
     result.hasBody &&
     typeof result.data.accessToken === "string" &&
     result.data.accessToken.length > 0
-  );
+    ? { token: result.data.accessToken, user: result.data.user }
+    : { token: null, user: null };
 }

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import InputBox from "@/components/forms/input-box";
-import LoadingScreen from "@/components/loading-screen";
+import { LoadingScreen } from "@/components/loading/screen";
 import { NumericValue } from "@/components/numeric-value";
 import SyntaxHighlighted from "@/components/syntax-highlighted";
 import { StateSetter } from "@/lib/types";

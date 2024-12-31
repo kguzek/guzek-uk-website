@@ -1,92 +1,19 @@
-"use client";
+import { PageTitle } from "@/components/page-title";
+import { getCurrentUser } from "@/providers/auth-provider";
+import { useTranslations } from "@/providers/translation-provider";
+import { ProfileForm } from "./profile-form";
+import { LogoutButton } from "./logout-button";
+import { PageSkeleton } from "@/components/pages/skeleton";
 
-import { MouseEvent, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { clearStoredLoginInfo } from "@/lib/backend";
-import { getErrorMessage, setTitle } from "@/lib/util";
-import InputBox from "@/components/forms/input-box";
-import { useTranslations } from "@/context/translation-context";
-import { useAuth } from "@/context/auth-context";
-import { useFetch } from "@/context/fetch-context";
-import { useModals } from "@/context/modal-context";
-import { LoadingButton } from "@/components/loading-screen";
+export default async function Profile() {
+  const user = await getCurrentUser();
+  const { data, userLanguage } = await useTranslations();
 
-function Profile() {
-  const [serverUrl, setServerUrl] = useState("");
-  const [loggingOut, setLoggingOut] = useState(false);
-  const [updating, setUpdating] = useState(false);
-  const router = useRouter();
-  const { data } = useTranslations();
-  const { user, logout, setUser } = useAuth();
-  const { fetchFromAPI } = useFetch();
-  const { setModalError, setModalInfo } = useModals();
+  if (!user) return <PageSkeleton />;
 
-  useEffect(() => {
-    setTitle(data.profile.title);
-  }, [data]);
-
-  async function handleLogOut(_evt: MouseEvent<HTMLButtonElement>) {
-    setLoggingOut(true);
-    let res;
-    try {
-      res = await fetchFromAPI(`auth/tokens`, { method: "DELETE" });
-    } catch {
-      setModalError(data.networkError);
-      setLoggingOut(false);
-      return;
-    }
-    setLoggingOut(false);
-    if (!res.ok) {
-      const json = await res.json();
-      setModalError(getErrorMessage(res, json, data));
-      return;
-    }
-    clearStoredLoginInfo();
-    logout();
-    router.push("/login");
-  }
-
-  useEffect(() => {
-    if (!user) {
-      return;
-    }
-    setServerUrl(user.serverUrl ?? "");
-  }, [user]);
-
-  if (!user) return null;
-
-  const isServerUrlValid = () =>
-    !updating &&
-    serverUrl &&
-    serverUrl !== "" &&
-    serverUrl !== (user.serverUrl ?? "") &&
-    serverUrl.match(/^https?:\/\/.+/);
-
-  async function handleUpdateServerUrl(evt: MouseEvent<HTMLButtonElement>) {
-    evt.preventDefault();
-    if (!user) return;
-    setUpdating(true);
-    const newServerUrl = serverUrl.endsWith("/") ? serverUrl : serverUrl + "/";
-    const res = await fetchFromAPI(`auth/users/${user.uuid}/details`, {
-      method: "PUT",
-      body: { serverUrl: newServerUrl },
-    });
-    const json = await res.json();
-    if (res.ok) {
-      setServerUrl(newServerUrl);
-      setModalInfo(data.profile.serverUrlUpdated(newServerUrl));
-      const newUser = { ...user, serverUrl: newServerUrl };
-      setUser(newUser);
-      localStorage.setItem("user", JSON.stringify(newUser));
-    } else {
-      setModalError(getErrorMessage(res, json, data));
-    }
-    setUpdating(false);
-  }
-
-  const userCreatedAt = new Date(user.created_at);
   return (
     <div className="text profile-page">
+      <PageTitle title={data.profile.title} />
       <h3>{data.profile.body}</h3>
       <p>
         {data.profile.formDetails.type}:{" "}
@@ -106,67 +33,28 @@ function Profile() {
         {data.profile.formDetails.email}:{" "}
         <span className="clickable genre">{user.email}</span>
       </p>
-      <form className="flex gap-10 profile-form">
-        <div style={{ width: "100%" }}>
-          <InputBox
-            label={data.profile.formDetails.serverUrl}
-            value={serverUrl}
-            setValue={setServerUrl}
-            required={false}
-            info={
-              <button
-                type="button"
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "inherit",
-                  cursor: "help",
-                }}
-                onClick={(evt) => {
-                  evt.preventDefault();
-                  setModalInfo(data.liveSeries.explanation);
-                }}
-              >
-                <i className="whats-this">{data.liveSeries.whatsThis}</i>
-              </button>
-            }
-          />
-        </div>
-        <button
-          type="submit"
-          className="btn"
-          disabled={!isServerUrlValid()}
-          onClick={handleUpdateServerUrl}
-        >
-          {data.admin.contentManager.formDetails.update}
-        </button>
-      </form>
+      <ProfileForm user={user} />
       <div>
-        <p>
-          <small>
-            UUID: <code className="clickable field">{user.uuid}</code>
-          </small>
-        </p>
-        <p>
-          <small>
-            {data.profile.formDetails.creationDate}:{" "}
-            <code className="clickable field">
-              {data.dateTimeFormat.format(userCreatedAt)}
-            </code>
-          </small>
-        </p>
-      </div>
-      <div className="centred">
-        {loggingOut ? (
-          <LoadingButton />
-        ) : (
-          <button className="btn btn-submit" onClick={handleLogOut}>
-            {data.profile.formDetails.logout}
-          </button>
+        {/* TODO: make uuid and created_at always available */}
+        {user.uuid && (
+          <p>
+            <small>
+              UUID: <code className="clickable field">{user.uuid}</code>
+            </small>
+          </p>
         )}
+        {user.created_at ? (
+          <p>
+            <small>
+              {data.profile.formDetails.creationDate}:{" "}
+              <code className="clickable field">
+                {data.dateTimeFormat.format(new Date(user.created_at))}
+              </code>
+            </small>
+          </p>
+        ) : null}
       </div>
+      <LogoutButton userLanguage={userLanguage} />
     </div>
   );
 }
-
-export default Profile;

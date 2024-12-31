@@ -1,6 +1,3 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import {
   getFetchFromAPI,
   clearStoredLoginInfo,
@@ -75,26 +72,6 @@ export function getDuration(milliseconds: number) {
   if (!days && !hours && seconds) formatted += ` ${seconds}s`;
   formatted = formatted.trim();
   return { formatted, days, hours, minutes, seconds, milliseconds };
-}
-
-export function useScroll(element: Element | null) {
-  const [scroll, setScroll] = useState(0);
-
-  useEffect(() => {
-    if (!element) return;
-    element.addEventListener("scroll", handleScroll, { passive: true });
-
-    return () => {
-      element.removeEventListener("scroll", handleScroll);
-    };
-  }, [element]);
-
-  function handleScroll(scrollEvent: Event) {
-    const elem = scrollEvent.target as Element | null;
-    setScroll(elem?.scrollLeft ?? 0);
-  }
-
-  return { scroll };
 }
 
 export function scrollToElement(

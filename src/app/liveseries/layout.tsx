@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, Suspense } from "react";
-import { MiniNavBar } from "@/components/navigation/navigation-bar";
+import { MiniNavBar } from "@/components/navigation/navigation-bar-client";
 import DownloadsWidget from "@/components/liveseries/downloads-widget";
 import { PageSkeleton } from "@/components/pages/skeleton";
 import { useTranslations } from "@/context/translation-context";

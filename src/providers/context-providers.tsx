@@ -7,7 +7,7 @@ import { ModalErrorProvider } from "@/context/modal/modal-error-context";
 import { ModalChoiceProvider } from "@/context/modal/modal-choice-context";
 import { ModalInfoProvider } from "@/context/modal/modal-info-context";
 
-export function AppProviders({ children }: { children: ReactNode }) {
+export function ContextProviders({ children }: { children: ReactNode }) {
   return (
     <TranslationProvider>
       <ModalInfoProvider>

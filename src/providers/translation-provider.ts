@@ -1,16 +1,13 @@
 import { cookies } from "next/headers";
-import { NextRequest } from "next/server";
 import { Language } from "@/lib/types";
 import { TRANSLATIONS } from "@/lib/translations";
 
 const DEFAULT_LANGUAGE = Language.EN;
 
-export async function useTranslations(req: NextRequest) {
+export async function useTranslations() {
   const cookieStore = await cookies();
   let language = DEFAULT_LANGUAGE;
-  let languageString =
-    cookieStore.get("lang")?.value ||
-    req.headers.get("accept-language")?.split(",")[0];
+  let languageString = cookieStore.get("lang")?.value;
   if (languageString && languageString in Language) {
     language = Language[languageString as keyof typeof Language];
   }

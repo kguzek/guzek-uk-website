@@ -1,18 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import Head from "next/head";
+import { PageTitle } from "@/components/page-title";
 import { ErrorCode } from "@/lib/types";
-import { PAGE_NAME, getTitle } from "@/lib/util";
+import { PAGE_NAME } from "@/lib/util";
 import { useTranslations } from "@/context/translation-context";
 
 export function ErrorComponent({ errorCode }: { errorCode: ErrorCode }) {
   const { data } = useTranslations();
   return (
     <div className="text">
-      <Head>
-        <title>{getTitle(`${errorCode} ${data.error[errorCode].title}`)}</title>
-      </Head>
+      <PageTitle title={`${errorCode} ${data.error[errorCode].title}`} />
       <h1>{errorCode}</h1>
       <p>{data.error[errorCode].body}</p>
       <div className="flex-column">

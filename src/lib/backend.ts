@@ -1,7 +1,7 @@
 import { AuthInfo as Auth } from "@/context/auth-context";
 
-const USE_LOCAL_API_URL = false;
-// const USE_LOCAL_API_URL = true;
+// const USE_LOCAL_API_URL = false;
+const USE_LOCAL_API_URL = true;
 const CACHE_NAME = "guzek-uk-cache";
 const TOKEN_PENDING = "TOKEN_PENDING";
 const MAX_TOKEN_REFRESH_TIME_S = 30; // seconds
@@ -40,7 +40,7 @@ export function clearStoredLoginInfo() {
 }
 
 export function getSearchParams(
-  params: Record<string, string> | URLSearchParams = {}
+  params: Record<string, string> | URLSearchParams = {},
 ) {
   const searchParams =
     params instanceof URLSearchParams ? params : new URLSearchParams(params);
@@ -128,7 +128,7 @@ async function refreshAccessToken(auth: Auth): Promise<null | string> {
     "auth/refresh",
     "POST",
     { body: { token: refreshToken } },
-    false
+    false,
   );
   console.info("Refreshing expired access token...");
   let res;
@@ -136,14 +136,14 @@ async function refreshAccessToken(auth: Auth): Promise<null | string> {
     res = await fetch(req);
   } catch {
     console.error(
-      "Could not fulfil request to refresh access token (API is probably offline)."
+      "Could not fulfil request to refresh access token (API is probably offline).",
     );
     localStorage.removeItem(TOKEN_PENDING);
     return null;
   }
   if (!res.ok) {
     console.error(
-      "Failed to refresh the access token (token probably invalid). Logging out."
+      "Failed to refresh the access token (token probably invalid). Logging out.",
     );
     clearStoredLoginInfo();
     localStorage.removeItem(TOKEN_PENDING);
@@ -184,13 +184,13 @@ async function createRequest(
     params?: Record<string, string> | URLSearchParams;
     body?: Record<string, any>;
   },
-  useAccessToken: boolean = true
+  useAccessToken: boolean = true,
 ) {
   const base = DECENTRALISED_ROUTES.find((route) => path.startsWith(route))
     ? getDecentralisedApiUrl(auth)
     : path.startsWith("auth/")
-    ? API_BASE_AUTH
-    : API_BASE;
+      ? API_BASE_AUTH
+      : API_BASE;
   const url = base + path + getSearchParams(params);
   const options: RequestInit = {
     method,
@@ -214,7 +214,7 @@ async function createRequest(
 
 export const getFetchFromAPI = (
   auth: Auth,
-  filterCaches: null | Promise<void>
+  filterCaches: null | Promise<void>,
 ) =>
   /** Performs an HTTPS request to the API using the provided values and the stored access token. */
   async function fetchFromAPI(
@@ -228,7 +228,7 @@ export const getFetchFromAPI = (
       params?: Record<string, string> | URLSearchParams;
       body?: Record<string, any>;
     },
-    useCache: boolean = false
+    useCache: boolean = false,
   ) {
     if (filterCaches) await filterCaches;
     const request = await createRequest(auth, path, method, { params, body });

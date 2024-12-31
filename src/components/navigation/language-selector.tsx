@@ -4,6 +4,7 @@ import { CSSProperties, useEffect, useRef, useState } from "react";
 import { TRANSLATIONS } from "@/lib/translations";
 import { useTranslations } from "@/context/translation-context";
 import { setLanguageCookie } from "@/lib/util";
+import { useRouter } from "next/navigation";
 // import { useTranslations } from "@/providers/translation-provider";
 // import { InferGetServerSidePropsType } from "next";
 // import { NextRequest } from "next/server";
@@ -23,6 +24,7 @@ export function LanguageSelector() {
   const { data, userLanguage, setLanguage } = useTranslations();
   const [markerStyle, setMarkerStyle] = useState<CSSProperties>({});
   const selectedButtonRef = useRef<HTMLButtonElement>(null);
+  const router = useRouter();
 
   function updateMarkerStyle() {
     const button = selectedButtonRef.current;
@@ -57,6 +59,7 @@ export function LanguageSelector() {
           onClick={() => {
             setLanguage(lang);
             setLanguageCookie(lang);
+            router.refresh();
           }}
           className={userLanguage === lang ? "" : "clickable"}
           ref={userLanguage === lang ? selectedButtonRef : null}

@@ -7,7 +7,7 @@ import { useParams } from "next/navigation";
 import { ErrorComponent } from "@/components/error-component";
 import { ErrorCode } from "@/lib/types";
 import { getAccessToken, getDecentralisedApiUrl } from "@/lib/backend";
-import LoadingScreen from "@/components/loading-screen";
+import { LoadingScreen } from "@/components/loading/screen";
 import { useTranslations } from "@/context/translation-context";
 import { useModals } from "@/context/modal-context";
 import { useAuth } from "@/context/auth-context";

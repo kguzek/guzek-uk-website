@@ -1,11 +1,11 @@
-import React from "react";
+"use client";
+
 import { ThreeDots } from "react-loader-spinner";
 import { useTranslations } from "@/context/translation-context";
+import { COLOR_PRIMARY } from "..";
 import "./loading-screen.css";
 
-const COLOR_PRIMARY = "var(--color-primary)";
-
-export default function LoadingScreen({
+export async function LoadingScreen({
   text,
   className = "loading-screen",
 }: {
@@ -13,19 +13,10 @@ export default function LoadingScreen({
   className?: string;
 }) {
   const { data } = useTranslations();
-
   return (
     <div className={className}>
       <h2 className="loading-text">{text ?? data.loading}</h2>
       <ThreeDots height={15} color={COLOR_PRIMARY} />
-    </div>
-  );
-}
-
-export function LoadingButton() {
-  return (
-    <div className={"flex-column"}>
-      <ThreeDots color={COLOR_PRIMARY} />
     </div>
   );
 }

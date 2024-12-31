@@ -13,7 +13,6 @@ import { getDuration, getTryFetch } from "@/lib/util";
 import { useTranslations } from "./translation-context";
 import { useModals } from "./modal-context";
 import { MenuItem, TryFetch } from "@/lib/types";
-import NavigationBar from "@/components/navigation/navigation-bar";
 
 /** When set to `true`, doesn't remove caches whose creation date is unknown. */
 const IGNORE_INVALID_RESPONSE_DATES = false;
@@ -168,11 +167,6 @@ export function FetchProvider({ children }: { children: ReactNode }) {
 
   return (
     <FetchContext.Provider value={fetchContext}>
-      <NavigationBar
-        menuItems={menuItems?.filter(
-          (item) => !item.adminOnly || authContext.user?.admin
-        )}
-      />
       {children}
     </FetchContext.Provider>
   );

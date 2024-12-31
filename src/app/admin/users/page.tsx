@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import LoadingScreen from "@/components/loading-screen";
+import { LoadingScreen } from "@/components/loading/screen";
 import { User } from "@/lib/types";
 import { getErrorMessage } from "@/lib/util";
 import { useTranslations } from "@/context/translation-context";
@@ -56,7 +56,7 @@ export default function Users() {
         <div className="cards flex-column gap-10">
           {users.map((user, idx) => (
             <div key={idx} className="clickable card-container no-overflow">
-              <Link href={user.uuid} className="card user flex gap-15">
+              <Link href={user.uuid!} className="card user flex gap-15">
                 <i
                   className={`fa-solid fa-user ${user.admin ? "admin" : ""}`}
                 ></i>

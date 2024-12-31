@@ -14,9 +14,7 @@
 }
 
 .navigation h1 {
-  width: min-content;
   white-space: nowrap;
-  margin-right: auto;
 }
 
 .nav-items {

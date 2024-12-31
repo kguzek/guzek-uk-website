@@ -1,7 +1,8 @@
 import { Metadata, Viewport } from "next";
 import { ReactNode } from "react";
+import { NavBar } from "@/components/navigation/navigation-bar";
 import { Footer } from "@/components/footer";
-import { AppProviders } from "@/providers/AppProviders";
+import { ContextProviders } from "@/providers/context-providers";
 import "./globals.css";
 import "./forms.css";
 
@@ -48,10 +49,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <title>Guzek UK</title>
       </head>
       <body>
-        <AppProviders>
+        <ContextProviders>
+          <NavBar />
           {children}
           <Footer />
-        </AppProviders>
+        </ContextProviders>
       </body>
     </html>
   );

@@ -3,7 +3,7 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import InputBox from "@/components/forms/input-box";
-import { LoadingButton } from "@/components/loading-screen";
+import { LoadingButton } from "@/components/loading/loading-button";
 import { getErrorMessage, getUserFromResponse } from "@/lib/util";
 import { useTranslations } from "@/context/translation-context";
 import { useAuth } from "@/context/auth-context";
