@@ -5,7 +5,7 @@ import Link from "next/link";
 import { CarouselIndicator } from "@/components/carousel";
 import EpisodesList from "@/components/liveseries/episodes-list";
 import TvShowPreview from "@/components/liveseries/tv-show-preview";
-import { Episode, TvShowDetails } from "@/lib/models";
+import { Episode, TvShowDetails } from "@/lib/types";
 import {
   hasEpisodeAired,
   scrollToElement,

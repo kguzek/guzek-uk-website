@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { FormEvent, useState } from "react";
 import Link from "next/link";
 import InputBox from "@/components/forms/input-box";
 import LoadingScreen, { LoadingButton } from "@/components/loading-screen";
@@ -15,15 +15,11 @@ export default function LogIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const { data } = useTranslations();
+  const router = useRouter();
   const { user, setUser } = useAuth();
   const { fetchFromAPI } = useFetch();
   const { setModalError } = useModals();
-
-  useEffect(() => {
-    if (user) router.replace("/profile");
-  }, [user]);
 
   async function handleLogin(evt: FormEvent<HTMLFormElement>) {
     evt.preventDefault();
@@ -33,11 +29,20 @@ export default function LogIn() {
       email,
       password,
     };
-    const res = await fetchFromAPI("auth/tokens", { method: "POST", body });
+    let res;
+    try {
+      res = await fetchFromAPI("auth/tokens", { method: "POST", body });
+    } catch (error) {
+      setModalError(data.networkError);
+      console.error(error);
+      setLoading(false);
+      return;
+    }
     const json = await res.json();
     setLoading(false);
     if (res.ok) {
       setUser(getUserFromResponse(json));
+      router.push("/profile");
     } else {
       setModalError(data.profile.invalidCredentials);
     }

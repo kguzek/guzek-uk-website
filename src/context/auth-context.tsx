@@ -1,7 +1,7 @@
 "use client";
 
 import { getCache } from "@/lib/backend";
-import { StateSetter, User } from "@/lib/models";
+import { StateSetter, User } from "@/lib/types";
 import {
   createContext,
   ReactNode,

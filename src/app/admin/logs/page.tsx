@@ -7,7 +7,7 @@ import InputBox from "@/components/forms/input-box";
 import LoadingScreen from "@/components/loading-screen";
 import { NumericValue } from "@/components/numeric-value";
 import SyntaxHighlighted from "@/components/syntax-highlighted";
-import { StateSetter } from "@/lib/models";
+import { StateSetter } from "@/lib/types";
 import { TRANSLATIONS } from "@/lib/translations";
 import { scrollToElement } from "@/lib/util";
 import { useFetch } from "@/context/fetch-context";

@@ -4,7 +4,7 @@ import React, { FormEvent, useEffect, useState } from "react";
 import InputArea from "@/components/forms/input-area";
 import InputBox from "@/components/forms/input-box";
 import LoadingScreen, { LoadingButton } from "@/components/loading-screen";
-import { DEFAULT_PAGE_DATA, MenuItem } from "@/lib/models";
+import { DEFAULT_PAGE_DATA, MenuItem } from "@/lib/types";
 import { getErrorMessage } from "@/lib/util";
 import { useTranslations } from "@/context/translation-context";
 import { useModals } from "@/context/modal-context";

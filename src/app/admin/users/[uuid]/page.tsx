@@ -4,8 +4,8 @@ import { FormEvent, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import InputBox from "@/components/forms/input-box";
 import LoadingScreen, { LoadingButton } from "@/components/loading-screen";
-import ErrorPage from "@/components/error-page";
-import { ErrorCode, User } from "@/lib/models";
+import { ErrorComponent } from "@/components/error-component";
+import { ErrorCode, User } from "@/lib/types";
 import { getErrorMessage } from "@/lib/util";
 import { useTranslations } from "@/context/translation-context";
 import { useModals } from "@/context/modal-context";
@@ -35,7 +35,7 @@ export default function UserPage() {
       </div>
     );
 
-  if (!user) return <ErrorPage errorCode={ErrorCode.NotFound} />;
+  if (!user) return <ErrorComponent errorCode={ErrorCode.NotFound} />;
 
   return (
     <UserEditor

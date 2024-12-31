@@ -6,17 +6,10 @@ const CACHE_NAME = "guzek-uk-cache";
 const TOKEN_PENDING = "TOKEN_PENDING";
 const MAX_TOKEN_REFRESH_TIME_S = 30; // seconds
 
-interface RequestOptions {
-  method: string;
-  headers: { Authorization?: string; "Content-Type"?: string };
-  body?: string;
-}
-
 const useLocalUrl = process.env.NODE_ENV === "development" && USE_LOCAL_API_URL;
 
-export const API_BASE = useLocalUrl
-  ? "http://localhost:5017/"
-  : "https://api.guzek.uk/";
+export const API_BASE =
+  useLocalUrl && false ? "http://localhost:5017/" : "https://api.guzek.uk/";
 
 const API_BASE_AUTH = useLocalUrl
   ? "http://localhost:5019/"
@@ -128,6 +121,8 @@ async function refreshAccessToken(auth: Auth): Promise<null | string> {
   tokenPendingInThisTab = true;
   const refreshToken = localStorage.getItem("refreshToken") ?? "";
   if (!refreshToken) return null;
+  // TODO: remove this
+  return null;
   const req = await createRequest(
     auth,
     "auth/refresh",
@@ -170,6 +165,10 @@ export function getDecentralisedApiUrl(auth: Auth) {
   return API_BASE_LIVESERIES_LOCAL;
 }
 
+const isAuthRequest = (method: string, path: string) =>
+  ["POST", "DELETE"].includes(method) &&
+  ["auth/users", "auth/tokens", "auth/refresh"].includes(path);
+
 /** Instantiates a `Request` object with the attributes provided.
  *  Automatically applies the user access token to the `Authorization` header
  *  as well as determining the `Content-Type` and URL search query parameters.
@@ -193,23 +192,24 @@ async function createRequest(
     ? API_BASE_AUTH
     : API_BASE;
   const url = base + path + getSearchParams(params);
-  const options: RequestOptions = {
+  const options: RequestInit = {
     method,
-    headers: {},
+    credentials: isAuthRequest(method, path) ? "include" : "omit",
   };
+  const headers: HeadersInit = {};
   // Set the request payload (if present)
   if (body) {
-    options.headers["Content-Type"] = "application/json";
+    headers["Content-Type"] = "application/json";
     options.body = JSON.stringify(body);
   }
   // Set the authorisation headers
   if (useAccessToken) {
     const accessToken = await getAccessToken(auth);
     if (accessToken) {
-      options.headers["Authorization"] = `Bearer ${accessToken}`;
+      headers["Authorization"] = `Bearer ${accessToken}`;
     }
   }
-  return new Request(url, options);
+  return new Request(url, { ...options, headers });
 }
 
 export const getFetchFromAPI = (

@@ -2,8 +2,8 @@
 
 import { ReactNode } from "react";
 import { MiniNavBar } from "@/components/navigation/navigation-bar";
-import ErrorPage from "@/components/error-page";
-import { ErrorCode, StateSetter, User } from "@/lib/models";
+import { ErrorComponent } from "@/components/error-component";
+import { ErrorCode, StateSetter, User } from "@/lib/types";
 import { useTranslations } from "@/context/translation-context";
 import { AdminProvider } from "@/context/admin-context";
 import { useAuth } from "@/context/auth-context";
@@ -28,7 +28,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   }
 
   if (!user?.admin) {
-    return <ErrorPage errorCode={ErrorCode.Forbidden} />;
+    return <ErrorComponent errorCode={ErrorCode.Forbidden} />;
   }
 
   return (

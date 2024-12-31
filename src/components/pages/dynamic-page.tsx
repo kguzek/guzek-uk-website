@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import ErrorPage from "@/components/error-page";
+import { ErrorComponent } from "@/components/error-component";
 import { PageSkeleton } from "./skeleton";
 import {
   DEFAULT_PAGE_DATA,
   MenuItem,
   PageContent,
   ErrorCode,
-} from "@/lib/models";
+} from "@/lib/types";
 import { setTitle } from "@/lib/util";
 import { useFetch } from "@/context/fetch-context";
 import { useTranslations } from "@/context/translation-context";
@@ -81,11 +81,9 @@ export function DynamicPageLoader({ page }: { page: string }) {
       </div>
     );
   }
-  console.log(page, menuItems);
-
   const currentPage =
     page && menuItems.find((item) => item.shouldFetch && item.url === page);
 
-  if (!currentPage) return <ErrorPage errorCode={ErrorCode.NotFound} />;
+  if (!currentPage) return <ErrorComponent errorCode={ErrorCode.NotFound} />;
   return <DynamicPage pageData={currentPage} />;
 }

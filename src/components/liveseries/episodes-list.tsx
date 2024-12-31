@@ -7,7 +7,7 @@ import {
   TvShowDetails,
   DownloadedEpisode,
   DownloadStatus,
-} from "@/lib/models";
+} from "@/lib/types";
 import {
   getEpisodeAirDate,
   hasEpisodeAired,

@@ -16,7 +16,7 @@ import {
   StateSetter,
   UserShows,
   WatchedEpisodes,
-} from "@/lib/models";
+} from "@/lib/types";
 import { fetchFromEpisodate } from "@/lib/episodate";
 import { compareEpisodes, getErrorMessage } from "@/lib/util";
 import { getAccessToken } from "@/lib/backend";
@@ -173,11 +173,13 @@ export function LiveSeriesProvider({ children }: { children: ReactNode }) {
         }
       } else {
         setModalError(getErrorMessage(res, json, data));
+        // TODO: erm why do I have router.push(pathname) here?
         router.push(pathname);
         onError();
       }
     } catch (error) {
       console.error(error);
+      // TODO: and here...
       router.push(pathname);
       onError();
     }

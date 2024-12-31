@@ -1,3 +1,4 @@
+import { NextMiddleware, NextRequest } from "next/server";
 import { Dispatch, SetStateAction } from "react";
 
 export interface PageContent {
@@ -129,3 +130,13 @@ export const CAROUSEL_INDICATOR_FULL_WIDTH = 140;
 export const DEFAULT_PAGE_DATA: PageContent = {
   content: "Oops! This page hasn't been implemented yet.",
 };
+
+export type CustomMiddleware = (
+  req: CustomRequest
+) => ReturnType<NextMiddleware>;
+
+export type MiddlewareFactory = (
+  middleware: CustomMiddleware
+) => CustomMiddleware;
+
+export interface CustomRequest extends NextRequest {}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Language } from "@/lib/models";
+import { Language } from "@/lib/types";
 import { Translation, TRANSLATIONS } from "@/lib/translations";
 import {
   createContext,

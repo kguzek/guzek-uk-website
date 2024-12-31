@@ -4,8 +4,8 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
-import ErrorPage from "@/components/error-page";
-import { ErrorCode } from "@/lib/models";
+import { ErrorComponent } from "@/components/error-component";
+import { ErrorCode } from "@/lib/types";
 import { getAccessToken, getDecentralisedApiUrl } from "@/lib/backend";
 import LoadingScreen from "@/components/loading-screen";
 import { useTranslations } from "@/context/translation-context";
@@ -52,7 +52,7 @@ export default function Watch() {
     setAccessToken(token);
   }
 
-  const errorPage = <ErrorPage errorCode={ErrorCode.NotFound} />;
+  const errorPage = <ErrorComponent errorCode={ErrorCode.NotFound} />;
 
   if (!params) return errorPage;
   const { showName, season, episode } = params;
@@ -180,7 +180,7 @@ export default function Watch() {
   }
 
   if (!accessToken || !authContext.user) {
-    return <ErrorPage errorCode={ErrorCode.Unauthorized} />;
+    return <ErrorComponent errorCode={ErrorCode.Unauthorized} />;
   }
 
   const path = `${showNameEncoded}/${season}/${episode}?access_token=${accessToken}`;

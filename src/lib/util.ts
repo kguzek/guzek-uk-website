@@ -6,8 +6,9 @@ import {
   clearStoredLoginInfo,
   updateAccessToken,
 } from "./backend";
-import { Episode, User, DownloadedEpisode, TryFetch } from "./models";
+import { Episode, User, DownloadedEpisode, TryFetch, Language } from "./types";
 import { Translation } from "./translations";
+import Cookies from "universal-cookie";
 
 export const PAGE_NAME = "Guzek UK";
 
@@ -21,8 +22,10 @@ const USER_REQUIRED_PROPERTIES = [
   "modified_at",
 ];
 
+export const getTitle = (title: string) => `${title} | ${PAGE_NAME}`;
+
 export const setTitle = (title: string) =>
-  (document.title = `${title} | ${PAGE_NAME}`);
+  void (document.title = getTitle(title));
 
 export const getTryFetch = (
   fetchFromAPI: ReturnType<typeof getFetchFromAPI>,
@@ -143,7 +146,7 @@ export const getErrorMessage = (
   json: any,
   data: Translation
 ): string =>
-  (json[`${res.status} ${res.statusText || STATUS_CODES[res.status]}`] ??
+  (json[`${res.status} ${STATUS_CODES[res.status] || res.statusText}`] ??
     JSON.stringify(json)) ||
   data.unknownError;
 
@@ -210,3 +213,18 @@ type EpisodeLike = Pick<DownloadedEpisode, "showName" | "season" | "episode">;
 /** Returns true if `a` and `b` reference the same episode. */
 export const compareEpisodes = (a: EpisodeLike, b: EpisodeLike) =>
   a.showName === b.showName && a.season === b.season && a.episode === b.episode;
+
+export function setLanguageCookie(langString: string) {
+  if (!(langString in Language)) {
+    throw new Error("Invalid language name.");
+  }
+  const language = Language[langString as keyof typeof Language];
+  const cookies = new Cookies();
+  cookies.set("lang", langString, {
+    httpOnly: false,
+    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+    path: "/",
+    sameSite: "lax",
+  });
+  return language;
+}

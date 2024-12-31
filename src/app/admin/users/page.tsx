@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import LoadingScreen from "@/components/loading-screen";
-import { User } from "@/lib/models";
+import { User } from "@/lib/types";
 import { getErrorMessage } from "@/lib/util";
 import { useTranslations } from "@/context/translation-context";
 import { useModals } from "@/context/modal-context";

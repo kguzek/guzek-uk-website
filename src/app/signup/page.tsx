@@ -17,15 +17,11 @@ export default function SignUp() {
   const [repeatPassword, setRepeatPassword] = useState("");
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
-  const { data } = useTranslations();
   const router = useRouter();
-  const { user, setUser } = useAuth();
+  const { data } = useTranslations();
+  const { setUser } = useAuth();
   const { fetchFromAPI } = useFetch();
   const { setModalError } = useModals();
-
-  useEffect(() => {
-    if (user) router.replace("/profile");
-  }, [user]);
 
   useEffect(() => {
     setModalError();
@@ -49,17 +45,21 @@ export default function SignUp() {
       email,
       password,
     };
+    let res;
     try {
-      const res = await fetchFromAPI("auth/users", { method: "POST", body });
-      const json = await res.json();
-      if (res.ok) {
-        setUser(getUserFromResponse(json));
-      } else {
-        setModalError(getErrorMessage(res, json, data));
-      }
+      res = await fetchFromAPI("auth/users", { method: "POST", body });
     } catch (error) {
       console.error(error);
       setModalError(data.networkError);
+      setLoading(false);
+      return;
+    }
+    const json = await res.json();
+    if (res.ok) {
+      setUser(getUserFromResponse(json));
+      router.push("/profile");
+    } else {
+      setModalError(getErrorMessage(res, json, data));
     }
     setLoading(false);
   }

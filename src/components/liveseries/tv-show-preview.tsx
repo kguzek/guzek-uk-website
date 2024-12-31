@@ -2,7 +2,7 @@
 
 import React, { MouseEvent, useState } from "react";
 import Link from "next/link";
-import { TvShowDetailsShort } from "@/lib/models";
+import { TvShowDetailsShort } from "@/lib/types";
 import TvShowPreviewSkeleton from "./tv-show-preview-skeleton";
 import { useTranslations } from "@/context/translation-context";
 import { useFetch } from "@/context/fetch-context";

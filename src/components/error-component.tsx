@@ -1,20 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
 import Link from "next/link";
-import { ErrorCode } from "@/lib/models";
-import { PAGE_NAME, setTitle } from "@/lib/util";
+import Head from "next/head";
+import { ErrorCode } from "@/lib/types";
+import { PAGE_NAME, getTitle } from "@/lib/util";
 import { useTranslations } from "@/context/translation-context";
 
-export default function ErrorPage({ errorCode }: { errorCode: ErrorCode }) {
+export function ErrorComponent({ errorCode }: { errorCode: ErrorCode }) {
   const { data } = useTranslations();
-
-  useEffect(() => {
-    setTitle(`${errorCode} ${data.error[errorCode].title}`);
-  }, [data]);
-
   return (
     <div className="text">
+      <Head>
+        <title>{getTitle(`${errorCode} ${data.error[errorCode].title}`)}</title>
+      </Head>
       <h1>{errorCode}</h1>
       <p>{data.error[errorCode].body}</p>
       <div className="flex-column">

@@ -9,12 +9,14 @@ import { useTranslations } from "@/context/translation-context";
 import { useAuth } from "@/context/auth-context";
 import { useFetch } from "@/context/fetch-context";
 import { useModals } from "@/context/modal-context";
+import { LoadingButton } from "@/components/loading-screen";
 
 function Profile() {
   const [serverUrl, setServerUrl] = useState("");
+  const [loggingOut, setLoggingOut] = useState(false);
   const [updating, setUpdating] = useState(false);
-  const { data } = useTranslations();
   const router = useRouter();
+  const { data } = useTranslations();
   const { user, logout, setUser } = useAuth();
   const { fetchFromAPI } = useFetch();
   const { setModalError, setModalInfo } = useModals();
@@ -24,15 +26,28 @@ function Profile() {
   }, [data]);
 
   async function handleLogOut(_evt: MouseEvent<HTMLButtonElement>) {
-    const token = localStorage.getItem("refreshToken");
-    await fetchFromAPI(`auth/tokens/${token}`, { method: "DELETE" });
+    setLoggingOut(true);
+    let res;
+    try {
+      res = await fetchFromAPI(`auth/tokens`, { method: "DELETE" });
+    } catch {
+      setModalError(data.networkError);
+      setLoggingOut(false);
+      return;
+    }
+    setLoggingOut(false);
+    if (!res.ok) {
+      const json = await res.json();
+      setModalError(getErrorMessage(res, json, data));
+      return;
+    }
     clearStoredLoginInfo();
     logout();
+    router.push("/login");
   }
 
   useEffect(() => {
     if (!user) {
-      router.replace("/login");
       return;
     }
     setServerUrl(user.serverUrl ?? "");
@@ -142,9 +157,13 @@ function Profile() {
         </p>
       </div>
       <div className="centred">
-        <button className="btn btn-submit" onClick={handleLogOut}>
-          {data.profile.formDetails.logout}
-        </button>
+        {loggingOut ? (
+          <LoadingButton />
+        ) : (
+          <button className="btn btn-submit" onClick={handleLogOut}>
+            {data.profile.formDetails.logout}
+          </button>
+        )}
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { TvShowList } from "@/lib/models";
+import { TvShowList } from "@/lib/types";
 import Paginator from "@/components/pagination/paginator";
 import { NumericValue } from "@/components/numeric-value";
 import TvShowPreview from "./tv-show-preview";

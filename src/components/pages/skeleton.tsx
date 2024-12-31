@@ -1,3 +1,6 @@
+// TODO: reorganise the styles
+import "@/app/liveseries/liveseries.css";
+
 export function PageSkeleton() {
   return (
     <div className="skeleton">

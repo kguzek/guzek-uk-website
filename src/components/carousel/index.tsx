@@ -1,4 +1,4 @@
-import { CAROUSEL_INDICATOR_FULL_WIDTH } from "@/lib/models";
+import { CAROUSEL_INDICATOR_FULL_WIDTH } from "@/lib/types";
 import { scrollToElement, useScroll } from "@/lib/util";
 import "./carousel.css";
 

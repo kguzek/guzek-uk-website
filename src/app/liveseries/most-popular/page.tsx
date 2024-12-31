@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import TvShowPreviewList from "@/components/liveseries/tv-show-preview-list";
-import { TvShowList } from "@/lib/models";
+import { TvShowList } from "@/lib/types";
 import { setTitle } from "@/lib/util";
 import { useTranslations } from "@/context/translation-context";
 import { useLiveSeries } from "@/context/liveseries-context";

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { DownloadedEpisode, DownloadStatus } from "@/lib/models";
+import { DownloadedEpisode, DownloadStatus } from "@/lib/types";
 import { bytesToReadable, getDuration } from "@/lib/util";
 import { useModals } from "@/context/modal-context";
 import { useTranslations } from "@/context/translation-context";

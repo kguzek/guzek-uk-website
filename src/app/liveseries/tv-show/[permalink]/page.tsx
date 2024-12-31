@@ -4,14 +4,14 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Carousel from "@/components/carousel";
 import EpisodesList from "@/components/liveseries/episodes-list";
-import { Episode as EpisodeType, ErrorCode, TvShowDetails } from "@/lib/models";
+import { Episode as EpisodeType, ErrorCode, TvShowDetails } from "@/lib/types";
 import {
   getEpisodeAirDate,
   hasEpisodeAired,
   isInvalidDate,
   setTitle,
 } from "@/lib/util";
-import ErrorPage from "@/components/error-page";
+import { ErrorComponent } from "@/components/error-component";
 import TvShowSkeleton from "@/components/liveseries/tv-show-skeleton";
 import InputBox from "@/components/forms/input-box";
 import { useTranslations } from "@/context/translation-context";
@@ -146,7 +146,7 @@ export default function TvShow() {
     tvShowDetails === undefined ||
     (Array.isArray(tvShowDetails) && tvShowDetails.length === 0)
   ) {
-    return <ErrorPage errorCode={ErrorCode.NotFound} />;
+    return <ErrorComponent errorCode={ErrorCode.NotFound} />;
   }
 
   if (!tvShowDetails) return <TvShowSkeleton />;

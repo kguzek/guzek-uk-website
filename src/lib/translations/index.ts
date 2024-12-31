@@ -4,7 +4,7 @@ import {
   ErrorPageContent,
   Language,
   DownloadedEpisode,
-} from "../models";
+} from "../types";
 import { ENGLISH } from "./english";
 import { POLISH } from "./polish";
 

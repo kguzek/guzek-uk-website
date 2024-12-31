@@ -1,33 +1,24 @@
 "use client";
 
-import React, {
-  useState,
-  useEffect,
-  MouseEventHandler,
-  useRef,
-  CSSProperties,
-  MouseEvent,
-} from "react";
+import { useState, MouseEventHandler } from "react";
 import Link from "next/link";
 import Logo from "@/media/logo";
-import { TRANSLATIONS } from "@/lib/translations";
-import { Language, MenuItem } from "@/lib/models";
+import { MenuItem } from "@/lib/types";
 import { PAGE_NAME } from "@/lib/util";
 import { useTranslations } from "@/context/translation-context";
 import "./navigation.css";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
+import { LanguageSelector } from "./language-selector";
+import { useWindowDimensions } from "@/hooks/window-dimensions";
 
 export default function NavigationBar({
-  selectedLanguage,
   menuItems,
 }: {
-  selectedLanguage: Language;
   menuItems?: MenuItem[];
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const windowDimensions = useWindowDimensions();
-  const { setLanguage } = useTranslations();
 
   // Create the array of nav bar page elements
   const menuItemElements = menuItems?.map((item, index) => (
@@ -47,20 +38,6 @@ export default function NavigationBar({
     <UserWidget displayStyle={displayStyle} setMenuOpen={setMenuOpen} />
   );
 
-  /** Event handler for when the user selects one of the lanugage options. */
-  function changeLang(evt: MouseEvent<HTMLButtonElement>) {
-    evt.preventDefault();
-    // Get the button text and remove whitespaces as well as Non-Breaking Spaces (&nbsp;)
-    const button = evt.target as HTMLButtonElement;
-    const elemText = button.textContent || button.innerText;
-    const lang = elemText.replace(/[\s\u00A0]/, "");
-    try {
-      setLanguage(lang);
-    } catch (error) {
-      console.error(error as Error);
-    }
-  }
-
   // Waiting for the page to load on the client
   if (windowDimensions.width === 0 || windowDimensions.height === 0)
     return null;
@@ -77,10 +54,7 @@ export default function NavigationBar({
               <p className="skeleton-text" style={{ width: "25vw" }}></p>
             </div>
           )}
-          <LangSelector
-            selectedLanguage={selectedLanguage}
-            changeLang={changeLang}
-          />
+          <LanguageSelector />
           {displayStyle === "desktop" && userWidget}
         </ul>
         {displayStyle === "medium" && userWidget}
@@ -113,61 +87,6 @@ function NavBarItem({
     <a href={item.url} onClick={onClick} className={className}>
       {item.title}
     </a>
-  );
-}
-
-function LangSelector({
-  selectedLanguage,
-  changeLang,
-}: {
-  selectedLanguage: Language;
-  changeLang: MouseEventHandler<HTMLButtonElement>;
-}) {
-  const { data } = useTranslations();
-
-  const [markerStyle, setMarkerStyle] = useState<CSSProperties>({});
-  const initialSelectedRef = useRef<HTMLButtonElement>(null);
-
-  const updateMarkerStyle = (button: HTMLButtonElement | null) =>
-    setMarkerStyle({
-      width: button?.offsetWidth,
-      height: button?.offsetHeight,
-      left: button?.offsetLeft,
-      top: button?.offsetTop,
-    });
-
-  useEffect(() => {
-    const updateStyle = () => updateMarkerStyle(initialSelectedRef.current);
-    updateStyle();
-    window.addEventListener("resize", updateStyle);
-    window.addEventListener("load", updateStyle);
-
-    return () => {
-      window.removeEventListener("resize", updateStyle);
-      window.removeEventListener("load", updateStyle);
-    };
-  }, [initialSelectedRef]);
-
-  function onChangeLang(event: React.MouseEvent<HTMLButtonElement>) {
-    changeLang(event);
-    updateMarkerStyle(event.currentTarget);
-  }
-
-  return (
-    <div className="centred lang-selector">
-      <div className="lang-selector-marker" style={markerStyle}></div>
-      {Object.keys(TRANSLATIONS).map((lang) => (
-        <button
-          key={lang}
-          onClick={onChangeLang}
-          className={selectedLanguage === lang ? "" : "clickable"}
-          ref={selectedLanguage === lang ? initialSelectedRef : null}
-        >
-          {lang}
-        </button>
-      ))}
-      <small>{data.language}</small>
-    </div>
   );
 }
 
@@ -213,28 +132,6 @@ function Hamburger({
       <p className={menuOpen ? "fas fa-times" : "fas fa-bars"}></p>
     </div>
   );
-}
-
-function useWindowDimensions() {
-  function getWindowDimensions() {
-    return { width: window.innerWidth, height: window.innerHeight };
-  }
-
-  const [windowDimensions, setWindowDimensions] = useState({
-    width: 0,
-    height: 0,
-  });
-
-  useEffect(() => {
-    function handleResize() {
-      setWindowDimensions(getWindowDimensions());
-    }
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  return windowDimensions;
 }
 
 interface Page {
