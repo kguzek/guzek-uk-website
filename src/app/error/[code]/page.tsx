@@ -2,10 +2,11 @@
 
 import { ErrorComponent } from "@/components/error-component";
 import { ErrorCode } from "@/lib/types";
-export default function ErrorPage({
-  params: { code: errorCode },
+export default async function ErrorPage({
+  params,
 }: {
-  params: { code: ErrorCode };
+  params: Promise<{ code: ErrorCode }>;
 }) {
+  const { code: errorCode } = await params;
   return <ErrorComponent errorCode={errorCode} />;
 }
