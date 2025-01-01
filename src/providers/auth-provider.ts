@@ -4,6 +4,7 @@ import type { User } from "@/lib/types";
 
 export async function getCurrentUser() {
   const cookieStore = await cookies();
+  // console.log("Cookies:", cookieStore.getAll());
   const value = cookieStore.get("user")?.value;
   if (!value) {
     const { user } = await refreshAccessToken();
