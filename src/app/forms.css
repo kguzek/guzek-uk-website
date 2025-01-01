@@ -1,0 +1,125 @@
+.form-login {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  min-width: 300px;
+  margin: auto;
+  align-items: stretch;
+}
+
+.form-login > div {
+  display: flex;
+  align-items: center;
+}
+
+@media screen and (max-width: 750px) {
+  .form-login {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+.form-login input {
+  font-family: unset;
+  height: 1.5rem;
+}
+
+.form-editor > label,
+.form-checkboxes {
+  width: 60%;
+}
+
+.profile-form .btn {
+  align-self: flex-end;
+}
+
+@media screen and (max-width: 750px) {
+  .form-editor > label,
+  .form-checkboxes {
+    width: 100%;
+  }
+
+  .profile-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .profile-form .btn {
+    align-self: unset;
+  }
+}
+
+.form-checkboxes {
+  gap: 10px 15px;
+}
+
+.form-checkboxes label:has(input:checked) {
+  color: var(--color-primary-strong);
+}
+
+.text-editor {
+  color: var(--color-primary);
+}
+
+.text-editor a {
+  color: var(--color-primary-strong);
+}
+
+.text-editor > div {
+  background-color: var(--color-background-strong);
+}
+
+.text-editor > div > div:first-child {
+  background-color: var(--color-primary);
+  color: var(--color-background-strong);
+  margin: 0;
+  padding: 10px 10px 5px;
+}
+
+.btn {
+  text-align: center;
+  color: var(--color-primary-strong);
+  border: 1px solid var(--color-primary-strong);
+  border-radius: 0;
+  min-width: 250px;
+  background-color: var(--color-accent);
+  padding: 10px;
+}
+
+.btn-submit {
+  margin-top: 1.5rem;
+}
+
+.input-box {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  gap: 5px;
+}
+
+.input-box :is(input, select) {
+  color: var(--color-background);
+  margin-top: 3px;
+  font-size: 1rem;
+  background-color: var(--color-primary-strong);
+}
+
+.input-checkbox {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  gap: 0.25rem;
+  border: 1px solid var(--color-primary-strong);
+  border-radius: 4px;
+  padding: 0px 0.5rem;
+}
+
+.input-checkbox input {
+  accent-color: var(--color-accent);
+}
+
+.required-asterisk {
+  color: red;
+  font-weight: bolder;
+}
