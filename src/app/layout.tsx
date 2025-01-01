@@ -7,6 +7,7 @@ import "./globals.css";
 import "./forms.css";
 
 export const metadata: Metadata = {
+  title: "Guzek UK",
   description:
     "The portfiolio website of Konrad Guzek, a Polish software developer from the UK.",
   keywords: [

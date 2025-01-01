@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { scrollToElement } from "@/lib/util";
-import { CarouselIndicator } from "@/components/carousel";
+import { CarouselArrow, CarouselIndicator } from "@/components/carousel";
 import { TvShowPreview } from "@/components/liveseries/tv-show-preview";
 import { useScroll } from "@/hooks/scroll";
 import type { LikedShows } from "@/lib/types";
@@ -79,42 +79,37 @@ export function LikedShowsCarousel({
     scrollToCard(card, "start");
   }
 
-  function getScrollerClassName(direction: "left" | "right") {
-    const { firstCard, lastCard, totalCards } = getDisplayedCards();
-    const visible =
-      direction === "left" ? firstCard > 1 : lastCard < totalCards;
-    return `${direction} fa-arrow-${direction} ${visible ? "" : "hidden"}`;
-  }
+  // TODO: fix carousel arrows/scrollers
+  // function getScrollerClassName(direction: "left" | "right") {
+  //   const { firstCard, lastCard, totalCards } = getDisplayedCards();
+  //   const visible =
+  //     direction === "left" ? firstCard > 1 : lastCard < totalCards;
+  //   return `${direction} fa-arrow-${direction} ${visible ? "" : "hidden"}`;
+  // }
 
   const toMap = likedShowIds ?? Array<number>(SKELETON_CARDS_COUNT).fill(0);
   return (
-    <div className="flex flex-col">
-      <div className="flex items-center">
-        <i
-          className={`carousel-scroller fas ${getScrollerClassName("left")}`}
-          onClick={previousImage}
-        ></i>
-        <ul ref={carouselRef} className="scroll-x flex gap-4">
-          {toMap.map((showId, idx) => (
-            <li key={`home-preview ${showId} ${idx}`}>
-              <TvShowPreview
-                idx={idx}
-                showDetails={likedShowIds ? likedShows[showId] : undefined}
-              />
-            </li>
-          ))}
-        </ul>
-        <i
-          className={`carousel-scroller fas ${getScrollerClassName("right")}`}
-          onClick={nextImage}
-        ></i>
-      </div>
+    <div className="flex flex-wrap items-center justify-center gap-2">
+      <CarouselArrow left onClick={previousImage} className="order-3" />
+      <ul ref={carouselRef} className="scroll-x flex gap-4">
+        {toMap.map((showId, idx) => (
+          <li key={`home-preview ${showId} ${idx}`}>
+            <TvShowPreview
+              idx={idx}
+              showDetails={likedShowIds ? likedShows[showId] : undefined}
+            />
+          </li>
+        ))}
+      </ul>
+      <CarouselArrow right onClick={nextImage} className="order-5" />
       {carouselTotalWidth > carouselVisibleWidth && (
-        <CarouselIndicator
-          scrolledWidth={carouselScroll}
-          totalWidth={carouselTotalWidth}
-          visibleWidth={carouselVisibleWidth}
-        />
+        <div className="order-4">
+          <CarouselIndicator
+            scrolledWidth={carouselScroll}
+            totalWidth={carouselTotalWidth}
+            visibleWidth={carouselVisibleWidth}
+          />
+        </div>
       )}
     </div>
   );

@@ -3,7 +3,6 @@
 import { Fragment, useState } from "react";
 import Carousel from "@/components/carousel";
 import { EpisodesList } from "@/components/liveseries/episodes-list";
-import { ErrorCode } from "@/lib/enums";
 import type { Language } from "@/lib/enums";
 import type {
   Episode as EpisodeType,
@@ -12,7 +11,6 @@ import type {
   WatchedEpisodes,
 } from "@/lib/types";
 import { getEpisodeAirDate, hasEpisodeAired, isInvalidDate } from "@/lib/util";
-import { ErrorComponent } from "@/components/error-component";
 import TvShowSkeleton from "@/components/liveseries/tv-show-skeleton";
 import InputBox from "@/components/forms/input-box";
 import { useFetch } from "@/context/fetch-context";
@@ -129,13 +127,6 @@ export function ShowDetails({
     }));
   }
 
-  if (
-    tvShowDetails === undefined ||
-    (Array.isArray(tvShowDetails) && tvShowDetails.length === 0)
-  ) {
-    return <ErrorComponent errorCode={ErrorCode.NotFound} />;
-  }
-
   if (!tvShowDetails) return <TvShowSkeleton />;
 
   const isSeasonWatched = (season: string, episodes: EpisodeType[]) =>
@@ -149,26 +140,29 @@ export function ShowDetails({
   const unwatchedEpisodesCount = totalEpisodes - watchedEpisodesCount;
 
   const imagesLoading = numImagesLoaded < tvShowDetails.pictures.length;
+  console.log({ imagesLoading });
 
   return (
-    <div className={`details ${imagesLoading ? "display-none" : ""}`}>
-      <h2 className="flex flex-wrap gap-10">
+    <div className="flex flex-col gap-1">
+      <div className="flex flex-wrap items-center gap-3">
         <i
-          className={`clickable fa-${isLiked ? "solid" : "regular"} fa-heart`}
+          className={`clickable fa-${isLiked ? "solid text-error" : "regular text-background-soft"} fa-heart text-3xl`}
           title={data.liveSeries.tvShow[isLiked ? "unlike" : "like"]}
           onClick={handleLike}
         ></i>
-        <span>{tvShowDetails.name}</span>
-        <small className="regular">
+        <h2 className="text-2xl font-bold text-accent-soft">
+          {tvShowDetails.name}
+        </h2>
+        <small className="text-xl">
           ({formatDate("start")} – {formatDate("end")})
         </small>
-      </h2>
-      <div className="flex flex-wrap">
-        <div className="genres flex">
+      </div>
+      <div className="my-1 flex flex-wrap gap-3">
+        <div className="flex items-center gap-2">
           {tvShowDetails.genres.map((genre, idx) => (
             <div
               key={`genre-${genre}-${idx}`}
-              className="genre nowrap"
+              className="clickable text-nowrap rounded-md bg-primary px-2 text-background"
               style={{ cursor: "default" }}
             >
               {genre}
@@ -176,13 +170,13 @@ export function ShowDetails({
           ))}
         </div>
         {tvShowDetails.rating ? (
-          <div className="flex">
+          <div className="flex items-center gap-2">
             <div
               className="stars"
               title={`${(+tvShowDetails.rating).toFixed(1)}/10`}
             >
               <div
-                className="stars-filled flex"
+                className="absolute flex text-accent2"
                 style={{ width: `${+tvShowDetails.rating * 10}%` }}
               >
                 {Array(10)
@@ -194,7 +188,7 @@ export function ShowDetails({
                     ></i>
                   ))}
               </div>
-              <div className="stars-empty flex">
+              <div className="flex">
                 {Array(10)
                   .fill(0)
                   .map((_, idx) => (
@@ -209,11 +203,12 @@ export function ShowDetails({
           </div>
         ) : null}
       </div>
-      <p>
+      <p className="mt-2 text-xl">
         <i className="serif regular">{tvShowDetails.network}</i> (
         {tvShowDetails.country}) | {tvShowDetails.runtime} min
       </p>
       <blockquote
+        className="mb-2 mt-1"
         dangerouslySetInnerHTML={{
           // Trim description end from line breaks
           __html: tvShowDetails.description.replace(/(\<br\s?\>|\\n|\s)*$/, ""),
@@ -238,7 +233,9 @@ export function ShowDetails({
       )}
       {tvShowDetails.pictures.length > 0 && (
         <>
-          <h3>{data.liveSeries.tvShow.images}</h3>
+          <h3 className="my-5 text-2xl font-bold">
+            {data.liveSeries.tvShow.images}
+          </h3>
           <Carousel
             className="gallery"
             images={tvShowDetails.pictures}
@@ -246,7 +243,9 @@ export function ShowDetails({
           />
         </>
       )}
-      <h3>{data.liveSeries.tvShow.episodes}</h3>
+      <h3 className="my-5 text-2xl font-bold">
+        {data.liveSeries.tvShow.episodes}
+      </h3>
       {user?.serverUrl?.length && (
         <div style={{ width: "fit-content" }}>
           <InputBox

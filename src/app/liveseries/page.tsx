@@ -143,7 +143,7 @@ export default async function Home() {
             showsResult.data.likedShows &&
             readyToRenderPreviews && (
               <>
-                <h3>
+                <h3 className="mb-5 mt-10 text-2xl font-bold">
                   {data.liveSeries.tvShow.unwatched}{" "}
                   {data.liveSeries.tvShow.episodes}
                 </h3>

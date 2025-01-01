@@ -55,7 +55,7 @@ export function LanguageSelector({ userLanguage }: { userLanguage: Language }) {
   }, [selectedButtonRef.current]);
 
   return (
-    <div className="flex flex-col items-center lg:mr-4">
+    <div className="my-4 flex flex-col items-center lg:my-0 lg:mr-4">
       <div className="flex gap-1">
         <div
           className="absolute -z-10 rounded-md bg-accent transition-all duration-300"
@@ -83,7 +83,7 @@ export function LanguageSelector({ userLanguage }: { userLanguage: Language }) {
           </Link>
         ))}
       </div>
-      <small>{data.language}</small>
+      <small className="mt-2 text-xs lg:mt-1">{data.language}</small>
     </div>
   );
 }

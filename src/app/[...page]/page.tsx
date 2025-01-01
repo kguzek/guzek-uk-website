@@ -1,20 +1,26 @@
-import { DynamicPageLoader } from "@/components/pages/dynamic-page";
+import {
+  DynamicPageLoader,
+  getPageBySlug,
+} from "@/components/pages/dynamic-page";
+import { ErrorCode } from "@/lib/enums";
 import { getTitle } from "@/lib/util";
+import { useTranslations } from "@/providers/translation-provider";
 
-// TODO: proper page title metadata
+type Props = {
+  params: Promise<{ page: any }>;
+};
 
-export async function generateMetadata() {
+const pageFromParams = async ({ params }: Props) =>
+  `/${(await params).page.join("/")}`;
+
+export async function generateMetadata(props: Props) {
+  const { data } = await useTranslations();
+  const currentPage = await getPageBySlug(await pageFromParams(props));
   return {
-    title: getTitle(),
+    title: getTitle(currentPage?.title || data.error[ErrorCode.NotFound].title),
   };
 }
 
-export default async function PageLoader({
-  params,
-}: {
-  params: Promise<{ page: string[] }>;
-}) {
-  const { page } = await params;
-  const joined = Array.isArray(page) ? page.join("/") : page;
-  return <DynamicPageLoader page={`/${joined}`} />;
+export default async function Page(props: Props) {
+  return <DynamicPageLoader page={await pageFromParams(props)} />;
 }

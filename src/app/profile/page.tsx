@@ -19,49 +19,51 @@ export default async function Profile() {
   if (!user) return <PageSkeleton />;
 
   return (
-    <div className="text profile-page">
+    <div className="text">
       <h2 className="my-6 text-3xl font-bold">{data.profile.title}</h2>
       <h3 className="my-5 text-2xl font-bold">{data.profile.body}</h3>
-      <p>
-        {data.profile.formDetails.type}:{" "}
-        <span className="clickable genre">
-          {
-            data.profile.formDetails[
-              user.admin ? "administrator" : "regularUser"
-            ]
-          }
-        </span>
-      </p>
-      <p>
-        {data.profile.formDetails.username}:{" "}
-        <span className="clickable genre">{user.username}</span>
-      </p>
-      <p>
-        {data.profile.formDetails.email}:{" "}
-        <span className="clickable genre">{user.email}</span>
-      </p>
-      <ProfileForm user={user} />
-      <div>
-        {/* TODO: make uuid and created_at always available */}
-        {user.uuid && (
-          <p>
-            <small>
-              UUID: <code className="clickable field">{user.uuid}</code>
-            </small>
-          </p>
-        )}
-        {user.created_at ? (
-          <p>
-            <small>
-              {data.profile.formDetails.creationDate}:{" "}
-              <code className="clickable field">
-                {data.dateTimeFormat.format(new Date(user.created_at))}
-              </code>
-            </small>
-          </p>
-        ) : null}
-      </div>
-      <LogoutButton userLanguage={userLanguage} />
+      <main className="space-y-3">
+        <p>
+          {data.profile.formDetails.type}:{" "}
+          <span className="clickable genre">
+            {
+              data.profile.formDetails[
+                user.admin ? "administrator" : "regularUser"
+              ]
+            }
+          </span>
+        </p>
+        <p>
+          {data.profile.formDetails.username}:{" "}
+          <span className="clickable genre">{user.username}</span>
+        </p>
+        <p>
+          {data.profile.formDetails.email}:{" "}
+          <span className="clickable genre">{user.email}</span>
+        </p>
+        <ProfileForm user={user} userLanguage={userLanguage} />
+        <div>
+          {/* TODO: make uuid and created_at always available */}
+          {user.uuid && (
+            <p>
+              <small>
+                UUID: <code className="clickable field">{user.uuid}</code>
+              </small>
+            </p>
+          )}
+          {user.created_at ? (
+            <p>
+              <small>
+                {data.profile.formDetails.creationDate}:{" "}
+                <code className="clickable field">
+                  {data.dateTimeFormat.format(new Date(user.created_at))}
+                </code>
+              </small>
+            </p>
+          ) : null}
+        </div>
+        <LogoutButton userLanguage={userLanguage} />
+      </main>
     </div>
   );
 }

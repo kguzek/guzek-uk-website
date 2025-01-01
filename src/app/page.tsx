@@ -1,12 +1,13 @@
-import { DynamicPageLoader } from "@/components/pages/dynamic-page";
+import {
+  DynamicPageLoader,
+  getPageBySlug,
+} from "@/components/pages/dynamic-page";
 import { getTitle } from "@/lib/util";
-import { useTranslations } from "@/providers/translation-provider";
 
 export async function generateMetadata() {
-  const { data } = await useTranslations();
-  // TODO: ehh don't use the LiveSeries title here
+  const homepage = await getPageBySlug("/");
   return {
-    title: getTitle(data.liveSeries.home.title),
+    title: getTitle(homepage?.title),
   };
 }
 

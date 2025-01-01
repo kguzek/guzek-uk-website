@@ -1,18 +1,15 @@
-"use client";
-// TODO: make this non-client
-
 import Link from "next/link";
 import { ErrorCode } from "@/lib/enums";
 import { PAGE_NAME } from "@/lib/util";
-import { useTranslations } from "@/context/translation-context";
 import { Translation, TRANSLATIONS } from "@/lib/translations";
+import { useTranslations } from "@/providers/translation-provider";
 
 const serialiseError = (
   error: ErrorCode,
   data: Translation = TRANSLATIONS.EN,
 ) => `${error} ${data.error[error].title}`;
 
-export function ErrorComponent({
+export async function ErrorComponent({
   errorCode,
   errorResult,
 }:
@@ -21,7 +18,7 @@ export function ErrorComponent({
       errorCode?: never;
       errorResult: { ok: boolean; error: any; hasBody: boolean; data: any };
     }) {
-  const { data } = useTranslations();
+  const { data } = await useTranslations();
   if (!errorCode) {
     if (!errorResult)
       throw new Error("ErrorComponent called with no errorCode or errorResult");

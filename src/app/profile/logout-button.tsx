@@ -41,7 +41,7 @@ export function LogoutButton({ userLanguage }: { userLanguage: Language }) {
   }
 
   return (
-    <div className="centred">
+    <div className="flex justify-center">
       {loggingOut ? (
         <LoadingButton />
       ) : (

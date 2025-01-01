@@ -1,19 +1,27 @@
 "use client";
 
-import { MouseEvent, useState } from "react";
+import { useState } from "react";
+import type { MouseEvent } from "react";
 import { getErrorMessage } from "@/lib/util";
 import InputBox from "@/components/forms/input-box";
-import { useTranslations } from "@/context/translation-context";
+import type { User } from "@/lib/types";
+import type { Language } from "@/lib/enums";
+import { TRANSLATIONS } from "@/lib/translations";
 import { useFetch } from "@/context/fetch-context";
 import { useModals } from "@/context/modal-context";
-import { User } from "@/lib/types";
 
-export function ProfileForm({ user }: { user: User }) {
+export function ProfileForm({
+  user,
+  userLanguage,
+}: {
+  user: User;
+  userLanguage: Language;
+}) {
   const [serverUrl, setServerUrl] = useState(user.serverUrl || "");
   const [updating, setUpdating] = useState(false);
-  const { data } = useTranslations();
   const { fetchFromAPI } = useFetch();
   const { setModalError, setModalInfo } = useModals();
+  const data = TRANSLATIONS[userLanguage];
 
   const isServerUrlValid = () =>
     !updating &&
@@ -45,7 +53,7 @@ export function ProfileForm({ user }: { user: User }) {
   }
 
   return (
-    <form className="flex gap-10 profile-form">
+    <form className="profile-form flex gap-10">
       <div style={{ width: "100%" }}>
         <InputBox
           label={data.profile.formDetails.serverUrl}

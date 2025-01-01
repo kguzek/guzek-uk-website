@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactElement, useState, useEffect } from "react";
+import { useState, useEffect, ReactNode } from "react";
 import Link from "next/link";
 import {
   Episode as EpisodeType,
@@ -114,13 +114,11 @@ function Episode({
   const playIcon = <i className={`fas fa-play status-${downloadStatus}`}></i>;
 
   return (
-    <div className="episode">
-      <div className="episode-details overflow-hidden">
-        <div className="flex" title={episode.name}>
-          <span className="color-primary">
-            {data.liveSeries.episodes.serialise(episode)}
-          </span>{" "}
-          <div className="cutoff">{episode.name}</div>
+    <div className="box-border flex w-full gap-2 rounded-lg bg-background-soft p-2 px-4">
+      <div className="mr-auto overflow-hidden">
+        <div className="flex gap-2" title={episode.name}>
+          <i>{data.liveSeries.episodes.serialise(episode)}</i>
+          <div className="cutoff text-accent-soft">{episode.name}</div>
         </div>
         <small>{airDate}</small>
       </div>
@@ -128,7 +126,7 @@ function Episode({
         {user?.serverUrl?.length && (
           <>
             <div
-              className="flex-column flex"
+              className="flex flex-col"
               title={downloadTooltip}
               style={{ minWidth: 20 }}
               onClick={
@@ -194,15 +192,15 @@ export function EpisodesList({
   tvShow: TvShowDetails;
   heading: string;
   episodes: EpisodeType[];
-  children?: ReactElement<any, any>;
+  children?: ReactNode;
 }) {
   const [collapsed, setCollapsed] = useState(true);
 
   return (
     <>
-      <div className="episodes-header gap-15">
+      <div className="flex items-center gap-4">
         <div
-          className="clickable gap-15 flex"
+          className="clickable flex items-center gap-4"
           onClick={() => setCollapsed((old) => !old)}
         >
           <i
@@ -210,16 +208,12 @@ export function EpisodesList({
               collapsed ? "" : "rotate-90"
             }`}
           ></i>
-          <h4>{heading}</h4>
+          <h4 className="my-4 text-lg font-bold">{heading}</h4>
         </div>
         {children}
       </div>
-      <div
-        className={`episodes-container collapsible ${
-          collapsed ? "hidden" : ""
-        }`}
-      >
-        <div className="episodes no-overflow flex-wrap gap-10">
+      <div className={`collapsible ${collapsed ? "hidden" : ""}`}>
+        <div className="episodes no-overflow grid gap-3 xl:grid-cols-2">
           {episodes.map((episode, idx) => (
             <Episode
               key={`episode-unwatched-${idx}`}

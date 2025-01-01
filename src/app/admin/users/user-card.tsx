@@ -50,7 +50,10 @@ export function UserCard({
   if (deleted) return null;
   return (
     <div className="clickable card-container overflow-hidden">
-      <Link href={user.uuid!} className="card group flex items-center gap-5">
+      <Link
+        href={`/admin/users/${user.uuid}`}
+        className="card group flex items-center gap-5"
+      >
         <i className={`fa-solid fa-user ${user.admin ? "admin" : ""}`}></i>
         <div>
           <div className="flex">

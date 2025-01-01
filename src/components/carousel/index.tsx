@@ -45,12 +45,7 @@ export default function Carousel({
   }
 
   return (
-    <div className="carousel-container flex-wrap">
-      <i
-        role="button"
-        className="carousel-scroller left fas fa-arrow-left"
-        onClick={previousImage}
-      ></i>
+    <div className="flex flex-wrap items-center justify-center gap-x-3">
       <div ref={carouselRef} className={`carousel scroll-x ${className}`}>
         {images.map((url, idx) => (
           <img
@@ -63,17 +58,35 @@ export default function Carousel({
           />
         ))}
       </div>
-      <i
-        role="button"
-        className="carousel-scroller right fas fa-arrow-right"
-        onClick={nextImage}
-      ></i>
+      <CarouselArrow left onClick={previousImage} />
       <CarouselIndicator
         scrolledWidth={carouselScroll}
         totalWidth={carouselTotalWidth}
         visibleWidth={carouselTotalWidth / images.length}
       />
+      <CarouselArrow right onClick={nextImage} />
     </div>
+  );
+}
+
+export function CarouselArrow({
+  left,
+  right,
+  className = "",
+  onClick,
+}: {
+  className?: string;
+  onClick: () => void | Promise<void>;
+} & ({ left: true; right?: never } | { left?: never; right: true })) {
+  return (
+    <button
+      className={`h-16 w-16 rounded-full bg-background-soft p-4 ${className}`}
+    >
+      <i
+        className={`fas fa-arrow-${left ? "left" : "right"} text-4xl font-extrabold text-background hover:animate-ping`}
+        onClick={onClick}
+      ></i>
+    </button>
   );
 }
 
@@ -91,9 +104,14 @@ export function CarouselIndicator({
   const percentageScrolled = scrolledWidth / (totalWidth - visibleWidth);
 
   return (
-    <div className="carousel-indicator-container">
+    <div
+      className="h-3 overflow-hidden rounded-full bg-primary"
+      style={{
+        width: CAROUSEL_INDICATOR_FULL_WIDTH,
+      }}
+    >
       <div
-        className="carousel-indicator"
+        className="h-3 bg-accent"
         style={{
           width,
           transform: `translateX(${

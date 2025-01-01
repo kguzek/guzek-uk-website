@@ -21,6 +21,15 @@
 @tailwind utilities;
 
 @layer utilities {
+  .field {
+    background: var(--color-background-soft);
+    color: var(--color-primary-strong);
+    padding: 2px 4px;
+    border-radius: 5px;
+    white-space: nowrap;
+    user-select: all;
+  }
+
   .scroll-x {
     overflow-x: scroll;
     -ms-overflow-style: none; /* IE and Edge */
@@ -38,54 +47,20 @@
     );
   }
 
-  .home-carousel {
-    width: 100%;
-    position: relative;
-    --translate-left: calc(-50%);
+  .serif {
+    font-family: "Roboto Slab", serif;
   }
 
-  .carousel-scroller {
-    background-color: var(--color-primary);
-    color: var(--color-primary-strong);
-    text-align: center;
-    padding: 20px;
-    font-size: xx-large;
-    font-weight: bold;
-    border-radius: 100%;
-    opacity: 0.8;
+  .text {
+    font-family: "Raleway", sans-serif;
+    font-weight: 500;
+    margin: 0 10vw;
+  }
+
+  .clickable:hover {
+    opacity: 85%;
     cursor: pointer;
-    transition: opacity 200ms ease;
-    z-index: 1;
-    width: min-content;
-    height: min-content;
   }
-
-  .carousel-scroller:hover {
-    opacity: 1;
-  }
-
-  .carousel-scroller.left {
-    transform: translateX(var(--translate-left));
-  }
-
-  .carousel-scroller.right {
-    transform: translateX(calc(-1 * var(--translate-left)));
-  }
-}
-
-.serif {
-  font-family: "Roboto Slab", serif;
-}
-
-.text {
-  font-family: "Raleway", sans-serif;
-  font-weight: 500;
-  margin: 0 10vw;
-}
-
-.clickable:hover {
-  opacity: 85%;
-  cursor: pointer;
 }
 
 a {
@@ -212,15 +187,6 @@ body {
 
 .hover-underline:hover {
   background-size: 100% 2px;
-}
-
-.profile-page .field {
-  background: var(--color-background-soft);
-  color: var(--color-primary-strong);
-  padding: 2px 4px;
-  border-radius: 5px;
-  white-space: nowrap;
-  user-select: all;
 }
 
 [disabled] {

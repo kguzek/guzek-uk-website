@@ -84,7 +84,7 @@ export async function serverToApi<T>(
         api === "episodate"
           ? 3600
           : !method || method === "GET"
-            ? 120
+            ? 300
             : useAuth
               ? 0
               : 5,
