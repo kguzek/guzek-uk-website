@@ -1,39 +1,42 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import TvShowPreviewList from "@/components/liveseries/tv-show-preview-list";
+import { TvShowPreviewList } from "@/components/liveseries/tv-show-preview-list";
 import { TvShowList } from "@/lib/types";
-import { setTitle } from "@/lib/util";
-import { useTranslations } from "@/context/translation-context";
-import { useLiveSeries } from "@/context/liveseries-context";
-import { getLiveSeriesTitle } from "../layout-client";
+import { serverToApi } from "@/lib/backend-v2";
+import { getTitle } from "@/lib/util";
+import { useTranslations } from "@/providers/translation-provider";
 
-export default function MostPopular() {
-  const [results, setResults] = useState<TvShowList | null>(null);
-  const searchParams = useSearchParams();
-  const { data } = useTranslations();
-  const { fetchResource } = useLiveSeries();
+export async function generateMetadata() {
+  const { data } = await useTranslations();
+  return {
+    title: getTitle(data.liveSeries.mostPopular.title, data.liveSeries.title),
+  };
+}
 
-  const title = getLiveSeriesTitle("mostPopular");
+export default async function MostPopular({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string>>;
+}) {
+  const { data, userLanguage } = await useTranslations();
+  const { page } = await searchParams;
 
-  useEffect(() => {
-    setTitle(title);
-  }, [data]);
-
-  useEffect(() => {
-    const searchedPage = +(searchParams.get("page") ?? "");
-    if (searchedPage === results?.page) return;
-
-    // Predictively update the page number in the old data
-    setResults((old) => old && { ...old, page: searchedPage });
-    fetchResource("most-popular", { onSuccess: setResults });
-  }, [searchParams]);
+  const result = await serverToApi<TvShowList>("most-popular", {
+    api: "episodate",
+    params: { page },
+  });
 
   return (
     <>
-      <h2>{title}</h2>
-      <TvShowPreviewList tvShows={results ?? undefined} />
+      <h2 className="my-6 text-3xl font-bold">
+        {getTitle(
+          data.liveSeries.mostPopular.title,
+          data.liveSeries.title,
+          false,
+        )}
+      </h2>
+      <TvShowPreviewList
+        userLanguage={userLanguage}
+        tvShows={result.ok ? result.data : undefined}
+      />
     </>
   );
 }

@@ -115,7 +115,7 @@ function Episode({
 
   return (
     <div className="episode">
-      <div className="episode-details no-overflow">
+      <div className="episode-details overflow-hidden">
         <div className="flex" title={episode.name}>
           <span className="color-primary">
             {data.liveSeries.episodes.serialise(episode)}

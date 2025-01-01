@@ -1,7 +1,7 @@
 import PageIndicator from "./page-indicator";
 import "./pagination.css";
 
-export default function Paginator({
+export function Paginator({
   currentPage,
   numPages,
 }: {

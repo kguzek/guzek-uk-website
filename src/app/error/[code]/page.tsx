@@ -1,5 +1,5 @@
 import { ErrorComponent } from "@/components/error-component";
-import { ErrorCode } from "@/lib/types";
+import type { ErrorCode } from "@/lib/enums";
 export default async function ErrorPage({
   params,
 }: {

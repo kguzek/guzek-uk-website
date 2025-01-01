@@ -1,3 +1,4 @@
+"use client";
 import "./syntax-highlighted.css";
 
 // const SAMPLE_JSON = {
@@ -42,11 +43,11 @@ function syntaxHighlight(json: any) {
         cls = "null";
       }
       return '<span class="' + cls + '">' + match + "</span>";
-    }
+    },
   );
 }
 
-export default function SyntaxHighlighted({ json }: { json: any }) {
+export function SyntaxHighlighted({ json }: { json: any }) {
   return (
     <div className="syntax">
       <pre>

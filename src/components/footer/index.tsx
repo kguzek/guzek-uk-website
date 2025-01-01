@@ -6,7 +6,7 @@ export async function Footer() {
   return (
     <footer className="mt-10">
       <hr />
-      <div className="mt-2 flex items-center justify-center">
+      <div className="mt-4 flex items-center justify-center gap-3">
         <Logo size={20} />
         <small className="text-xs">
           <a
@@ -17,6 +17,7 @@ export async function Footer() {
             {data.footer(new Date().getFullYear().toString())}
           </a>
         </small>
+        <small className="text-xs">Next (no-JS)</small>
       </div>
     </footer>
   );

@@ -11,13 +11,9 @@ import { useLiveSeries } from "@/context/liveseries-context";
 export function TvShowPreview({
   idx,
   showDetails,
-  onLoad,
-  ready,
 }: {
   idx: number;
   showDetails?: TvShowDetailsShort;
-  ready: boolean;
-  onLoad: () => void;
 }) {
   const [flipped, setFlipped] = useState(false);
   const { data } = useTranslations();
@@ -54,11 +50,10 @@ export function TvShowPreview({
 
   return (
     <>
-      {!ready && <TvShowPreviewSkeleton idx={idx} />}
-      <div className={`preview ${ready ? "" : "display-none"}`}>
-        <div className="preview-header flex">
+      <div className="w-[240px] rounded-md bg-primary pb-10">
+        <div className="flex w-full justify-between px-4 py-2">
           <Link href={link} title={showDetails?.name} className="no-overflow">
-            <p className="title serif cutoff">
+            <p className="title serif cutoff text-background visited:text-background-soft">
               {showDetails?.name} ({showDetails?.country})
             </p>
           </Link>
@@ -67,7 +62,7 @@ export function TvShowPreview({
             title={data.liveSeries.tvShow[isLiked ? "unlike" : "like"]}
           >
             <i
-              className={`clickable fa-${
+              className={`clickable text-background fa-${
                 isLiked ? "solid" : "regular"
               } fa-heart`}
             ></i>
@@ -75,11 +70,9 @@ export function TvShowPreview({
         </div>
         <Link href={link} title={showDetails?.name}>
           <img
-            className="thumbnail"
+            className="block h-[300px] w-full bg-cover bg-center object-cover"
             src={showDetails?.image_thumbnail_path}
             alt={showDetails?.name + " thumbnail"}
-            onLoad={onLoad}
-            onError={onLoad}
           />
         </Link>
       </div>

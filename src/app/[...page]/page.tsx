@@ -1,4 +1,13 @@
 import { DynamicPageLoader } from "@/components/pages/dynamic-page";
+import { getTitle } from "@/lib/util";
+
+// TODO: proper page title metadata
+
+export async function generateMetadata() {
+  return {
+    title: getTitle(),
+  };
+}
 
 export default async function PageLoader({
   params,

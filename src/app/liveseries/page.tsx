@@ -1,19 +1,28 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { EpisodesList } from "@/components/liveseries/episodes-list";
-import {
-  ErrorCode,
+import { ErrorComponent } from "@/components/error-component";
+import { LikedShowsCarousel } from "@/components/liveseries/liked-shows-carousel";
+import { ErrorCode } from "@/lib/enums";
+import type {
+  Episode,
   ShowData,
   TvShowDetails,
   WatchedEpisodes,
+  LikedShows,
+  UserShows,
 } from "@/lib/types";
-import type { Episode, LikedShows, UserShows } from "@/lib/types";
 import { getTitle, hasEpisodeAired } from "@/lib/util";
 import { useTranslations } from "@/providers/translation-provider";
-import { PageTitle } from "@/components/page-title";
 import { serverToApi } from "@/lib/backend-v2";
-import { ErrorComponent } from "@/components/error-component";
-import { LikedShowsCarousel } from "@/components/liveseries/liked-shows-carousel";
 import { getCurrentUser } from "@/providers/auth-provider";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { data } = await useTranslations();
+  return {
+    title: getTitle(data.liveSeries.home.title, data.liveSeries.title),
+  };
+}
 
 export default async function Home() {
   const { data, userLanguage } = await useTranslations();
@@ -89,16 +98,15 @@ export default async function Home() {
 
   const unwatchedEpisodesByShowId: { [showId: number]: Episode[] } = {};
 
-  const title = getTitle(data.liveSeries.home.title, data.liveSeries.title);
-
   // TODO: what was this for?
   const loading = [];
 
   return (
     <>
-      <PageTitle title={title} />
-      <h2 className="mt-6 text-3xl font-bold">{title}</h2>
-      <h3 className="my-5 text-2xl font-bold">
+      <h2 className="my-6 text-3xl font-bold">
+        {getTitle(data.liveSeries.home.title, data.liveSeries.title, false)}
+      </h2>
+      <h3 className="mb-5 text-2xl font-bold">
         {data.liveSeries.home.likedShows}
         {showsResult.ok && showsResult.data.likedShows
           ? ` (${showsResult.data.likedShows?.length})`
@@ -129,7 +137,6 @@ export default async function Home() {
               showsResult.ok ? showsResult.data.likedShows : undefined
             }
             likedShows={likedShows}
-            readyToRenderPreviews={readyToRenderPreviews}
             userLanguage={userLanguage}
           />
           {showsResult.ok &&

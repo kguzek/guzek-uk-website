@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { scrollToElement } from "@/lib/util";
 import { CarouselIndicator } from "@/components/carousel";
 import { TvShowPreview } from "@/components/liveseries/tv-show-preview";
 import { useScroll } from "@/hooks/scroll";
-import type { Language, LikedShows } from "@/lib/types";
+import type { LikedShows } from "@/lib/types";
+import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import { useModals } from "@/context/modal-context";
 
@@ -15,24 +16,23 @@ const SKELETON_CARDS_COUNT = 4;
 export function LikedShowsCarousel({
   likedShowIds,
   likedShows,
-  readyToRenderPreviews,
   userLanguage,
 }: {
   likedShowIds?: number[];
   likedShows: LikedShows;
-  readyToRenderPreviews: boolean;
   userLanguage: Language;
 }) {
-  const [cardsToLoad, setCardsToLoad] = useState<number[]>(likedShowIds ?? []);
   const { setModalError } = useModals();
+  const carouselRef = useRef<HTMLUListElement>(null);
 
   const data = TRANSLATIONS[userLanguage];
+  // TODO: ????
 
-  const carouselElement = document.querySelector<HTMLElement>(".scroll-x");
-  const carouselTotalWidth = carouselElement?.scrollWidth || 1;
-  const carouselVisibleWidth = carouselElement?.offsetWidth || 1;
-
-  const { scroll: carouselScroll } = useScroll(carouselElement);
+  const {
+    scroll: carouselScroll,
+    totalWidth: carouselTotalWidth,
+    visibleWidth: carouselVisibleWidth,
+  } = useScroll(carouselRef);
 
   useEffect(() => {
     if (!likedShowIds) {
@@ -88,24 +88,18 @@ export function LikedShowsCarousel({
 
   const toMap = likedShowIds ?? Array<number>(SKELETON_CARDS_COUNT).fill(0);
   return (
-    <div className="flex-column home">
-      <div className="home-carousel flex">
+    <div className="flex flex-col">
+      <div className="flex items-center">
         <i
           className={`carousel-scroller fas ${getScrollerClassName("left")}`}
           onClick={previousImage}
         ></i>
-        <ul className="previews scroll-x flex">
+        <ul ref={carouselRef} className="scroll-x flex gap-4">
           {toMap.map((showId, idx) => (
             <li key={`home-preview ${showId} ${idx}`}>
               <TvShowPreview
                 idx={idx}
                 showDetails={likedShowIds ? likedShows[showId] : undefined}
-                onLoad={() =>
-                  setCardsToLoad((old) =>
-                    old.filter((value) => value !== showId),
-                  )
-                }
-                ready={cardsToLoad.length === 0 && readyToRenderPreviews}
               />
             </li>
           ))}

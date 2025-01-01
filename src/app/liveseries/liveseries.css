@@ -1,8 +1,3 @@
-.liveseries {
-  --preview-width: 240px;
-  --preview-padding: 20px;
-}
-
 .liveseries .loading-screen {
   justify-content: center;
 }
@@ -30,16 +25,6 @@
 .previews,
 .previews-list {
   gap: 15px;
-}
-
-.previews-list {
-  display: grid;
-  width: 100%;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(var(--preview-width), max-content)
-  );
-  justify-content: center;
 }
 
 .embed {
@@ -131,7 +116,9 @@
 }
 
 .episodes-container.collapsible {
-  transition: grid-template-rows 400ms ease, opacity 1s ease;
+  transition:
+    grid-template-rows 400ms ease,
+    opacity 1s ease;
 }
 
 .episodes-header {
@@ -275,12 +262,6 @@
   cursor: wait;
 }
 
-.home-carousel {
-  width: 100%;
-  position: relative;
-  --translate-left: calc(-50%);
-}
-
 .home-carousel .carousel-scroller {
   position: absolute;
   opacity: 0;
@@ -340,7 +321,9 @@
 }
 
 .video-icon.hidden {
-  transition: opacity 500ms ease, visibility 500ms ease;
+  transition:
+    opacity 500ms ease,
+    visibility 500ms ease;
   opacity: 0;
   visibility: hidden;
 }

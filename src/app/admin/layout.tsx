@@ -1,17 +1,10 @@
 import { ReactNode } from "react";
 import { MiniNavBar } from "@/components/navigation/navigation-bar-client";
 import { ErrorComponent } from "@/components/error-component";
-import { ErrorCode, StateSetter, User } from "@/lib/types";
-import { AdminProvider } from "@/context/admin-context";
+import { ErrorCode } from "@/lib/enums";
 import { useTranslations } from "@/providers/translation-provider";
 import { getCurrentUser } from "@/providers/auth-provider";
 import "./admin.css";
-
-export interface AdminContext {
-  users: User[] | null;
-  setUsers: StateSetter<User[] | null>;
-  setTitle: (title: string) => void;
-}
 
 export default async function AdminLayout({
   children,
@@ -43,8 +36,8 @@ export default async function AdminLayout({
           { link: "logs", label: data.admin.logs.title },
         ]}
       />
-      <h2>{data.admin.title}</h2>
-      <AdminProvider>{children}</AdminProvider>
+      <h2 className="my-6 text-3xl font-bold">{data.admin.title}</h2>
+      {children}
     </div>
   );
 }

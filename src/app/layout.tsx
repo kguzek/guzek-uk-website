@@ -7,7 +7,6 @@ import "./globals.css";
 import "./forms.css";
 
 export const metadata: Metadata = {
-  title: "Guzek UK",
   description:
     "The portfiolio website of Konrad Guzek, a Polish software developer from the UK.",
   keywords: [
@@ -46,7 +45,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         ></script>
         <link rel="apple-touch-icon" href="/logo192.png" />
         <link rel="manifest" href="/manifest.json" />
-        <title>Guzek UK</title>
       </head>
       <body>
         <ContextProviders>

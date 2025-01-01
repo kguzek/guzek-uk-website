@@ -2,6 +2,7 @@ import { CAROUSEL_INDICATOR_FULL_WIDTH } from "@/lib/types";
 import { scrollToElement } from "@/lib/util";
 import "./carousel.css";
 import { useScroll } from "@/hooks/scroll";
+import { useRef } from "react";
 
 export default function Carousel({
   className = "",
@@ -12,10 +13,10 @@ export default function Carousel({
   images: string[];
   onLoadImage: () => void;
 }) {
-  const carouselElement = document.querySelector(".carousel");
-  const carouselTotalWidth = carouselElement?.scrollWidth || 1;
+  const carouselRef = useRef<HTMLDivElement>(null);
 
-  const { scroll: carouselScroll } = useScroll(carouselElement);
+  const { scroll: carouselScroll, totalWidth: carouselTotalWidth } =
+    useScroll(carouselRef);
 
   function getSelectedImage() {
     const imageWidth = carouselTotalWidth / images.length;
@@ -50,7 +51,7 @@ export default function Carousel({
         className="carousel-scroller left fas fa-arrow-left"
         onClick={previousImage}
       ></i>
-      <div className={`carousel scroll-x ${className}`}>
+      <div ref={carouselRef} className={`carousel scroll-x ${className}`}>
         {images.map((url, idx) => (
           <img
             key={idx}

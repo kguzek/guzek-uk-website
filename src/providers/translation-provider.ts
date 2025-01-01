@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { Language } from "@/lib/types";
+import { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 
 const DEFAULT_LANGUAGE = Language.EN;

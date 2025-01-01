@@ -35,7 +35,7 @@ export function UserWidget({ user }: { user: User | null }) {
   return (
     <Link
       href={user ? "/profile" : "/login"}
-      className={`${active} clickable nav-link user-widget`}
+      className={`${active} clickable nav-link user-widget min-w-20`}
       onClick={() => {}}
     >
       <img alt="User avatar" className="user-avatar" src={imgUrl} />

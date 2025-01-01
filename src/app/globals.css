@@ -1,7 +1,4 @@
 @import url("https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Slab:wght@100;200;300;400;500;600;700;800;900&display=swap");
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 :root {
   --color-primary: #bbb;
@@ -14,6 +11,66 @@
   --color-accent2: #c9b86e;
   --color-success: #3dc983;
   --color-error: #b64949;
+
+  --card-width: 240px;
+  --card-padding: 20px;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .scroll-x {
+    overflow-x: scroll;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .scroll-x::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cards-grid {
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(var(--card-width), max-content)
+    );
+  }
+
+  .home-carousel {
+    width: 100%;
+    position: relative;
+    --translate-left: calc(-50%);
+  }
+
+  .carousel-scroller {
+    background-color: var(--color-primary);
+    color: var(--color-primary-strong);
+    text-align: center;
+    padding: 20px;
+    font-size: xx-large;
+    font-weight: bold;
+    border-radius: 100%;
+    opacity: 0.8;
+    cursor: pointer;
+    transition: opacity 200ms ease;
+    z-index: 1;
+    width: min-content;
+    height: min-content;
+  }
+
+  .carousel-scroller:hover {
+    opacity: 1;
+  }
+
+  .carousel-scroller.left {
+    transform: translateX(var(--translate-left));
+  }
+
+  .carousel-scroller.right {
+    transform: translateX(calc(-1 * var(--translate-left)));
+  }
 }
 
 .serif {
@@ -26,32 +83,9 @@
   margin: 0 10vw;
 }
 
-.text img {
-  object-fit: contain;
-  max-width: 100%;
-  width: unset;
-  height: unset;
-}
-
-.centred {
-  text-align: center;
-}
-
-.no-select {
-  user-select: none;
-}
-
 .clickable:hover {
   opacity: 85%;
   cursor: pointer;
-}
-
-.regular {
-  font-weight: normal;
-}
-
-.nowrap {
-  white-space: nowrap;
 }
 
 a {
@@ -121,12 +155,6 @@ body {
   text-overflow: ellipsis;
 }
 
-.flex {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
 .flex-column {
   display: flex;
   flex-direction: column;
@@ -135,31 +163,6 @@ body {
 
 .stretch {
   align-items: stretch;
-}
-
-.gap-10 {
-  gap: 10px;
-}
-
-.gap-15 {
-  gap: 15px;
-}
-
-.flex-wrap {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.display-none {
-  display: none;
-}
-
-.rotate-90 {
-  transform: rotate(90deg);
-}
-
-.rotate-180 {
-  transform: rotate(180deg);
 }
 
 .transition-transform {

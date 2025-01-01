@@ -244,6 +244,7 @@ export const getFetchFromAPI = (
 async function fetchWithCache(request: Request) {
   const cache = await getCache();
   if (!cache) {
+    // return null;
     return await fetch(request);
   }
 

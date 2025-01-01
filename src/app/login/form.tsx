@@ -2,13 +2,12 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-
-import { useFetch } from "@/context/fetch-context";
-import { useModals } from "@/context/modal-context";
 import InputBox from "@/components/forms/input-box";
 import { LoadingButton } from "@/components/loading/loading-button";
 import { TRANSLATIONS } from "@/lib/translations";
-import type { Language } from "@/lib/types";
+import type { Language } from "@/lib/enums";
+import { useFetch } from "@/context/fetch-context";
+import { useModals } from "@/context/modal-context";
 
 export function LogInForm({ userLanguage }: { userLanguage: Language }) {
   const [email, setEmail] = useState("");

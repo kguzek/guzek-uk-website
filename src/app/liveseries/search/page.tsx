@@ -1,54 +1,56 @@
-"use client";
+import { useTranslations } from "@/providers/translation-provider";
+import { SearchForm } from "./search-form";
+import { serverToApi } from "@/lib/backend-v2";
+import { TvShowList } from "@/lib/types";
+import { TvShowPreviewList } from "@/components/liveseries/tv-show-preview-list";
+import { getTitle } from "@/lib/util";
+import { Metadata } from "next";
 
-import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import InputBox from "@/components/forms/input-box";
-import { useTranslations } from "@/context/translation-context";
-import { SearchResults } from "./results";
-import { getLiveSeriesTitle } from "../layout-client";
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string>>;
+}): Promise<Metadata> {
+  const { data } = await useTranslations();
+  const params = await searchParams;
 
-export default function Search() {
-  const router = useRouter();
-  const { data } = useTranslations();
+  const title = params.q
+    ? `${data.liveSeries.search.results} "${params.q}"`
+    : data.liveSeries.search.title;
 
-  const [inputValue, setInputValue] = useState("");
-  const title = getLiveSeriesTitle("search");
+  return {
+    title: getTitle(title, data.liveSeries.title),
+  };
+}
 
-  function getSearchPath() {
-    const query = new URLSearchParams({ q: inputValue.trim() });
-    return `/liveseries/search?${query}`;
-  }
+export default async function Search({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string>>;
+}) {
+  const { data, userLanguage } = await useTranslations();
+  const params = await searchParams;
+
+  const result = params.q
+    ? await serverToApi<TvShowList>("search", {
+        api: "episodate",
+        params: { q: params.q },
+      })
+    : null;
 
   return (
     <>
-      <h2>{title}</h2>
-      <form
-        className="form-editor flex-column search"
-        onSubmit={(evt) => {
-          evt.preventDefault();
-          router.push(getSearchPath());
-        }}
-      >
-        <InputBox
-          label={data.liveSeries.search.label}
-          type="search"
-          value={inputValue}
-          setValue={setInputValue}
-          required={true}
-          placeholder={data.liveSeries.search.prompt}
-          autofocus
+      <h2 className="my-6 text-3xl font-bold">
+        {getTitle(data.liveSeries.search.title, data.liveSeries.title, false)}
+      </h2>
+      <SearchForm userLanguage={userLanguage} />
+      {params.q && <h3>{`${data.liveSeries.search.results} "${params.q}"`}</h3>}
+      {result && (
+        <TvShowPreviewList
+          tvShows={result.ok ? result.data : undefined}
+          userLanguage={userLanguage}
         />
-        <Link
-          href={getSearchPath()}
-          role="submit"
-          className="btn"
-          style={{ minWidth: "unset" }}
-        >
-          {data.liveSeries.search.search}
-        </Link>
-      </form>
-      <SearchResults />
+      )}
     </>
   );
 }

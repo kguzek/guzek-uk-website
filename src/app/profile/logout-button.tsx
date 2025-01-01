@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useFetch } from "@/context/fetch-context";
 import { useModals } from "@/context/modal-context";
 import { getErrorMessage } from "@/lib/util";
-import { Language } from "@/lib/types";
+import { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import { clearStoredLoginInfo } from "@/lib/backend";
 import { LoadingButton } from "@/components/loading/loading-button";

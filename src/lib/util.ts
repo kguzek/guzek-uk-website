@@ -3,7 +3,8 @@ import {
   clearStoredLoginInfo,
   updateAccessToken,
 } from "./backend";
-import { Episode, User, DownloadedEpisode, TryFetch, Language } from "./types";
+import { Language } from "./enums";
+import type { Episode, User, DownloadedEpisode, TryFetch } from "./types";
 import { Translation } from "./translations";
 import Cookies from "universal-cookie";
 
@@ -19,8 +20,15 @@ const USER_REQUIRED_PROPERTIES = [
   "modified_at",
 ];
 
-export const getTitle = (title: string, suffix?: string) =>
-  `${title}${suffix ? ` – ${suffix}` : ""} | ${PAGE_NAME}`;
+export function getTitle(
+  title?: string,
+  suffix: string | null = null,
+  addPageName = true,
+) {
+  if (!title) return PAGE_NAME;
+  const withSuffix = `${title}${suffix ? ` – ${suffix}` : ""}`;
+  return addPageName ? `${withSuffix} | ${PAGE_NAME}` : withSuffix;
+}
 
 export const setTitle = (title: string) =>
   void (document.title = getTitle(title));
@@ -48,8 +56,8 @@ export const getTryFetch = (
       setModalError(data.networkError);
       return defaultData;
     }
-    const json = await res.json();
-    if (res.ok) return json as T;
+    const json = await res?.json();
+    if (res?.ok) return json as T;
     setModalError(getErrorMessage(res, json, data));
     return defaultData;
   };
@@ -127,6 +135,9 @@ export const getErrorMessage = (
   (json[`${res.status} ${STATUS_CODES[res.status] || res.statusText}`] ??
     JSON.stringify(json)) ||
   data.unknownError;
+
+export const getUTCDateString = (dateInit: any) =>
+  new Date(dateInit).toISOString().split("T")[0];
 
 export function getUserFromResponse(json: any) {
   const { accessToken, refreshToken, expiresAt, ...userDetails } = json;

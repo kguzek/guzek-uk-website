@@ -1,6 +1,6 @@
 "use client";
 
-import { Language } from "@/lib/types";
+import { Language } from "@/lib/enums";
 import { Translation, TRANSLATIONS } from "@/lib/translations";
 import {
   createContext,
@@ -47,7 +47,7 @@ export function useTranslations() {
   const context = useContext(TranslationContext);
   if (!context) {
     throw new Error(
-      "useTranslations must be used within a TranslationProvider."
+      "useTranslations must be used within a TranslationProvider.",
     );
   }
   return context;

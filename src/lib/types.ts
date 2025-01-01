@@ -1,5 +1,6 @@
 import { NextMiddleware, NextRequest } from "next/server";
 import { Dispatch, SetStateAction } from "react";
+import { LOG_LEVEL_ICONS } from "./enums";
 
 export interface PageContent {
   content: string;
@@ -31,17 +32,18 @@ export interface User {
   serverUrl?: string;
 }
 
-export enum ErrorCode {
-  Unauthorized = 401,
-  Forbidden = 403,
-  NotFound = 404,
-  ServerError = 500,
-}
+/** Admin logs */
 
-export enum Language {
-  EN = "EN",
-  PL = "PL",
+export type LogLevel = keyof typeof LOG_LEVEL_ICONS;
+
+export interface LogEntry {
+  label: string;
+  level: LogLevel;
+  message: string | NodeJS.ErrnoException;
+  metadata: any;
+  timestamp: string;
 }
+export type LogResponse = { date: string; logs: LogEntry[] };
 
 export interface ErrorPageContent {
   title: string;

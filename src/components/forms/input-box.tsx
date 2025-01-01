@@ -31,7 +31,7 @@ export default function InputBox({
 
   function handleChange(
     evt: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-    predicate: Function
+    predicate: Function,
   ) {
     const val = isCheckbox
       ? (evt.target as HTMLInputElement).checked
@@ -41,7 +41,7 @@ export default function InputBox({
 
   if (isDropdown && !options) {
     throw Error(
-      "'options' prop must be provided when using 'dropdown' InputBox type."
+      "'options' prop must be provided when using 'dropdown' InputBox type.",
     );
   }
 
@@ -51,7 +51,7 @@ export default function InputBox({
 
   return (
     <label className={`input-box input-${type} ${isCheckbox ? "nowrap" : ""}`}>
-      <div className="flex gap-10">
+      <div className="flex gap-2">
         {required && value === "" && (
           <span className="required-asterisk">*</span>
         )}

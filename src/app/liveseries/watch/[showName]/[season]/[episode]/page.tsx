@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import { ErrorComponent } from "@/components/error-component";
-import { ErrorCode } from "@/lib/types";
+import { ErrorCode } from "@/lib/enums";
 import { getAccessToken, getDecentralisedApiUrl } from "@/lib/backend";
 import { LoadingScreen } from "@/components/loading/screen";
 import { useTranslations } from "@/context/translation-context";
@@ -23,7 +23,7 @@ export default function Watch() {
   const videoContainerRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [loadingFailed, setLoadingFailed] = useState<boolean | undefined>(
-    false
+    false,
   );
   const [currentIcon, setCurrentIcon] = useState("");
   const [iconVisibility, setIconVisibility] = useState("hidden");
@@ -94,9 +94,9 @@ export default function Watch() {
           window.setTimeout(() => {
             setCurrentIcon("");
             setCurrentTimeout(null);
-          }, 500)
+          }, 500),
         );
-      }, 500)
+      }, 500),
     );
   }
 
@@ -137,7 +137,7 @@ export default function Watch() {
       case ".": // Skip forward 1 frame
         video.currentTime = Math.min(
           video.duration,
-          video.currentTime + VIDEO_FRAME_LENGTH
+          video.currentTime + VIDEO_FRAME_LENGTH,
         );
         break;
       case "c": // Toggle subtitles
@@ -171,7 +171,7 @@ export default function Watch() {
       throw new Error("Episode number is nullish");
     }
     router.push(
-      `/liveseries/watch/${showNameEncoded}/${season}/${+episode + 1}`
+      `/liveseries/watch/${showNameEncoded}/${season}/${+episode + 1}`,
     );
   }
 
@@ -193,7 +193,7 @@ export default function Watch() {
         {showName} {data.liveSeries.episodes.serialise(episodeObject)}
       </h2>
       <div
-        className="flex gap-15 episode-controls"
+        className="gap-15 episode-controls flex"
         style={{ marginBottom: "10px" }}
       >
         <div className="flex gap-10">

@@ -1,10 +1,5 @@
-import {
-  Episode,
-  ErrorCode,
-  ErrorPageContent,
-  Language,
-  DownloadedEpisode,
-} from "../types";
+import type { Language, ErrorCode } from "@/lib/enums";
+import type { Episode, ErrorPageContent, DownloadedEpisode } from "@/lib/types";
 import { ENGLISH } from "./english";
 import { POLISH } from "./polish";
 

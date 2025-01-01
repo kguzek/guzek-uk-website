@@ -1,9 +1,16 @@
-import { PageTitle } from "@/components/page-title";
 import { getCurrentUser } from "@/providers/auth-provider";
 import { useTranslations } from "@/providers/translation-provider";
 import { ProfileForm } from "./profile-form";
 import { LogoutButton } from "./logout-button";
 import { PageSkeleton } from "@/components/pages/skeleton";
+import { getTitle } from "@/lib/util";
+
+export async function generateMetadata() {
+  const { data } = await useTranslations();
+  return {
+    title: getTitle(data.profile.title),
+  };
+}
 
 export default async function Profile() {
   const user = await getCurrentUser();
@@ -13,8 +20,8 @@ export default async function Profile() {
 
   return (
     <div className="text profile-page">
-      <PageTitle title={data.profile.title} />
-      <h3>{data.profile.body}</h3>
+      <h2 className="my-6 text-3xl font-bold">{data.profile.title}</h2>
+      <h3 className="my-5 text-2xl font-bold">{data.profile.body}</h3>
       <p>
         {data.profile.formDetails.type}:{" "}
         <span className="clickable genre">

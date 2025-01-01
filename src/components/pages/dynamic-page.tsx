@@ -1,6 +1,5 @@
 import { ErrorComponent } from "@/components/error-component";
-import { PageTitle } from "@/components/page-title";
-import { ErrorCode } from "@/lib/types";
+import { ErrorCode } from "@/lib/enums";
 import type { MenuItem, PageContent } from "@/lib/types";
 import { serverToApi } from "@/lib/backend-v2";
 
@@ -13,9 +12,8 @@ async function DynamicPage({ pageData }: { pageData: MenuItem }) {
 
   return (
     <div className="text">
-      <PageTitle title={pageData.title} />
       <div
-        className="page-content"
+        className="page-content mt-6"
         dangerouslySetInnerHTML={{ __html: result.data.content }}
       ></div>
     </div>

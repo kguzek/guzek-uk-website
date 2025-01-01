@@ -27,6 +27,8 @@ const DECENTRALISED_ROUTES = [
   "torrents",
 ];
 
+let refreshPromise: ReturnType<typeof refreshToken> | undefined = undefined;
+
 // type ServerToApiResult<T> = Promise<
 //   | { failed: true; res: null; data: null; hasBody: false }
 //   | { failed: false; res: Response; data: null; hasBody: false }
@@ -52,7 +54,8 @@ function getUrlBase(path: string) {
  *   `failed`: true if the request didn't go through (network error, etc.);
  *   `hasBody`: true if the response has a JSON body (even if it's an error) -- available as `data`;
  *   `ok`: true if the response status is 2xx else `false`;
- *   `data`: `null` if `hasBody` is false, otherwise the JSON body of the response typed as `T` or `ErrorResponseBody`, depending on `ok`.
+ *   `data`: the JSON body of the response typed as `T` if `ok` is `true`, otherwise `null`;
+ *   `error`: `null` if `ok` is `true`, otherwise the JSON body of the response typed as `ErrorResponseBody`.
  * }
  */
 export async function serverToApi<T>(
@@ -114,24 +117,43 @@ export async function serverToApi<T>(
     res = await fetch(url, options);
   } catch (error) {
     console.error(error);
-    return { failed: true, hasBody: false, ok: false, data: null } as const;
+    return {
+      failed: true,
+      hasBody: false,
+      ok: false,
+      data: null,
+      error: null,
+    } as const;
   }
   let data: T;
   try {
     data = await res.json();
   } catch (error) {
     console.error(error);
-    return { failed: false, hasBody: false, ok: false, data: null } as const;
+    return {
+      failed: false,
+      hasBody: false,
+      ok: false,
+      data: null,
+      error: null,
+    } as const;
   }
   console.debug("...", res.status, res.statusText);
   if (res.ok) {
-    return { failed: false, hasBody: true, ok: true, data } as const;
+    return {
+      failed: false,
+      hasBody: true,
+      ok: true,
+      data,
+      error: null,
+    } as const;
   }
   return {
     failed: false,
     hasBody: true,
     ok: false,
-    data: data as ErrorResponseBody,
+    data: null,
+    error: data as ErrorResponseBody,
   } as const;
 }
 
@@ -149,6 +171,12 @@ export async function getAccessToken(
  * @returns an object containing the user & access token if refresh was successful, otherwise the fields are `null`.
  */
 export async function refreshAccessToken() {
+  if (refreshPromise) return refreshPromise;
+  refreshPromise = refreshToken();
+  return refreshPromise;
+}
+
+async function refreshToken() {
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get("refresh_token")?.value;
   if (!refreshToken) return { token: null, user: null };
