@@ -5,8 +5,10 @@ import { getCurrentUser } from "@/providers/auth-provider";
 import Logo from "@/media/logo";
 import { PAGE_NAME } from "@/lib/util";
 import { LanguageSelector } from "./language-selector";
+import { useTranslations } from "@/providers/translation-provider";
 
 export async function NavBar() {
+  const { userLanguage } = await useTranslations();
   const result = await serverToApi<MenuItem[]>("pages");
   const user = await getCurrentUser();
   const menuItems = result.ok && result.hasBody ? result.data : [];
@@ -49,7 +51,7 @@ export async function NavBar() {
                   <NavBarItem item={item} />
                 </li>
               ))}
-            <LanguageSelector />
+            <LanguageSelector userLanguage={userLanguage} />
           </ul>
           <div className="hidden sm:block">
             <UserWidget user={user} />
