@@ -18,6 +18,7 @@ function Footer() {
           {data.footer(new Date().getFullYear().toString())}
         </a>
       </small>
+      <small>Player v2 (beta)</small>
     </footer>
   );
 }
