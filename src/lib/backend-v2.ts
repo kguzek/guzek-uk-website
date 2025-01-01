@@ -106,10 +106,8 @@ export async function serverToApi<T>(
   }
   options.headers = headers;
   if (!params?.lang) {
-    const lang = cookieStore.get("lang")?.value;
-    if (lang) {
-      params = { ...params, lang };
-    }
+    const lang = cookieStore.get("lang")?.value || "EN";
+    params = { ...params, lang };
   }
   const url = `${api === "episodate" ? EPISODATE_URL : getUrlBase(path)}${path}${getSearchParams(params)}`;
   console.debug("", options.method ?? "GET", url);
