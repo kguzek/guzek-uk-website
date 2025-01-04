@@ -1,7 +1,7 @@
 import { Language } from "./enums";
 import type { Episode, DownloadedEpisode } from "./types";
 import { Translation } from "./translations";
-import Cookies from "universal-cookie";
+import Cookies from "js-cookie";
 
 export const PAGE_NAME = "Guzek UK";
 
@@ -118,21 +118,20 @@ type EpisodeLike = Pick<DownloadedEpisode, "showName" | "season" | "episode">;
 export const compareEpisodes = (a: EpisodeLike, b: EpisodeLike) =>
   a.showName === b.showName && a.season === b.season && a.episode === b.episode;
 
+export const getLanguageCookieOptions = () =>
+  ({
+    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+    path: "/",
+    sameSite: "lax",
+    secure: process.env.NODE_ENV !== "development",
+  }) as const;
+
 export function setLanguageCookie(langString: string) {
   if (!(langString in Language)) {
     throw new Error("Invalid language name.");
   }
   const language = Language[langString as keyof typeof Language];
-  const cookies = new Cookies();
-  const developmentMode = process.env.NODE_ENV === "development";
-  cookies.set("lang", langString, {
-    httpOnly: false,
-    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
-    path: "/",
-    sameSite: "lax",
-    domain: developmentMode ? "localhost" : "guzek.uk",
-    secure: !developmentMode,
-  });
+  Cookies.set("lang", langString, getLanguageCookieOptions());
   console.debug("Set language cookie to", langString);
   return language;
 }

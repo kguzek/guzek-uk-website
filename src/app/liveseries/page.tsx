@@ -122,10 +122,12 @@ export default async function Home() {
             {data.liveSeries.home.noLikes}
           </p>
           <p>
-            <Link href="search">{data.liveSeries.search.label}</Link>
+            <Link href="/liveseries/search">
+              {data.liveSeries.search.label}
+            </Link>
           </p>
           <p>
-            <Link href="most-popular">
+            <Link href="/liveseries/most-popular">
               {data.liveSeries.home.explore} {data.liveSeries.mostPopular.title}{" "}
               {data.liveSeries.home.shows}
             </Link>
