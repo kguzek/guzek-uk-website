@@ -61,6 +61,24 @@
     opacity: 85%;
     cursor: pointer;
   }
+
+  .collapsible {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition:
+      grid-template-rows 300ms ease,
+      opacity 300ms ease;
+  }
+
+  .collapsible.collapsed {
+    opacity: 0;
+    grid-template-rows: 0fr;
+  }
+
+  .collapsible.expanded {
+    opacity: 1;
+    grid-template-rows: 1fr;
+  }
 }
 
 a {
@@ -142,19 +160,6 @@ body {
 
 .transition-transform {
   transition: transform 300ms ease;
-}
-
-.collapsible {
-  display: grid;
-  grid-template-rows: 1fr;
-  transition:
-    grid-template-rows 300ms ease,
-    opacity 300ms ease;
-}
-
-.collapsible.hidden {
-  opacity: 0;
-  grid-template-rows: 0fr;
 }
 
 .delete {

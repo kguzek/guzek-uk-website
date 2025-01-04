@@ -59,7 +59,7 @@ async function Episode({
         </div>
         <small>{airDate}</small>
       </div>
-      <div className="noshrink flex gap-10">
+      <div className="noshrink flex items-center gap-4">
         <EpisodeDownloadIndicator
           user={user}
           userLanguage={userLanguage}
@@ -116,16 +116,16 @@ export async function EpisodesList({
   }
   return (
     <>
-      <div className="flex items-center gap-4">
+      <div className="peer flex items-center gap-4">
         <label className="clickable flex items-center gap-4">
-          <input type="checkbox" className="group peer hidden" />
-          <i className="fas fa-caret-right transition-transform group-checked:rotate-90"></i>
+          <input type="checkbox" className="peer hidden" />
+          <i className="fas fa-caret-right transition-transform peer-checked:rotate-90"></i>
           <h4 className="my-4 text-lg font-bold">{heading}</h4>
         </label>
         {children}
       </div>
-      <div className="hidden peer-checked:block">
-        <div className="episodes no-overflow grid gap-3 xl:grid-cols-2">
+      <div className="collapsible collapsed peer-has-[:checked]:expanded">
+        <div className="episodes no-overflow grid gap-3 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
           {episodes.map((episode, idx) => (
             <Episode
               key={`episode-unwatched-${idx}`}

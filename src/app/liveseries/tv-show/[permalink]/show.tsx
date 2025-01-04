@@ -79,7 +79,7 @@ export function ShowDetails({
     setIsLiked((old) => !old);
 
     const result = await clientToApi(
-      "shows/personal/liked/" + tvShowDetails?.id,
+      "liveseries/shows/personal/liked/" + tvShowDetails?.id,
       accessToken,
       {
         method: isLiked ? "DELETE" : "POST",
@@ -106,7 +106,7 @@ export function ShowDetails({
 
     setIsSubscribed((old) => !old);
     const result = await clientToApi(
-      "shows/personal/subscribed/" + tvShowDetails?.id,
+      "liveseries/shows/personal/subscribed/" + tvShowDetails?.id,
       accessToken,
       {
         method: isSubscribed ? "DELETE" : "POST",
@@ -132,7 +132,7 @@ export function ShowDetails({
       [season]: episodeNumbers,
     }));
     const result = await clientToApi(
-      `watched-episodes/personal/${tvShowDetails.id}/${season}`,
+      `liveseries/watched-episodes/personal/${tvShowDetails.id}/${season}`,
       accessToken,
       {
         method: "PUT",
@@ -179,7 +179,7 @@ export function ShowDetails({
           {tvShowDetails.genres.map((genre, idx) => (
             <div
               key={`genre-${genre}-${idx}`}
-              className="clickable text-nowrap rounded-md bg-primary px-2 text-background"
+              className="clickable whitespace-nowrap rounded-md bg-primary px-2 text-background"
               style={{ cursor: "default" }}
             >
               {genre}

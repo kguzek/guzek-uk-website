@@ -33,7 +33,7 @@ export function WatchedIndicator({
           }
         >
           <i
-            className={`clickable fas fa-eye${seasonWatched ? "" : "-slash"}`}
+            className={`clickable fas text-center fa-eye${seasonWatched ? "" : "-slash"}`}
           ></i>
         </div>
       ) : (

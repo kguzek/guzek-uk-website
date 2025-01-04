@@ -28,21 +28,14 @@ function syntaxHighlight(json: any) {
   return json.replace(
     /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
     (match: any) => {
-      var cls = "number";
-      if (/^"/.test(match)) {
-        if (/:$/.test(match)) {
-          cls = "key";
-        } else {
-          cls = "string";
-        }
-      } else if (/true/.test(match)) {
-        cls = "true";
-      } else if (/false/.test(match)) {
-        cls = "false";
-      } else if (/null/.test(match)) {
-        cls = "null";
-      }
-      return '<span class="' + cls + '">' + match + "</span>";
+      const cls = match.startsWith('"')
+        ? match.endsWith(":")
+          ? "key"
+          : "string"
+        : ["true", "false", "null"].includes(match)
+          ? match
+          : "number";
+      return `<span class="${cls}">${match}</span>`;
     },
   );
 }

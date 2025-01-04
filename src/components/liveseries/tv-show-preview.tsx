@@ -37,7 +37,7 @@ export function TvShowPreview({
     setIsLiked((old) => !old);
 
     const result = await clientToApi(
-      "shows/personal/liked/" + showDetails.id,
+      "liveseries/shows/personal/liked/" + showDetails.id,
       accessToken,
       {
         method: isLiked ? "DELETE" : "POST",

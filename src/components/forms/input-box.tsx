@@ -50,7 +50,9 @@ export default function InputBox({
   }, []);
 
   return (
-    <label className={`input-box input-${type} ${isCheckbox ? "nowrap" : ""}`}>
+    <label
+      className={`input-box input-${type} ${isCheckbox ? "whitespace-nowrap" : ""}`}
+    >
       <div className="flex gap-2">
         {required && value === "" && (
           <span className="required-asterisk">*</span>

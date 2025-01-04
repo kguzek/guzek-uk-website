@@ -28,7 +28,7 @@ export function EpisodeWatchedIndicator({
 
   async function updateWatchedEpisodes(episodes: number[]) {
     const result = await clientToApi(
-      `watched-episodes/personal/${showId}/${episode.season}`,
+      `liveseries/watched-episodes/personal/${showId}/${episode.season}`,
       accessToken,
       {
         method: "PUT",

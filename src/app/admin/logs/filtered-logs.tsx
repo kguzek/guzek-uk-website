@@ -77,8 +77,8 @@ export function FilteredLogs({
   }, [dateLogs, errorLogs, filter]);
 
   return (
-    <div className="cards flex-column stretch gap-10">
-      <div className="flex gap-10">
+    <div className="cards flex-column stretch gap-3">
+      <div className="flex items-center gap-3">
         <h4>Log levels:</h4>
         {Object.entries(LOG_LEVEL_ICONS).map(([key, icon], idx) => {
           const level = key as LogLevel;
@@ -98,7 +98,7 @@ export function FilteredLogs({
               >
                 <i
                   className={`fa-solid fa-${icon} ${
-                    selected ? "" : "deselected"
+                    selected ? "" : "text-background-soft"
                   }`}
                   title={level}
                 ></i>
@@ -107,9 +107,9 @@ export function FilteredLogs({
           );
         })}
       </div>
-      <div className="stretch flex gap-10">
-        <h4 className="nowrap">Source files:</h4>
-        <div className="flex flex-wrap">
+      <div className="stretch flex gap-3">
+        <h4 className="whitespace-nowrap">Source files:</h4>
+        <div className="flex flex-wrap items-center gap-2">
           {labels.map((label, idx) => {
             const selected = filter.labels.includes(label);
             return (
@@ -143,9 +143,9 @@ export function FilteredLogs({
           }
         />
       </div>
-      <div className="flex gap-10">
+      <div className="flex gap-3">
         <div
-          className="clickable flex gap-10"
+          className="clickable flex items-center gap-3"
           onClick={() =>
             setFilter((old) => ({ ...old, ascending: !old.ascending }))
           }
@@ -188,11 +188,11 @@ function Log({
   const showBody = entryHasBody(data);
 
   return (
-    <div className="flex-column stretch">
+    <div className="flex flex-col justify-stretch">
       <div className={`card-container log ${data.level}`}>
-        <div className="card flex gap-10">
+        <div className="card flex gap-3">
           <div
-            className="clickable centred level-icon"
+            className="clickable level-icon self-center"
             title={data.level}
             onClick={() =>
               setFilter((old) => ({ ...old, levels: [data.level] }))
@@ -200,7 +200,7 @@ function Log({
           >
             <i className={`fa-solid fa-${getIcon(data.level)}`}></i>
           </div>
-          <div className="log-body flex-column flex gap-10">
+          <div className="log-body flex flex-col items-center gap-3">
             <div className="log-header flex">
               <small>
                 <code className="flex gap-10">
@@ -229,14 +229,14 @@ function Log({
                 {data.label}
               </div>
             </div>
-            <div className="flex flex-wrap gap-10">
+            <div className="flex flex-wrap items-center gap-3">
               {showBody && (
                 <div
                   className="clickable"
                   onClick={() => setCollapsed((old) => !old)}
                 >
                   <div
-                    className="message flex"
+                    className="message flex gap-3"
                     title={
                       (collapsed ? "Expand" : "Collapse") + " log entry body"
                     }
@@ -257,7 +257,7 @@ function Log({
       </div>
       {showBody && (
         <div
-          className={`log-container collapsible ${collapsed ? "hidden" : ""}`}
+          className={`log-container collapsible ${collapsed ? "collapsed" : "expanded"}`}
         >
           <div className="no-overflow flex">
             <SyntaxHighlighted json={data.metadata.body} />
