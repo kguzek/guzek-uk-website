@@ -26,23 +26,20 @@ export function LogInForm({ userLanguage }: { userLanguage: Language }) {
       email,
       password,
     };
-    let res;
-    try {
-      res = await clientToApi("auth/tokens", "", {
-        method: "POST",
-        body,
-      });
-    } catch (error) {
-      setModalError(data.networkError);
-      console.error(error);
-      setLoading(false);
-      return;
-    }
+    let result;
+    result = await clientToApi("auth/tokens", "", {
+      method: "POST",
+      body,
+    });
     setLoading(false);
-    if (res.ok) {
+    if (result.ok) {
       router.push("/profile");
     } else {
-      setModalError(data.profile.invalidCredentials);
+      setModalError(
+        result.res?.status === 400
+          ? data.profile.invalidCredentials
+          : data.networkError,
+      );
     }
   }
 

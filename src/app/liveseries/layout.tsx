@@ -15,7 +15,7 @@ export default async function LiveSeriesLayout({
   const accessToken = await getAccessToken();
   const user = await getCurrentUser();
   let downloadedEpisodes: DownloadedEpisode[] = [];
-  if (user) {
+  if (user && user.serverUrl) {
     const downloadedEpisodesResult = await serverToApi<DownloadedEpisode[]>(
       "liveseries/downloaded-episodes",
     );

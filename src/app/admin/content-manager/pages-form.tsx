@@ -86,6 +86,7 @@ function PagesEditor({
         method: "PUT",
         body: { ...page, content },
         userLanguage,
+        setModalError,
       });
       if (result.ok) {
         setUnsavedChanges(false);

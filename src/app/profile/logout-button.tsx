@@ -6,6 +6,7 @@ import { LoadingButton } from "@/components/loading/loading-button";
 import { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import { clientToApi } from "@/lib/backend/client";
+import { useModals } from "@/context/modal-context";
 
 export function LogoutButton({
   userLanguage,
@@ -15,6 +16,7 @@ export function LogoutButton({
   accessToken: string;
 }) {
   const [loggingOut, setLoggingOut] = useState(false);
+  const { setModalError } = useModals();
   const router = useRouter();
 
   const data = TRANSLATIONS[userLanguage];
@@ -24,6 +26,7 @@ export function LogoutButton({
     const result = await clientToApi(`auth/tokens`, accessToken, {
       method: "DELETE",
       userLanguage,
+      setModalError,
     });
     setLoggingOut(false);
     if (result.ok) {

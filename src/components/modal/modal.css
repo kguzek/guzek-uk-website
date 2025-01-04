@@ -11,7 +11,7 @@
   transition: all 250ms ease;
 }
 
-.modal-background.hidden {
+.modal-background.modal-hidden {
   opacity: 0;
   visibility: hidden;
 }
@@ -48,7 +48,7 @@
   background-size: 100% 2px;
 }
 
-.hidden .modal {
+.modal-hidden .modal {
   transform: translateY(calc(-100% - var(--offset-y)));
 }
 

@@ -98,7 +98,7 @@ export async function EpisodesList({
   const user = await getCurrentUser();
   let downloadedEpisodes: DownloadedEpisode[] = [];
   let watchedEpisodes: ShowData<WatchedEpisodes> = {};
-  if (user) {
+  if (user && user.serverUrl) {
     const [downloadedEpisodesResult, watchedEpisodesResult] = await Promise.all(
       [
         serverToApi<DownloadedEpisode[]>("liveseries/downloaded-episodes"),

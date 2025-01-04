@@ -41,7 +41,7 @@ export function Modal({
   }
 
   return (
-    <div className={`modal-background ${value ? "" : "hidden"} z-30`}>
+    <div className={`modal-background ${value ? "" : "modal-hidden"} z-30`}>
       <div className={`modal ${className} z-40`}>
         <p>
           {before}

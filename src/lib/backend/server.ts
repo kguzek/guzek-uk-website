@@ -36,7 +36,7 @@ export async function serverToApi<T>(
     const lang = cookieStore.get("lang")?.value || "EN";
     fetchOptions.params = { ...fetchOptions.params, lang };
   }
-  const options = await prepareRequest(fetchOptions, useAuth, {
+  const options = await prepareRequest(path, fetchOptions, useAuth, {
     getAccessToken,
   });
   options.next = {

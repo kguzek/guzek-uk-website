@@ -66,13 +66,24 @@ type AuthOptions =
   | { accessToken: string; getAccessToken?: never }
   | (GetAccessToken & { accessToken?: never });
 
+const requestNeedsCredentials = (
+  path: string,
+  method: FetchOptions["method"],
+) =>
+  (method === "POST" || method === "DELETE") &&
+  ["auth/tokens", "auth/refresh", "auth/users"].includes(path);
+
 export async function prepareRequest(
+  path: string,
   fetchOptions: FetchOptions,
   ...args: [false, GetAccessToken | null | never] | [true, AuthOptions]
 ): Promise<RequestInit> {
   const [useAuth, authOptions] = args;
   const requestInit: RequestInit = {
     method: fetchOptions.method,
+    credentials: requestNeedsCredentials(path, fetchOptions.method)
+      ? "include"
+      : "omit",
   };
   const headers: HeadersInit = {
     Accept: "*",

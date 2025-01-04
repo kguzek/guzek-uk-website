@@ -1,10 +1,13 @@
-import { useModals } from "@/context/modal-context";
 import { fetchFromApi, FetchOptions, getUrlBase, prepareRequest } from ".";
 import { getSearchParams } from "../backend";
 import { getErrorMessage } from "../util";
 import type { Language } from "../enums";
 import type { User } from "../types";
 import { TRANSLATIONS } from "../translations";
+
+type FetchOptionsExtension =
+  | { userLanguage: Language; setModalError: (error: string) => void }
+  | { userLanguage?: never; setModalError?: never };
 
 /** Makes a client-to-server API call using the provided access token.
  *
@@ -28,11 +31,12 @@ export async function clientToApi<T>(
   accessToken: string,
   {
     userLanguage,
+    setModalError,
     ...fetchOptions
-  }: FetchOptions & { userLanguage?: Language; user?: User | null },
+  }: FetchOptions & { user?: User | null } & FetchOptionsExtension,
 ) {
-  const { setModalError } = useModals();
   const options = await prepareRequest(
+    path,
     fetchOptions,
     ...(accessToken ? [true, { accessToken }] : [false, null]),
   );

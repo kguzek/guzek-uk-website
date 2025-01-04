@@ -46,6 +46,7 @@ export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
       method: "POST",
       body,
       userLanguage,
+      setModalError,
     });
     setLoading(false);
     if (result.ok) {

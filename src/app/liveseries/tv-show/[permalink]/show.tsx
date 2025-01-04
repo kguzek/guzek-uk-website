@@ -84,6 +84,7 @@ export function ShowDetails({
       {
         method: isLiked ? "DELETE" : "POST",
         userLanguage,
+        setModalError,
       },
     );
     if (!result.ok) setIsLiked((old) => !old);
@@ -110,6 +111,7 @@ export function ShowDetails({
       {
         method: isSubscribed ? "DELETE" : "POST",
         userLanguage,
+        setModalError,
       },
     );
     if (!result.ok) {

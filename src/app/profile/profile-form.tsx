@@ -20,7 +20,7 @@ export function ProfileForm({
 }) {
   const [serverUrl, setServerUrl] = useState(user.serverUrl || "");
   const [updating, setUpdating] = useState(false);
-  const { setModalInfo } = useModals();
+  const { setModalError, setModalInfo } = useModals();
   const data = TRANSLATIONS[userLanguage];
 
   const isServerUrlValid = () =>
@@ -42,6 +42,7 @@ export function ProfileForm({
         method: "PUT",
         body: { serverUrl: newServerUrl },
         userLanguage,
+        setModalError,
       },
     );
     if (result.ok) {
