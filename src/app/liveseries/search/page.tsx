@@ -1,6 +1,6 @@
 import { useTranslations } from "@/providers/translation-provider";
 import { SearchForm } from "./search-form";
-import { serverToApi } from "@/lib/backend-v2";
+import { serverToApi } from "@/lib/backend/server";
 import { TvShowList } from "@/lib/types";
 import { TvShowPreviewList } from "@/components/liveseries/tv-show-preview-list";
 import { getTitle } from "@/lib/util";
@@ -49,6 +49,7 @@ export default async function Search({
         <TvShowPreviewList
           tvShows={result.ok ? result.data : undefined}
           userLanguage={userLanguage}
+          searchParams={params}
         />
       )}
     </>

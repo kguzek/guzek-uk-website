@@ -1,7 +1,7 @@
 import { ErrorComponent } from "@/components/error-component";
 import type { User } from "@/lib/types";
 import { getTitle } from "@/lib/util";
-import { serverToApi } from "@/lib/backend-v2";
+import { serverToApi } from "@/lib/backend/server";
 import { useTranslations } from "@/providers/translation-provider";
 import { UserEditor } from "./user-editor";
 

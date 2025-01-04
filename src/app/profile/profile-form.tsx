@@ -2,25 +2,25 @@
 
 import { useState } from "react";
 import type { MouseEvent } from "react";
-import { getErrorMessage } from "@/lib/util";
 import InputBox from "@/components/forms/input-box";
 import type { User } from "@/lib/types";
 import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
-import { useFetch } from "@/context/fetch-context";
 import { useModals } from "@/context/modal-context";
+import { clientToApi } from "@/lib/backend/client";
 
 export function ProfileForm({
   user,
   userLanguage,
+  accessToken,
 }: {
   user: User;
   userLanguage: Language;
+  accessToken: string;
 }) {
   const [serverUrl, setServerUrl] = useState(user.serverUrl || "");
   const [updating, setUpdating] = useState(false);
-  const { fetchFromAPI } = useFetch();
-  const { setModalError, setModalInfo } = useModals();
+  const { setModalInfo } = useModals();
   const data = TRANSLATIONS[userLanguage];
 
   const isServerUrlValid = () =>
@@ -35,19 +35,21 @@ export function ProfileForm({
     if (!user) return;
     setUpdating(true);
     const newServerUrl = serverUrl.endsWith("/") ? serverUrl : serverUrl + "/";
-    const res = await fetchFromAPI(`auth/users/${user.uuid}/details`, {
-      method: "PUT",
-      body: { serverUrl: newServerUrl },
-    });
-    const json = await res.json();
-    if (res.ok) {
+    const result = await clientToApi(
+      `auth/users/${user.uuid}/details`,
+      accessToken,
+      {
+        method: "PUT",
+        body: { serverUrl: newServerUrl },
+        userLanguage,
+      },
+    );
+    if (result.ok) {
       setServerUrl(newServerUrl);
       setModalInfo(data.profile.serverUrlUpdated(newServerUrl));
       // const newUser = { ...user, serverUrl: newServerUrl };
       // TODO: implement setUser
       // setUser(newUser);
-    } else {
-      setModalError(getErrorMessage(res, json, data));
     }
     setUpdating(false);
   }

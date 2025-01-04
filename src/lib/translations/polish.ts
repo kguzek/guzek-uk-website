@@ -115,6 +115,7 @@ export const POLISH: Translation = {
       source: "Źródło",
       images: "Galeria",
       episodes: "Odcinki",
+      noEpisodes: "Brak odcinków do wyświetlenia.",
       episode: "Odcinek",
       season: "Sezon",
       like: "Polub",

@@ -114,6 +114,7 @@ export const ENGLISH: Translation = {
       source: "Source",
       images: "Gallery",
       episodes: "Episodes",
+      noEpisodes: "No episodes to list.",
       episode: "Episode",
       season: "Season",
       like: "Like",

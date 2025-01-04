@@ -1,16 +1,20 @@
 import { ErrorComponent } from "@/components/error-component";
-import { serverToApi } from "@/lib/backend-v2";
+import { getAccessToken, serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
 import {
+  Episode,
   ShowData,
   UserShows,
   WatchedEpisodes,
   type TvShowDetails,
 } from "@/lib/types";
 import { getTitle } from "@/lib/util";
-import { getCurrentUser } from "@/providers/auth-provider";
+import { getCurrentUser } from "@/lib/backend/user";
 import { useTranslations } from "@/providers/translation-provider";
 import { ShowDetails } from "./show";
+import { Fragment } from "react";
+import { EpisodesList } from "@/components/liveseries/episodes-list";
+import { WatchedIndicator } from "./watched-indicator";
 
 interface Props {
   params: Promise<Record<string, string>>;
@@ -28,6 +32,19 @@ export async function generateMetadata({ params }: Props) {
   };
 }
 
+function sortEpisodes(episodes: Episode[]) {
+  const seasons: { [season: number]: Episode[] } = {};
+  for (const episode of episodes) {
+    const season = episode.season;
+    if (seasons[season]) {
+      seasons[season].push(episode);
+    } else {
+      seasons[season] = [episode];
+    }
+  }
+  return Object.entries(seasons);
+}
+
 const getShowDetails = async (params: Props["params"]) =>
   await serverToApi<{ tvShow: TvShowDetails }>("show-details", {
     params: { q: (await params).permalink },
@@ -36,7 +53,7 @@ const getShowDetails = async (params: Props["params"]) =>
 
 export default async function TvShow({ params }: Props) {
   const { permalink } = await params;
-  const { userLanguage } = await useTranslations();
+  const { data, userLanguage } = await useTranslations();
   const showResult = await serverToApi<{ tvShow: TvShowDetails }>(
     "show-details",
     {
@@ -62,6 +79,8 @@ export default async function TvShow({ params }: Props) {
       watchedEpisodesResult.data[showResult.data.tvShow.id]) ||
     [];
   const user = await getCurrentUser();
+  const accessToken = await getAccessToken();
+
   return (
     <ShowDetails
       tvShowDetails={showResult.data.tvShow}
@@ -70,6 +89,25 @@ export default async function TvShow({ params }: Props) {
       user={user}
       userLanguage={userLanguage}
       watchedEpisodes={watchedEpisodes}
-    />
+      accessToken={accessToken}
+    >
+      {sortEpisodes(showResult.data.tvShow.episodes).map(
+        ([season, episodes]) => (
+          <Fragment key={`season-${season}`}>
+            <EpisodesList
+              tvShow={showResult.data.tvShow}
+              heading={`${data.liveSeries.tvShow.season} ${season}`}
+              episodes={episodes}
+            >
+              <WatchedIndicator
+                season={season}
+                episodes={episodes}
+                userLanguage={userLanguage}
+              />
+            </EpisodesList>
+          </Fragment>
+        ),
+      )}
+    </ShowDetails>
   );
 }

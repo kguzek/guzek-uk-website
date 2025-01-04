@@ -1,5 +1,6 @@
 import { ThreeDots } from "react-loader-spinner";
-import { COLOR_PRIMARY } from ".";
+
+export const COLOR_PRIMARY = "var(--color-primary)";
 
 export function LoadingButton() {
   return (

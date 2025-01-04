@@ -2,9 +2,10 @@ import { Metadata, Viewport } from "next";
 import { ReactNode } from "react";
 import { NavBar } from "@/components/navigation/navigation-bar";
 import { Footer } from "@/components/footer";
-import { ContextProviders } from "@/providers/context-providers";
 import "./globals.css";
 import "./forms.css";
+import { ModalProvider } from "@/context/modal-context";
+import { useTranslations } from "@/providers/translation-provider";
 
 export const metadata: Metadata = {
   title: "Guzek UK",
@@ -28,7 +29,12 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const { userLanguage } = await useTranslations();
   return (
     <html lang="en">
       <head>
@@ -48,11 +54,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body>
-        <ContextProviders>
+        <ModalProvider userLanguage={userLanguage}>
           <NavBar />
           {children}
           <Footer />
-        </ContextProviders>
+        </ModalProvider>
       </body>
     </html>
   );

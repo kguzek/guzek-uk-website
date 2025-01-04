@@ -1,6 +1,6 @@
 import { NextMiddleware, NextRequest } from "next/server";
 import { Dispatch, SetStateAction } from "react";
-import { LOG_LEVEL_ICONS } from "./enums";
+import { DownloadStatus, LOG_LEVEL_ICONS } from "./enums";
 
 export interface PageContent {
   content: string;
@@ -14,13 +14,6 @@ export interface MenuItem {
   adminOnly: boolean;
   shouldFetch: boolean;
 }
-
-export type TryFetch = <T>(
-  path: string,
-  params: Record<string, string>,
-  defaultData: T,
-  useCache?: boolean,
-) => Promise<T>;
 
 export interface User {
   uuid?: string;
@@ -105,15 +98,6 @@ export interface WatchedEpisodes {
 export interface ShowData<T> {
   [showId: number]: T;
 }
-
-export const DownloadStatus = {
-  STOPPED: 1,
-  PENDING: 2,
-  COMPLETE: 3,
-  FAILED: 4,
-  UNKNOWN: 5,
-  VERIFYING: 6,
-};
 
 export type DownloadStatusType =
   (typeof DownloadStatus)[keyof typeof DownloadStatus];

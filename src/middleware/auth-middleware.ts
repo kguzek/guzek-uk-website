@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { MiddlewareFactory } from "@/lib/types";
-import { getCurrentUser } from "@/providers/auth-provider";
+import { getCurrentUser } from "@/lib/backend/user";
 
 const ROUTES_REQUIRING_AUTH = ["/profile", "/admin", "/liveseries/watch"];
 const ROUTES_REQUIRING_NOAUTH = ["/login", "/signup"];

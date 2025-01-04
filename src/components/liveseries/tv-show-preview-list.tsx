@@ -1,9 +1,10 @@
 import { Language } from "@/lib/enums";
-import type { TvShowList } from "@/lib/types";
+import { UserShows, type TvShowList } from "@/lib/types";
 import { Paginator } from "@/components/pagination/paginator";
 import { NumericValue } from "@/components/numeric-value";
 import { TvShowPreview } from "./tv-show-preview";
 import { TRANSLATIONS } from "@/lib/translations";
+import { getAccessToken, serverToApi } from "@/lib/backend/server";
 
 const RESULTS_PER_PAGE = 20;
 
@@ -17,9 +18,11 @@ const DUMMY_TV_SHOWS = {
 export async function TvShowPreviewList({
   tvShows: tvShowsRaw,
   userLanguage,
+  searchParams,
 }: {
   tvShows?: TvShowList;
   userLanguage: Language;
+  searchParams: Record<string, string>;
 }) {
   const data = TRANSLATIONS[userLanguage];
 
@@ -31,6 +34,21 @@ export async function TvShowPreviewList({
   if (tvShowsRaw?.total === "0")
     return <p>{data.liveSeries.search.noResults}</p>;
 
+  const accessToken = await getAccessToken();
+  const userShowsResult = await serverToApi<UserShows>(
+    "liveseries/shows/personal",
+  );
+  const likedShowIds =
+    (userShowsResult.ok && userShowsResult.data.likedShows) || [];
+
+  const paginator = (
+    <Paginator
+      currentPage={tvShows.page}
+      numPages={tvShows.pages}
+      searchParams={searchParams}
+    />
+  );
+
   return (
     <div className="flex flex-col items-center">
       <small className="showing">
@@ -38,17 +56,20 @@ export async function TvShowPreviewList({
         <NumericValue value={endIdx} /> {data.liveSeries.tvShowList.of}{" "}
         <NumericValue value={tvShows.total} />
       </small>
-      <Paginator currentPage={tvShows.page} numPages={tvShows.pages} />
+      {paginator}
       <div className="cards-grid my-3 grid w-full justify-center gap-4">
         {tvShows.tv_shows.map((showDetails, idx) => (
           <TvShowPreview
             key={`tv-show-${showDetails.id}-${idx}`}
             idx={idx % 8}
             showDetails={tvShowsRaw ? showDetails : undefined}
+            userLanguage={userLanguage}
+            accessToken={accessToken}
+            isLiked={likedShowIds.includes(showDetails.id)}
           />
         ))}
       </div>
-      <Paginator currentPage={tvShows.page} numPages={tvShows.pages} />
+      {paginator}
     </div>
   );
 }

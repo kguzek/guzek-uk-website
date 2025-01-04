@@ -6,14 +6,13 @@ import InputBox from "@/components/forms/input-box";
 import { LoadingButton } from "@/components/loading/loading-button";
 import { TRANSLATIONS } from "@/lib/translations";
 import type { Language } from "@/lib/enums";
-import { useFetch } from "@/context/fetch-context";
 import { useModals } from "@/context/modal-context";
+import { clientToApi } from "@/lib/backend/client";
 
 export function LogInForm({ userLanguage }: { userLanguage: Language }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { fetchFromAPI } = useFetch();
   const { setModalError } = useModals();
   const router = useRouter();
 
@@ -29,7 +28,10 @@ export function LogInForm({ userLanguage }: { userLanguage: Language }) {
     };
     let res;
     try {
-      res = await fetchFromAPI("auth/tokens", { method: "POST", body });
+      res = await clientToApi("auth/tokens", "", {
+        method: "POST",
+        body,
+      });
     } catch (error) {
       setModalError(data.networkError);
       console.error(error);

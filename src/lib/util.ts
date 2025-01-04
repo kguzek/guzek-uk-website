@@ -1,24 +1,9 @@
-import {
-  getFetchFromAPI,
-  clearStoredLoginInfo,
-  updateAccessToken,
-} from "./backend";
 import { Language } from "./enums";
-import type { Episode, User, DownloadedEpisode, TryFetch } from "./types";
+import type { Episode, DownloadedEpisode } from "./types";
 import { Translation } from "./translations";
 import Cookies from "universal-cookie";
 
 export const PAGE_NAME = "Guzek UK";
-
-const USER_REQUIRED_PROPERTIES = [
-  "uuid",
-  "username",
-  "email",
-  "admin",
-  "serverUrl",
-  "created_at",
-  "modified_at",
-];
 
 export function getTitle(
   title?: string,
@@ -32,35 +17,6 @@ export function getTitle(
 
 export const setTitle = (title: string) =>
   void (document.title = getTitle(title));
-
-export const getTryFetch = (
-  fetchFromAPI: ReturnType<typeof getFetchFromAPI>,
-  setModalError: (message: string | undefined) => void,
-  data: Translation,
-): TryFetch =>
-  /** Attempts to fetch the data from local cache or from the API.
-   *  On success, returns the consumed response's body.
-   *  On failure, returns `defaultData`.
-   */
-  async function tryFetch<T>(
-    path: string,
-    params: Record<string, string>,
-    defaultData: T,
-    useCache: boolean = true,
-  ) {
-    let res;
-    try {
-      res = await fetchFromAPI(path, { params }, useCache);
-    } catch (networkError) {
-      console.error("Could not fetch from API:", networkError);
-      setModalError(data.networkError);
-      return defaultData;
-    }
-    const json = await res?.json();
-    if (res?.ok) return json as T;
-    setModalError(getErrorMessage(res, json, data));
-    return defaultData;
-  };
 
 const divmod = (dividend: number, divisor: number) => [
   Math.floor(dividend / divisor),
@@ -139,47 +95,6 @@ export const getErrorMessage = (
 export const getUTCDateString = (dateInit: any) =>
   new Date(dateInit).toISOString().split("T")[0];
 
-export function getUserFromResponse(json: any) {
-  const { accessToken, refreshToken, expiresAt, ...userDetails } = json;
-  updateAccessToken(accessToken);
-  localStorage.setItem("refreshToken", refreshToken);
-  return userDetails as User;
-}
-
-function rejectSavedUser(user: any) {
-  console.warn(
-    "Cleared fake user set in localStorage. If you're reading this, nice try!",
-    user,
-  );
-  clearStoredLoginInfo();
-}
-
-export function getLocalUser() {
-  const savedUser = localStorage.getItem("user");
-  if (!savedUser) return;
-  let parsedUser;
-  try {
-    parsedUser = JSON.parse(savedUser);
-  } catch {
-    return clearStoredLoginInfo();
-  }
-  if (!parsedUser) return clearStoredLoginInfo();
-  for (const property of USER_REQUIRED_PROPERTIES) {
-    if (parsedUser[property] !== undefined) continue;
-    return rejectSavedUser(parsedUser);
-  }
-  if (
-    Object.keys(parsedUser).length !==
-    Object.keys(USER_REQUIRED_PROPERTIES).length
-  ) {
-    return rejectSavedUser(parsedUser);
-  }
-  for (const dateString of [parsedUser.created_at, parsedUser.modified_at]) {
-    if (isInvalidDate(new Date(dateString))) return rejectSavedUser(parsedUser);
-  }
-  return parsedUser as User;
-}
-
 const UNIT_PREFIXES = ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi"];
 
 /** Converts a value in bytes to a human-readable form. E.g. (4096) => "4.00 KiB" */
@@ -209,11 +124,15 @@ export function setLanguageCookie(langString: string) {
   }
   const language = Language[langString as keyof typeof Language];
   const cookies = new Cookies();
+  const developmentMode = process.env.NODE_ENV === "development";
   cookies.set("lang", langString, {
     httpOnly: false,
     expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
     path: "/",
     sameSite: "lax",
+    domain: developmentMode ? "localhost" : "guzek.uk",
+    secure: !developmentMode,
   });
+  console.debug("Set language cookie to", langString);
   return language;
 }

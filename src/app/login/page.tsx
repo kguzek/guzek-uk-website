@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getTitle } from "@/lib/util";
 import { useTranslations } from "@/providers/translation-provider";
-import { getCurrentUser } from "@/providers/auth-provider";
+import { getCurrentUser } from "@/lib/backend/user";
 import { LogInForm } from "./form";
 
 export async function generateMetadata(): Promise<Metadata> {

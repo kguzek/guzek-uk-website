@@ -1,11 +1,10 @@
 "use client";
 
-import { useFetch } from "@/context/fetch-context";
 import { useModals } from "@/context/modal-context";
+import { clientToApi } from "@/lib/backend/client";
 import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import type { User } from "@/lib/types";
-import { getErrorMessage } from "@/lib/util";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -16,9 +15,8 @@ export function UserCard({
   user: User;
   userLanguage: Language;
 }) {
-  const { setModalChoice, setModalError, setModalInfo } = useModals();
-  const [deleted, setDeleted] = useState(false);
-  const { fetchFromAPI } = useFetch();
+  const { setModalChoice, setModalInfo } = useModals();
+  const [isDeleted, setIsDeleted] = useState(false);
 
   const data = TRANSLATIONS[userLanguage];
 
@@ -29,25 +27,16 @@ export function UserCard({
   }
 
   async function deleteUser(user: User) {
-    try {
-      const res = await fetchFromAPI(`auth/users/${user.uuid}`, {
-        method: "DELETE",
-      });
-      if (!res) throw new Error("Beep boop 123");
-      if (res.ok) {
-        setModalInfo(data.admin.users.deleted(user.username));
-        setDeleted(true);
-      } else {
-        const json = await res.json();
-        setModalError(getErrorMessage(res, json, data));
-      }
-    } catch (error) {
-      console.error(error);
-      setModalError(data.networkError);
+    const res = await clientToApi(`auth/users/${user.uuid}`, userLanguage, {
+      method: "DELETE",
+    });
+    if (res.ok) {
+      setModalInfo(data.admin.users.deleted(user.username));
+      setIsDeleted(true);
     }
   }
 
-  if (deleted) return null;
+  if (isDeleted) return null;
   return (
     <div className="clickable card-container overflow-hidden">
       <Link

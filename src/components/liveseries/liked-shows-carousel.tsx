@@ -17,16 +17,16 @@ export function LikedShowsCarousel({
   likedShowIds,
   likedShows,
   userLanguage,
+  accessToken,
 }: {
   likedShowIds?: number[];
   likedShows: LikedShows;
   userLanguage: Language;
+  accessToken: string | null;
 }) {
   const { setModalError } = useModals();
   const carouselRef = useRef<HTMLUListElement>(null);
-
   const data = TRANSLATIONS[userLanguage];
-  // TODO: ????
 
   const {
     scroll: carouselScroll,
@@ -97,6 +97,9 @@ export function LikedShowsCarousel({
             <TvShowPreview
               idx={idx}
               showDetails={likedShowIds ? likedShows[showId] : undefined}
+              userLanguage={userLanguage}
+              accessToken={accessToken}
+              isLiked={likedShowIds?.includes(showId) ?? false}
             />
           </li>
         ))}

@@ -3,8 +3,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "@/context/translation-context";
 import { useModals } from "@/context/modal-context";
+import { TRANSLATIONS } from "@/lib/translations";
+import { Language } from "@/lib/enums";
 
 const VIDEO_FRAME_RATE = 25; // frames per second
 const VIDEO_FRAME_LENGTH = 1 / VIDEO_FRAME_RATE; // seconds per frame
@@ -15,12 +16,14 @@ export default function Player({
   episode,
   apiBase,
   accessToken,
+  userLanguage,
 }: {
   showName: string;
   season: number;
   episode: number;
   apiBase: string;
   accessToken: string;
+  userLanguage: Language;
 }) {
   const videoContainerRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -31,8 +34,8 @@ export default function Player({
   const [iconVisibility, setIconVisibility] = useState("hidden");
   const [currentTimeout, setCurrentTimeout] = useState<null | number>(null);
   const router = useRouter();
-  const { data } = useTranslations();
   const { setModalError } = useModals();
+  const data = TRANSLATIONS[userLanguage];
 
   useEffect(() => {
     window.addEventListener("fullscreenchange", onFullscreenChange);

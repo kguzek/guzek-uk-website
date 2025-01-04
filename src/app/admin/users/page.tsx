@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import type { User } from "@/lib/types";
 import { useTranslations } from "@/providers/translation-provider";
-import { serverToApi } from "@/lib/backend-v2";
+import { serverToApi } from "@/lib/backend/server";
 import { ErrorComponent } from "@/components/error-component";
 import { ErrorCode } from "@/lib/enums";
 import { UserCard } from "./user-card";

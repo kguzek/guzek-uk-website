@@ -1,9 +1,9 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { ErrorComponent } from "@/components/error-component";
 import { ErrorCode } from "@/lib/enums";
-import { getAccessToken } from "@/lib/backend-v2";
-import { getCurrentUser } from "@/providers/auth-provider";
+import { getAccessToken } from "@/lib/backend/server";
+import { getCurrentUser } from "@/lib/backend/user";
+import { useTranslations } from "@/providers/translation-provider";
 import Player from "./player";
 
 function isNumber(val: string | string[] | undefined): val is string {
@@ -15,6 +15,7 @@ interface Props {
 }
 
 export default async function Watch({ params }: Props) {
+  const { userLanguage } = await useTranslations();
   const { showName, season, episode } = await params;
   if (
     Array.isArray(showName) ||
@@ -29,7 +30,7 @@ export default async function Watch({ params }: Props) {
   if (!user.serverUrl) {
     return NextResponse.redirect("/profile?redirect_reason=no_server_url");
   }
-  const accessToken = await getAccessToken(await cookies());
+  const accessToken = await getAccessToken();
   if (!accessToken) {
     return <ErrorComponent errorCode={ErrorCode.Unauthorized} />;
   }
@@ -40,6 +41,7 @@ export default async function Watch({ params }: Props) {
       episode={+episode}
       apiBase={user.serverUrl}
       accessToken={accessToken}
+      userLanguage={userLanguage}
     />
   );
 }

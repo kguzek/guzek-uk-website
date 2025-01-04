@@ -6,9 +6,8 @@ import { LoadingButton } from "@/components/loading/loading-button";
 import { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import { User } from "@/lib/types";
-import { getErrorMessage } from "@/lib/util";
-import { useFetch } from "@/context/fetch-context";
 import { useModals } from "@/context/modal-context";
+import { clientToApi } from "@/lib/backend/client";
 
 export function UserEditor({
   user: originalUser,
@@ -23,8 +22,7 @@ export function UserEditor({
   const [admin, setAdmin] = useState(user.admin);
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState("");
-  const { setModalError, setModalInfo } = useModals();
-  const { fetchFromAPI, removeOldCaches } = useFetch();
+  const { setModalInfo } = useModals();
   const data = TRANSLATIONS[userLanguage];
 
   const haveDetailsChanged = () =>
@@ -35,7 +33,6 @@ export function UserEditor({
     if (haveDetailsChanged()) {
       const newUser = { email, username, admin };
       updateUser("details", newUser, () => {
-        removeOldCaches();
         setUser({ ...user, ...newUser });
       });
     }
@@ -50,21 +47,17 @@ export function UserEditor({
     onSuccess: () => void,
   ) {
     setLoading(true);
-    try {
-      const res = await fetchFromAPI(`auth/users/${user.uuid}/${section}`, {
+    const result = await clientToApi(
+      `auth/users/${user.uuid}/${section}`,
+      userLanguage,
+      {
         method: "PUT",
         body,
-      });
-      if (!res) throw new Error("BEEP BOOOOOOOOOOP");
-      if (res.ok) {
-        setModalInfo(`Successfully updated user '${username}' ${section}.`);
-        onSuccess();
-      } else {
-        const json = await res.json();
-        setModalError(getErrorMessage(res, json, data));
-      }
-    } catch {
-      setModalError(data.networkError);
+      },
+    );
+    if (result.ok) {
+      setModalInfo(`Successfully updated user '${username}' ${section}.`);
+      onSuccess();
     }
     setLoading(false);
   }

@@ -2,42 +2,33 @@
 
 import { MouseEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useFetch } from "@/context/fetch-context";
-import { useModals } from "@/context/modal-context";
-import { getErrorMessage } from "@/lib/util";
+import { LoadingButton } from "@/components/loading/loading-button";
 import { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
-import { clearStoredLoginInfo } from "@/lib/backend";
-import { LoadingButton } from "@/components/loading/loading-button";
+import { clientToApi } from "@/lib/backend/client";
 
-export function LogoutButton({ userLanguage }: { userLanguage: Language }) {
+export function LogoutButton({
+  userLanguage,
+  accessToken,
+}: {
+  userLanguage: Language;
+  accessToken: string;
+}) {
   const [loggingOut, setLoggingOut] = useState(false);
   const router = useRouter();
-  const { fetchFromAPI } = useFetch();
-  const { setModalError } = useModals();
 
   const data = TRANSLATIONS[userLanguage];
 
   async function handleLogOut(_evt: MouseEvent<HTMLButtonElement>) {
     setLoggingOut(true);
-    let res;
-    try {
-      res = await fetchFromAPI(`auth/tokens`, { method: "DELETE" });
-    } catch {
-      setModalError(data.networkError);
-      setLoggingOut(false);
-      return;
-    }
+    const result = await clientToApi(`auth/tokens`, accessToken, {
+      method: "DELETE",
+      userLanguage,
+    });
     setLoggingOut(false);
-    if (!res.ok) {
-      const json = await res.json();
-      setModalError(getErrorMessage(res, json, data));
-      return;
+    if (result.ok) {
+      router.push("/login");
     }
-    clearStoredLoginInfo();
-    // TODO: implement logout via cookies
-    // logout();
-    router.push("/login");
   }
 
   return (

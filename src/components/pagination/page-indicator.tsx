@@ -1,46 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { useLiveSeries } from "@/context/liveseries-context";
-import { useTranslations } from "@/context/translation-context";
-import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { getSearchParams } from "@/lib/backend";
+import { TRANSLATIONS } from "@/lib/translations";
+import type { Language } from "@/lib/enums";
 
-const pagePattern = /page=\d+/;
-
-interface PageIndicatorProps {
-  page?: number;
-  currentPage: number;
-  direction?: "PREVIOUS" | "NEXT";
-  disabled?: boolean;
-}
-
-function PageIndicator({
+export function PageIndicator({
   page,
   currentPage,
   direction,
+  searchParams,
   disabled = false,
-  search = "",
-}: PageIndicatorProps & {
-  search?: string;
+  userLanguage,
+}: {
+  page?: number;
+  currentPage: number;
+  searchParams: Record<string, string>;
+  direction?: "PREVIOUS" | "NEXT";
+  disabled?: boolean;
+  userLanguage: Language;
 }) {
-  const { data } = useTranslations();
   let loading = [];
-  try {
-    ({ loading } = useLiveSeries());
-  } catch (error) {
-    console.warn("PageIndicator is not inside a LiveSeriesProvider");
-    console.error(error);
-  }
-
-  function getNewSearchParams() {
-    const newFragment = `page=${page}`;
-    if (!search) return newFragment;
-    if (search.match(pagePattern))
-      return search.replace(pagePattern, newFragment);
-    return search + "&" + newFragment;
-  }
   let displayValue;
+  const data = TRANSLATIONS[userLanguage];
 
   if (null == page) {
     if (!direction) return <div className="page-indicator disabled">...</div>;
@@ -53,7 +35,11 @@ function PageIndicator({
   }
   return (
     <Link
-      href={disabled ? "#" : "?" + getNewSearchParams()}
+      href={
+        disabled
+          ? "#"
+          : getSearchParams({ ...searchParams, page: page.toString() })
+      }
       className={`page-indicator serif ${
         disabled ? "disabled" : page === currentPage ? "current-page" : ""
       } ${direction ? "auxiliary" : ""}`}
@@ -63,13 +49,5 @@ function PageIndicator({
     >
       {displayValue}
     </Link>
-  );
-}
-
-export default function SuspendedPageIndicator(props: PageIndicatorProps) {
-  return (
-    <Suspense fallback={<PageIndicator {...props} />}>
-      <PageIndicator {...props} search={useSearchParams().toString()} />
-    </Suspense>
   );
 }

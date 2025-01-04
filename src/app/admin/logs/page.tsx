@@ -5,7 +5,7 @@ import type { LogResponse } from "@/lib/types";
 import { TRANSLATIONS } from "@/lib/translations";
 import { getTitle, getUTCDateString } from "@/lib/util";
 import { ErrorCode } from "@/lib/enums";
-import { serverToApi } from "@/lib/backend-v2";
+import { serverToApi } from "@/lib/backend/server";
 import { useTranslations } from "@/providers/translation-provider";
 import { FilteredLogs } from "./filtered-logs";
 

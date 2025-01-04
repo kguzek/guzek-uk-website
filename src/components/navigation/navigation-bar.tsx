@@ -1,7 +1,8 @@
-import { serverToApi } from "@/lib/backend-v2";
-import { NavBarItem, UserWidget } from "./navigation-bar-client";
+import { serverToApi } from "@/lib/backend/server";
+import { NavBarItem } from "./navigation-bar-client";
+import { UserWidget } from "./user-widget";
 import { MenuItem } from "@/lib/types";
-import { getCurrentUser } from "@/providers/auth-provider";
+import { getCurrentUser } from "@/lib/backend/user";
 import Logo from "@/media/logo";
 import { PAGE_NAME } from "@/lib/util";
 import { LanguageSelector } from "./language-selector";
@@ -42,7 +43,7 @@ export async function NavBar() {
           {/* Menu */}
           <ul className="invisible absolute right-0 top-0 z-10 w-full origin-top-right scale-[25%] transform select-none items-center rounded-b-lg border-0 border-b-2 border-background-soft bg-background pb-4 opacity-0 shadow-lg shadow-background-strong transition-[opacity,transform,visibility] duration-300 peer-has-[:checked]:visible peer-has-[:checked]:scale-100 peer-has-[:checked]:opacity-100 sm:right-10 sm:top-3 sm:w-[50%] sm:rounded-lg sm:border-2 sm:border-solid lg:visible lg:static lg:flex lg:w-full lg:transform-none lg:border-none lg:bg-transparent lg:opacity-100 lg:shadow-none">
             <div className="mt-5 sm:hidden">
-              <UserWidget user={user} />
+              <UserWidget user={user} userLanguage={userLanguage} />
             </div>
             {menuItems
               .filter((item) => user?.admin || !item.adminOnly)
@@ -54,7 +55,7 @@ export async function NavBar() {
             <LanguageSelector userLanguage={userLanguage} />
           </ul>
           <div className="hidden sm:block">
-            <UserWidget user={user} />
+            <UserWidget user={user} userLanguage={userLanguage} />
           </div>
         </div>
       </nav>

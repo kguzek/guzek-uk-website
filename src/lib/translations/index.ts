@@ -85,6 +85,7 @@ export type Translation = Readonly<{
       source: string;
       images: string;
       episodes: string;
+      noEpisodes: string;
       episode: string;
       season: string;
       like: string;

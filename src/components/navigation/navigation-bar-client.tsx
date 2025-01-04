@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { MenuItem, User } from "@/lib/types";
-import { useTranslations } from "@/context/translation-context";
+import type { MenuItem } from "@/lib/types";
 import "./navigation.css";
 
 export function NavBarItem({ item }: { item: MenuItem }) {
@@ -21,42 +20,15 @@ export function NavBarItem({ item }: { item: MenuItem }) {
   );
 }
 
-export function UserWidget({ user }: { user: User | null }) {
-  const pathname = usePathname();
-  const { data } = useTranslations();
-  //  add user.url
-  const imgUrl =
-    (user && Object.hasOwn(user, "url") && (user as any).url) ||
-    "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/default-avatar.png";
-  const active =
-    pathname != null && ["/profile", "/login"].includes(pathname)
-      ? "active"
-      : "";
-  return (
-    <Link
-      href={user ? "/profile" : "/login"}
-      className={`${active} clickable nav-link user-widget min-w-20`}
-      onClick={() => {}}
-    >
-      <img alt="User avatar" className="user-avatar" src={imgUrl} />
-      <b className="user-name whitespace-nowrap">
-        {user?.username || data.loginShort}
-      </b>
-    </Link>
-  );
-}
-
-interface Page {
-  link: string;
-  label: string;
-}
-
 export function MiniNavBar({
   pathBase,
   pages,
 }: {
   pathBase: string;
-  pages: Page[];
+  pages: {
+    link: string;
+    label: string;
+  }[];
 }) {
   const pathname = usePathname();
 

@@ -4,12 +4,10 @@ import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import InputBox from "@/components/forms/input-box";
 import { LoadingButton } from "@/components/loading/loading-button";
-import { getErrorMessage, getUserFromResponse } from "@/lib/util";
 import type { Language } from "@/lib/enums";
-import { useAuth } from "@/context/auth-context";
-import { useFetch } from "@/context/fetch-context";
 import { useModals } from "@/context/modal-context";
 import { TRANSLATIONS } from "@/lib/translations";
+import { clientToApi } from "@/lib/backend/client";
 
 export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
   const [email, setEmail] = useState("");
@@ -18,8 +16,6 @@ export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { setUser } = useAuth();
-  const { fetchFromAPI } = useFetch();
   const { setModalError } = useModals();
 
   const data = TRANSLATIONS[userLanguage];
@@ -38,7 +34,7 @@ export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
       setModalError(data.profile.passwordMismatch);
       return;
     }
-    setModalError("");
+    setModalError();
     setLoading(true);
 
     const body = {
@@ -46,23 +42,15 @@ export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
       email,
       password,
     };
-    let res;
-    try {
-      res = await fetchFromAPI("auth/users", { method: "POST", body });
-    } catch (error) {
-      console.error(error);
-      setModalError(data.networkError);
-      setLoading(false);
-      return;
-    }
-    const json = await res.json();
-    if (res.ok) {
-      setUser(getUserFromResponse(json));
-      router.push("/profile");
-    } else {
-      setModalError(getErrorMessage(res, json, data));
-    }
+    const result = await clientToApi("auth/users", "", {
+      method: "POST",
+      body,
+      userLanguage,
+    });
     setLoading(false);
+    if (result.ok) {
+      router.push("/profile");
+    }
   }
 
   return (

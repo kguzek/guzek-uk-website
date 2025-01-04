@@ -5,11 +5,10 @@ import { Language } from "@/lib/enums";
 import { MenuItem, PageContent } from "@/lib/types";
 import { useModals } from "@/context/modal-context";
 import { TRANSLATIONS } from "@/lib/translations";
-import { useFetch } from "@/context/fetch-context";
-import { getErrorMessage } from "@/lib/util";
 import InputBox from "@/components/forms/input-box";
 import { LoadingButton } from "@/components/loading/loading-button";
 import InputArea from "@/components/forms/input-area";
+import { clientToApi } from "@/lib/backend/client";
 
 const TEXT_PAGE_PROPERTIES = ["title", "url"] as const;
 const BOOL_PAGE_PROPERTIES = ["adminOnly", "localUrl", "shouldFetch"] as const;
@@ -19,11 +18,13 @@ export function PagesForm({
   pageContent,
   menuItems,
   pagesMap,
+  accessToken,
 }: {
   userLanguage: Language;
   pageContent: Record<number, PageContent>;
   menuItems: MenuItem[];
   pagesMap: Map<number, string>;
+  accessToken: string;
 }) {
   const data = TRANSLATIONS[userLanguage];
   const [selectedPageId, setSelectedPageId] = useState(menuItems[0]?.id ?? 0);
@@ -42,6 +43,7 @@ export function PagesForm({
           userLanguage={userLanguage}
           originalPage={selectedPage as MenuItem}
           pageContent={pageContent[selectedPageId]}
+          accessToken={accessToken}
         />
       )}
     </form>
@@ -52,16 +54,17 @@ function PagesEditor({
   userLanguage,
   originalPage,
   pageContent,
+  accessToken,
 }: {
   userLanguage: Language;
   originalPage: MenuItem;
   pageContent: PageContent | undefined;
+  accessToken: string;
 }) {
   const [page, setPage] = useState<MenuItem>(originalPage);
   const [content, setContent] = useState(pageContent?.content ?? "");
   const [clickedSubmit, setClickedSubmit] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
-  const { fetchFromAPI, removeOldCaches } = useFetch();
   const { setModalError } = useModals();
   const data = TRANSLATIONS[userLanguage];
 
@@ -79,17 +82,13 @@ function PagesEditor({
     setClickedSubmit(true);
     const url = `pages/${page.id}?lang=${userLanguage}`;
     try {
-      const res = await fetchFromAPI(url, {
+      const result = await clientToApi(url, accessToken, {
         method: "PUT",
         body: { ...page, content },
+        userLanguage,
       });
-      if (!res) throw new Error("BEEP BOOOOOOOOOOP v2");
-      if (res.ok) {
-        removeOldCaches();
+      if (result.ok) {
         setUnsavedChanges(false);
-      } else {
-        const json = await res.json();
-        setModalError(getErrorMessage(res, json, data));
       }
     } catch {
       setModalError(data.networkError);

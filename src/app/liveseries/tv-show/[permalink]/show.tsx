@@ -1,8 +1,7 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { ReactNode, useState } from "react";
 import Carousel from "@/components/carousel";
-import { EpisodesList } from "@/components/liveseries/episodes-list";
 import type { Language } from "@/lib/enums";
 import type {
   Episode as EpisodeType,
@@ -10,13 +9,13 @@ import type {
   User,
   WatchedEpisodes,
 } from "@/lib/types";
-import { getEpisodeAirDate, hasEpisodeAired, isInvalidDate } from "@/lib/util";
+import { getEpisodeAirDate, isInvalidDate } from "@/lib/util";
 import TvShowSkeleton from "@/components/liveseries/tv-show-skeleton";
 import InputBox from "@/components/forms/input-box";
-import { useFetch } from "@/context/fetch-context";
 import { useModals } from "@/context/modal-context";
-import { useLiveSeries } from "@/context/liveseries-context";
 import { TRANSLATIONS } from "@/lib/translations";
+import { clientToApi } from "@/lib/backend/client";
+import { TvShowContext } from "./context";
 
 // Will issue a warning when trying to subscribe with more than 10 unwatched episodes
 const UNWATCHED_EPISODES_THRESHOLD = 10;
@@ -28,6 +27,8 @@ export function ShowDetails({
   liked,
   subscribed,
   watchedEpisodes,
+  accessToken,
+  children,
 }: {
   tvShowDetails: TvShowDetails;
   user: User | null;
@@ -35,28 +36,15 @@ export function ShowDetails({
   liked: boolean;
   subscribed: boolean;
   watchedEpisodes: WatchedEpisodes;
+  accessToken: string | null;
+  children: ReactNode;
 }) {
   const [numImagesLoaded, setNumImagesLoaded] = useState(0);
   const [isLiked, setIsLiked] = useState(liked);
   const [isSubscribed, setIsSubscribed] = useState(subscribed);
   const [watchedInShow, setWatchedInShow] = useState(watchedEpisodes);
-  const { fetchResource } = useLiveSeries();
-  const { removeOldCaches } = useFetch();
-  const { setModalChoice } = useModals();
+  const { setModalChoice, setModalError } = useModals();
   const data = TRANSLATIONS[userLanguage];
-
-  function sortEpisodes(episodes: EpisodeType[]) {
-    const seasons: { [season: number]: EpisodeType[] } = {};
-    for (const episode of episodes) {
-      const season = episode.season;
-      if (seasons[season]) {
-        seasons[season].push(episode);
-      } else {
-        seasons[season] = [episode];
-      }
-    }
-    return Object.entries(seasons);
-  }
 
   function formatDate(which: "start" | "end") {
     const latestEpisode = tvShowDetails?.episodes?.at(-1);
@@ -80,18 +68,31 @@ export function ShowDetails({
     return data.dateShortFormat.format(date);
   }
 
+  function promptLogin() {
+    setModalError(data.liveSeries.home.login);
+  }
+
   async function handleLike() {
+    if (!accessToken) {
+      return promptLogin();
+    }
     setIsLiked((old) => !old);
 
-    await fetchResource("shows/personal/liked/" + tvShowDetails?.id, {
-      method: isLiked ? "DELETE" : "POST",
-      onSuccess: () => removeOldCaches(),
-      onError: () => setIsLiked((old) => !old),
-      useEpisodate: false,
-    });
+    const result = await clientToApi(
+      "shows/personal/liked/" + tvShowDetails?.id,
+      accessToken,
+      {
+        method: isLiked ? "DELETE" : "POST",
+        userLanguage,
+      },
+    );
+    if (!result.ok) setIsLiked((old) => !old);
   }
 
   async function handleSubscribe() {
+    if (!accessToken) {
+      return promptLogin();
+    }
     if (
       !isSubscribed &&
       unwatchedEpisodesCount > UNWATCHED_EPISODES_THRESHOLD
@@ -103,28 +104,42 @@ export function ShowDetails({
     }
 
     setIsSubscribed((old) => !old);
-
-    await fetchResource("shows/personal/subscribed/" + tvShowDetails?.id, {
-      method: isSubscribed ? "DELETE" : "POST",
-      onSuccess: () => removeOldCaches(),
-      onError: () => setIsSubscribed((old) => !old),
-      useEpisodate: false,
-    });
+    const result = await clientToApi(
+      "shows/personal/subscribed/" + tvShowDetails?.id,
+      accessToken,
+      {
+        method: isSubscribed ? "DELETE" : "POST",
+        userLanguage,
+      },
+    );
+    if (!result.ok) {
+      setIsSubscribed(subscribed);
+    }
   }
 
-  function updateWatchedEpisodes(season: string, episodes: EpisodeType[]) {
+  async function updateWatchedEpisodes(
+    season: string,
+    episodes: EpisodeType[],
+  ) {
+    if (!accessToken) {
+      return promptLogin();
+    }
     const episodeNumbers = episodes.map((episode) => episode.episode);
-    fetchResource(`watched-episodes/personal/${tvShowDetails.id}/${season}`, {
-      method: "PUT",
-      onSuccess: () => removeOldCaches(),
-      onError: () => setWatchedInShow(watchedEpisodes),
-      body: episodeNumbers,
-      useEpisodate: false,
-    });
     setWatchedInShow((old) => ({
       ...old,
       [season]: episodeNumbers,
     }));
+    const result = await clientToApi(
+      `watched-episodes/personal/${tvShowDetails.id}/${season}`,
+      accessToken,
+      {
+        method: "PUT",
+        body: episodeNumbers,
+      },
+    );
+    if (!result.ok) {
+      setWatchedInShow(watchedEpisodes);
+    }
   }
 
   if (!tvShowDetails) return <TvShowSkeleton />;
@@ -256,44 +271,14 @@ export function ShowDetails({
           ></InputBox>
         </div>
       )}
-      {tvShowDetails.episodes.length === 0 ? <p>No episodes to list.</p> : null}
-      {sortEpisodes(tvShowDetails.episodes).map(([season, episodes]) => {
-        const allEpisodesAired = episodes.every(hasEpisodeAired);
-        const seasonWatched = isSeasonWatched(season, episodes);
-        return (
-          <Fragment key={`season-${season}`}>
-            <EpisodesList
-              tvShow={tvShowDetails}
-              heading={`${data.liveSeries.tvShow.season} ${season}`}
-              episodes={episodes}
-            >
-              <div className="centred">
-                {allEpisodesAired ? (
-                  <div
-                    title={data.liveSeries.tvShow.markAllWatched(
-                      seasonWatched ? data.liveSeries.tvShow.un : "",
-                    )}
-                    onClick={() =>
-                      updateWatchedEpisodes(
-                        season,
-                        seasonWatched ? [] : episodes,
-                      )
-                    }
-                  >
-                    <i
-                      className={`clickable fas fa-eye${
-                        seasonWatched ? "" : "-slash"
-                      }`}
-                    ></i>
-                  </div>
-                ) : (
-                  <i className="fa-regular fa-clock"></i>
-                )}
-              </div>
-            </EpisodesList>
-          </Fragment>
-        );
-      })}
+      {tvShowDetails.episodes.length === 0 ? (
+        <p>{data.liveSeries.tvShow.noEpisodes}</p>
+      ) : null}
+      <TvShowContext.Provider
+        value={{ updateWatchedEpisodes, isSeasonWatched }}
+      >
+        {children}
+      </TvShowContext.Provider>
     </div>
   );
 }

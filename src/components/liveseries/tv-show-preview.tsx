@@ -1,43 +1,51 @@
 "use client";
 
-import React, { MouseEvent, useState } from "react";
+import { MouseEvent, useState } from "react";
 import Link from "next/link";
 import { TvShowDetailsShort } from "@/lib/types";
+import type { Language } from "@/lib/enums";
+import { TRANSLATIONS } from "@/lib/translations";
+import { clientToApi } from "@/lib/backend/client";
+import { useModals } from "@/context/modal-context";
 import TvShowPreviewSkeleton from "./tv-show-preview-skeleton";
-import { useTranslations } from "@/context/translation-context";
-import { useFetch } from "@/context/fetch-context";
-import { useLiveSeries } from "@/context/liveseries-context";
 
 export function TvShowPreview({
   idx,
   showDetails,
+  userLanguage,
+  isLiked: isLikedInitial,
+  accessToken,
 }: {
   idx: number;
   showDetails?: TvShowDetailsShort;
+  userLanguage: Language;
+  isLiked: boolean;
+  accessToken: string | null;
 }) {
-  const [flipped, setFlipped] = useState(false);
-  const { data } = useTranslations();
-  const { removeOldCaches } = useFetch();
-  const { userShows, fetchResource } = useLiveSeries();
-
-  const isLikedOld =
-    showDetails && userShows?.likedShows
-      ? userShows.likedShows.includes(showDetails.id)
-      : false;
-  const isLiked = flipped ? !isLikedOld : isLikedOld;
+  const [isLiked, setIsLiked] = useState(isLikedInitial);
+  const { setModalError } = useModals();
+  const data = TRANSLATIONS[userLanguage];
 
   async function handleHeart(clickEvent: MouseEvent) {
     if (!showDetails) return;
+    if (!accessToken) {
+      setModalError(data.liveSeries.home.login);
+      return;
+    }
     clickEvent.stopPropagation();
 
-    setFlipped(!flipped);
+    setIsLiked((old) => !old);
 
-    await fetchResource("shows/personal/liked/" + showDetails.id, {
-      method: isLiked ? "DELETE" : "POST",
-      onSuccess: () => removeOldCaches(),
-      onError: () => setFlipped((old) => !old),
-      useEpisodate: false,
-    });
+    const result = await clientToApi(
+      "shows/personal/liked/" + showDetails.id,
+      accessToken,
+      {
+        method: isLiked ? "DELETE" : "POST",
+      },
+    );
+    if (!result.ok) {
+      setIsLiked(isLiked);
+    }
   }
 
   if (!showDetails) return <TvShowPreviewSkeleton idx={idx} />;

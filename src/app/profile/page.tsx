@@ -1,9 +1,10 @@
-import { getCurrentUser } from "@/providers/auth-provider";
+import { getCurrentUser } from "@/lib/backend/user";
 import { useTranslations } from "@/providers/translation-provider";
 import { ProfileForm } from "./profile-form";
 import { LogoutButton } from "./logout-button";
 import { PageSkeleton } from "@/components/pages/skeleton";
 import { getTitle } from "@/lib/util";
+import { getAccessToken } from "@/lib/backend/server";
 
 export async function generateMetadata() {
   const { data } = await useTranslations();
@@ -14,9 +15,10 @@ export async function generateMetadata() {
 
 export default async function Profile() {
   const user = await getCurrentUser();
+  const accessToken = await getAccessToken();
   const { data, userLanguage } = await useTranslations();
 
-  if (!user) return <PageSkeleton />;
+  if (!user || !accessToken) return <PageSkeleton />;
 
   return (
     <div className="text">
@@ -41,7 +43,11 @@ export default async function Profile() {
           {data.profile.formDetails.email}:{" "}
           <span className="clickable genre">{user.email}</span>
         </p>
-        <ProfileForm user={user} userLanguage={userLanguage} />
+        <ProfileForm
+          user={user}
+          userLanguage={userLanguage}
+          accessToken={accessToken}
+        />
         <div>
           {/* TODO: make uuid and created_at always available */}
           {user.uuid && (
@@ -62,7 +68,7 @@ export default async function Profile() {
             </p>
           ) : null}
         </div>
-        <LogoutButton userLanguage={userLanguage} />
+        <LogoutButton userLanguage={userLanguage} accessToken={accessToken} />
       </main>
     </div>
   );

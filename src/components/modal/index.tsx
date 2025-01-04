@@ -9,7 +9,7 @@ export type ModalHandler = (primary: boolean) => void;
 
 const VALUE_URL_PATTERN = /^(.+)(https:\/\/[^\s]+)(\s.+)?$/g;
 
-export default function Modal({
+export function Modal({
   value,
   onClick,
   labelPrimary = "Ok",

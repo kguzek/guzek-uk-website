@@ -1,13 +1,17 @@
-import PageIndicator from "./page-indicator";
+import { useTranslations } from "@/providers/translation-provider";
+import { PageIndicator } from "./page-indicator";
 import "./pagination.css";
 
-export function Paginator({
+export async function Paginator({
   currentPage,
   numPages,
+  searchParams,
 }: {
   currentPage: number;
   numPages: number;
+  searchParams: Record<string, string>;
 }) {
+  const { userLanguage } = await useTranslations();
   const pages: (undefined | number)[] = [1];
 
   function addPage(page: number) {
@@ -47,18 +51,24 @@ export function Paginator({
         currentPage={currentPage}
         direction="PREVIOUS"
         disabled={currentPage === 1}
+        searchParams={searchParams}
+        userLanguage={userLanguage}
       />
       {pages.map((page, idx) => (
         <PageIndicator
           key={"page-" + page + "-" + idx}
           page={page}
           currentPage={currentPage}
+          searchParams={searchParams}
+          userLanguage={userLanguage}
         />
       ))}
       <PageIndicator
         currentPage={currentPage}
         direction="NEXT"
         disabled={currentPage === numPages}
+        searchParams={searchParams}
+        userLanguage={userLanguage}
       />
     </div>
   );

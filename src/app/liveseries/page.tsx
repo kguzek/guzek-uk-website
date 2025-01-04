@@ -14,8 +14,8 @@ import type {
 } from "@/lib/types";
 import { getTitle, hasEpisodeAired } from "@/lib/util";
 import { useTranslations } from "@/providers/translation-provider";
-import { serverToApi } from "@/lib/backend-v2";
-import { getCurrentUser } from "@/providers/auth-provider";
+import { getAccessToken, serverToApi } from "@/lib/backend/server";
+import { getCurrentUser } from "@/lib/backend/user";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data } = await useTranslations();
@@ -27,6 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Home() {
   const { data, userLanguage } = await useTranslations();
   const user = await getCurrentUser();
+  const accessToken = await getAccessToken();
 
   const [showsResult, watchedEpisodesResult] = await Promise.all([
     serverToApi<UserShows>("liveseries/shows/personal"),
@@ -138,6 +139,7 @@ export default async function Home() {
             }
             likedShows={likedShows}
             userLanguage={userLanguage}
+            accessToken={accessToken}
           />
           {showsResult.ok &&
             showsResult.data.likedShows &&

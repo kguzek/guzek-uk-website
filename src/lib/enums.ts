@@ -17,3 +17,12 @@ export const LOG_LEVEL_ICONS = {
   info: "info-circle",
   debug: "info-circle",
 } as const;
+
+export const DownloadStatus = {
+  STOPPED: 1,
+  PENDING: 2,
+  COMPLETE: 3,
+  FAILED: 4,
+  UNKNOWN: 5,
+  VERIFYING: 6,
+};

@@ -1,9 +1,10 @@
 import { MenuItem, PageContent } from "@/lib/types";
 import { Metadata } from "next";
 import { useTranslations } from "@/providers/translation-provider";
-import { serverToApi } from "@/lib/backend-v2";
+import { getAccessToken, serverToApi } from "@/lib/backend/server";
 import { ErrorComponent } from "@/components/error-component";
 import { PagesForm } from "./pages-form";
+import { ErrorCode } from "@/lib/enums";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data } = await useTranslations();
@@ -12,6 +13,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ContentManager() {
   const { data, userLanguage } = await useTranslations();
+  const accessToken = await getAccessToken();
+
+  if (!accessToken) {
+    return <ErrorComponent errorCode={ErrorCode.Unauthorized} />;
+  }
 
   const menuItemsResult = await serverToApi<MenuItem[]>("pages");
   if (!menuItemsResult.ok) {
@@ -43,6 +49,7 @@ export default async function ContentManager() {
           pageContent={pageContent}
           pagesMap={pagesMap}
           menuItems={menuItemsResult.data}
+          accessToken={accessToken}
         />
       )}
     </div>

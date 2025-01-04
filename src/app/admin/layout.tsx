@@ -3,7 +3,7 @@ import { MiniNavBar } from "@/components/navigation/navigation-bar-client";
 import { ErrorComponent } from "@/components/error-component";
 import { ErrorCode } from "@/lib/enums";
 import { useTranslations } from "@/providers/translation-provider";
-import { getCurrentUser } from "@/providers/auth-provider";
+import { getCurrentUser } from "@/lib/backend/user";
 import "./admin.css";
 
 export default async function AdminLayout({

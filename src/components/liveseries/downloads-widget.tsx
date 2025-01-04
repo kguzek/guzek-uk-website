@@ -2,22 +2,33 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { DownloadedEpisode, DownloadStatus } from "@/lib/types";
+import type { DownloadedEpisode, User } from "@/lib/types";
+import { DownloadStatus } from "@/lib/enums";
+import type { Language } from "@/lib/enums";
 import { bytesToReadable, getDuration } from "@/lib/util";
+import { TRANSLATIONS } from "@/lib/translations";
+import { clientToApi } from "@/lib/backend/client";
 import { useModals } from "@/context/modal-context";
-import { useTranslations } from "@/context/translation-context";
-import { useLiveSeries } from "@/context/liveseries-context";
 import "./downloads-widget.css";
 
-export default function DownloadsWidget() {
-  const { downloadedEpisodes, fetchResource } = useLiveSeries();
+export default function DownloadsWidget({
+  user,
+  userLanguage,
+  accessToken,
+  downloadedEpisodes,
+}: {
+  user: User;
+  userLanguage: Language;
+  accessToken: string;
+  downloadedEpisodes: DownloadedEpisode[];
+}) {
   const [collapsed, setCollapsed] = useState(
     downloadedEpisodes.find(
-      (episode) => episode.status === DownloadStatus.PENDING
-    ) == null
+      (episode) => episode.status === DownloadStatus.PENDING,
+    ) == null,
   );
-  const { data } = useTranslations();
   const { setModalInfo, setModalChoice } = useModals();
+  const data = TRANSLATIONS[userLanguage];
   const serialise = data.liveSeries.episodes.serialise;
 
   async function handleDeleteEpisode(episode: DownloadedEpisode) {
@@ -25,13 +36,14 @@ export default function DownloadsWidget() {
     const question = data.liveSeries.episodes.confirmDelete(episodeString);
     const answer = await setModalChoice(question);
     if (!answer) return;
-    function onSuccess() {
+    const result = await clientToApi(
+      `liveseries/downloaded-episodes/${episode.showName}/${episode.season}/${episode.episode}`,
+      accessToken,
+      { method: "DELETE", user },
+    );
+    if (result.ok) {
       setModalInfo(data.liveSeries.episodes.deleted(episodeString));
     }
-    fetchResource(
-      `downloaded-episodes/${episode.showName}/${episode.season}/${episode.episode}`,
-      { method: "DELETE", onSuccess, useEpisodate: false }
-    );
   }
 
   if (downloadedEpisodes.length === 0) return null;
@@ -47,14 +59,14 @@ export default function DownloadsWidget() {
         onClick={() => setCollapsed((old) => !old)}
       >
         <i
-          className={`fas transition-transform fa-chevron-up ${
+          className={`fas fa-chevron-up transition-transform ${
             collapsed ? "" : "rotate-180"
           }`}
         ></i>
       </div>
       <div className="collapsible-container">
         <div className={`collapsible ${collapsed ? "hidden" : ""}`}>
-          <div className="flex flex-column no-overflow">
+          <div className="flex-column no-overflow flex">
             {downloadedEpisodes.map((episode, idx) => {
               const downloadProgress =
                 (100 * (episode.progress ?? 0)).toFixed(1) + "%";
@@ -101,14 +113,14 @@ export default function DownloadsWidget() {
               );
               return (
                 <div
-                  className="downloads-card-container flex no-overflow"
+                  className="downloads-card-container no-overflow flex"
                   key={key}
                 >
                   {episode.status === DownloadStatus.COMPLETE ? (
                     <>
                       <Link
                         href={episodeLink}
-                        className="downloads-card-container flex no-overflow"
+                        className="downloads-card-container no-overflow flex"
                         onClick={() => setCollapsed(true)}
                       >
                         {card}

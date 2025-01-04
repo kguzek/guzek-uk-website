@@ -1,6 +1,6 @@
 import { TvShowPreviewList } from "@/components/liveseries/tv-show-preview-list";
 import { TvShowList } from "@/lib/types";
-import { serverToApi } from "@/lib/backend-v2";
+import { serverToApi } from "@/lib/backend/server";
 import { getTitle } from "@/lib/util";
 import { useTranslations } from "@/providers/translation-provider";
 
@@ -17,11 +17,11 @@ export default async function MostPopular({
   searchParams: Promise<Record<string, string>>;
 }) {
   const { data, userLanguage } = await useTranslations();
-  const { page } = await searchParams;
+  const params = await searchParams;
 
   const result = await serverToApi<TvShowList>("most-popular", {
     api: "episodate",
-    params: { page },
+    params: { page: params.page },
   });
 
   return (
@@ -36,6 +36,7 @@ export default async function MostPopular({
       <TvShowPreviewList
         userLanguage={userLanguage}
         tvShows={result.ok ? result.data : undefined}
+        searchParams={params}
       />
     </>
   );
