@@ -13,9 +13,13 @@ export function SearchForm({ userLanguage }: { userLanguage: Language }) {
   const data = TRANSLATIONS[userLanguage];
 
   function getSearchPath() {
-    const query = new URLSearchParams({ q: inputValue.trim() });
+    const trimmed = inputValue.trim();
+    if (!trimmed) return "";
+    const query = new URLSearchParams({ q: trimmed });
     return `/liveseries/search?${query}`;
   }
+
+  const path = getSearchPath();
 
   return (
     <form
@@ -24,6 +28,8 @@ export function SearchForm({ userLanguage }: { userLanguage: Language }) {
         evt.preventDefault();
         router.push(getSearchPath());
       }}
+      action="/liveseries/search"
+      method="get"
     >
       <InputBox
         label={data.liveSeries.search.label}
@@ -33,15 +39,15 @@ export function SearchForm({ userLanguage }: { userLanguage: Language }) {
         required={true}
         placeholder={data.liveSeries.search.prompt}
         autofocus
+        name="q"
       />
-      <Link
-        href={getSearchPath()}
-        role="submit"
-        className="btn"
-        style={{ minWidth: "unset" }}
-      >
-        {data.liveSeries.search.search}
-      </Link>
+      {path ? (
+        <Link href={path} role="submit" className="btn">
+          {data.liveSeries.search.search}
+        </Link>
+      ) : (
+        <button className="btn">{data.liveSeries.search.search}</button>
+      )}
     </form>
   );
 }
