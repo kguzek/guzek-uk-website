@@ -44,6 +44,7 @@ export { BlockquoteFigure } from "./BlockquoteFigure";
 export { Quote } from "./BlockquoteFigure/Quote";
 export { QuoteCaption } from "./BlockquoteFigure/QuoteCaption";
 export { Link } from "./Link";
+export { ImageUpload } from "./ImageUpload";
 export { ImageBlock } from "./ImageBlock";
 export { Columns, Column } from "./MultiColumn";
 export { emojiSuggestion } from "./EmojiSuggestion";

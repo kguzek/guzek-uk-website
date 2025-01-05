@@ -44,6 +44,7 @@ import {
   UniqueID,
 } from ".";
 
+import { ImageUpload } from "./ImageUpload";
 import { TableOfContentsNode } from "./TableOfContentsNode";
 import { isChangeOrigin } from "@tiptap/extension-collaboration";
 
@@ -95,6 +96,7 @@ export const ExtensionKit = () => [
   CharacterCount.configure({ limit: 50000 }),
   TableOfContents,
   TableOfContentsNode,
+  ImageUpload,
   ImageBlock,
   Emoji.configure({
     enableEmoticons: true,

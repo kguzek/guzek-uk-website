@@ -3,6 +3,7 @@ import { Editor } from "@tiptap/react";
 import {
   Figcaption,
   HorizontalRule,
+  ImageUpload,
   ImageBlock,
   Link,
   CodeBlock,
@@ -36,6 +37,7 @@ export const isCustomNodeSelected = (editor: Editor, node: HTMLElement) => {
   const customNodes = [
     HorizontalRule.name,
     ImageBlock.name,
+    ImageUpload.name,
     CodeBlock.name,
     ImageBlock.name,
     Link.name,
