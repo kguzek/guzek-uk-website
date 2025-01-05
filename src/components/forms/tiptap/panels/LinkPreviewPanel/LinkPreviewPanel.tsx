@@ -2,6 +2,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Surface } from "@/components/ui/Surface";
 import { Toolbar } from "@/components/ui/Toolbar";
 import Tooltip from "@/components/ui/Tooltip";
+import { sanitiseUrl } from "@/lib/utils";
 
 export type LinkPreviewPanelProps = {
   url: string;
@@ -14,7 +15,7 @@ export const LinkPreviewPanel = ({
   onEdit,
   url,
 }: LinkPreviewPanelProps) => {
-  const sanitizedLink = url?.startsWith("javascript:") ? "" : url;
+  const sanitizedLink = sanitiseUrl(url);
   return (
     <Surface className="flex items-center gap-2 p-2">
       <a
