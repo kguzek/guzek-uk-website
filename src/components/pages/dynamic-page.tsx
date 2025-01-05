@@ -27,7 +27,7 @@ export async function DynamicPageLoader({ page }: { page: string }) {
   const content = await getContentById(currentPage.id);
   if (!content) return <ErrorComponent errorCode={ErrorCode.ServerError} />;
   return (
-    <div className="text">
+    <div className="text flex justify-center">
       <div
         className="page-content prose mt-6"
         dangerouslySetInnerHTML={{ __html: content.content }}
