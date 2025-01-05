@@ -62,6 +62,7 @@ export default function InputBox({
       </div>
       {isDropdown ? (
         <select
+          className="h-7 cursor-pointer rounded-xl px-3"
           value={value as string | number}
           onChange={(evt) => handleChange(evt, parseInt)}
         >
@@ -82,6 +83,7 @@ export default function InputBox({
         />
       ) : (
         <input
+          className="h-7 rounded-md px-1"
           ref={ref}
           value={value as string | number}
           type={type}

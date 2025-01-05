@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Language } from "@/lib/enums";
 import { MenuItem, PageContent } from "@/lib/types";
 import { useModals } from "@/context/modal-context";
@@ -17,26 +17,26 @@ export function PagesForm({
   userLanguage,
   pageContent,
   menuItems,
-  pagesMap,
+  pageIdentifiers,
   accessToken,
 }: {
   userLanguage: Language;
   pageContent: Record<number, PageContent>;
   menuItems: MenuItem[];
-  pagesMap: Map<number, string>;
+  pageIdentifiers: Map<number, string>;
   accessToken: string;
 }) {
   const data = TRANSLATIONS[userLanguage];
   const [selectedPageId, setSelectedPageId] = useState(menuItems[0]?.id ?? 0);
   const selectedPage = menuItems.find((page) => page.id === selectedPageId);
   return (
-    <form className="form-editor flex-column gap-15">
+    <form className="form-editor flex flex-col items-center gap-4">
       <InputBox
         type="dropdown"
         label={data.admin.contentManager.selectedPage}
         value={selectedPageId}
         setValue={setSelectedPageId}
-        options={pagesMap}
+        options={pageIdentifiers}
       />
       {selectedPage && (
         <PagesEditor
@@ -67,6 +67,11 @@ function PagesEditor({
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const { setModalError } = useModals();
   const data = TRANSLATIONS[userLanguage];
+
+  useEffect(() => {
+    setPage(originalPage);
+    setContent(pageContent?.content ?? "");
+  }, [originalPage]);
 
   function handleUpdate(changedProperty: string, newValue: string | boolean) {
     // console.debug("Set", changedProperty, "to", newValue);
@@ -108,7 +113,7 @@ function PagesEditor({
           required
         />
       ))}
-      <div className="form-checkboxes flex-wrap">
+      <div className="form-checkboxes flex flex-col flex-wrap gap-3">
         {BOOL_PAGE_PROPERTIES.map((property, idx) => (
           <InputBox
             key={idx}

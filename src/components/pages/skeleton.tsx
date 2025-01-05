@@ -3,7 +3,7 @@ import "@/app/liveseries/liveseries.css";
 
 export function PageSkeleton() {
   return (
-    <div className="skeleton">
+    <div className="skeleton mt-5 flex flex-col gap-4">
       <h1 className="skeleton-text" style={{ height: 45 }}></h1>
       <br />
       <h2

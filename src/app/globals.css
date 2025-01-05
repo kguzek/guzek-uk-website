@@ -79,6 +79,29 @@
     opacity: 1;
     grid-template-rows: 1fr;
   }
+
+  .skeleton {
+    animation: 4s ease skeleton infinite;
+    opacity: 0.4;
+  }
+
+  @keyframes skeleton {
+    50% {
+      opacity: 0.8;
+    }
+
+    90%,
+    100% {
+      opacity: 0.4;
+    }
+  }
+
+  .skeleton-text {
+    height: 21px; /* Font height is 21px */
+    max-width: 100%;
+    background-color: var(--color-background-soft);
+    border-radius: 15px;
+  }
 }
 
 a {

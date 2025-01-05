@@ -8,16 +8,19 @@ export default function InputArea({
   setValue,
 }: {
   value: string;
-  setValue: Function;
+  setValue: (value: string) => void;
 }) {
-  const editor = useEditor({
-    extensions: [StarterKit],
-    content: value,
-    immediatelyRender: false,
-    onUpdate: ({ editor }) => {
-      setValue(editor.getHTML());
+  const editor = useEditor(
+    {
+      extensions: [StarterKit],
+      content: value,
+      immediatelyRender: false,
+      onUpdate: ({ editor }) => {
+        setValue(editor.getHTML());
+      },
     },
-  });
+    [value],
+  );
 
   return <EditorContent editor={editor} />;
 }

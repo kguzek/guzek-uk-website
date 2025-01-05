@@ -51,6 +51,8 @@ export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
     setLoading(false);
     if (result.ok) {
       router.push("/profile");
+      router.refresh();
+      router.prefetch("/liveseries");
     }
   }
 

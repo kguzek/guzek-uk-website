@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import type { User } from "@/lib/types";
 import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
+import Image from "next/image";
 
 export function UserWidget({
   user,
@@ -26,10 +27,10 @@ export function UserWidget({
   return (
     <Link
       href={user ? "/profile" : "/login"}
-      className={`${active} clickable nav-link user-widget min-w-20`}
+      className={`${active} clickable nav-link user-widget flex min-w-20 flex-col items-center gap-1`}
       onClick={() => {}}
     >
-      <img alt="User avatar" className="user-avatar" src={imgUrl} />
+      <Image alt="User avatar" width={40} height={40} src={imgUrl} />
       <b className="user-name whitespace-nowrap">
         {user?.username || data.loginShort}
       </b>

@@ -53,6 +53,7 @@ export default async function Home() {
 
   const likedShows: LikedShows = {};
   let anyLikedShowsFailed = false;
+
   for (const result of likedShowsResults ?? []) {
     if (!result.ok) {
       anyLikedShowsFailed = true;

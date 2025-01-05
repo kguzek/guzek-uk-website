@@ -174,33 +174,9 @@
   gap: 20px;
 }
 
-.skeleton {
-  animation: 4s ease skeleton infinite;
-  opacity: 0.4;
-}
-
 .previews {
   justify-content: start;
   padding: 0;
-}
-
-@keyframes skeleton {
-  50% {
-    opacity: 0.8;
-  }
-
-  90%,
-  100% {
-    opacity: 0.4;
-  }
-}
-
-.skeleton-text {
-  height: 21px; /* Font height is 21px */
-  width: 80%;
-  max-width: 100%;
-  background-color: var(--color-background-soft);
-  border-radius: 15px;
 }
 
 .preview-header .skeleton-text {

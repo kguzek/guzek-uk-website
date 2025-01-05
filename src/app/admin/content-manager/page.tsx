@@ -6,6 +6,8 @@ import { ErrorComponent } from "@/components/error-component";
 import { PagesForm } from "./pages-form";
 import { ErrorCode } from "@/lib/enums";
 
+type PageId = MenuItem["id"];
+
 export async function generateMetadata(): Promise<Metadata> {
   const { data } = await useTranslations();
   return { title: data.admin.contentManager.title };
@@ -24,10 +26,10 @@ export default async function ContentManager() {
     return <ErrorComponent errorResult={menuItemsResult} />;
   }
 
-  const pageContent: Record<number, PageContent> = {};
-  const pagesMap = new Map<number, string>();
+  const pageContent: Record<PageId, PageContent> = {};
+  const pageIdentifiers: Map<PageId, string> = new Map();
   for (const page of menuItemsResult.data) {
-    pagesMap.set(page.id, `${page.title} '${page.url}'`);
+    pageIdentifiers.set(page.id, `${page.title} '${page.url}'`);
     if (!page.shouldFetch) continue;
     const contentResult = await serverToApi<PageContent>(`pages/${page.id}`);
     if (!contentResult.ok) {
@@ -38,7 +40,7 @@ export default async function ContentManager() {
 
   return (
     <div>
-      <h3>{data.admin.contentManager.title}</h3>
+      <h3 className="text-2xl font-bold">{data.admin.contentManager.title}</h3>
       {menuItemsResult.data.length === 0 ? (
         <button className="btn btn-submit">
           {data.admin.contentManager.addPage}
@@ -47,7 +49,7 @@ export default async function ContentManager() {
         <PagesForm
           userLanguage={userLanguage}
           pageContent={pageContent}
-          pagesMap={pagesMap}
+          pageIdentifiers={pageIdentifiers}
           menuItems={menuItemsResult.data}
           accessToken={accessToken}
         />

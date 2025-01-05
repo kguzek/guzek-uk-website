@@ -1,6 +1,6 @@
 import { Metadata, Viewport } from "next";
 import { ReactNode } from "react";
-import { NavBar } from "@/components/navigation/navigation-bar";
+import { NavigationBar } from "@/components/navigation/navigation-bar";
 import { Footer } from "@/components/footer";
 import "./globals.css";
 import "./forms.css";
@@ -57,7 +57,7 @@ export default async function RootLayout({
       <body>
         <ModalProvider userLanguage={userLanguage}>
           <LanguageCookie />
-          <NavBar />
+          <NavigationBar />
           {children}
           <Footer />
         </ModalProvider>

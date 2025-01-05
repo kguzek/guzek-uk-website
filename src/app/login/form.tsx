@@ -34,6 +34,8 @@ export function LogInForm({ userLanguage }: { userLanguage: Language }) {
     setLoading(false);
     if (result.ok) {
       router.push("/profile");
+      router.refresh();
+      router.prefetch("/liveseries");
     } else {
       setModalError(
         result.res?.status === 400

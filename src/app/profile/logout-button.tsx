@@ -31,6 +31,7 @@ export function LogoutButton({
     setLoggingOut(false);
     if (result.ok) {
       router.push("/login");
+      router.refresh();
     }
   }
 

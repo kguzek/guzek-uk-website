@@ -14,14 +14,6 @@ export default async function AdminLayout({
   const { data } = await useTranslations();
   const user = await getCurrentUser();
 
-  if (user === undefined) {
-    return (
-      <div className="flex-column">
-        <h3>Validating permissions...</h3>
-      </div>
-    );
-  }
-
   if (!user?.admin) {
     return <ErrorComponent errorCode={ErrorCode.Forbidden} />;
   }
