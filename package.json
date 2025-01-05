@@ -79,6 +79,7 @@
     "@types/next": "^8.0.7",
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
     "@types/tailwindcss": "^3.0.11",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
