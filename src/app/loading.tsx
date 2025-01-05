@@ -1,3 +1,7 @@
 import { PageSkeleton } from "@/components/pages/skeleton";
 
-export default PageSkeleton;
+export default () => (
+  <div className="text">
+    <PageSkeleton />
+  </div>
+);

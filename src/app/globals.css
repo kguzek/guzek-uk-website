@@ -54,7 +54,8 @@
   .text {
     font-family: "Raleway", sans-serif;
     font-weight: 500;
-    margin: 0 10vw;
+    margin-left: 10vw;
+    margin-right: 10vw;
   }
 
   .clickable:hover {
