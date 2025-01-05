@@ -1,9 +1,18 @@
 "use client";
 
-import { useEditor, EditorContent } from "@tiptap/react";
+import {
+  useEditor,
+  EditorContent,
+  FloatingMenu,
+  BubbleMenu,
+  Editor,
+} from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { BlockEditor } from "./tiptap/BlockEditor";
+import { useBlockEditor } from "@/hooks/useBlockEditor";
+import { useEffect } from "react";
 
-export default function InputArea({
+export function InputAreaOld({
   value,
   setValue,
 }: {
@@ -22,5 +31,43 @@ export default function InputArea({
     [value],
   );
 
-  return <EditorContent editor={editor} />;
+  return (
+    <>
+      <EditorContent editor={editor} />
+      <FloatingMenu editor={editor}>Floating menU!!!</FloatingMenu>
+      <BubbleMenu editor={editor}>Bubble menU!!!</BubbleMenu>
+    </>
+  );
+}
+
+export function InputArea({
+  value,
+  setValue,
+  contentId,
+}: {
+  value: string;
+  setValue: (value: string) => void;
+  contentId: number | string;
+}) {
+  const { editor } = useBlockEditor({
+    value,
+    onUpdate,
+  });
+
+  useEffect(() => {
+    editor?.commands.setContent(value);
+  }, [contentId]);
+
+  function onUpdate({ editor }: { editor: Editor }) {
+    setValue(editor.getHTML());
+  }
+
+  if (!editor) return null;
+  return (
+    <div className="w-[100vw] bg-background-strong">
+      <div className="text bg-background">
+        <BlockEditor editor={editor} />
+      </div>
+    </div>
+  );
 }

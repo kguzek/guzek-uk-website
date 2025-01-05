@@ -102,6 +102,11 @@
     background-color: var(--color-background-soft);
     border-radius: 15px;
   }
+
+  /* This is a lazy solution for the tiptap editor */
+  div[contenteditable] {
+    outline: none;
+  }
 }
 
 a {

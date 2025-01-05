@@ -7,7 +7,7 @@ import { useModals } from "@/context/modal-context";
 import { TRANSLATIONS } from "@/lib/translations";
 import InputBox from "@/components/forms/input-box";
 import { LoadingButton } from "@/components/loading/loading-button";
-import InputArea from "@/components/forms/input-area";
+import { InputArea } from "@/components/forms/input-area";
 import { clientToApi } from "@/lib/backend/client";
 
 const TEXT_PAGE_PROPERTIES = ["title", "url"] as const;
@@ -30,23 +30,25 @@ export function PagesForm({
   const [selectedPageId, setSelectedPageId] = useState(menuItems[0]?.id ?? 0);
   const selectedPage = menuItems.find((page) => page.id === selectedPageId);
   return (
-    <form className="form-editor flex flex-col items-center gap-4">
-      <InputBox
-        type="dropdown"
-        label={data.admin.contentManager.selectedPage}
-        value={selectedPageId}
-        setValue={setSelectedPageId}
-        options={pageIdentifiers}
-      />
-      {selectedPage && (
-        <PagesEditor
-          userLanguage={userLanguage}
-          originalPage={selectedPage as MenuItem}
-          pageContent={pageContent[selectedPageId]}
-          accessToken={accessToken}
+    <>
+      <div className="form-editor flex flex-col items-center gap-4">
+        <InputBox
+          type="dropdown"
+          label={data.admin.contentManager.selectedPage}
+          value={selectedPageId}
+          setValue={setSelectedPageId}
+          options={pageIdentifiers}
         />
-      )}
-    </form>
+        {selectedPage && (
+          <PagesEditor
+            userLanguage={userLanguage}
+            originalPage={selectedPage as MenuItem}
+            pageContent={pageContent[selectedPageId]}
+            accessToken={accessToken}
+          />
+        )}
+      </div>
+    </>
   );
 }
 
@@ -63,6 +65,7 @@ function PagesEditor({
 }) {
   const [page, setPage] = useState<MenuItem>(originalPage);
   const [content, setContent] = useState(pageContent?.content ?? "");
+  const [contentId, setContentId] = useState("");
   const [clickedSubmit, setClickedSubmit] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const { setModalError } = useModals();
@@ -72,6 +75,10 @@ function PagesEditor({
     setPage(originalPage);
     setContent(pageContent?.content ?? "");
   }, [originalPage]);
+
+  useEffect(() => {
+    setContentId(`${originalPage.id}-${userLanguage}`);
+  }, [pageContent, originalPage, userLanguage]);
 
   function handleUpdate(changedProperty: string, newValue: string | boolean) {
     // console.debug("Set", changedProperty, "to", newValue);
@@ -118,6 +125,7 @@ function PagesEditor({
           <InputBox
             key={idx}
             type="checkbox"
+            required={false}
             label={data.admin.contentManager.formDetails[property]}
             setValue={(val: boolean) => handleUpdate(property, val)}
             value={page[property]}
@@ -125,15 +133,14 @@ function PagesEditor({
         ))}
       </div>
       {page.shouldFetch && (
-        <div className="text-editor">
-          <InputArea
-            value={content}
-            setValue={(html: string) => {
-              if (!unsavedChanges) setUnsavedChanges(true);
-              setContent(html);
-            }}
-          />
-        </div>
+        <InputArea
+          value={content}
+          setValue={(html: string) => {
+            if (!unsavedChanges) setUnsavedChanges(true);
+            setContent(html);
+          }}
+          contentId={contentId}
+        />
       )}
       {clickedSubmit ? (
         <LoadingButton />

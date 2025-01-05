@@ -29,7 +29,7 @@ export async function DynamicPageLoader({ page }: { page: string }) {
   return (
     <div className="text">
       <div
-        className="page-content mt-6"
+        className="page-content prose mt-6"
         dangerouslySetInnerHTML={{ __html: content.content }}
       ></div>
     </div>
