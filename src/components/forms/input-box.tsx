@@ -13,6 +13,7 @@ export default function InputBox({
   name,
   autofocus = false,
   info,
+  disabled = false,
 }: {
   label: string;
   value: string | number | boolean;
@@ -24,6 +25,7 @@ export default function InputBox({
   name?: string;
   autofocus?: boolean;
   info?: ReactNode;
+  disabled?: boolean;
 }) {
   const ref = createRef<HTMLInputElement>();
   const isDropdown = type === "dropdown";
@@ -65,6 +67,7 @@ export default function InputBox({
           className="h-7 cursor-pointer rounded-xl px-3"
           value={value as string | number}
           onChange={(evt) => handleChange(evt, parseInt)}
+          disabled={disabled || undefined}
         >
           {[...(options?.entries() ?? [])].map(([key, value], idx) => (
             <option key={idx} value={key}>
@@ -80,6 +83,7 @@ export default function InputBox({
           onChange={(evt) => handleChange(evt, (val: string) => val)}
           required={required}
           autoFocus={autofocus}
+          disabled={disabled || undefined}
         />
       ) : (
         <input
@@ -92,6 +96,7 @@ export default function InputBox({
           placeholder={placeholder}
           name={name}
           autoFocus={autofocus}
+          disabled={disabled || undefined}
         />
       )}
     </label>

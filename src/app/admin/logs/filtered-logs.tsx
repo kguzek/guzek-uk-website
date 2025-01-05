@@ -189,7 +189,7 @@ function Log({
 
   return (
     <div className="flex flex-col justify-stretch">
-      <div className={`card-container log ${data.level}`}>
+      <div className={`log flex rounded-2xl ${data.level}`}>
         <div className="card flex gap-3">
           <div
             className="clickable level-icon self-center"

@@ -5,11 +5,12 @@ import { getAccessToken, serverToApi } from "@/lib/backend/server";
 import { ErrorComponent } from "@/components/error-component";
 import { ErrorCode } from "@/lib/enums";
 import { UserCard } from "./user-card";
+import { getTitle } from "@/lib/util";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data } = await useTranslations();
   return {
-    title: data.admin.users.title,
+    title: getTitle(data.admin.users.title),
   };
 }
 

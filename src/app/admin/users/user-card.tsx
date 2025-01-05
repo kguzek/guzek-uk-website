@@ -42,17 +42,17 @@ export function UserCard({
 
   if (isDeleted) return null;
   return (
-    <div className="clickable card-container overflow-hidden">
+    <div className="flex w-full overflow-hidden rounded-2xl bg-primary text-background transition-all duration-300 hover:-translate-y-1 hover:opacity-100 lg:opacity-70">
       <Link
         href={`/admin/users/${user.uuid}`}
         className="card group flex items-center gap-5"
       >
-        <i className={`fa-solid fa-user ${user.admin ? "admin" : ""}`}></i>
+        <i
+          className={`fa-solid fa-user ${user.admin ? "text-accent" : ""}`}
+        ></i>
         <div>
-          <div className="flex">
-            <i>{user.username}</i>
-          </div>
-          <div className="fontserif font-normal">{user.email}</div>
+          <i>{user.username}</i>
+          <div className="font-normal">{user.email}</div>
         </div>
         <i className="fa-solid fa-gear transition-transform group-hover:rotate-180"></i>
       </Link>

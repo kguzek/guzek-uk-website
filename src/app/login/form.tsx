@@ -30,15 +30,13 @@ export function LogInForm({ userLanguage }: { userLanguage: Language }) {
     result = await clientToApi("auth/tokens", "", {
       method: "POST",
       body,
-      userLanguage,
-      setModalError,
     });
-    setLoading(false);
     if (result.ok) {
       router.push("/profile");
       router.refresh();
       router.prefetch("/liveseries");
     } else {
+      setLoading(false);
       setModalError(
         result.res?.status === 400
           ? data.profile.invalidCredentials
@@ -55,6 +53,7 @@ export function LogInForm({ userLanguage }: { userLanguage: Language }) {
         value={email}
         name="email"
         setValue={setEmail}
+        autofocus
       />
       <InputBox
         label={data.profile.formDetails.password}

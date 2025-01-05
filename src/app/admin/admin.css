@@ -2,14 +2,6 @@
   width: 80%;
 }
 
-.card-container {
-  width: 100%;
-  background-color: var(--color-primary);
-  display: flex;
-  border-radius: 15px;
-  color: var(--color-background);
-}
-
 .card {
   color: inherit;
   width: 100%;

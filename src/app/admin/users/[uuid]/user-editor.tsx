@@ -67,7 +67,7 @@ export function UserEditor({
   }
 
   return (
-    <form className="form-login gap-10" onSubmit={handleSubmit}>
+    <form className="flex w-[50%] flex-col gap-3" onSubmit={handleSubmit}>
       <InputBox
         label={data.profile.formDetails.username}
         value={username}
@@ -85,6 +85,13 @@ export function UserEditor({
         value={password}
         setValue={setPassword}
       />
+      <InputBox
+        label={data.profile.formDetails.serverUrl}
+        value={user.serverUrl ?? ""}
+        setValue={() => {}}
+        disabled
+        required={false}
+      />
       <div>
         <InputBox
           type="checkbox"
@@ -93,6 +100,20 @@ export function UserEditor({
           value={admin}
           setValue={setAdmin}
         />
+      </div>
+      <div className="grid w-fit grid-cols-[auto_1fr] gap-2 text-sm">
+        {user.created_at && (
+          <>
+            <p>User created:</p>
+            <code className="field">{user.created_at}</code>
+          </>
+        )}
+        {user.modified_at && (
+          <>
+            <p>Last modified:</p>
+            <code className="field">{user.modified_at}</code>
+          </>
+        )}
       </div>
       <br />
       {loading ? (

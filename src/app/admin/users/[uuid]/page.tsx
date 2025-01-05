@@ -10,28 +10,40 @@ interface Props {
   params: Promise<{ uuid: string }>;
 }
 
-export async function generateMetadata(): Promise<{ title: string }> {
-  // TODO: Implement
-  return { title: getTitle("@user") };
+export async function generateMetadata(
+  props: Props,
+): Promise<{ title: string }> {
+  const result = await fetchUserFromProps(props);
+  if (!result?.data) return { title: getTitle("User ???") };
+  const [user] = result.data;
+  return { title: getTitle(`@${user.username}`) };
 }
 
-export default async function UserPage({ params }: Props) {
+async function fetchUserFromProps(props: Props) {
+  const { params } = props;
+  const { uuid } = await params;
+  if (!uuid) return null;
+  const result = await serverToApi<User[]>(`auth/users/${uuid}`);
+  return result;
+}
+
+export default async function UserPage(props: Props) {
   const { userLanguage } = await useTranslations();
   const accessToken = await getAccessToken();
   if (!accessToken) {
     return <ErrorComponent errorCode={ErrorCode.Unauthorized} />;
   }
-  const { uuid } = await params;
-  const result = await serverToApi<User>(`auth/users/${uuid}`);
-  if (!result.ok) {
-    return <ErrorComponent errorResult={result} />;
-  }
-
+  const result = await fetchUserFromProps(props);
+  if (!result) return <ErrorComponent errorCode={ErrorCode.NotFound} />;
+  if (!result.ok) return <ErrorComponent errorResult={result} />;
+  const [user] = result.data;
   return (
-    <UserEditor
-      user={result.data}
-      userLanguage={userLanguage}
-      accessToken={accessToken}
-    />
+    <div className="flex w-full justify-center">
+      <UserEditor
+        user={user}
+        userLanguage={userLanguage}
+        accessToken={accessToken}
+      />
+    </div>
   );
 }

@@ -5,11 +5,12 @@ import type { Language } from "../enums";
 import type { User } from "../types";
 import { TRANSLATIONS } from "../translations";
 
-type FetchOptionsExtension = {
-  userLanguage: Language;
-  setModalError: (error: string) => void;
-};
-// | { userLanguage?: never; setModalError?: never };
+type FetchOptionsExtension =
+  | {
+      userLanguage: Language;
+      setModalError: (error: string) => void;
+    }
+  | { userLanguage?: never; setModalError?: never };
 
 /** Makes a client-to-server API call using the provided access token.
  *

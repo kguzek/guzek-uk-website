@@ -5,12 +5,13 @@ import { getAccessToken, serverToApi } from "@/lib/backend/server";
 import { ErrorComponent } from "@/components/error-component";
 import { PagesForm } from "./pages-form";
 import { ErrorCode } from "@/lib/enums";
+import { getTitle } from "@/lib/util";
 
 type PageId = MenuItem["id"];
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data } = await useTranslations();
-  return { title: data.admin.contentManager.title };
+  return { title: getTitle(data.admin.contentManager.title) };
 }
 
 export default async function ContentManager() {
