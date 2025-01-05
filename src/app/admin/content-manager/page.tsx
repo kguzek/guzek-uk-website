@@ -6,6 +6,7 @@ import { ErrorComponent } from "@/components/error-component";
 import { PagesForm } from "./pages-form";
 import { ErrorCode } from "@/lib/enums";
 import { getTitle } from "@/lib/util";
+import { CreatePageButton } from "./create-page-button";
 
 type PageId = MenuItem["id"];
 
@@ -43,9 +44,11 @@ export default async function ContentManager() {
     <div>
       <h3 className="text-2xl font-bold">{data.admin.contentManager.title}</h3>
       {menuItemsResult.data.length === 0 ? (
-        <button className="btn btn-submit">
-          {data.admin.contentManager.addPage}
-        </button>
+        // TODO: button needs initial values to create menu item
+        <CreatePageButton
+          userLanguage={userLanguage}
+          accessToken={accessToken}
+        />
       ) : (
         <PagesForm
           userLanguage={userLanguage}

@@ -68,7 +68,7 @@ function PagesEditor({
   const [contentId, setContentId] = useState("");
   const [clickedSubmit, setClickedSubmit] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
-  const { setModalError } = useModals();
+  const { setModalError, setModalInfo } = useModals();
   const data = TRANSLATIONS[userLanguage];
 
   useEffect(() => {
@@ -93,18 +93,15 @@ function PagesEditor({
     evt.preventDefault();
     setClickedSubmit(true);
     const url = `pages/${page.id}?lang=${userLanguage}`;
-    try {
-      const result = await clientToApi(url, accessToken, {
-        method: "PUT",
-        body: { ...page, content },
-        userLanguage,
-        setModalError,
-      });
-      if (result.ok) {
-        setUnsavedChanges(false);
-      }
-    } catch {
-      setModalError(data.networkError);
+    const result = await clientToApi(url, accessToken, {
+      method: "PUT",
+      body: { ...page, content },
+      userLanguage,
+      setModalError,
+    });
+    if (result.ok) {
+      setUnsavedChanges(false);
+      setModalInfo(`Successfully updated '${page.title}' (${userLanguage}).`);
     }
     setClickedSubmit(false);
   }
