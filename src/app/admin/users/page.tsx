@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import type { User } from "@/lib/types";
 import { useTranslations } from "@/providers/translation-provider";
-import { serverToApi } from "@/lib/backend/server";
+import { getAccessToken, serverToApi } from "@/lib/backend/server";
 import { ErrorComponent } from "@/components/error-component";
 import { ErrorCode } from "@/lib/enums";
 import { UserCard } from "./user-card";
@@ -15,6 +15,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Users() {
   const { data, userLanguage } = await useTranslations();
+  const accessToken = await getAccessToken();
+
+  if (!accessToken) {
+    return <ErrorComponent errorCode={ErrorCode.Unauthorized} />;
+  }
 
   const usersResult = await serverToApi<User[]>("auth/users");
   if (!usersResult.ok) {
@@ -31,6 +36,7 @@ export default async function Users() {
               key={`user-${user.uuid || key}`}
               user={user}
               userLanguage={userLanguage}
+              accessToken={accessToken}
             />
           ))}
         </div>

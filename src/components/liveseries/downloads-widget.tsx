@@ -27,7 +27,7 @@ export default function DownloadsWidget({
       (episode) => episode.status === DownloadStatus.PENDING,
     ) == null,
   );
-  const { setModalInfo, setModalChoice } = useModals();
+  const { setModalError, setModalChoice, setModalInfo } = useModals();
   const data = TRANSLATIONS[userLanguage];
   const serialise = data.liveSeries.episodes.serialise;
 
@@ -39,7 +39,7 @@ export default function DownloadsWidget({
     const result = await clientToApi(
       `liveseries/downloaded-episodes/${episode.showName}/${episode.season}/${episode.episode}`,
       accessToken,
-      { method: "DELETE", user },
+      { method: "DELETE", user, userLanguage, setModalError },
     );
     if (result.ok) {
       setModalInfo(data.liveSeries.episodes.deleted(episodeString));

@@ -137,6 +137,8 @@ export function ShowDetails({
       {
         method: "PUT",
         body: episodeNumbers,
+        userLanguage,
+        setModalError,
       },
     );
     if (!result.ok) {

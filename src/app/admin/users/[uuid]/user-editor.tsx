@@ -12,9 +12,11 @@ import { clientToApi } from "@/lib/backend/client";
 export function UserEditor({
   user: originalUser,
   userLanguage,
+  accessToken,
 }: {
   user: User;
   userLanguage: Language;
+  accessToken: string;
 }) {
   const [user, setUser] = useState(originalUser);
   const [username, setUsername] = useState(user.username);
@@ -22,7 +24,7 @@ export function UserEditor({
   const [admin, setAdmin] = useState(user.admin);
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState("");
-  const { setModalInfo } = useModals();
+  const { setModalError, setModalInfo } = useModals();
   const data = TRANSLATIONS[userLanguage];
 
   const haveDetailsChanged = () =>
@@ -49,10 +51,12 @@ export function UserEditor({
     setLoading(true);
     const result = await clientToApi(
       `auth/users/${user.uuid}/${section}`,
-      userLanguage,
+      accessToken,
       {
         method: "PUT",
         body,
+        userLanguage,
+        setModalError,
       },
     );
     if (result.ok) {

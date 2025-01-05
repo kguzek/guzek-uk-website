@@ -11,11 +11,13 @@ import { useState } from "react";
 export function UserCard({
   user,
   userLanguage,
+  accessToken,
 }: {
   user: User;
   userLanguage: Language;
+  accessToken: string;
 }) {
-  const { setModalChoice, setModalInfo } = useModals();
+  const { setModalChoice, setModalError, setModalInfo } = useModals();
   const [isDeleted, setIsDeleted] = useState(false);
 
   const data = TRANSLATIONS[userLanguage];
@@ -27,8 +29,10 @@ export function UserCard({
   }
 
   async function deleteUser(user: User) {
-    const res = await clientToApi(`auth/users/${user.uuid}`, userLanguage, {
+    const res = await clientToApi(`auth/users/${user.uuid}`, accessToken, {
       method: "DELETE",
+      userLanguage,
+      setModalError,
     });
     if (res.ok) {
       setModalInfo(data.admin.users.deleted(user.username));

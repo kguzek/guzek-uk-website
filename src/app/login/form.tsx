@@ -30,6 +30,8 @@ export function LogInForm({ userLanguage }: { userLanguage: Language }) {
     result = await clientToApi("auth/tokens", "", {
       method: "POST",
       body,
+      userLanguage,
+      setModalError,
     });
     setLoading(false);
     if (result.ok) {

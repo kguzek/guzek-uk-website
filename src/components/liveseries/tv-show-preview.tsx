@@ -41,6 +41,8 @@ export function TvShowPreview({
       accessToken,
       {
         method: isLiked ? "DELETE" : "POST",
+        userLanguage,
+        setModalError,
       },
     );
     if (!result.ok) {

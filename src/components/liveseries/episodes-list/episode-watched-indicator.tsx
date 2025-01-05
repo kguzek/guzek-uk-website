@@ -33,6 +33,8 @@ export function EpisodeWatchedIndicator({
       {
         method: "PUT",
         body: episodes,
+        userLanguage,
+        setModalError,
       },
     );
     if (result.ok) {

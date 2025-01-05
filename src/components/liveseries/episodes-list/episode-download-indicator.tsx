@@ -51,6 +51,8 @@ export function EpisodeDownloadIndicator({
           season: episode.season,
         },
         user,
+        userLanguage,
+        setModalError,
       },
     );
     if (result.ok) {
