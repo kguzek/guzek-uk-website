@@ -46,9 +46,13 @@ export async function clientToApi<T>(
   const user = fetchOptions.user ?? null;
   const url = `${getUrlBase(path, user)}${path}${getSearchParams(fetchOptions.params)}`;
   const result = await fetchFromApi<T>(url, options);
-  if (userLanguage && !result.ok && result.hasBody) {
+  if (userLanguage && !result.ok) {
     const data = TRANSLATIONS[userLanguage];
-    setModalError(getErrorMessage(result.res, result.error, data));
+    setModalError(
+      result.hasBody
+        ? getErrorMessage(result.res, result.error, data)
+        : data.networkError,
+    );
   }
   return result;
 }
