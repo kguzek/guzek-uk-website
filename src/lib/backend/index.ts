@@ -125,24 +125,18 @@ export async function fetchFromApi<T>(url: string, options: RequestInit) {
       error: null,
     } as const;
   }
-  let data: T;
+  let body: string;
   try {
-    data = await res.json();
-  } catch (error) {
+    body = await res.text();
+  } catch {
     console.error(
-      "FAILED to parse JSON from",
+      "FAILED to read response body from",
       method,
       url,
       "with status:",
       res.status,
       res.statusText,
-      error,
     );
-    try {
-      console.info("Response text:", await res.text());
-    } catch (error) {
-      console.error("Also, reading response text failed:", error);
-    }
     return {
       failed: false,
       res,
@@ -152,6 +146,32 @@ export async function fetchFromApi<T>(url: string, options: RequestInit) {
       error: null,
     } as const;
   }
+  let data: T;
+  try {
+    // Use this method because sometimes res.json() fails with weird errors
+    data = JSON.parse(body.trim());
+  } catch (error) {
+    console.error(
+      "FAILED to parse JSON from",
+      method,
+      url,
+      "with status:",
+      res.status,
+      res.statusText,
+      error,
+      "and response body:",
+      body,
+    );
+    return {
+      failed: false,
+      res,
+      hasBody: false,
+      ok: false,
+      data: null,
+      error: null,
+    } as const;
+  }
+
   // console.debug("...", res.status, res.statusText);
   if (res.ok) {
     return {
