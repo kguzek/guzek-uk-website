@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  useEditor,
-  EditorContent,
-  FloatingMenu,
-  BubbleMenu,
-  Editor,
-} from "@tiptap/react";
+import { useEditor, EditorContent, Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { BlockEditor } from "./tiptap/BlockEditor";
 import { useBlockEditor } from "@/hooks/useBlockEditor";
@@ -34,8 +28,6 @@ export function InputAreaOld({
   return (
     <>
       <EditorContent editor={editor} />
-      <FloatingMenu editor={editor}>Floating menU!!!</FloatingMenu>
-      <BubbleMenu editor={editor}>Bubble menU!!!</BubbleMenu>
     </>
   );
 }
