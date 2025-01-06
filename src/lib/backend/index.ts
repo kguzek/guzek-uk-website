@@ -110,11 +110,12 @@ export async function prepareRequest(
 }
 
 export async function fetchFromApi<T>(url: string, options: RequestInit) {
+  const method = options.method ?? "GET";
   let res;
   try {
     res = await fetch(url, options);
   } catch (error) {
-    console.error("Request to", url, "failed:", error);
+    console.error(method, url, "FALIED:", error);
     return {
       failed: true,
       res: null,
@@ -128,7 +129,20 @@ export async function fetchFromApi<T>(url: string, options: RequestInit) {
   try {
     data = await res.json();
   } catch (error) {
-    console.error("Parsing JSON from", url, "failed:", error);
+    console.error(
+      "FAILED to parse JSON from",
+      method,
+      url,
+      "with status:",
+      res.status,
+      res.statusText,
+      error,
+    );
+    try {
+      console.info("Response text:", await res.text());
+    } catch (error) {
+      console.error("Also, reading response text failed:", error);
+    }
     return {
       failed: false,
       res,
