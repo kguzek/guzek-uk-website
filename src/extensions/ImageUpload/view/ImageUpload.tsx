@@ -7,9 +7,11 @@ import { useCallback } from "react";
 export const ImageUpload = ({
   getPos,
   editor,
+  initialUrl = "",
 }: {
   getPos: () => number;
   editor: Editor;
+  initialUrl?: string;
 }) => {
   const onUpload = useCallback(
     (url: string) => {
@@ -28,7 +30,7 @@ export const ImageUpload = ({
   const state = useLinkEditorState({
     onSetLink: onUpload,
     initialOpenInNewTab: false,
-    initialUrl: "",
+    initialUrl,
   });
 
   return (

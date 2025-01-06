@@ -8,6 +8,7 @@ import { Icon } from "@/components/ui/Icon";
 import { ImageBlockWidth } from "./ImageBlockWidth";
 import { MenuProps } from "@/components/forms/tiptap/menus/types";
 import { getRenderContainer } from "@/lib/utils";
+import { ImageUpload } from "@/extensions/ImageUpload/view";
 
 export const ImageBlockMenu = ({
   editor,
@@ -27,7 +28,6 @@ export const ImageBlockMenu = ({
 
   const shouldShow = useCallback(() => {
     const isActive = editor.isActive("imageBlock");
-
     return isActive;
   }, [editor]);
 
@@ -121,6 +121,11 @@ export const ImageBlockMenu = ({
         >
           <Icon name="AlignHorizontalDistributeEnd" />
         </Toolbar.Button>
+        <ImageUpload
+          getPos={() => editor.state.selection?.$anchor.pos || 0}
+          editor={editor}
+          initialUrl={editor.getAttributes("imageBlock")?.src}
+        />
         <Toolbar.Divider />
         <ImageBlockWidth onChange={onWidthChange} value={width} />
       </Toolbar.Wrapper>

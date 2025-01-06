@@ -19,10 +19,20 @@ export const ColumnsMenu = ({ editor, appendTo }: MenuProps) => {
     return rect;
   }, [editor]);
 
-  const shouldShow = useCallback(() => {
-    const isColumns = editor.isActive("columns");
-    return isColumns;
+  const isColumnEmpty = useCallback(() => {
+    const renderContainer = getRenderContainer(editor, "columns");
+    if (!renderContainer) return false;
+    return renderContainer.classList.contains("is-empty");
   }, [editor]);
+
+  const shouldShow = useCallback(() => {
+    // Only show the columns menu if:
+    // 1. The editor is currently in column layout.
+    // 2. The column layout has no child nodes (it's empty).
+    // 3. The selection is not inside an image (prevents the image menu from showing).
+    const isColumns = editor.isActive("columns");
+    return isColumns && isColumnEmpty();
+  }, [editor, isColumnEmpty]);
 
   const onColumnLeft = useCallback(() => {
     editor.chain().focus().setLayout(ColumnLayout.SidebarLeft).run();
