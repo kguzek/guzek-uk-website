@@ -82,15 +82,15 @@ export function EpisodeDownloadIndicator({
   );
   const playIcon = <i className={`fas fa-play status-${downloadStatus}`}></i>;
 
+  const isStopped = downloadStatus === DownloadStatus.STOPPED;
+
   return (
     <>
       <div
-        className="flex flex-col"
+        className={`flex flex-col ${isStopped ? "cursor-pointer" : ""}`}
         title={downloadTooltip}
         style={{ minWidth: 20 }}
-        onClick={
-          downloadStatus === DownloadStatus.STOPPED ? startDownload : undefined
-        }
+        onClick={isStopped ? startDownload : undefined}
       >
         {showProgress && (
           <i
