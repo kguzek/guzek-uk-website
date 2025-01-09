@@ -12,8 +12,9 @@ import type {
 import { TRANSLATIONS } from "@/lib/translations";
 import { useModals } from "@/context/modal-context";
 import { useState } from "react";
-import { bytesToReadable } from "@/lib/util";
+import { bytesToReadable, compareEpisodes } from "@/lib/util";
 import Link from "next/link";
+import { useLiveSeriesContext } from "@/context/liveseries-context";
 
 export function EpisodeDownloadIndicator({
   user,
@@ -21,16 +22,25 @@ export function EpisodeDownloadIndicator({
   episode,
   tvShow,
   accessToken,
-  metadata: initialMetadata,
 }: {
   user: User;
   userLanguage: Language;
   episode: Episode;
   tvShow: TvShowDetails;
   accessToken: string;
-  metadata: DownloadedEpisode | undefined;
 }) {
   const { setModalError } = useModals();
+  const { downloadedEpisodes } = useLiveSeriesContext();
+
+  const episodePredicate = (
+    check: DownloadedEpisode, // Torrents filenames omit colons
+  ) =>
+    compareEpisodes(check, {
+      ...episode,
+      showName: tvShow.name.replace(/:/g, ""),
+    });
+
+  const initialMetadata = downloadedEpisodes.find(episodePredicate);
   const [metadata, setMetadata] = useState(initialMetadata);
   const data = TRANSLATIONS[userLanguage];
 

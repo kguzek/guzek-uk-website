@@ -10,18 +10,18 @@ import { TRANSLATIONS } from "@/lib/translations";
 import { clientToApi } from "@/lib/backend/client";
 import { useModals } from "@/context/modal-context";
 import "./downloads-widget.css";
+import { useLiveSeriesContext } from "@/context/liveseries-context";
 
 export default function DownloadsWidget({
   user,
   userLanguage,
   accessToken,
-  downloadedEpisodes,
 }: {
   user: User;
   userLanguage: Language;
   accessToken: string;
-  downloadedEpisodes: DownloadedEpisode[];
 }) {
+  const { downloadedEpisodes } = useLiveSeriesContext();
   const [collapsed, setCollapsed] = useState(
     downloadedEpisodes.find(
       (episode) => episode.status === DownloadStatus.PENDING,

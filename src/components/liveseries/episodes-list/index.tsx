@@ -2,15 +2,10 @@ import { ReactNode } from "react";
 import type {
   Episode as EpisodeType,
   TvShowDetails,
-  DownloadedEpisode,
   WatchedEpisodes,
   ShowData,
 } from "@/lib/types";
-import {
-  getEpisodeAirDate,
-  hasEpisodeAired,
-  compareEpisodes,
-} from "@/lib/util";
+import { getEpisodeAirDate, hasEpisodeAired } from "@/lib/util";
 import { useTranslations } from "@/providers/translation-provider";
 import { EpisodeWatchedIndicator } from "./episode-watched-indicator";
 import { getAccessToken, serverToApi } from "@/lib/backend/server";
@@ -20,12 +15,10 @@ import { getCurrentUser } from "@/lib/backend/user";
 async function Episode({
   episode,
   tvShow,
-  downloadedEpisodes,
   watchedEpisodes,
 }: {
   episode: EpisodeType;
   tvShow: TvShowDetails;
-  downloadedEpisodes: DownloadedEpisode[] | null;
   watchedEpisodes: ShowData<WatchedEpisodes> | null;
 }) {
   const { data, userLanguage } = await useTranslations();
@@ -39,15 +32,6 @@ async function Episode({
 
   const airDate = data.dateTimeFormat.format(getEpisodeAirDate(episode));
 
-  const episodePredicate = (
-    check: DownloadedEpisode, // Torrents filenames omit colons
-  ) =>
-    compareEpisodes(check, {
-      ...episode,
-      showName: tvShow.name.replace(/:/g, ""),
-    });
-
-  const metadata = downloadedEpisodes?.find(episodePredicate);
   const watchedInSeason = watchedEpisodes?.[tvShow.id]?.[+episode.season];
 
   return (
@@ -66,7 +50,6 @@ async function Episode({
           accessToken={accessToken}
           episode={episode}
           tvShow={tvShow}
-          metadata={metadata}
         />
         {hasEpisodeAired(episode) ? (
           <EpisodeWatchedIndicator
@@ -96,20 +79,13 @@ export async function EpisodesList({
   children?: ReactNode;
 }) {
   const user = await getCurrentUser();
-  let downloadedEpisodes: DownloadedEpisode[] = [];
   let watchedEpisodes: ShowData<WatchedEpisodes> = {};
   if (user && user.serverUrl) {
-    const [downloadedEpisodesResult, watchedEpisodesResult] = await Promise.all(
-      [
-        serverToApi<DownloadedEpisode[]>("liveseries/downloaded-episodes"),
-        serverToApi<ShowData<WatchedEpisodes>>(
-          "liveseries/watched-episodes/personal",
-        ),
-      ],
-    );
-    if (downloadedEpisodesResult.ok) {
-      downloadedEpisodes = downloadedEpisodesResult.data;
-    }
+    const [watchedEpisodesResult] = await Promise.all([
+      serverToApi<ShowData<WatchedEpisodes>>(
+        "liveseries/watched-episodes/personal",
+      ),
+    ]);
     if (watchedEpisodesResult.ok) {
       watchedEpisodes = watchedEpisodesResult.data;
     }
@@ -131,7 +107,6 @@ export async function EpisodesList({
               key={`episode-unwatched-${idx}`}
               episode={episode}
               tvShow={tvShow}
-              downloadedEpisodes={downloadedEpisodes}
               watchedEpisodes={watchedEpisodes}
             />
           ))}
