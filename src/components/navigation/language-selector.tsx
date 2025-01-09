@@ -52,7 +52,7 @@ export function LanguageSelector({ userLanguage }: { userLanguage: Language }) {
   useEffect(() => {
     updateMarkerStyle();
     if (!selectedButtonRef.current) return;
-  }, [selectedButtonRef.current]);
+  }, [selectedButtonRef.current, pathname]);
 
   return (
     <div className="my-4 flex flex-col items-center lg:my-0 lg:mr-4">

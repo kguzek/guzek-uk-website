@@ -9,8 +9,8 @@ import { bytesToReadable, getDuration } from "@/lib/util";
 import { TRANSLATIONS } from "@/lib/translations";
 import { clientToApi } from "@/lib/backend/client";
 import { useModals } from "@/context/modal-context";
-import "./downloads-widget.css";
 import { useLiveSeriesContext } from "@/context/liveseries-context";
+import "./downloads-widget.css";
 
 export default function DownloadsWidget({
   user,
@@ -49,13 +49,9 @@ export default function DownloadsWidget({
   if (downloadedEpisodes.length === 0) return null;
 
   return (
-    <div
-      className={`downloads-widget flex-column ${
-        collapsed ? "collapsed" : "expanded"
-      }`}
-    >
+    <div className="downloads-widget">
       <div
-        className="clickable collapser centred"
+        className="clickable collapser peer w-full text-center"
         onClick={() => setCollapsed((old) => !old)}
       >
         <i
@@ -64,81 +60,81 @@ export default function DownloadsWidget({
           }`}
         ></i>
       </div>
-      <div className="collapsible-container">
-        <div className={`collapsible ${collapsed ? "hidden" : ""}`}>
-          <div className="flex-column no-overflow flex">
-            {downloadedEpisodes.map((episode, idx) => {
-              const downloadProgress =
-                (100 * (episode.progress ?? 0)).toFixed(1) + "%";
-              const episodeLink = `/liveseries/watch/${episode.showName}/${episode.season}/${episode.episode}`;
-              const key = `downloads-card-${idx}`;
-              const card = (
-                <div className="downloads-card flex">
-                  <div style={{ width: "100%" }}>
+      <div
+        className={`collapsible ${collapsed ? "collapsed" : "expanded pb-2"}`}
+      >
+        <div className="flex flex-col justify-around gap-2 overflow-hidden">
+          {downloadedEpisodes.map((episode, idx) => {
+            const downloadProgress =
+              (100 * (episode.progress ?? 0)).toFixed(1) + "%";
+            const episodeLink = `/liveseries/watch/${episode.showName}/${episode.season}/${episode.episode}`;
+            const key = `downloads-card-${idx}`;
+            const card = (
+              <div className="downloads-card flex">
+                <div style={{ width: "100%" }}>
+                  <span>
+                    {episode.showName} {serialise(episode)}
+                  </span>
+                  <span className="serif"> {downloadProgress}</span>
+                  {episode.speed != null &&
+                    episode.status === DownloadStatus.PENDING && (
+                      <span className="serif">
+                        {" "}
+                        ({bytesToReadable(episode.speed)}/s)
+                      </span>
+                    )}
+                  {episode.status === DownloadStatus.VERIFYING && (
                     <span>
-                      {episode.showName} {serialise(episode)}
+                      {" " +
+                        data.liveSeries.episodes.downloadStatus[
+                          DownloadStatus.VERIFYING
+                        ]}
+                      ...
                     </span>
-                    <span className="serif"> {downloadProgress}</span>
-                    {episode.speed != null &&
-                      episode.status === DownloadStatus.PENDING && (
-                        <span className="serif">
-                          {" "}
-                          ({bytesToReadable(episode.speed)}/s)
-                        </span>
-                      )}
-                    {episode.status === DownloadStatus.VERIFYING && (
-                      <span>
-                        {" " +
-                          data.liveSeries.episodes.downloadStatus[
-                            DownloadStatus.VERIFYING
-                          ]}
-                        ...
-                      </span>
-                    )}
-                    {episode.eta != null && episode.eta > 0 && (
-                      <span className="eta">
-                        {" " + getDuration(episode.eta * 1000).formatted}
-                      </span>
-                    )}
-                  </div>
-                  <div className="progress-bar-container">
-                    <div
-                      className={`progress-bar ${
-                        episode.status === DownloadStatus.COMPLETE ? "done" : ""
-                      }`}
-                      style={{ width: downloadProgress }}
-                    ></div>
-                  </div>
-                </div>
-              );
-              return (
-                <div
-                  className="downloads-card-container no-overflow flex"
-                  key={key}
-                >
-                  {episode.status === DownloadStatus.COMPLETE ? (
-                    <>
-                      <Link
-                        href={episodeLink}
-                        className="downloads-card-container no-overflow flex"
-                        onClick={() => setCollapsed(true)}
-                      >
-                        {card}
-                      </Link>
-                    </>
-                  ) : (
-                    <>{card}</>
                   )}
-                  <div
-                    className="clickable delete"
-                    onClick={() => handleDeleteEpisode(episode)}
-                  >
-                    <i className="fas fa-trash"></i>
-                  </div>
+                  {episode.eta != null && episode.eta > 0 && (
+                    <span className="eta">
+                      {" " + getDuration(episode.eta * 1000).formatted}
+                    </span>
+                  )}
                 </div>
-              );
-            })}
-          </div>
+                <div className="progress-bar-container">
+                  <div
+                    className={`progress-bar ${
+                      episode.status === DownloadStatus.COMPLETE ? "done" : ""
+                    }`}
+                    style={{ width: downloadProgress }}
+                  ></div>
+                </div>
+              </div>
+            );
+            return (
+              <div
+                className="downloads-card-container no-overflow flex"
+                key={key}
+              >
+                {episode.status === DownloadStatus.COMPLETE ? (
+                  <>
+                    <Link
+                      href={episodeLink}
+                      className="downloads-card-container no-overflow flex"
+                      onClick={() => setCollapsed(true)}
+                    >
+                      {card}
+                    </Link>
+                  </>
+                ) : (
+                  <>{card}</>
+                )}
+                <div
+                  className="clickable delete"
+                  onClick={() => handleDeleteEpisode(episode)}
+                >
+                  <i className="fas fa-trash"></i>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

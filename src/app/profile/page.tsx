@@ -18,7 +18,12 @@ export default async function Profile() {
   const accessToken = await getAccessToken();
   const { data, userLanguage } = await useTranslations();
 
-  if (!user || !accessToken) return <PageSkeleton />;
+  if (!user || !accessToken)
+    return (
+      <div className="text">
+        <PageSkeleton />
+      </div>
+    );
 
   return (
     <div className="text">
