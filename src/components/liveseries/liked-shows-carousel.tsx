@@ -65,7 +65,7 @@ export function LikedShowsCarousel({
   }
 
   const scrollToCard = (card: number, inline: ScrollLogicalPosition) =>
-    scrollToElement(`.previews li:nth-child(${card})`, inline);
+    scrollToElement(`#previews li:nth-child(${card})`, inline);
 
   function previousImage() {
     const { lastCard, cardsPerPage } = getDisplayedCards();
@@ -80,18 +80,27 @@ export function LikedShowsCarousel({
   }
 
   // TODO: fix carousel arrows/scrollers
-  // function getScrollerClassName(direction: "left" | "right") {
-  //   const { firstCard, lastCard, totalCards } = getDisplayedCards();
-  //   const visible =
-  //     direction === "left" ? firstCard > 1 : lastCard < totalCards;
-  //   return `${direction} fa-arrow-${direction} ${visible ? "" : "hidden"}`;
-  // }
+  function isScrollerVisible(direction: "left" | "right") {
+    const { firstCard, lastCard, totalCards } = getDisplayedCards();
+    const visible =
+      direction === "left" ? firstCard > 1 : lastCard < totalCards;
+    // return `${direction} fa-arrow-${direction} ${visible ? "" : "hidden"}`;
+    return visible;
+  }
 
   const toMap = likedShowIds ?? Array<number>(SKELETON_CARDS_COUNT).fill(0);
   return (
-    <div className="flex flex-wrap items-center justify-center gap-2">
-      <CarouselArrow left onClick={previousImage} className="order-3" />
-      <ul ref={carouselRef} className="scroll-x flex gap-4">
+    <div className="relative flex flex-wrap items-center justify-center gap-2">
+      <CarouselArrow
+        left
+        onClick={previousImage}
+        isVisible={isScrollerVisible}
+      />
+      <ul
+        ref={carouselRef}
+        id="previews"
+        className="scroll-x flex w-full gap-4"
+      >
         {toMap.map((showId, idx) => (
           <li key={`home-preview ${showId} ${idx}`}>
             <TvShowPreview
@@ -104,15 +113,13 @@ export function LikedShowsCarousel({
           </li>
         ))}
       </ul>
-      <CarouselArrow right onClick={nextImage} className="order-5" />
+      <CarouselArrow right onClick={nextImage} isVisible={isScrollerVisible} />
       {carouselTotalWidth > carouselVisibleWidth && (
-        <div className="order-4">
-          <CarouselIndicator
-            scrolledWidth={carouselScroll}
-            totalWidth={carouselTotalWidth}
-            visibleWidth={carouselVisibleWidth}
-          />
-        </div>
+        <CarouselIndicator
+          scrolledWidth={carouselScroll}
+          totalWidth={carouselTotalWidth}
+          visibleWidth={carouselVisibleWidth}
+        />
       )}
     </div>
   );

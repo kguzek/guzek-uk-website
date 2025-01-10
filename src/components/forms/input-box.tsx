@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { ChangeEvent, createRef, ReactNode, useEffect } from "react";
 
 export default function InputBox({
@@ -53,7 +54,9 @@ export default function InputBox({
 
   return (
     <label
-      className={`input-box input-${type} ${isCheckbox ? "whitespace-nowrap" : ""}`}
+      className={cn(`input-box input-${type}`, {
+        "sm:whitespace-nowrap": isCheckbox,
+      })}
     >
       <div className="flex gap-2">
         {required && value === "" && (

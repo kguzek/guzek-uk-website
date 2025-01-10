@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useState } from "react";
-import Carousel from "@/components/carousel";
+import { ImageGallery } from "@/components/carousel";
 import type { Language } from "@/lib/enums";
 import type {
   Episode as EpisodeType,
@@ -12,10 +12,10 @@ import type {
 import { getEpisodeAirDate, isInvalidDate } from "@/lib/util";
 import TvShowSkeleton from "@/components/liveseries/tv-show-skeleton";
 import InputBox from "@/components/forms/input-box";
-import { useModals } from "@/context/modal-context";
 import { TRANSLATIONS } from "@/lib/translations";
 import { clientToApi } from "@/lib/backend/client";
-import { TvShowContext } from "./context";
+import { useModals } from "@/context/modal-context";
+import { TvShowContext } from "@/context/tv-show-context";
 
 // Will issue a warning when trying to subscribe with more than 10 unwatched episodes
 const UNWATCHED_EPISODES_THRESHOLD = 10;
@@ -191,7 +191,7 @@ export function ShowDetails({
         {tvShowDetails.rating ? (
           <div className="flex items-center gap-2">
             <div
-              className="stars"
+              className="relative"
               title={`${(+tvShowDetails.rating).toFixed(1)}/10`}
             >
               <div
@@ -255,7 +255,7 @@ export function ShowDetails({
           <h3 className="my-5 text-2xl font-bold">
             {data.liveSeries.tvShow.images}
           </h3>
-          <Carousel
+          <ImageGallery
             className="gallery"
             images={tvShowDetails.pictures}
             onLoadImage={() => setNumImagesLoaded((old) => old + 1)}

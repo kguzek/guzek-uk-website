@@ -3,8 +3,9 @@ import { scrollToElement } from "@/lib/util";
 import "./carousel.css";
 import { useScroll } from "@/hooks/scroll";
 import { useRef } from "react";
+import { cn } from "@/lib/utils";
 
-export default function Carousel({
+export function ImageGallery({
   className = "",
   images,
   onLoadImage,
@@ -45,7 +46,8 @@ export default function Carousel({
   }
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-x-3">
+    <div className="relative flex flex-wrap items-center justify-center gap-2">
+      <CarouselArrow left onClick={previousImage} />
       <div ref={carouselRef} className={`carousel scroll-x ${className}`}>
         {images.map((url, idx) => (
           <img
@@ -58,33 +60,49 @@ export default function Carousel({
           />
         ))}
       </div>
-      <CarouselArrow left onClick={previousImage} />
+      <CarouselArrow right onClick={nextImage} />
       <CarouselIndicator
         scrolledWidth={carouselScroll}
         totalWidth={carouselTotalWidth}
         visibleWidth={carouselTotalWidth / images.length}
       />
-      <CarouselArrow right onClick={nextImage} />
     </div>
   );
 }
 
 export function CarouselArrow({
+  onClick,
+  isVisible = () => true,
   left,
   right,
-  className = "",
-  onClick,
 }: {
-  className?: string;
   onClick: () => void | Promise<void>;
+  isVisible?: (direction: "left" | "right") => boolean;
 } & ({ left: true; right?: never } | { left?: never; right: true })) {
+  const visible = isVisible(left ? "left" : "right");
   return (
     <button
-      className={`h-16 w-16 rounded-full bg-background-soft p-4 ${className}`}
+      className={cn(
+        "group flex h-16 w-16 items-center justify-center rounded-full bg-background-soft p-4 transition-all duration-300 lg:absolute",
+        {
+          "order-3 lg:left-0 lg:order-1 lg:translate-x-[-50%]": left,
+          "order-5 lg:right-0 lg:order-3 lg:translate-x-[50%]": right,
+          "visible opacity-100 hover:opacity-100 lg:opacity-75 lg:hover:opacity-95":
+            visible,
+          "lg:invisible lg:opacity-0": !visible,
+        },
+      )}
+      onClick={onClick}
     >
       <i
-        className={`fas fa-arrow-${left ? "left" : "right"} text-4xl font-extrabold text-background hover:animate-ping`}
-        onClick={onClick}
+        className={cn(
+          "fas text-4xl font-extrabold text-background transition-transform duration-300",
+          {
+            "fa-arrow-left": left,
+            "fa-arrow-right": right,
+            "lg:group-hover:scale-125": visible,
+          },
+        )}
       ></i>
     </button>
   );
@@ -105,7 +123,7 @@ export function CarouselIndicator({
 
   return (
     <div
-      className="h-3 overflow-hidden rounded-full bg-primary"
+      className="order-4 h-3 overflow-hidden rounded-full bg-primary"
       style={{
         width: CAROUSEL_INDICATOR_FULL_WIDTH,
       }}

@@ -12,7 +12,6 @@ import { getTitle } from "@/lib/util";
 import { getCurrentUser } from "@/lib/backend/user";
 import { useTranslations } from "@/providers/translation-provider";
 import { ShowDetails } from "./show";
-import { Fragment } from "react";
 import { EpisodesList } from "@/components/liveseries/episodes-list";
 import { WatchedIndicator } from "./watched-indicator";
 
@@ -93,19 +92,18 @@ export default async function TvShow({ params }: Props) {
     >
       {sortEpisodes(showResult.data.tvShow.episodes).map(
         ([season, episodes]) => (
-          <Fragment key={`season-${season}`}>
-            <EpisodesList
-              tvShow={showResult.data.tvShow}
-              heading={`${data.liveSeries.tvShow.season} ${season}`}
+          <EpisodesList
+            key={`season-${season}`}
+            tvShow={showResult.data.tvShow}
+            heading={`${data.liveSeries.tvShow.season} ${season}`}
+            episodes={episodes}
+          >
+            <WatchedIndicator
+              season={season}
               episodes={episodes}
-            >
-              <WatchedIndicator
-                season={season}
-                episodes={episodes}
-                userLanguage={userLanguage}
-              />
-            </EpisodesList>
-          </Fragment>
+              userLanguage={userLanguage}
+            />
+          </EpisodesList>
         ),
       )}
     </ShowDetails>

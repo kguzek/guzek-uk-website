@@ -4,7 +4,7 @@ import type { Language } from "@/lib/enums";
 import type { Episode } from "@/lib/types";
 import { TRANSLATIONS } from "@/lib/translations";
 import { hasEpisodeAired } from "@/lib/util";
-import { useTvShowContext } from "./context";
+import { useTvShowContext } from "@/context/tv-show-context";
 
 export function WatchedIndicator({
   season,
