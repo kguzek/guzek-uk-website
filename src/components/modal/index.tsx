@@ -9,6 +9,12 @@ export type ModalHandler = (primary: boolean) => void;
 
 const VALUE_URL_PATTERN = /^(.+)(https:\/\/[^\s]+)(\s.+)?$/g;
 
+function splitValue(value?: string) {
+  const text = value || "";
+  const match = VALUE_URL_PATTERN.exec(text);
+  return match ? match.slice(1) : [text, "", ""];
+}
+
 export function Modal({
   value,
   onClick,
@@ -23,6 +29,7 @@ export function Modal({
   className?: string;
 }) {
   const [oldValue, setOldValue] = useState(value);
+  const [splittedValue, setSplittedValue] = useState(splitValue(value));
 
   useEffect(() => {
     if (value) {
@@ -30,15 +37,10 @@ export function Modal({
     } else {
       setTimeout(() => setOldValue(value), 300);
     }
+    setSplittedValue(splitValue(value || oldValue));
   }, [value]);
 
-  let before = (value || oldValue) ?? "";
-  let url = "";
-  let after = "";
-  const match = VALUE_URL_PATTERN.exec(before);
-  if (match) {
-    [before, url, after] = match.slice(1);
-  }
+  const [before, url, after] = splittedValue;
 
   return (
     <div className={`modal-background ${value ? "" : "modal-hidden"} z-30`}>

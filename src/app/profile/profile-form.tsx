@@ -66,18 +66,13 @@ export function ProfileForm({
           info={
             <button
               type="button"
-              style={{
-                background: "none",
-                border: "none",
-                color: "inherit",
-                cursor: "help",
-              }}
+              className="clickable !cursor-help border-none bg-none text-primary-strong"
               onClick={(evt) => {
                 evt.preventDefault();
                 setModalInfo(data.liveSeries.explanation);
               }}
             >
-              <i className="whats-this">{data.liveSeries.whatsThis}</i>
+              <i>{data.liveSeries.whatsThis}</i>
             </button>
           }
         />
