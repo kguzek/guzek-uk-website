@@ -13,6 +13,7 @@ import type { DownloadedEpisode, User } from "@/lib/types";
 import { compareEpisodes } from "@/lib/util";
 import { useModals } from "./modal-context";
 import { TRANSLATIONS } from "@/lib/translations";
+import { usePathname } from "next/navigation";
 
 const LiveSeriesContext = createContext<
   | {
@@ -48,6 +49,7 @@ export function LiveSeriesProvider({
     DownloadedEpisode[]
   >([]);
   const { setModalInfo, setModalError, setModalChoice } = useModals();
+  const pathname = usePathname();
   const data = TRANSLATIONS[userLanguage];
 
   useEffect(() => {
@@ -57,7 +59,8 @@ export function LiveSeriesProvider({
       if (!existingSocket) return;
       const socket = existingSocket;
       setExistingSocket(null);
-      socket.close();
+      socket.close(1000, "Client component unmounted.");
+      console.info("Websocket closed.");
     };
   }, [user]);
 
@@ -103,6 +106,17 @@ export function LiveSeriesProvider({
       socketFailed = false;
     };
     socket.onclose = async (evt) => {
+      console.warn("Websocket closed on path", pathname, evt);
+      if (!pathname.startsWith("/liveseries")) {
+        console.info(
+          "Silently dismissing websocket closure because the user navigated away.",
+        );
+        return;
+      }
+      if (evt.code === 1005 || evt.code === 1000) {
+        // This might be a bad call but sometimes the websocket gets closed when changing language
+        return;
+      }
       if (evt.wasClean) {
         // The server URL is probably misconfigured
         setModalError(data.liveSeries.websockets.connectionFailed);

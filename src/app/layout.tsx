@@ -7,6 +7,7 @@ import "./forms.css";
 import { ModalProvider } from "@/context/modal-context";
 import { useTranslations } from "@/providers/translation-provider";
 import { LanguageCookie } from "@/components/language-cookie";
+import { LanguageSelectorProvider } from "@/context/language-selector-context";
 
 export const metadata: Metadata = {
   title: "Guzek UK",
@@ -56,10 +57,12 @@ export default async function RootLayout({
       </head>
       <body>
         <ModalProvider userLanguage={userLanguage}>
-          <LanguageCookie />
-          <NavigationBar />
-          {children}
-          <Footer />
+          <LanguageSelectorProvider>
+            <LanguageCookie />
+            <NavigationBar />
+            {children}
+            <Footer />
+          </LanguageSelectorProvider>
         </ModalProvider>
       </body>
     </html>

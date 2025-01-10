@@ -1,11 +1,12 @@
 "use client";
 
-import { CSSProperties, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { TRANSLATIONS } from "@/lib/translations";
 import { setLanguageCookie } from "@/lib/util";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Language } from "@/lib/enums";
+import { useLanguageSelector } from "@/context/language-selector-context";
 // import { useTranslations } from "@/providers/translation-provider";
 // import { InferGetServerSidePropsType } from "next";
 // import { NextRequest } from "next/server";
@@ -22,32 +23,12 @@ export function LanguageSelector({ userLanguage }: { userLanguage: Language }) {
   userLanguage,
   setLanguage,
 }: InferGetServerSidePropsType<typeof getServerSideProps>*/
-  const [markerStyle, setMarkerStyle] = useState<CSSProperties>({});
   const [language, setLanguage] = useState(userLanguage);
-  const selectedButtonRef = useRef<HTMLAnchorElement>(null);
   const router = useRouter();
   const pathname = usePathname();
+  const { selectedButtonRef, markerStyle, updateMarkerStyle } =
+    useLanguageSelector();
   const data = TRANSLATIONS[language];
-
-  function updateMarkerStyle() {
-    const button = selectedButtonRef.current;
-    setMarkerStyle({
-      width: button?.offsetWidth,
-      height: button?.offsetHeight,
-      left: button?.offsetLeft,
-      top: button?.offsetTop,
-    });
-  }
-
-  useEffect(() => {
-    window.addEventListener("resize", updateMarkerStyle);
-    window.addEventListener("load", updateMarkerStyle);
-
-    return () => {
-      window.removeEventListener("resize", updateMarkerStyle);
-      window.removeEventListener("load", updateMarkerStyle);
-    };
-  }, [selectedButtonRef]);
 
   useEffect(() => {
     updateMarkerStyle();

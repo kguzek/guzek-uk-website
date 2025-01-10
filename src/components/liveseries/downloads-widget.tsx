@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { DownloadedEpisode, User } from "@/lib/types";
 import { DownloadStatus } from "@/lib/enums";
@@ -11,6 +11,7 @@ import { clientToApi } from "@/lib/backend/client";
 import { useModals } from "@/context/modal-context";
 import { useLiveSeriesContext } from "@/context/liveseries-context";
 import "./downloads-widget.css";
+import { useLanguageSelector } from "@/context/language-selector-context";
 
 export default function DownloadsWidget({
   user,
@@ -22,6 +23,7 @@ export default function DownloadsWidget({
   accessToken: string;
 }) {
   const { downloadedEpisodes } = useLiveSeriesContext();
+  const { updateMarkerStyle } = useLanguageSelector();
   const [collapsed, setCollapsed] = useState(
     downloadedEpisodes.find(
       (episode) => episode.status === DownloadStatus.PENDING,
@@ -45,6 +47,10 @@ export default function DownloadsWidget({
       setModalInfo(data.liveSeries.episodes.deleted(episodeString));
     }
   }
+
+  useEffect(() => {
+    updateMarkerStyle();
+  }, [downloadedEpisodes]);
 
   if (downloadedEpisodes.length === 0) return null;
 

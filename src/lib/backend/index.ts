@@ -86,7 +86,7 @@ export async function prepareRequest(
       : "omit",
   };
   const headers: HeadersInit = {
-    Accept: "*",
+    Accept: "application/json",
   };
   if (useAuth) {
     const { getAccessToken, accessToken } = authOptions;
