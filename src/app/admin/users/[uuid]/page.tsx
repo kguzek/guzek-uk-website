@@ -15,15 +15,14 @@ export async function generateMetadata(
 ): Promise<{ title: string }> {
   const result = await fetchUserFromProps(props);
   if (!result?.data) return { title: getTitle("User ???") };
-  const [user] = result.data;
-  return { title: getTitle(`@${user.username}`) };
+  return { title: getTitle(`@${result.data.username}`) };
 }
 
 async function fetchUserFromProps(props: Props) {
   const { params } = props;
   const { uuid } = await params;
   if (!uuid) return null;
-  const result = await serverToApi<User[]>(`auth/users/${uuid}`);
+  const result = await serverToApi<User>(`auth/users/${uuid}`);
   return result;
 }
 
@@ -36,11 +35,10 @@ export default async function UserPage(props: Props) {
   const result = await fetchUserFromProps(props);
   if (!result) return <ErrorComponent errorCode={ErrorCode.NotFound} />;
   if (!result.ok) return <ErrorComponent errorResult={result} />;
-  const [user] = result.data;
   return (
     <div className="flex w-full justify-center">
       <UserEditor
-        user={user}
+        user={result.data}
         userLanguage={userLanguage}
         accessToken={accessToken}
       />
