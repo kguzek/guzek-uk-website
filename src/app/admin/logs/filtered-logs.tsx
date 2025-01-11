@@ -1,92 +1,145 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import type { ComponentProps, ElementType, ReactNode } from "react";
 import InputBox from "@/components/forms/input-box";
 import { NumericValue } from "@/components/numeric-value/client";
 import { SyntaxHighlighted } from "@/components/syntax-highlighted";
-import { Language, LOG_LEVEL_ICONS } from "@/lib/enums";
-import { LogEntry, LogLevel, LogResponse, StateSetter } from "@/lib/types";
-import { getUTCDateString, scrollToElement } from "@/lib/util";
-import { useEffect, useState } from "react";
+import type { Language } from "@/lib/enums";
+import { LOG_LEVELS } from "@/lib/enums";
+import type { LogEntry, LogLevel, StateSetter } from "@/lib/types";
+import { scrollToElement } from "@/lib/util";
+import { cn } from "@/lib/utils";
 
 const IP_LOOKUP_URL = "https://www.ip-tracker.org/locator/ip-lookup.php?ip=";
 
-const getIcon = (key: string) =>
-  LOG_LEVEL_ICONS[key as LogLevel] || "question error";
-
-const entryHasBody = (entry: LogEntry) =>
-  entry.metadata?.body && Object.keys(entry.metadata.body).length > 0;
+function parseLogEntry(log: LogEntry) {
+  const { filename, ip, ...meta } = log.metadata;
+  // Flatten the metadata if it contains a key called 'body' (i.e. request body)
+  const body = meta.body ?? meta;
+  return {
+    filename,
+    ip,
+    body,
+    hasBody: Object.keys(body).length > 0,
+  };
+}
 
 type Filter = {
   ascending: boolean;
-  levels: LogLevel[];
+  levels: readonly LogLevel[];
   labels: string[];
   withBodyOnly: boolean;
 };
 
+function LogLevelIcon({
+  level,
+  selected = true,
+}: {
+  level: LogLevel;
+  selected?: boolean;
+}) {
+  return (
+    <i
+      title={[level[0].toUpperCase(), level.slice(1)].join("")}
+      className={cn("clickable fa fa-solid min-w-8 text-center text-2xl", {
+        "fa-warning text-error": level === "crit",
+        "fa-exclamation-circle text-error": level === "error",
+        "fa-warning text-accent2": level === "warn",
+        "fa-info-circle text-success": level === "info",
+        "fa-download text-fuchsia-400": level === "request",
+        "fa-upload text-violet-500": level === "response",
+        "fa-globe text-orange-400": level === "http",
+        "fa-bug text-accent": level === "debug",
+        "fa-info-circle text-primary": level === "verbose",
+        "text-background-soft": !selected,
+      })}
+    ></i>
+  );
+}
+
+function StyledLogComponent<T extends ElementType>({
+  log,
+  tag,
+  children,
+  ...props
+}: Omit<ComponentProps<T>, "tag" | "log" | "children"> & {
+  log: LogEntry;
+  tag: T;
+  children: ReactNode;
+}) {
+  const Tag = tag as ElementType;
+
+  return (
+    <Tag
+      {...props}
+      className={cn(
+        "whitespace-pre-wrap break-all rounded-3xl bg-primary px-4 py-3 text-background",
+        {
+          "text-error": log.level === "crit",
+          "bg-background text-error": log.level === "error",
+          "bg-background text-accent2": log.level === "warn",
+          "text-background-soft": log.level === "verbose",
+        },
+        props.className,
+      )}
+    >
+      {children}
+    </Tag>
+  );
+}
+
 export function FilteredLogs({
-  dateLogs,
-  errorLogs,
+  logs,
   userLanguage,
 }: {
-  dateLogs: LogResponse;
-  errorLogs: LogResponse;
+  logs: LogEntry[];
   userLanguage: Language;
 }) {
   const [filteredLogs, setFilteredLogs] = useState<LogEntry[]>([]);
   const [labels, setLabels] = useState<string[]>([]);
   const [filter, setFilter] = useState<Filter>({
     ascending: false,
-    levels: Object.keys(LOG_LEVEL_ICONS) as LogLevel[],
+    levels: LOG_LEVELS,
     labels: [],
     withBodyOnly: false,
   });
 
   useEffect(() => {
     const foundLabels = new Set<string>();
-    for (const log of [...errorLogs.logs, ...dateLogs.logs]) {
-      if (!log.label) continue;
-      foundLabels.add(log.label);
+    for (const log of logs) {
+      if (!log.metadata.filename) continue;
+      foundLabels.add(log.metadata.filename);
     }
     setLabels([...foundLabels]);
 
-    const errorLogsFiltered = errorLogs.logs.filter(
-      (log) => getUTCDateString(log.timestamp) === dateLogs.date,
-    );
-
-    const logsSorted = [...dateLogs.logs, ...errorLogsFiltered].sort(
-      (a, b) =>
-        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
-    );
-
     const baseLogFilter = (log: LogEntry) =>
       filter.levels.includes(log.level) &&
-      (!filter.withBodyOnly || entryHasBody(log));
+      (!filter.withBodyOnly || parseLogEntry(log).hasBody);
 
     const predicate =
       filter.labels.length === 0
         ? baseLogFilter
         : (log: LogEntry) =>
-            baseLogFilter(log) && filter.labels.includes(log.label);
+            baseLogFilter(log) && filter.labels.includes(log.metadata.filename);
 
-    const logsFiltered = logsSorted.filter(predicate);
+    const logsFiltered = logs.filter(predicate);
     if (!filter.ascending) {
       logsFiltered.reverse();
     }
     setFilteredLogs(logsFiltered);
     scrollToElement("#logs-header");
-  }, [dateLogs, errorLogs, filter]);
+  }, [logs, filter]);
 
   return (
     <div className="cards flex-column stretch gap-3">
       <div className="flex items-center gap-3">
         <h4>Log levels:</h4>
-        {Object.entries(LOG_LEVEL_ICONS).map(([key, icon], idx) => {
-          const level = key as LogLevel;
+        {LOG_LEVELS.map((level, idx) => {
           const selected = filter.levels.includes(level);
           return (
             <div key={`level-selector-${idx}`} className={level}>
               <div
-                className="clickable level-icon"
                 onClick={() =>
                   setFilter((old) => ({
                     ...old,
@@ -96,12 +149,7 @@ export function FilteredLogs({
                   }))
                 }
               >
-                <i
-                  className={`fa-solid fa-${icon} ${
-                    selected ? "" : "text-background-soft"
-                  }`}
-                  title={level}
-                ></i>
+                <LogLevelIcon level={level} selected={selected} />
               </div>
             </div>
           );
@@ -115,9 +163,10 @@ export function FilteredLogs({
             return (
               <div
                 key={`label-selector-${idx}`}
-                className={`clickable log-label ${
-                  selected ? "" : "deselected"
-                }`}
+                className={cn("clickable rounded-xl px-3", {
+                  "bg-accent text-primary-strong": selected,
+                  "bg-background-soft text-primary": !selected,
+                })}
                 onClick={() =>
                   setFilter((old) => ({
                     ...old,
@@ -165,102 +214,99 @@ export function FilteredLogs({
         <NumericValue value={filteredLogs.length} userLanguage={userLanguage} />
       </h3>
       {filteredLogs.map((log, idx) => (
-        <Log key={idx} data={log} setFilter={setFilter} />
+        <Log key={idx} log={log} setFilter={setFilter} />
       ))}
     </div>
   );
 }
 
 function Log({
-  data,
+  log,
   setFilter,
 }: {
-  data: LogEntry;
+  log: LogEntry;
   setFilter: StateSetter<Filter>;
 }) {
   const [collapsed, setCollapsed] = useState(true);
 
-  let message = data.message;
-  if (typeof message !== "string" && data.level === "error") {
-    message = "[See log body for error details]";
-    data.metadata.body = data.message;
-  }
-  const showBody = entryHasBody(data);
+  let message = log.message;
+  const entry = parseLogEntry(log);
 
   return (
-    <div className="flex flex-col justify-stretch">
-      <div className={`log flex rounded-2xl ${data.level}`}>
-        <div className="card flex gap-3">
+    <div>
+      <div className="flex flex-col gap-1 rounded-2xl bg-background-soft px-6 py-4 text-primary-strong">
+        <div className="flex w-full items-center justify-between">
+          <div className="flex gap-3">
+            <div
+              title={log.level}
+              onClick={() =>
+                setFilter((old) => ({ ...old, levels: [log.level] }))
+              }
+            >
+              <LogLevelIcon level={log.level} />
+            </div>
+            <small>
+              <code className="flex gap-3">
+                {log.timestamp}
+                {entry.ip && (
+                  <span>
+                    (
+                    <a
+                      href={IP_LOOKUP_URL + entry.ip}
+                      target="_blank"
+                      className="clickable hover-underline"
+                    >
+                      {entry.ip}
+                    </a>
+                    )
+                  </span>
+                )}
+              </code>
+            </small>
+          </div>
           <div
-            className="clickable level-icon self-center"
-            title={data.level}
+            className="clickable rounded-xl bg-accent px-3"
             onClick={() =>
-              setFilter((old) => ({ ...old, levels: [data.level] }))
+              setFilter((old) => ({
+                ...old,
+                labels: [entry.filename],
+              }))
             }
           >
-            <i className={`fa-solid fa-${getIcon(data.level)}`}></i>
-          </div>
-          <div className="log-body flex flex-col items-center gap-3">
-            <div className="log-header flex">
-              <small>
-                <code className="flex gap-10">
-                  {data.timestamp}
-                  {data.metadata?.ip && (
-                    <span>
-                      (
-                      <a
-                        href={IP_LOOKUP_URL + data.metadata.ip}
-                        target="_blank"
-                        className="clickable hover-underline"
-                      >
-                        {data.metadata.ip}
-                      </a>
-                      )
-                    </span>
-                  )}
-                </code>
-              </small>
-              <div
-                className="clickable log-label"
-                onClick={() =>
-                  setFilter((old) => ({ ...old, labels: [data.label] }))
-                }
-              >
-                {data.label}
-              </div>
-            </div>
-            <div className="flex flex-wrap items-center gap-3">
-              {showBody && (
-                <div
-                  className="clickable"
-                  onClick={() => setCollapsed((old) => !old)}
-                >
-                  <div
-                    className="message flex gap-3"
-                    title={
-                      (collapsed ? "Expand" : "Collapse") + " log entry body"
-                    }
-                  >
-                    <i className="fas fa-code"></i>
-                    <i
-                      className={`fas fa-caret-up transition-transform ${
-                        collapsed ? "rotate-180" : ""
-                      }`}
-                    ></i>
-                  </div>
-                </div>
-              )}
-              <code className="message">{message.toString()}</code>
-            </div>
+            {entry.filename}
           </div>
         </div>
+        <div className="flex flex-wrap items-stretch gap-2">
+          {entry.hasBody && (
+            <div
+              className="clickable"
+              onClick={() => setCollapsed((old) => !old)}
+            >
+              <StyledLogComponent
+                tag="div"
+                log={log}
+                title={(collapsed ? "Expand" : "Collapse") + " log entry body"}
+              >
+                <i className="fas fa-code mr-3"></i>
+                <i
+                  className={`fas fa-caret-up transition-transform ${
+                    collapsed ? "rotate-180" : ""
+                  }`}
+                ></i>
+              </StyledLogComponent>
+            </div>
+          )}
+          <StyledLogComponent tag="code" log={log}>
+            {message}
+          </StyledLogComponent>
+        </div>
       </div>
-      {showBody && (
+      {entry.hasBody && (
         <div
           className={`log-container collapsible ${collapsed ? "collapsed" : "expanded"}`}
         >
           <div className="no-overflow flex">
-            <SyntaxHighlighted json={data.metadata.body} />
+            <SyntaxHighlighted json={entry.body} />
           </div>
         </div>
       )}

@@ -1,6 +1,6 @@
 import { NextMiddleware, NextRequest } from "next/server";
 import { Dispatch, SetStateAction } from "react";
-import { DownloadStatus, LOG_LEVEL_ICONS } from "./enums";
+import { DownloadStatus, LOG_LEVELS } from "./enums";
 
 export interface PageContent {
   content: string;
@@ -27,16 +27,24 @@ export interface User {
 
 /** Admin logs */
 
-export type LogLevel = keyof typeof LOG_LEVEL_ICONS;
+export type LogLevel = (typeof LOG_LEVELS)[number];
 
-export interface LogEntry {
-  label: string;
+export interface LegacyLogEntry {
   level: LogLevel;
   message: string | NodeJS.ErrnoException;
+  label: string;
   metadata: any;
   timestamp: string;
 }
-export type LogResponse = { date: string; logs: LogEntry[] };
+
+export interface LogEntry {
+  level: LogLevel;
+  message: string;
+  metadata: { filename: string; [key: string]: any };
+  timestamp: string;
+}
+
+export type LogResponse = { date: string; logs: (LegacyLogEntry | LogEntry)[] };
 
 export interface ErrorPageContent {
   title: string;

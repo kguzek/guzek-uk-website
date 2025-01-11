@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ErrorComponent } from "@/components/error-component";
-import type { LogResponse } from "@/lib/types";
+import type { LegacyLogEntry, LogEntry, LogResponse } from "@/lib/types";
 import { TRANSLATIONS } from "@/lib/translations";
 import { getTitle, getUTCDateString } from "@/lib/util";
 import { ErrorCode } from "@/lib/enums";
@@ -23,6 +23,28 @@ const getTodayString = () =>
     .split("/")
     .reverse()
     .join("-");
+
+const isLegacyLog = (log: LegacyLogEntry | LogEntry): log is LegacyLogEntry =>
+  (log as LegacyLogEntry).label != null;
+
+const convertLegacyLogs = (data: LogResponse) =>
+  data.logs.map((log) => {
+    if (!isLegacyLog(log)) return log;
+    const filename = log.label || "(no filename)";
+    if (!log.label) {
+      console.warn("Log has no filename label:", log);
+    }
+    const message =
+      typeof log.message === "string"
+        ? log.message
+        : "[See log body for error details]";
+    return {
+      message,
+      level: log.level,
+      metadata: { ...log.metadata, filename },
+      timestamp: log.timestamp,
+    } as LogEntry;
+  });
 
 export default async function Logs({
   searchParams,
@@ -48,6 +70,16 @@ export default async function Logs({
   const previousDate = new Date(logDate.getTime() - 86400000);
   const nextDate = new Date(logDate.getTime() + 86400000);
 
+  const dateLogs = convertLegacyLogs(dateLogsResult.data);
+  const errorLogs = convertLegacyLogs(errorLogsResult.data);
+
+  const errorLogsFiltered = errorLogs.filter(
+    (log) => getUTCDateString(log.timestamp) === dateLogsResult.data.date,
+  );
+  const logsSorted = [...dateLogs, ...errorLogsFiltered].sort(
+    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+  );
+
   return (
     <div>
       <div
@@ -59,12 +91,7 @@ export default async function Logs({
         }}
       >
         <h3 className="absolute text-2xl font-bold">{data.admin.logs.title}</h3>
-        <div
-          className="flex gap-10"
-          style={{
-            margin: "0 auto",
-          }}
-        >
+        <div className="mx-auto mt-0 flex gap-3">
           <Link
             href={`/admin/logs?date=${getUTCDateString(previousDate)}`}
             className="clickable"
@@ -83,11 +110,7 @@ export default async function Logs({
         </div>
       </div>
       <div className="logs flex-column">
-        <FilteredLogs
-          dateLogs={dateLogsResult.data}
-          errorLogs={errorLogsResult.data}
-          userLanguage={userLanguage}
-        />
+        <FilteredLogs logs={logsSorted} userLanguage={userLanguage} />
       </div>
     </div>
   );

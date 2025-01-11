@@ -10,14 +10,6 @@ export enum Language {
   PL = "PL",
 }
 
-export const LOG_LEVEL_ICONS = {
-  error: "warning",
-  request: "download",
-  response: "upload",
-  info: "info-circle",
-  debug: "info-circle",
-} as const;
-
 export const DownloadStatus = {
   STOPPED: 1,
   PENDING: 2,
@@ -26,3 +18,15 @@ export const DownloadStatus = {
   UNKNOWN: 5,
   VERIFYING: 6,
 };
+
+export const LOG_LEVELS = [
+  "crit",
+  "error",
+  "warn",
+  "info",
+  "verbose",
+  "debug",
+  "request",
+  "response",
+  "http",
+] as const;
