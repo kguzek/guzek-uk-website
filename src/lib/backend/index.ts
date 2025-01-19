@@ -24,6 +24,35 @@ const DECENTRALISED_ROUTES = [
 
 export type ErrorResponseBody = { [code: string]: string };
 
+const SANDWICHED_JSON_PATTERN = /.*?(\{.*\}).*?/;
+
+function parseResponseBody(body: string) {
+  try {
+    return JSON.parse(body);
+  } catch {
+    console.warn("Initial body JSON parse failed:", body);
+  }
+  const sandwichedMatch = body.match(SANDWICHED_JSON_PATTERN);
+  if (sandwichedMatch == null) {
+    console.warn("No sandwiched JSON found in body");
+  } else {
+    body = sandwichedMatch[1];
+  }
+  for (let offset = 0; offset < body.length / 2; offset++) {
+    try {
+      return JSON.parse(body.substring(offset, body.length - offset));
+    } catch {}
+  }
+  for (let start = 0; start < body.length; start++) {
+    for (let end = body.length; end > start; end--) {
+      try {
+        return JSON.parse(body.substring(start, end));
+      } catch {}
+    }
+  }
+  throw new Error("No substring of the body yields valid JSON.");
+}
+
 /** Formats a key-value dictionary into a string ready for use in a URL.
  *
  * @param params The key-value dictionary to format. Can be a `URLSearchParams` object, or an object (empty or not).
@@ -149,7 +178,7 @@ export async function fetchFromApi<T>(url: string, options: RequestInit) {
   let data: T;
   try {
     // Use this method because sometimes res.json() fails with weird errors
-    data = JSON.parse(body.trim());
+    data = parseResponseBody(body.trim());
   } catch (error) {
     console.error(
       "FAILED to parse JSON from",
