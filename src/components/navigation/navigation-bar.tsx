@@ -17,7 +17,7 @@ export async function NavigationBar() {
     <>
       <nav className="flex items-center gap-4 px-4 py-2 lg:gap-6">
         <Logo size={80} />
-        <h1 className="whitespace-nowrap font-bold sm:text-3xl">{PAGE_NAME}</h1>
+        <p className="whitespace-nowrap font-bold sm:text-3xl">{PAGE_NAME}</p>
         <div className="ml-auto flex flex-row-reverse lg:flex-row">
           {/* Hamburger */}
           <label
