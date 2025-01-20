@@ -26,7 +26,7 @@ export type ErrorResponseBody = { [code: string]: string };
 
 const SANDWICHED_JSON_PATTERN = /.*?(\{.*\}).*?/;
 const JSON_PATTERN =
-  /(\{(?:[^{}[\]]|(?<rec>\{(?:[^{}[\]]|<rec>)*\}))*\}|\[(?:[^\[\]{}]|(?<rec>\[(?:[^\[\]{}]|<rec>)*\]))*\])/g;
+  /(\{(?:[^{}[\]]|(?<rec1>\{(?:[^{}[\]]|<rec1>)*\}))*\}|\[(?:[^\[\]{}]|(?<rec2>\[(?:[^\[\]{}]|<rec2>)*\]))*\])/g;
 
 function parseResponseBody(body: string) {
   try {
