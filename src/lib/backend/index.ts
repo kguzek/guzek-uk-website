@@ -85,13 +85,27 @@ export function getUrlBase(path: string, user: User | null) {
   return API_BASE;
 }
 
-type BodyOptions =
-  | { body: Record<string, any>; method: "POST" | "PUT" | "PATCH" }
-  | { body?: never; method?: "GET" | "DELETE" | "POST" };
-
-export type FetchOptions = BodyOptions & {
+export type BaseFetchOptions = {
   params?: Record<string, string>;
 };
+
+type BodyFetchOptions = {
+  method: "POST" | "PUT" | "PATCH";
+  body: Record<string, any>;
+};
+
+type BodilessFetchOptions = {
+  method?: "GET" | "DELETE" | "POST";
+  body?: never;
+};
+
+export type ClientFetchOptions = BaseFetchOptions & BodyFetchOptions;
+
+export type ServerFetchOptions = BaseFetchOptions & {
+  api?: "episodate";
+} & (BodyFetchOptions | BodilessFetchOptions);
+
+type FetchOptions = ClientFetchOptions | ServerFetchOptions;
 
 type GetAccessToken = { getAccessToken: () => Promise<string | null> };
 
@@ -110,7 +124,7 @@ export async function prepareRequest(
   path: string,
   fetchOptions: FetchOptions,
   ...args: [false, GetAccessToken | null | never] | [true, AuthOptions]
-): Promise<RequestInit> {
+): Promise<RequestInit & { next: NextFetchRequestConfig }> {
   const [useAuth, authOptions] = args;
   const requestInit: RequestInit = {
     method: fetchOptions.method,
@@ -129,8 +143,6 @@ export async function prepareRequest(
     }
   }
   if (fetchOptions.body) {
-    if (!fetchOptions.method)
-      throw new Error("Method must be set when providing a body.");
     requestInit.body = JSON.stringify(fetchOptions.body);
     headers["Content-Type"] = "application/json";
   } else if (fetchOptions.method === "POST") {
@@ -138,8 +150,16 @@ export async function prepareRequest(
     // https://stackoverflow.com/a/4198969
     headers["Content-Length"] = "0";
   }
-  requestInit.headers = headers;
-  return requestInit;
+  return {
+    ...requestInit,
+    headers,
+    next: {
+      tags:
+        fetchOptions.method == null || fetchOptions.method === "GET"
+          ? [path]
+          : [],
+    },
+  };
 }
 
 export async function fetchFromApi<T>(url: string, options: RequestInit) {

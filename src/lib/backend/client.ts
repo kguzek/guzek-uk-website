@@ -1,16 +1,23 @@
-import { fetchFromApi, FetchOptions, getUrlBase, prepareRequest } from ".";
+import {
+  ClientFetchOptions,
+  fetchFromApi,
+  getUrlBase,
+  prepareRequest,
+} from ".";
 import { getSearchParams } from "../backend";
 import { getErrorMessage } from "../util";
 import type { Language } from "../enums";
 import type { User } from "../types";
 import { TRANSLATIONS } from "../translations";
+import { revalidateTag } from "next/cache";
 
-type FetchOptionsExtension =
+type FetchOptionsExtension = { user?: User | null } & (
   | {
       userLanguage: Language;
       setModalError: (error: string) => void;
     }
-  | { userLanguage?: never; setModalError?: never };
+  | { userLanguage?: never; setModalError?: never }
+);
 
 /** Makes a client-to-server API call using the provided access token.
  *
@@ -33,20 +40,22 @@ export async function clientToApi<T>(
   path: string,
   accessToken: string,
   {
+    user = null,
     userLanguage,
     setModalError,
     ...fetchOptions
-  }: FetchOptions & { user?: User | null } & FetchOptionsExtension,
+  }: ClientFetchOptions & FetchOptionsExtension,
 ) {
   const options = await prepareRequest(
     path,
     fetchOptions,
     ...(accessToken ? [true, { accessToken }] : [false, null]),
   );
-  const user = fetchOptions.user ?? null;
   const url = `${getUrlBase(path, user)}${path}${getSearchParams(fetchOptions.params)}`;
   const result = await fetchFromApi<T>(url, options);
-  if (userLanguage && !result.ok) {
+  if (result.ok) {
+    revalidateTag(path);
+  } else if (userLanguage) {
     const data = TRANSLATIONS[userLanguage];
     setModalError(
       result.hasBody
@@ -54,5 +63,6 @@ export async function clientToApi<T>(
         : data.networkError,
     );
   }
+
   return result;
 }

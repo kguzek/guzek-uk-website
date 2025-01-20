@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { getSearchParams } from "../backend";
 import { fetchFromApi, getUrlBase, prepareRequest } from ".";
-import type { FetchOptions } from ".";
+import type { ServerFetchOptions } from ".";
 import { parseUser } from "@/lib/backend/user";
 
 const EPISODATE_URL = "https://www.episodate.com/api/";
@@ -26,9 +26,7 @@ let refreshPromise: ReturnType<typeof _refreshAccessToken> | undefined =
  */
 export async function serverToApi<T>(
   path: string,
-  fetchOptions: FetchOptions & {
-    api?: "episodate";
-  } = {},
+  fetchOptions: ServerFetchOptions = {},
   useAuth: boolean = true,
 ) {
   const cookieStore = await cookies();
@@ -39,16 +37,14 @@ export async function serverToApi<T>(
   const options = await prepareRequest(path, fetchOptions, useAuth, {
     getAccessToken,
   });
-  options.next = {
-    revalidate:
-      fetchOptions.api === "episodate"
-        ? 3600
-        : !fetchOptions.method || fetchOptions.method === "GET"
-          ? 300
-          : useAuth
-            ? 0
-            : 5,
-  };
+  options.next.revalidate =
+    fetchOptions.api === "episodate"
+      ? 3600
+      : !fetchOptions.method || fetchOptions.method === "GET"
+        ? 300
+        : useAuth
+          ? 0
+          : 5;
   const user = useAuth ? parseUser(await getAccessToken()) : null;
   const url = `${fetchOptions.api === "episodate" ? EPISODATE_URL : getUrlBase(path, user)}${path}${getSearchParams(fetchOptions.params)}`;
   // console.debug("", options.method ?? "GET", url);
