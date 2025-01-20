@@ -122,9 +122,10 @@ const requestNeedsCredentials = (
 export async function prepareRequest(
   path: string,
   fetchOptions: FetchOptions,
-  ...args: [false, GetAccessToken | null | never] | [true, AuthOptions]
+  ...[useAuth, authOptions]:
+    | [false, GetAccessToken | null | never]
+    | [true, AuthOptions]
 ): Promise<RequestInit & { next: NextFetchRequestConfig }> {
-  const [useAuth, authOptions] = args;
   const requestInit: RequestInit = {
     method: fetchOptions.method,
     credentials: requestNeedsCredentials(path, fetchOptions.method)

@@ -9,7 +9,6 @@ import { getErrorMessage } from "../util";
 import type { Language } from "../enums";
 import type { User } from "../types";
 import { TRANSLATIONS } from "../translations";
-import { revalidateTag } from "next/cache";
 
 type FetchOptionsExtension = { user?: User | null } & (
   | {
@@ -18,6 +17,19 @@ type FetchOptionsExtension = { user?: User | null } & (
     }
   | { userLanguage?: never; setModalError?: never }
 );
+
+async function triggerRevalidation(path: string) {
+  const request = await prepareRequest(path, { method: "POST" }, false, null);
+  const result = await fetchFromApi("/app/revalidate", request);
+  if (!result.ok) {
+    console.warn(
+      "Failed to trigger revalidation for path",
+      path,
+      result.error ?? "",
+    );
+  }
+  return result;
+}
 
 /** Makes a client-to-server API call using the provided access token.
  *
@@ -54,7 +66,7 @@ export async function clientToApi<T>(
   const url = `${getUrlBase(path, user)}${path}${getSearchParams(fetchOptions.params)}`;
   const result = await fetchFromApi<T>(url, options);
   if (result.ok) {
-    revalidateTag(path);
+    await triggerRevalidation(path);
   } else if (userLanguage) {
     const data = TRANSLATIONS[userLanguage];
     setModalError(
