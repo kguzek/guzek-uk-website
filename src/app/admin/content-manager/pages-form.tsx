@@ -92,10 +92,10 @@ function PagesEditor({
   async function handleSubmit(evt: FormEvent) {
     evt.preventDefault();
     setClickedSubmit(true);
-    const url = `pages/${page.id}`;
-    const result = await clientToApi(url, accessToken, {
+    const result = await clientToApi(`pages/${page.id}`, accessToken, {
       method: "PUT",
       body: { ...page, content },
+      params: { lang: userLanguage },
       userLanguage,
       setModalError,
     });
