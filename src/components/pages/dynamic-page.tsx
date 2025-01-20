@@ -17,6 +17,10 @@ export async function DynamicPageLoader({ page }: { page: string }) {
   if (!currentPage) return <ErrorComponent errorCode={ErrorCode.NotFound} />;
   const result = await serverToApi<PageContent>(`pages/${currentPage.id}`);
   if (!result.ok) return <ErrorComponent errorResult={result} />;
+  if (!result.data.content) {
+    console.error("Failed to fetch page content", result);
+    return <ErrorComponent errorCode={ErrorCode.NotFound} />;
+  }
   return (
     <div className="text flex justify-center">
       <div
