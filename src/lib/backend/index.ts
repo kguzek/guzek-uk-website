@@ -85,10 +85,6 @@ export function getUrlBase(path: string, user: User | null) {
   return API_BASE;
 }
 
-export type BaseFetchOptions = {
-  params?: Record<string, string>;
-};
-
 type BodyFetchOptions = {
   method: "POST" | "PUT" | "PATCH";
   body: Record<string, any>;
@@ -98,12 +94,15 @@ type BodilessFetchOptions = {
   method?: "GET" | "DELETE" | "POST";
   body?: never;
 };
+export type BaseFetchOptions = (BodyFetchOptions | BodilessFetchOptions) & {
+  params?: Record<string, string>;
+};
 
-export type ClientFetchOptions = BaseFetchOptions & BodyFetchOptions;
+export type ClientFetchOptions = BaseFetchOptions;
 
 export type ServerFetchOptions = BaseFetchOptions & {
   api?: "episodate";
-} & (BodyFetchOptions | BodilessFetchOptions);
+};
 
 type FetchOptions = ClientFetchOptions | ServerFetchOptions;
 
