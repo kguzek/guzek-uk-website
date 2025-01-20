@@ -25,6 +25,8 @@ const DECENTRALISED_ROUTES = [
 export type ErrorResponseBody = { [code: string]: string };
 
 const SANDWICHED_JSON_PATTERN = /.*?(\{.*\}).*?/;
+const JSON_PATTERN =
+  /(\{(?:[^{}[\]]|(?<rec>\{(?:[^{}[\]]|<rec>)*\}))*\}|\[(?:[^\[\]{}]|(?<rec>\[(?:[^\[\]{}]|<rec>)*\]))*\])/g;
 
 function parseResponseBody(body: string) {
   try {
@@ -32,6 +34,8 @@ function parseResponseBody(body: string) {
   } catch {
     console.warn("Initial body JSON parse failed:", body);
   }
+  const matches = [...body.matchAll(JSON_PATTERN)].map((match) => match[0]);
+  matches.length;
   const sandwichedMatch = body.match(SANDWICHED_JSON_PATTERN);
   if (sandwichedMatch == null) {
     console.warn("No sandwiched JSON found in body");

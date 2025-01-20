@@ -1,13 +1,13 @@
 import { cookies } from "next/headers";
 import { getSearchParams } from "../backend";
-import { User } from "../types";
 import { fetchFromApi, getUrlBase, prepareRequest } from ".";
 import type { FetchOptions } from ".";
-import { getUserOnce } from "@/lib/backend/user";
+import { parseUser } from "@/lib/backend/user";
 
 const EPISODATE_URL = "https://www.episodate.com/api/";
 
-let refreshPromise: ReturnType<typeof refreshToken> | undefined = undefined;
+let refreshPromise: ReturnType<typeof _refreshAccessToken> | undefined =
+  undefined;
 
 /** Makes a server-to-server API call using cookie-based authentication.
  *
@@ -49,7 +49,7 @@ export async function serverToApi<T>(
             ? 0
             : 5,
   };
-  const user = await getUserOnce();
+  const user = useAuth ? parseUser(await getAccessToken()) : null;
   const url = `${fetchOptions.api === "episodate" ? EPISODATE_URL : getUrlBase(path, user)}${path}${getSearchParams(fetchOptions.params)}`;
   // console.debug("", options.method ?? "GET", url);
   return await fetchFromApi<T>(url, options);
@@ -60,23 +60,19 @@ export async function getAccessToken(): Promise<string | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value;
   if (token) return token;
-  return (await refreshAccessToken()).token;
+  return refreshAccessToken();
 }
 
 /** Refreshes the access token using the refresh token.
  *
- * @returns an object containing the user & access token if refresh was successful, otherwise the fields are `null`.
+ * @returns the access token if refresh was successful, otherwise `null`.
  */
-export async function refreshAccessToken() {
-  if (refreshPromise) return refreshPromise;
-  refreshPromise = refreshToken();
-  return refreshPromise;
-}
+const refreshAccessToken = () => (refreshPromise ??= _refreshAccessToken());
 
-async function refreshToken() {
+async function _refreshAccessToken() {
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get("refresh_token")?.value;
-  if (!refreshToken) return { token: null, user: null };
+  if (!refreshToken) return null;
   if (cookieStore.get("access_token")?.value) {
     throw new Error(
       "Refusing to refresh access token since it is still valid.",
@@ -85,8 +81,8 @@ async function refreshToken() {
   console.info("Refreshing access token...");
   const result = await serverToApi<{
     accessToken: string;
-    expiresAt: number;
-    user: User;
+    // expiresAt: number;
+    // user: User;
   }>(
     "auth/refresh",
     {
@@ -96,9 +92,8 @@ async function refreshToken() {
     false,
   );
   return result.ok &&
-    result.hasBody &&
     typeof result.data.accessToken === "string" &&
     result.data.accessToken.length > 0
-    ? { token: result.data.accessToken, user: result.data.user }
-    : { token: null, user: null };
+    ? result.data.accessToken
+    : null;
 }
