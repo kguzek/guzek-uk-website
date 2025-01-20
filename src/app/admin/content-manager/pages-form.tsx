@@ -92,7 +92,7 @@ function PagesEditor({
   async function handleSubmit(evt: FormEvent) {
     evt.preventDefault();
     setClickedSubmit(true);
-    const url = `pages/${page.id}?lang=${userLanguage}`;
+    const url = `pages/${page.id}`;
     const result = await clientToApi(url, accessToken, {
       method: "PUT",
       body: { ...page, content },
