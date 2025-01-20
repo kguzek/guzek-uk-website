@@ -2,6 +2,7 @@ import { ErrorComponent } from "@/components/error-component";
 import { ErrorCode } from "@/lib/enums";
 import type { MenuItem, PageContent } from "@/lib/types";
 import { serverToApi } from "@/lib/backend/server";
+import { revalidatePath } from "next/cache";
 
 export async function getPageBySlug(slug: string) {
   const result = await serverToApi<MenuItem[]>("pages");
@@ -19,6 +20,7 @@ export async function DynamicPageLoader({ page }: { page: string }) {
   if (!result.ok) return <ErrorComponent errorResult={result} />;
   if (!result.data.content) {
     console.error("Failed to fetch page content", result);
+    revalidatePath(currentPage.url);
     return <ErrorComponent errorCode={ErrorCode.NotFound} />;
   }
   return (

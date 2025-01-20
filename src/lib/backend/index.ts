@@ -167,7 +167,7 @@ export async function fetchFromApi<T>(url: string, options: RequestInit) {
   try {
     res = await fetch(url, options);
   } catch (error) {
-    console.error(method, url, "FALIED:", error);
+    console.error(method, url, "FAILED:", error);
     return {
       failed: true,
       res: null,
