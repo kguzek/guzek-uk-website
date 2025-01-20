@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { getAccessToken } from "@/lib/backend/server";
 import type { User } from "@/lib/types";
 import { isInvalidDate } from "../util";
@@ -22,28 +21,15 @@ function parseJwt(token: string): string {
   return Buffer.from(payload, "base64").toString();
 }
 
-async function rejectSavedUser(user: any) {
-  console.warn("Rejecting saved user:", user);
-  const cookieStore = await cookies();
-  cookieStore.set("user", "", { expires: new Date(0) });
-}
-
 function validateUser(parsedUser: any) {
   for (const property of USER_REQUIRED_PROPERTIES) {
     if (parsedUser[property] !== undefined) continue;
-    rejectSavedUser(parsedUser);
-    return null;
-  }
-  if (
-    Object.keys(parsedUser).length !==
-    Object.keys(USER_REQUIRED_PROPERTIES).length
-  ) {
-    rejectSavedUser(parsedUser);
+    console.warn("User", parsedUser, "is missing required property", property);
     return null;
   }
   for (const dateString of [parsedUser.created_at, parsedUser.modified_at]) {
     if (isInvalidDate(new Date(dateString))) {
-      rejectSavedUser(parsedUser);
+      console.warn("User", parsedUser, "has invalid date string", dateString);
       return null;
     }
   }
