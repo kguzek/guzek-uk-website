@@ -44,12 +44,18 @@ function sortEpisodes(episodes: Episode[]) {
   return Object.entries(seasons);
 }
 
-const getShowDetails = async (params: Props["params"]) =>
-  await serverToApi<{ tvShow: TvShowDetails }>("show-details", {
+async function getShowDetails(params: Props["params"]) {
+  const result = await serverToApi<{ tvShow: TvShowDetails }>("show-details", {
     params: { q: (await params).permalink },
     api: "episodate",
   });
-
+  if (!result.ok) return result;
+  if (result.data?.tvShow?.name == null) {
+    console.warn("Invalid tv show details:", result.data);
+    return { ok: false } as const;
+  }
+  return result;
+}
 export default async function TvShow({ params }: Props) {
   const { permalink } = await params;
   const { data, userLanguage } = await useTranslations();
