@@ -56,6 +56,7 @@ async function getShowDetails(params: Props["params"]) {
   }
   return result;
 }
+
 export default async function TvShow({ params }: Props) {
   const { permalink } = await params;
   const { data, userLanguage } = await useTranslations();
