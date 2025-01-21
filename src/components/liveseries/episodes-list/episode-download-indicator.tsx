@@ -11,7 +11,7 @@ import type {
 } from "@/lib/types";
 import { TRANSLATIONS } from "@/lib/translations";
 import { useModals } from "@/context/modal-context";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { bytesToReadable, compareEpisodes } from "@/lib/util";
 import Link from "next/link";
 import { useLiveSeriesContext } from "@/context/liveseries-context";
@@ -32,21 +32,26 @@ export function EpisodeDownloadIndicator({
   const { setModalError } = useModals();
   const { downloadedEpisodes } = useLiveSeriesContext();
 
-  const episodePredicate = (
-    check: DownloadedEpisode, // Torrents filenames omit colons
-  ) =>
-    compareEpisodes(check, {
-      ...episode,
-      showName: tvShow.name.replace(/:/g, ""),
-    });
+  const episodeObject = {
+    showName: tvShow.name.replace(/:/g, ""), // Torrent filenames omit colons
+    season: episode.season,
+    episode: episode.episode,
+  };
 
-  const initialMetadata = downloadedEpisodes.find(episodePredicate);
-  const [metadata, setMetadata] = useState(initialMetadata);
+  const [metadata, setMetadata] = useState<undefined | DownloadedEpisode>(
+    undefined,
+  );
   const data = TRANSLATIONS[userLanguage];
 
   const episodeString = `${tvShow.name} ${data.liveSeries.episodes.serialise(
     episode,
   )}`;
+
+  useEffect(() => {
+    setMetadata(
+      downloadedEpisodes.find((check) => compareEpisodes(check, episodeObject)),
+    );
+  }, [downloadedEpisodes]);
 
   async function startDownload() {
     const result = await clientToApi(

@@ -159,7 +159,9 @@ export function ShowDetails({
   const unwatchedEpisodesCount = totalEpisodes - watchedEpisodesCount;
 
   const imagesLoading = numImagesLoaded < tvShowDetails.pictures.length;
-  console.log({ imagesLoading });
+  if (imagesLoading && !imagesLoading) {
+    // TODO: remove this
+  }
 
   return (
     <div className="flex flex-col gap-1">

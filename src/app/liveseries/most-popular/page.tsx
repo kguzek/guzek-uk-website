@@ -21,7 +21,7 @@ export default async function MostPopular({
 
   const result = await serverToApi<TvShowList>("most-popular", {
     api: "episodate",
-    params: { page: params.page },
+    params: { page: params.page || "1" },
   });
 
   return (

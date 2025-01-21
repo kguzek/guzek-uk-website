@@ -44,21 +44,23 @@ async function Episode({
         <small>{airDate}</small>
       </div>
       <div className="noshrink flex items-center gap-4">
-        <EpisodeDownloadIndicator
-          user={user}
-          userLanguage={userLanguage}
-          accessToken={accessToken}
-          episode={episode}
-          tvShow={tvShow}
-        />
         {hasEpisodeAired(episode) ? (
-          <EpisodeWatchedIndicator
-            userLanguage={userLanguage}
-            showId={tvShow.id}
-            episode={episode}
-            watchedInSeason={watchedInSeason ?? []}
-            accessToken={accessToken}
-          />
+          <>
+            <EpisodeDownloadIndicator
+              user={user}
+              userLanguage={userLanguage}
+              accessToken={accessToken}
+              episode={episode}
+              tvShow={tvShow}
+            />
+            <EpisodeWatchedIndicator
+              userLanguage={userLanguage}
+              showId={tvShow.id}
+              episode={episode}
+              watchedInSeason={watchedInSeason ?? []}
+              accessToken={accessToken}
+            />
+          </>
         ) : (
           <i className="watched centred fa-regular fa-clock"></i>
         )}
@@ -91,7 +93,7 @@ export async function EpisodesList({
     }
   }
   return (
-    <>
+    <div>
       <div className="peer flex items-center gap-4">
         <label className="clickable flex items-center gap-4">
           <input type="checkbox" className="peer hidden" />
@@ -112,6 +114,6 @@ export async function EpisodesList({
           ))}
         </div>
       </div>
-    </>
+    </div>
   );
 }
