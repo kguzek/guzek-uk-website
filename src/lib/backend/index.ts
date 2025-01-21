@@ -248,7 +248,7 @@ export async function fetchFromApi<T>(url: string, options: RequestInit) {
 
 /** Makes a request to the Next server to revalidate the given tag, and logs a message on failure. */
 export async function triggerRevalidation(tag: string) {
-  const url = "/app/revalidate";
+  const url = "/api/revalidate";
   const request = await prepareRequest(
     url,
     { method: "POST", body: { tag } },
