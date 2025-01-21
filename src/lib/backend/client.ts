@@ -3,6 +3,7 @@ import {
   fetchFromApi,
   getUrlBase,
   prepareRequest,
+  triggerRevalidation,
 } from ".";
 import { getSearchParams } from "../backend";
 import { getErrorMessage } from "../util";
@@ -17,19 +18,6 @@ type FetchOptionsExtension = { user?: User | null } & (
     }
   | { userLanguage?: never; setModalError?: never }
 );
-
-async function triggerRevalidation(path: string) {
-  const request = await prepareRequest(path, { method: "POST" }, false, null);
-  const result = await fetchFromApi("/app/revalidate", request);
-  if (!result.ok) {
-    console.warn(
-      "Failed to trigger revalidation for path",
-      path,
-      result.error ?? "",
-    );
-  }
-  return result;
-}
 
 /** Makes a client-to-server API call using the provided access token.
  *
