@@ -156,7 +156,7 @@ export async function prepareRequest(
     next: {
       tags:
         fetchOptions.method == null || fetchOptions.method === "GET"
-          ? [path]
+          ? [pathToTag(path)]
           : [],
     },
   };
@@ -246,9 +246,24 @@ export async function fetchFromApi<T>(url: string, options: RequestInit) {
   } as const;
 }
 
-/** Makes a request to the Next server to revalidate the given tag, and logs a message on failure. */
-export async function triggerRevalidation(tag: string) {
+/** This ensures the path is no longer than two subdirectories.
+ *
+ * @param path The path to shorten.
+ * @returns The shortened path, containing at most one separator (slash).
+ *
+ * @example pathToTag("a/b/c") => "a/b"
+ * @example pathToTag("a") => "a"
+ */
+export function pathToTag(path: string) {
+  const parts = path.split("/");
+  if (parts.length < 2) return path;
+  return parts.slice(0, 2).join("/");
+}
+
+/** Makes a request to the Next server to revalidate the tag corresponding to the path, and logs a message on failure. */
+export async function triggerRevalidation(path: string) {
   const url = "/api/revalidate";
+  const tag = pathToTag(path);
   const request = await prepareRequest(
     url,
     { method: "POST", body: { tag } },
