@@ -1,7 +1,7 @@
 import { User } from "../types";
 
-// const USE_LOCAL_API_URL = false;
-const USE_LOCAL_API_URL = true;
+const USE_LOCAL_API_URL = false;
+// const USE_LOCAL_API_URL = true;
 
 const useLocalUrl = process.env.NODE_ENV === "development" && USE_LOCAL_API_URL;
 

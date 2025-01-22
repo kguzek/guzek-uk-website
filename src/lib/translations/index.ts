@@ -27,6 +27,7 @@ export type Translation = Readonly<{
     formDetails: {
       username: string;
       email: string;
+      loginPrompt: string;
       creationDate: string;
       type: string;
       administrator: string;

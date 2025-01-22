@@ -39,6 +39,7 @@ export const POLISH: Translation = {
     formDetails: {
       username: "Nazwa użytkownika",
       email: "Email",
+      loginPrompt: "Nazwa użytkownika lub email",
       creationDate: "Data utworzenia konta",
       type: "Typ konta",
       administrator: "administrator",

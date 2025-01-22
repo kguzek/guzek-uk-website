@@ -10,7 +10,7 @@ import { useModals } from "@/context/modal-context";
 import { clientToApi } from "@/lib/backend/client";
 
 export function LogInForm({ userLanguage }: { userLanguage: Language }) {
-  const [email, setEmail] = useState("");
+  const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { setModalError } = useModals();
@@ -23,7 +23,7 @@ export function LogInForm({ userLanguage }: { userLanguage: Language }) {
     setModalError();
     setLoading(true);
     const body = {
-      email,
+      login,
       password,
     };
     let result;
@@ -46,13 +46,18 @@ export function LogInForm({ userLanguage }: { userLanguage: Language }) {
   }
 
   return (
-    <form className="form-login" onSubmit={handleLogin}>
+    <form
+      action="https://auth.guzek.uk/auth/tokens"
+      method="POST"
+      className="form-login"
+      onSubmit={handleLogin}
+    >
       <InputBox
-        label={data.profile.formDetails.email}
-        type="email"
-        value={email}
-        name="email"
-        setValue={setEmail}
+        label={data.profile.formDetails.loginPrompt}
+        type="text"
+        value={login}
+        name="login"
+        setValue={setLogin}
         autofocus
       />
       <InputBox

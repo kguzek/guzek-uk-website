@@ -3,7 +3,7 @@ import Link from "next/link";
 
 function Logo({ size = 80 }) {
   return (
-    <Link href="/" className="max-w-16 sm:max-w-none">
+    <Link href="/" className="min-w-5 max-w-16 sm:max-w-none">
       <Image
         src="/logo128.png"
         width={size}

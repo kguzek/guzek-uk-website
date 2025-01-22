@@ -8,8 +8,18 @@ const ROUTES_REQUIRING_ADMIN = ["/admin"];
 
 export const authMiddleware: MiddlewareFactory = (next) =>
   async function (request) {
-    const redirect = (to: string) =>
-      NextResponse.redirect(new URL(to, request.url));
+    function redirect(to: string) {
+      console.debug(
+        "Redirecting",
+        user?.username ?? "<anonymous>",
+        "from",
+        request.url,
+        "to",
+        to,
+      );
+      return NextResponse.redirect(new URL(to, request.url));
+    }
+
     const user = await getCurrentUser();
     const [redirectFrom, redirectTo] = user?.admin
       ? [ROUTES_REQUIRING_NOAUTH, "/profile"]

@@ -54,36 +54,6 @@
   background-repeat: no-repeat;
 }
 
-.user-widget {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  margin-bottom: 10px;
-}
-
-.user-widget.medium {
-  transition: background-size 0.2s ease-out;
-}
-
-.user-widget.mobile {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.user-name {
-  color: grey;
-  text-align: center;
-  overflow: hidden;
-  line-height: 1.2em;
-  max-height: 2.4em;
-  font-size: 1.1rem;
-  margin-top: 2px;
-}
-
-.active .user-name {
-  color: white;
-}
-
 .lang-selector {
   margin: auto;
   width: 80px;

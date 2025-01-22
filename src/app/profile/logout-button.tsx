@@ -1,6 +1,6 @@
 "use client";
 
-import { MouseEvent, useState } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LoadingButton } from "@/components/loading/loading-button";
 import { Language } from "@/lib/enums";
@@ -21,9 +21,10 @@ export function LogoutButton({
 
   const data = TRANSLATIONS[userLanguage];
 
-  async function handleLogOut(_evt: MouseEvent<HTMLButtonElement>) {
+  async function handleLogOut(evt: FormEvent<HTMLFormElement>) {
+    evt.preventDefault();
     setLoggingOut(true);
-    const result = await clientToApi(`auth/tokens`, accessToken, {
+    const result = await clientToApi("auth/tokens", accessToken, {
       method: "DELETE",
       userLanguage,
       setModalError,
@@ -36,14 +37,20 @@ export function LogoutButton({
   }
 
   return (
-    <div className="flex justify-center">
+    <form
+      action="https://auth.guzek.uk/auth/tokens"
+      method="post"
+      onSubmit={handleLogOut}
+      className="flex justify-center"
+    >
+      <input className="hidden" type="hidden" name="_method" value="DELETE" />
       {loggingOut ? (
         <LoadingButton />
       ) : (
-        <button className="btn btn-submit" onClick={handleLogOut}>
+        <button className="btn btn-submit" type="submit">
           {data.profile.formDetails.logout}
         </button>
       )}
-    </div>
+    </form>
   );
 }

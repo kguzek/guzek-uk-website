@@ -23,13 +23,13 @@ export function SearchForm({ userLanguage }: { userLanguage: Language }) {
 
   return (
     <form
+      action="/liveseries/search"
+      method="GET"
       className="form-editor flex items-center gap-4"
       onSubmit={(evt) => {
         evt.preventDefault();
         router.push(getSearchPath());
       }}
-      action="/liveseries/search"
-      method="get"
     >
       <InputBox
         label={data.liveSeries.search.label}

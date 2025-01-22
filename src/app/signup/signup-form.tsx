@@ -57,7 +57,12 @@ export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
   }
 
   return (
-    <form className="form-login" onSubmit={handleSignUp}>
+    <form
+      action="https://auth.guzek.uk/auth/users"
+      method="POST"
+      className="form-login"
+      onSubmit={handleSignUp}
+    >
       <InputBox
         label={data.profile.formDetails.username}
         type="text"

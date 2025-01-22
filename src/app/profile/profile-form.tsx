@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import type { MouseEvent } from "react";
+import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
 import InputBox from "@/components/forms/input-box";
 import type { User } from "@/lib/types";
 import type { Language } from "@/lib/enums";
@@ -19,6 +19,7 @@ export function ProfileForm({
   accessToken: string;
 }) {
   const [serverUrl, setServerUrl] = useState(user.serverUrl || "");
+  const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
   const [updating, setUpdating] = useState(false);
   const { setModalError, setModalInfo } = useModals();
   const data = TRANSLATIONS[userLanguage];
@@ -30,21 +31,23 @@ export function ProfileForm({
     serverUrl !== (user.serverUrl ?? "") &&
     serverUrl.match(/^https?:\/\/.+/);
 
-  async function handleUpdateServerUrl(evt: MouseEvent<HTMLButtonElement>) {
+  const detailsRequestPath = "auth/users/me/details";
+
+  useEffect(() => {
+    setSubmitButtonDisabled(!isServerUrlValid());
+  }, [serverUrl, updating]);
+
+  async function handleUpdateServerUrl(evt: FormEvent) {
     evt.preventDefault();
     if (!user) return;
     setUpdating(true);
     const newServerUrl = serverUrl.endsWith("/") ? serverUrl : serverUrl + "/";
-    const result = await clientToApi(
-      `auth/users/${user.uuid}/details`,
-      accessToken,
-      {
-        method: "PUT",
-        body: { serverUrl: newServerUrl },
-        userLanguage,
-        setModalError,
-      },
-    );
+    const result = await clientToApi(detailsRequestPath, accessToken, {
+      method: "PUT",
+      body: { serverUrl: newServerUrl },
+      userLanguage,
+      setModalError,
+    });
     if (result.ok) {
       setServerUrl(newServerUrl);
       setModalInfo(data.profile.serverUrlUpdated(newServerUrl));
@@ -56,13 +59,20 @@ export function ProfileForm({
   }
 
   return (
-    <form className="profile-form flex gap-10">
+    <form
+      action={`https://auth.guzek.uk/${detailsRequestPath}`}
+      method="POST"
+      className="profile-form flex gap-10"
+      onSubmit={handleUpdateServerUrl}
+    >
+      <input className="hidden" type="hidden" name="_method" value="PUT" />
       <div style={{ width: "100%" }}>
         <InputBox
           label={data.profile.formDetails.serverUrl}
           value={serverUrl}
           setValue={setServerUrl}
           required={false}
+          name="serverUrl"
           info={
             <button
               type="button"
@@ -77,12 +87,7 @@ export function ProfileForm({
           }
         />
       </div>
-      <button
-        type="submit"
-        className="btn"
-        disabled={!isServerUrlValid()}
-        onClick={handleUpdateServerUrl}
-      >
+      <button type="submit" className="btn" disabled={submitButtonDisabled}>
         {data.admin.contentManager.formDetails.update}
       </button>
     </form>

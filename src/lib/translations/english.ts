@@ -38,6 +38,7 @@ export const ENGLISH: Translation = {
     formDetails: {
       username: "Username",
       email: "Email",
+      loginPrompt: "Username or email",
       creationDate: "Account creation date",
       type: "Account type",
       administrator: "administrator",
