@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import type { NextRequest, NextResponse } from "next/server";
 import type { User } from "@/lib/types";
 import { isInvalidDate } from "../util";
-import { refreshAccessToken } from "./server";
+import { serverToApi } from "./server";
 
 const USER_REQUIRED_PROPERTIES = [
   "uuid",
@@ -13,6 +13,9 @@ const USER_REQUIRED_PROPERTIES = [
   "created_at",
   "modified_at",
 ];
+
+let refreshPromise: ReturnType<typeof _refreshAccessToken> | undefined =
+  undefined;
 
 type AccessTokenPayload = User & { iat: number; exp: number };
 
@@ -72,16 +75,43 @@ async function getAccessToken(request?: NextRequest): Promise<string | null> {
   return token;
 }
 
-async function refreshToken(reason: string, response?: NextResponse) {
-  if (!response) {
-    return { user: null, accessToken: null };
+/** Refreshes the access token using the refresh token.
+ *
+ * @returns the access token if refresh was successful, otherwise `null`.
+ */
+async function _refreshAccessToken(refreshToken: string) {
+  const result = await serverToApi<{
+    accessToken: string;
+    // expiresAt: number;
+    // user: User;
+  }>(
+    "auth/refresh",
+    {
+      body: { token: refreshToken },
+      method: "POST",
+    },
+    false,
+  );
+  return result.ok &&
+    typeof result.data.accessToken === "string" &&
+    result.data.accessToken.length > 0
+    ? result.data.accessToken
+    : null;
+}
+
+async function refreshAccessToken(
+  reason: string,
+  request?: NextRequest,
+  response?: NextResponse,
+) {
+  if (!request || !response) {
+    return null;
   }
+  if (refreshPromise) return refreshPromise;
+  const refreshToken = request.cookies.get("refresh_token")?.value;
+  if (!refreshToken) return null;
   console.info(`Refreshing access token (${reason})...`);
-  const accessToken = await refreshAccessToken();
-  if (!accessToken) {
-    return { user: null, accessToken: null } as const;
-  }
-  return { accessToken } as const;
+  return (refreshPromise = _refreshAccessToken(refreshToken));
 }
 
 /** Checks if the access token will expire within the threshold.
@@ -107,23 +137,27 @@ export async function useAuth(
   let accessToken = await getAccessToken(request);
   let refreshed = false;
   if (!accessToken) {
-    const result = await refreshToken("cookie missing", response);
-    if (result.accessToken == null) return result;
+    accessToken = await refreshAccessToken("cookie missing", request, response);
+    if (!accessToken) return { user: null, accessToken: null };
     refreshed = true;
-    accessToken = result.accessToken;
   }
   let payload = decodeAccessToken(accessToken);
   if (!payload) return { user: null, accessToken: null };
   if (tokenWillExpireSoon(payload.exp)) {
-    const result = await refreshToken("soon to expire", response);
-    if (result.accessToken == null) {
+    const newAccessToken = await refreshAccessToken(
+      "soon to expire",
+      request,
+      response,
+    );
+    if (newAccessToken == null) {
       console.warn("Failed to refresh access token.");
     } else {
       refreshed = true;
-      payload = decodeAccessToken(result.accessToken);
+      payload = decodeAccessToken(newAccessToken);
       if (!payload) throw new Error("Newly refreshed token cannot be decoded");
       if (tokenWillExpireSoon(payload.exp))
         throw new Error("Newly refreshed token still expires soon");
+      accessToken = newAccessToken;
     }
   }
   if (refreshed) {

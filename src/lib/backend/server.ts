@@ -6,9 +6,6 @@ import { useAuth } from "@/lib/backend/user";
 
 const EPISODATE_URL = "https://www.episodate.com/api/";
 
-let refreshPromise: ReturnType<typeof _refreshAccessToken> | undefined =
-  undefined;
-
 /** Makes a server-to-server API call using cookie-based authentication.
  *
  * @param path The relative path to the API endpoint, where the base is inferred from the path or the `fetchOptions.api` parameter.
@@ -53,39 +50,4 @@ export async function serverToApi<T>(
   const url = `${fetchOptions.api === "episodate" ? EPISODATE_URL : getUrlBase(path, user)}${path}${getSearchParams(fetchOptions.params)}`;
   // console.debug("", options.method ?? "GET", url);
   return await fetchFromApi<T>(url, options);
-}
-
-/** Refreshes the access token using the refresh token.
- *
- * @returns the access token if refresh was successful, otherwise `null`.
- */
-export const refreshAccessToken = () =>
-  (refreshPromise ??= _refreshAccessToken());
-
-async function _refreshAccessToken() {
-  const cookieStore = await cookies();
-  const refreshToken = cookieStore.get("refresh_token")?.value;
-  if (!refreshToken) return null;
-  if (cookieStore.get("access_token")?.value) {
-    throw new Error(
-      "Refusing to refresh access token since it is still valid.",
-    );
-  }
-  const result = await serverToApi<{
-    accessToken: string;
-    // expiresAt: number;
-    // user: User;
-  }>(
-    "auth/refresh",
-    {
-      body: { token: refreshToken },
-      method: "POST",
-    },
-    false,
-  );
-  return result.ok &&
-    typeof result.data.accessToken === "string" &&
-    result.data.accessToken.length > 0
-    ? result.data.accessToken
-    : null;
 }
