@@ -79,26 +79,6 @@ async function getAccessToken(request?: NextRequest): Promise<string | null> {
  *
  * @returns the access token if refresh was successful, otherwise `null`.
  */
-async function _refreshAccessToken(refreshToken: string) {
-  const result = await serverToApi<{
-    accessToken: string;
-    // expiresAt: number;
-    // user: User;
-  }>(
-    "auth/refresh",
-    {
-      body: { token: refreshToken },
-      method: "POST",
-    },
-    false,
-  );
-  return result.ok &&
-    typeof result.data.accessToken === "string" &&
-    result.data.accessToken.length > 0
-    ? result.data.accessToken
-    : null;
-}
-
 async function refreshAccessToken(
   reason: string,
   request?: NextRequest,
@@ -111,7 +91,28 @@ async function refreshAccessToken(
   const refreshToken = request.cookies.get("refresh_token")?.value;
   if (!refreshToken) return null;
   console.info(`Refreshing access token (${reason})...`);
-  return (refreshPromise = _refreshAccessToken(refreshToken));
+  refreshPromise = _refreshAccessToken(refreshToken);
+  return refreshPromise;
+}
+
+async function _refreshAccessToken(refreshToken: string) {
+  const result = await serverToApi<{
+    accessToken: string;
+    expiresAt: number;
+    user: User;
+  }>(
+    "auth/refresh",
+    {
+      body: { token: refreshToken },
+      method: "POST",
+    },
+    false,
+  );
+  if (result.ok) {
+    return result.data.accessToken;
+  }
+  console.warn("Failed to refresh access token", result);
+  return null;
 }
 
 /** Checks if the access token will expire within the threshold.
@@ -149,9 +150,7 @@ export async function useAuth(
       request,
       response,
     );
-    if (newAccessToken == null) {
-      console.warn("Failed to refresh access token.");
-    } else {
+    if (newAccessToken != null) {
       refreshed = true;
       payload = decodeAccessToken(newAccessToken);
       if (!payload) throw new Error("Newly refreshed token cannot be decoded");
