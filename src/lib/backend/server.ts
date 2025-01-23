@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { getSearchParams } from "../backend";
 import { fetchFromApi, getUrlBase, prepareRequest } from ".";
 import type { ServerFetchOptions } from ".";
-import { parseUser } from "@/lib/backend/user";
+import { useAuth } from "@/lib/backend/user";
 
 const EPISODATE_URL = "https://www.episodate.com/api/";
 
@@ -27,43 +27,40 @@ let refreshPromise: ReturnType<typeof _refreshAccessToken> | undefined =
 export async function serverToApi<T>(
   path: string,
   fetchOptions: ServerFetchOptions = {},
-  useAuth: boolean = true,
+  useCredentials: boolean = true,
 ) {
   const cookieStore = await cookies();
   if (!fetchOptions.params?.lang) {
     const lang = cookieStore.get("lang")?.value || "EN";
     fetchOptions.params = { ...fetchOptions.params, lang };
   }
-  const options = await prepareRequest(path, fetchOptions, useAuth, {
-    getAccessToken,
-  });
+  const { accessToken, user } = await useAuth();
+
+  const options = await prepareRequest(
+    path,
+    fetchOptions,
+    accessToken,
+    useCredentials,
+  );
   options.next.revalidate =
     fetchOptions.api === "episodate"
       ? 3600
       : !fetchOptions.method || fetchOptions.method === "GET"
         ? 300
-        : useAuth
+        : useCredentials
           ? 0
           : 5;
-  const user = useAuth ? parseUser(await getAccessToken()) : null;
   const url = `${fetchOptions.api === "episodate" ? EPISODATE_URL : getUrlBase(path, user)}${path}${getSearchParams(fetchOptions.params)}`;
   // console.debug("", options.method ?? "GET", url);
   return await fetchFromApi<T>(url, options);
-}
-
-/** Gets the access token from cookies, refreshing it if needed. */
-export async function getAccessToken(): Promise<string | null> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("access_token")?.value;
-  if (token) return token;
-  return refreshAccessToken();
 }
 
 /** Refreshes the access token using the refresh token.
  *
  * @returns the access token if refresh was successful, otherwise `null`.
  */
-const refreshAccessToken = () => (refreshPromise ??= _refreshAccessToken());
+export const refreshAccessToken = () =>
+  (refreshPromise ??= _refreshAccessToken());
 
 async function _refreshAccessToken() {
   const cookieStore = await cookies();
@@ -74,7 +71,6 @@ async function _refreshAccessToken() {
       "Refusing to refresh access token since it is still valid.",
     );
   }
-  console.info("Refreshing access token...");
   const result = await serverToApi<{
     accessToken: string;
     // expiresAt: number;

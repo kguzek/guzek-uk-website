@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getTitle } from "@/lib/util";
 import { useTranslations } from "@/providers/translation-provider";
-import { getCurrentUser } from "@/lib/backend/user";
+import { useAuth } from "@/lib/backend/user";
 import { SignUpForm } from "./signup-form";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function SignUp() {
   const { data, userLanguage } = await useTranslations();
-  const user = await getCurrentUser();
+  const { user } = await useAuth();
   if (user) return null;
   return (
     <div className="mt-10 flex flex-col items-center gap-3">

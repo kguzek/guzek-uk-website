@@ -1,6 +1,8 @@
-import { getAccessToken } from "@/lib/backend/server";
+import { cookies } from "next/headers";
+import type { NextRequest, NextResponse } from "next/server";
 import type { User } from "@/lib/types";
 import { isInvalidDate } from "../util";
+import { refreshAccessToken } from "./server";
 
 const USER_REQUIRED_PROPERTIES = [
   "uuid",
@@ -11,6 +13,8 @@ const USER_REQUIRED_PROPERTIES = [
   "created_at",
   "modified_at",
 ];
+
+type AccessTokenPayload = User & { iat: number; exp: number };
 
 function parseJwt(token: string): string {
   const parts = token.split(".");
@@ -33,11 +37,11 @@ function validateUser(parsedUser: any) {
       return null;
     }
   }
-  return parsedUser as User;
+  return parsedUser as AccessTokenPayload;
 }
 
 /** Extracts and parses the user object from the JWT access token. */
-export function parseUser(accessToken: string | null): User | null {
+function decodeAccessToken(accessToken: string | null) {
   if (!accessToken) return null;
   let rawUser;
   try {
@@ -54,14 +58,81 @@ export function parseUser(accessToken: string | null): User | null {
     return null;
   }
   if (!parsedUser) return null;
-  return validateUser(parsedUser);
+  const payload = validateUser(parsedUser);
+  if (!payload) return null;
+  const { iat, exp, ...user } = payload;
+  return { iat, exp, user };
 }
 
-/** Tries to retrieve and parse the user from cookies, querying the API if the cookie is not present. */
-export async function getCurrentUser(): Promise<User | null> {
-  const accessToken = await getAccessToken();
-  if (!accessToken) return null;
-  const user = parseUser(accessToken);
-  // TODO: make this return an object with user and access token, to reduce boilerplate
-  return user;
+/** Gets the access token from cookies. */
+async function getAccessToken(request?: NextRequest): Promise<string | null> {
+  const cookieStore = request?.cookies ?? (await cookies());
+  const token = cookieStore.get("access_token")?.value;
+  if (!token) return null;
+  return token;
+}
+
+async function refreshToken(reason: string, response?: NextResponse) {
+  if (!response) {
+    return { user: null, accessToken: null };
+  }
+  console.info(`Refreshing access token (${reason})...`);
+  const accessToken = await refreshAccessToken();
+  if (!accessToken) {
+    return { user: null, accessToken: null } as const;
+  }
+  return { accessToken } as const;
+}
+
+/** Checks if the access token will expire within the threshold.
+ *
+ * @param exp The expiration time of the token.
+ * @param thresholdMinutes The number of minutes before expiration to consider the token as expiring soon. Default is 5 minutes.
+ */
+function tokenWillExpireSoon(exp: number, thresholdMinutes = 5) {
+  const now = Date.now();
+  return exp - now < thresholdMinutes * 60 * 1000;
+}
+
+/** Retrieves the access token from cookies and decodes the payload into a user object.
+ *
+ * @param response If provided, the request object to use for automatically refreshing the access token and saving the new one to cookies.
+ */
+export async function useAuth(
+  request?: NextRequest,
+  response?: NextResponse,
+): Promise<
+  { user: User; accessToken: string } | { user: null; accessToken: null }
+> {
+  let accessToken = await getAccessToken(request);
+  let refreshed = false;
+  if (!accessToken) {
+    const result = await refreshToken("cookie missing", response);
+    if (result.accessToken == null) return result;
+    refreshed = true;
+    accessToken = result.accessToken;
+  }
+  let payload = decodeAccessToken(accessToken);
+  if (!payload) return { user: null, accessToken: null };
+  if (tokenWillExpireSoon(payload.exp)) {
+    const result = await refreshToken("soon to expire", response);
+    if (result.accessToken == null) {
+      console.warn("Failed to refresh access token.");
+    } else {
+      refreshed = true;
+      payload = decodeAccessToken(result.accessToken);
+      if (!payload) throw new Error("Newly refreshed token cannot be decoded");
+      if (tokenWillExpireSoon(payload.exp))
+        throw new Error("Newly refreshed token still expires soon");
+    }
+  }
+  if (refreshed) {
+    response!.cookies.set("access_token", accessToken, {
+      domain: ".guzek.uk",
+      httpOnly: true,
+      expires: payload.exp,
+      secure: true,
+    });
+  }
+  return { user: payload.user, accessToken };
 }

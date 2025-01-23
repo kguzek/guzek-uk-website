@@ -1,8 +1,7 @@
 import DownloadsWidget from "@/components/liveseries/downloads-widget";
 import { MiniNavBar } from "@/components/navigation/navigation-bar-client";
 import { LiveSeriesProvider } from "@/context/liveseries-context";
-import { getAccessToken } from "@/lib/backend/server";
-import { getCurrentUser } from "@/lib/backend/user";
+import { useAuth } from "@/lib/backend/user";
 import { useTranslations } from "@/providers/translation-provider";
 import { ReactNode } from "react";
 
@@ -12,8 +11,7 @@ export default async function LiveSeriesLayout({
   children: ReactNode;
 }) {
   const { data, userLanguage } = await useTranslations();
-  const accessToken = await getAccessToken();
-  const user = await getCurrentUser();
+  const { user, accessToken } = await useAuth();
   return (
     <div className="text liveseries">
       <LiveSeriesProvider

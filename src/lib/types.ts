@@ -1,4 +1,4 @@
-import { NextMiddleware, NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { Dispatch, SetStateAction } from "react";
 import { DownloadStatus, LOG_LEVELS } from "./enums";
 
@@ -129,11 +129,9 @@ export const DEFAULT_PAGE_DATA: PageContent = {
 };
 
 export type CustomMiddleware = (
-  req: CustomRequest,
-) => ReturnType<NextMiddleware>;
+  req: NextRequest,
+) => NextResponse | Promise<NextResponse>;
 
 export type MiddlewareFactory = (
   middleware: CustomMiddleware,
 ) => CustomMiddleware;
-
-export interface CustomRequest extends NextRequest {}

@@ -2,7 +2,7 @@ import { serverToApi } from "@/lib/backend/server";
 import { NavBarItem } from "./navigation-bar-client";
 import { UserWidget } from "./user-widget";
 import { MenuItem, User } from "@/lib/types";
-import { getCurrentUser } from "@/lib/backend/user";
+import { useAuth } from "@/lib/backend/user";
 import Logo from "@/media/logo";
 import { PAGE_NAME } from "@/lib/util";
 import { LanguageSelector } from "./language-selector";
@@ -12,7 +12,7 @@ import "./navigation.css";
 
 export async function NavigationBar() {
   const { userLanguage } = await useTranslations();
-  const user = await getCurrentUser();
+  const { user } = await useAuth();
   return (
     <>
       <nav className="flex items-center gap-4 px-4 py-2 lg:gap-6">

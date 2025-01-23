@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { MiddlewareFactory } from "@/lib/types";
-import { getCurrentUser } from "@/lib/backend/user";
+import { useAuth } from "@/lib/backend/user";
 
 const ROUTES_REQUIRING_AUTH = ["/profile", "/admin", "/liveseries/watch"];
 const ROUTES_REQUIRING_NOAUTH = ["/login", "/signup"];
@@ -20,7 +20,8 @@ export const authMiddleware: MiddlewareFactory = (next) =>
       return NextResponse.redirect(new URL(to, request.url));
     }
 
-    const user = await getCurrentUser();
+    const response = await next(request);
+    const { user } = await useAuth(request, response);
     const [redirectFrom, redirectTo] = user?.admin
       ? [ROUTES_REQUIRING_NOAUTH, "/profile"]
       : [ROUTES_REQUIRING_AUTH, "/login"];
@@ -36,5 +37,5 @@ export const authMiddleware: MiddlewareFactory = (next) =>
         }
       }
     }
-    return next(request);
+    return response;
   };

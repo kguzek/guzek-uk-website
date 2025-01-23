@@ -123,6 +123,7 @@ export const getLanguageCookieOptions = () =>
     expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
     path: "/",
     sameSite: "lax",
+    domain: ".guzek.uk",
     secure: process.env.NODE_ENV !== "development",
   }) as const;
 

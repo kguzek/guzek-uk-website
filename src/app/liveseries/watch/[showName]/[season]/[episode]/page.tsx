@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { ErrorComponent } from "@/components/error-component";
 import { ErrorCode } from "@/lib/enums";
-import { getAccessToken } from "@/lib/backend/server";
-import { getCurrentUser } from "@/lib/backend/user";
+import { useAuth } from "@/lib/backend/user";
 import { useTranslations } from "@/providers/translation-provider";
 import Player from "./player";
 
@@ -23,14 +22,13 @@ export default async function Watch({ params }: Props) {
   ) {
     return <ErrorComponent errorCode={ErrorCode.NotFound} />;
   }
-  const user = await getCurrentUser();
+  const { user, accessToken } = await useAuth();
   if (!user) {
     return NextResponse.redirect("/login");
   }
   if (!user.serverUrl) {
     return NextResponse.redirect("/profile?redirect_reason=no_server_url");
   }
-  const accessToken = await getAccessToken();
   if (!accessToken) {
     return <ErrorComponent errorCode={ErrorCode.Unauthorized} />;
   }

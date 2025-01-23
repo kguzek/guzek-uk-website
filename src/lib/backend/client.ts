@@ -19,6 +19,13 @@ type FetchOptionsExtension = { user?: User | null } & (
   | { userLanguage?: never; setModalError?: never }
 );
 
+const requestNeedsCredentials = (
+  path: string,
+  method: ClientFetchOptions["method"],
+) =>
+  (method === "POST" || method === "DELETE") &&
+  ["auth/tokens", "auth/refresh", "auth/users"].includes(path);
+
 /** Makes a client-to-server API call using the provided access token.
  *
  * @param path The relative path to the API endpoint, where the base is inferred from the path.
@@ -46,11 +53,12 @@ export async function clientToApi<T>(
     ...fetchOptions
   }: ClientFetchOptions & FetchOptionsExtension,
 ) {
-  const options = await prepareRequest(
-    path,
-    fetchOptions,
-    ...(accessToken ? [true, { accessToken }] : [false, null]),
-  );
+  const options = await prepareRequest(path, fetchOptions, accessToken);
+
+  options.credentials = requestNeedsCredentials(path, fetchOptions.method)
+    ? "include"
+    : "omit";
+
   const url = `${getUrlBase(path, user)}${path}${getSearchParams(fetchOptions.params)}`;
   const result = await fetchFromApi<T>(url, options);
   if (result.ok) {

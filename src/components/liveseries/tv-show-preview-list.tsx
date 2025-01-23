@@ -4,7 +4,8 @@ import { Paginator } from "@/components/pagination/paginator";
 import { NumericValue } from "@/components/numeric-value";
 import { TvShowPreview } from "./tv-show-preview";
 import { TRANSLATIONS } from "@/lib/translations";
-import { getAccessToken, serverToApi } from "@/lib/backend/server";
+import { serverToApi } from "@/lib/backend/server";
+import { useAuth } from "@/lib/backend/user";
 
 const RESULTS_PER_PAGE = 20;
 
@@ -34,7 +35,7 @@ export async function TvShowPreviewList({
   if (tvShowsRaw?.total === "0")
     return <p>{data.liveSeries.search.noResults}</p>;
 
-  const accessToken = await getAccessToken();
+  const { accessToken } = await useAuth();
   const userShowsResult = await serverToApi<UserShows>(
     "liveseries/shows/personal",
   );

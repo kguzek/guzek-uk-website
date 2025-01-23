@@ -106,41 +106,21 @@ export type ServerFetchOptions = BaseFetchOptions & {
 
 type FetchOptions = ClientFetchOptions | ServerFetchOptions;
 
-type GetAccessToken = { getAccessToken: () => Promise<string | null> };
-
-type AuthOptions =
-  | { accessToken: string; getAccessToken?: never }
-  | (GetAccessToken & { accessToken?: never });
-
-const requestNeedsCredentials = (
-  path: string,
-  method: FetchOptions["method"],
-) =>
-  (method === "POST" || method === "DELETE") &&
-  ["auth/tokens", "auth/refresh", "auth/users"].includes(path);
-
 export async function prepareRequest(
   path: string,
   fetchOptions: FetchOptions,
-  ...[useAuth, authOptions]:
-    | [false, GetAccessToken | null | never]
-    | [true, AuthOptions]
+  accessToken: string | null,
+  useCredentials?: boolean,
 ): Promise<RequestInit & { next: NextFetchRequestConfig }> {
+  useCredentials ??= accessToken != null;
   const requestInit: RequestInit = {
     method: fetchOptions.method,
-    credentials: requestNeedsCredentials(path, fetchOptions.method)
-      ? "include"
-      : "omit",
   };
   const headers: HeadersInit = {
     Accept: "application/json",
   };
-  if (useAuth) {
-    const { getAccessToken, accessToken } = authOptions;
-    const token = accessToken ?? (await getAccessToken());
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
+  if (useCredentials && accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
   }
   if (fetchOptions.body) {
     requestInit.body = JSON.stringify(fetchOptions.body);
@@ -267,7 +247,6 @@ export async function triggerRevalidation(path: string) {
   const request = await prepareRequest(
     url,
     { method: "POST", body: { tag } },
-    false,
     null,
   );
   const result = await fetchFromApi(url, request);

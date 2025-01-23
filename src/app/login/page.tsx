@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getTitle } from "@/lib/util";
 import { useTranslations } from "@/providers/translation-provider";
-import { getCurrentUser } from "@/lib/backend/user";
+import { useAuth } from "@/lib/backend/user";
 import { LogInForm } from "./form";
 import { PageSkeleton } from "@/components/pages/skeleton";
 
@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function LogIn() {
   const { data, userLanguage } = await useTranslations();
-  const user = await getCurrentUser();
+  const { user } = await useAuth();
   if (user) {
     console.warn("Logged in user visited /login:", user);
     return (

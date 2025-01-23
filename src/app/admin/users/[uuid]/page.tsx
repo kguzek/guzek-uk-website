@@ -1,10 +1,11 @@
 import { ErrorComponent } from "@/components/error-component";
 import type { User } from "@/lib/types";
 import { getTitle } from "@/lib/util";
-import { getAccessToken, serverToApi } from "@/lib/backend/server";
+import { serverToApi } from "@/lib/backend/server";
 import { useTranslations } from "@/providers/translation-provider";
 import { UserEditor } from "./user-editor";
 import { ErrorCode } from "@/lib/enums";
+import { useAuth } from "@/lib/backend/user";
 
 interface Props {
   params: Promise<{ uuid: string }>;
@@ -28,7 +29,7 @@ async function fetchUserFromProps(props: Props) {
 
 export default async function UserPage(props: Props) {
   const { userLanguage } = await useTranslations();
-  const accessToken = await getAccessToken();
+  const { accessToken } = await useAuth();
   if (!accessToken) {
     return <ErrorComponent errorCode={ErrorCode.Unauthorized} />;
   }

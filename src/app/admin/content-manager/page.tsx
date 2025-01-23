@@ -1,12 +1,13 @@
 import { MenuItem, PageContent } from "@/lib/types";
 import { Metadata } from "next";
 import { useTranslations } from "@/providers/translation-provider";
-import { getAccessToken, serverToApi } from "@/lib/backend/server";
+import { serverToApi } from "@/lib/backend/server";
 import { ErrorComponent } from "@/components/error-component";
 import { PagesForm } from "./pages-form";
 import { ErrorCode } from "@/lib/enums";
 import { getTitle } from "@/lib/util";
 import { CreatePageButton } from "./create-page-button";
+import { useAuth } from "@/lib/backend/user";
 
 type PageId = MenuItem["id"];
 
@@ -17,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ContentManager() {
   const { data, userLanguage } = await useTranslations();
-  const accessToken = await getAccessToken();
+  const { accessToken } = await useAuth();
 
   if (!accessToken) {
     return <ErrorComponent errorCode={ErrorCode.Unauthorized} />;

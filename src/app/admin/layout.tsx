@@ -3,7 +3,7 @@ import { MiniNavBar } from "@/components/navigation/navigation-bar-client";
 import { ErrorComponent } from "@/components/error-component";
 import { ErrorCode } from "@/lib/enums";
 import { useTranslations } from "@/providers/translation-provider";
-import { getCurrentUser } from "@/lib/backend/user";
+import { useAuth } from "@/lib/backend/user";
 import "./admin.css";
 
 export default async function AdminLayout({
@@ -12,7 +12,7 @@ export default async function AdminLayout({
   children: ReactNode;
 }) {
   const { data } = await useTranslations();
-  const user = await getCurrentUser();
+  const { user } = await useAuth();
 
   if (!user?.admin) {
     return <ErrorComponent errorCode={ErrorCode.Forbidden} />;

@@ -8,9 +8,9 @@ import type {
 import { getEpisodeAirDate, hasEpisodeAired } from "@/lib/util";
 import { useTranslations } from "@/providers/translation-provider";
 import { EpisodeWatchedIndicator } from "./episode-watched-indicator";
-import { getAccessToken, serverToApi } from "@/lib/backend/server";
+import { serverToApi } from "@/lib/backend/server";
 import { EpisodeDownloadIndicator } from "./episode-download-indicator";
-import { getCurrentUser } from "@/lib/backend/user";
+import { useAuth } from "@/lib/backend/user";
 
 async function Episode({
   episode,
@@ -22,8 +22,7 @@ async function Episode({
   watchedEpisodes: ShowData<WatchedEpisodes> | null;
 }) {
   const { data, userLanguage } = await useTranslations();
-  const user = await getCurrentUser();
-  const accessToken = await getAccessToken();
+  const { user, accessToken } = await useAuth();
 
   if (!accessToken || !user) {
     // TODO: handle this case
@@ -80,7 +79,7 @@ export async function EpisodesList({
   episodes: EpisodeType[];
   children?: ReactNode;
 }) {
-  const user = await getCurrentUser();
+  const { user } = await useAuth();
   let watchedEpisodes: ShowData<WatchedEpisodes> = {};
   if (user && user.serverUrl) {
     const [watchedEpisodesResult] = await Promise.all([

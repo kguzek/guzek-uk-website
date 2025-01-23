@@ -1,10 +1,9 @@
-import { getCurrentUser } from "@/lib/backend/user";
+import { useAuth } from "@/lib/backend/user";
 import { useTranslations } from "@/providers/translation-provider";
 import { ProfileForm } from "./profile-form";
 import { LogoutButton } from "./logout-button";
 import { PageSkeleton } from "@/components/pages/skeleton";
 import { getTitle } from "@/lib/util";
-import { getAccessToken } from "@/lib/backend/server";
 
 export async function generateMetadata() {
   const { data } = await useTranslations();
@@ -14,8 +13,7 @@ export async function generateMetadata() {
 }
 
 export default async function Profile() {
-  const user = await getCurrentUser();
-  const accessToken = await getAccessToken();
+  const { user, accessToken } = await useAuth();
   const { data, userLanguage } = await useTranslations();
 
   if (!user || !accessToken)

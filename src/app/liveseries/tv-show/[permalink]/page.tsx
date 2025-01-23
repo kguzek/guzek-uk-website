@@ -1,5 +1,5 @@
 import { ErrorComponent } from "@/components/error-component";
-import { getAccessToken, serverToApi } from "@/lib/backend/server";
+import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
 import {
   Episode,
@@ -9,7 +9,7 @@ import {
   type TvShowDetails,
 } from "@/lib/types";
 import { getTitle } from "@/lib/util";
-import { getCurrentUser } from "@/lib/backend/user";
+import { useAuth } from "@/lib/backend/user";
 import { useTranslations } from "@/providers/translation-provider";
 import { ShowDetails } from "./show";
 import { EpisodesList } from "@/components/liveseries/episodes-list";
@@ -84,8 +84,7 @@ export default async function TvShow({ params }: Props) {
     (watchedEpisodesResult.ok &&
       watchedEpisodesResult.data[showResult.data.tvShow.id]) ||
     [];
-  const user = await getCurrentUser();
-  const accessToken = await getAccessToken();
+  const { user, accessToken } = await useAuth();
 
   return (
     <ShowDetails

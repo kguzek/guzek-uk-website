@@ -1,16 +1,15 @@
 import { Language } from "@/lib/enums";
 import { MiddlewareFactory } from "@/lib/types";
 import { getLanguageCookieOptions } from "@/lib/util";
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export const languageMiddleware: MiddlewareFactory = (next) =>
   async function (request) {
-    const cookieStore = await cookies();
+    const response = await next(request);
     for (const language of Object.keys(Language)) {
       const slug = `/${language.toLowerCase()}`;
       if (request.nextUrl.pathname.startsWith(slug)) {
-        cookieStore.set(
+        response.cookies.set(
           "lang",
           language.toUpperCase(),
           getLanguageCookieOptions(),
@@ -20,5 +19,5 @@ export const languageMiddleware: MiddlewareFactory = (next) =>
         return NextResponse.redirect(url);
       }
     }
-    return next(request);
+    return response;
   };
