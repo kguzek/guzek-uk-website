@@ -108,6 +108,7 @@ async function _refreshAccessToken(refreshToken: string) {
     },
     false,
   );
+  refreshPromise = undefined;
   if (result.ok) {
     return result.data.accessToken;
   }
@@ -151,12 +152,21 @@ export async function useAuth(
       response,
     );
     if (newAccessToken != null) {
-      refreshed = true;
-      payload = decodeAccessToken(newAccessToken);
-      if (!payload) throw new Error("Newly refreshed token cannot be decoded");
-      if (tokenWillExpireSoon(payload.exp))
-        throw new Error("Newly refreshed token still expires soon");
-      accessToken = newAccessToken;
+      const newPayload = decodeAccessToken(newAccessToken);
+      if (!newPayload)
+        throw new Error("Newly refreshed token cannot be decoded");
+      if (tokenWillExpireSoon(newPayload.exp)) {
+        console.error(
+          "Refreshed token still expires soon",
+          payload,
+          "->",
+          newPayload,
+        );
+      } else {
+        accessToken = newAccessToken;
+        payload = newPayload;
+        refreshed = true;
+      }
     }
   }
   if (refreshed) {
