@@ -13,7 +13,7 @@ import { useLiveSeriesContext } from "@/context/liveseries-context";
 import "./downloads-widget.css";
 import { useLanguageSelector } from "@/context/language-selector-context";
 
-export default function DownloadsWidget({
+export function DownloadsWidget({
   user,
   userLanguage,
   accessToken,

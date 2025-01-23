@@ -54,6 +54,10 @@ export const ENGLISH: Translation = {
     },
   },
   error: {
+    400: {
+      title: "Bad Request",
+      body: "The request was invalid.",
+    },
     401: {
       title: "Unauthorized",
       body: "This page is only available to logged in users.",

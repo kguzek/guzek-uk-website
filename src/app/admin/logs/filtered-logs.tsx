@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { ComponentProps, ElementType, ReactNode } from "react";
-import InputBox from "@/components/forms/input-box";
+import { InputBox } from "@/components/forms/input-box";
 import { NumericValue } from "@/components/numeric-value/client";
 import { SyntaxHighlighted } from "@/components/syntax-highlighted";
 import type { Language } from "@/lib/enums";

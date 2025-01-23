@@ -1,4 +1,4 @@
-import DownloadsWidget from "@/components/liveseries/downloads-widget";
+import { DownloadsWidget } from "@/components/liveseries/downloads-widget";
 import { MiniNavBar } from "@/components/navigation/navigation-bar-client";
 import { LiveSeriesProvider } from "@/context/liveseries-context";
 import { useAuth } from "@/lib/backend/user";

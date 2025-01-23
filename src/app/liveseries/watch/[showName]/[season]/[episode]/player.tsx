@@ -10,7 +10,7 @@ import { Language } from "@/lib/enums";
 const VIDEO_FRAME_RATE = 25; // frames per second
 const VIDEO_FRAME_LENGTH = 1 / VIDEO_FRAME_RATE; // seconds per frame
 
-export default function Player({
+export function Player({
   showName,
   season,
   episode,

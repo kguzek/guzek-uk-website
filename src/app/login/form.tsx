@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import InputBox from "@/components/forms/input-box";
+import { InputBox } from "@/components/forms/input-box";
 import { LoadingButton } from "@/components/loading/loading-button";
 import { TRANSLATIONS } from "@/lib/translations";
 import type { Language } from "@/lib/enums";

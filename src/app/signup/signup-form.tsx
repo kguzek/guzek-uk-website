@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import InputBox from "@/components/forms/input-box";
+import { InputBox } from "@/components/forms/input-box";
 import { LoadingButton } from "@/components/loading/loading-button";
 import type { Language } from "@/lib/enums";
 import { useModals } from "@/context/modal-context";

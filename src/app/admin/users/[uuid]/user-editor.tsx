@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import InputBox from "@/components/forms/input-box";
+import { InputBox } from "@/components/forms/input-box";
 import { LoadingButton } from "@/components/loading/loading-button";
 import { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";

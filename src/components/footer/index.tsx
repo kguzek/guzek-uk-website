@@ -1,4 +1,4 @@
-import Logo from "@/media/logo";
+import { Logo } from "@/media/logo";
 import { useTranslations } from "@/providers/translation-provider";
 
 export async function Footer() {

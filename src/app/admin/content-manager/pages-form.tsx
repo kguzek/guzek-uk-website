@@ -5,7 +5,7 @@ import { Language } from "@/lib/enums";
 import { MenuItem, PageContent } from "@/lib/types";
 import { useModals } from "@/context/modal-context";
 import { TRANSLATIONS } from "@/lib/translations";
-import InputBox from "@/components/forms/input-box";
+import { InputBox } from "@/components/forms/input-box";
 import { LoadingButton } from "@/components/loading/loading-button";
 import { InputArea } from "@/components/forms/input-area";
 import { clientToApi } from "@/lib/backend/client";

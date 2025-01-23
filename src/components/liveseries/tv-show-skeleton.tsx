@@ -1,4 +1,4 @@
-export default function TvShowSkeleton() {
+export function TvShowSkeleton() {
   return (
     <div className="details skeleton">
       <h2 className="skeleton-text" style={{ height: 32 }}></h2>

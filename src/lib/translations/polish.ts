@@ -55,6 +55,10 @@ export const POLISH: Translation = {
     },
   },
   error: {
+    400: {
+      title: "Błąd Zapytania",
+      body: "Zapytanie nie zostało zrozumiane. Spróbuj ponownie.",
+    },
     401: {
       title: "Nieautoryzowano",
       body: "Ta strona jest dostępna tylko dla zalogowanych użytkowników.",

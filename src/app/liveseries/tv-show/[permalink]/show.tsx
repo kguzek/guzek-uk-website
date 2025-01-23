@@ -10,8 +10,8 @@ import type {
   WatchedEpisodes,
 } from "@/lib/types";
 import { getEpisodeAirDate, isInvalidDate } from "@/lib/util";
-import TvShowSkeleton from "@/components/liveseries/tv-show-skeleton";
-import InputBox from "@/components/forms/input-box";
+import { TvShowSkeleton } from "@/components/liveseries/tv-show-skeleton";
+import { InputBox } from "@/components/forms/input-box";
 import { TRANSLATIONS } from "@/lib/translations";
 import { clientToApi } from "@/lib/backend/client";
 import { useModals } from "@/context/modal-context";

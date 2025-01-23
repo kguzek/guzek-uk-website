@@ -3,7 +3,7 @@ import { NavBarItem } from "./navigation-bar-client";
 import { UserWidget } from "./user-widget";
 import { MenuItem, User } from "@/lib/types";
 import { useAuth } from "@/lib/backend/user";
-import Logo from "@/media/logo";
+import { Logo } from "@/media/logo";
 import { PAGE_NAME } from "@/lib/util";
 import { LanguageSelector } from "./language-selector";
 import { useTranslations } from "@/providers/translation-provider";

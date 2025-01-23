@@ -7,7 +7,7 @@ import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import { clientToApi } from "@/lib/backend/client";
 import { useModals } from "@/context/modal-context";
-import TvShowPreviewSkeleton from "./tv-show-preview-skeleton";
+import { TvShowPreviewSkeleton } from "./tv-show-preview-skeleton";
 
 export function TvShowPreview({
   idx,

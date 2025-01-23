@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { ChangeEvent, createRef, ReactNode, useEffect } from "react";
 
-export default function InputBox({
+export function InputBox({
   label,
   value,
   setValue,

@@ -3,7 +3,7 @@ import { ErrorComponent } from "@/components/error-component";
 import { ErrorCode } from "@/lib/enums";
 import { useAuth } from "@/lib/backend/user";
 import { useTranslations } from "@/providers/translation-provider";
-import Player from "./player";
+import { Player } from "./player";
 
 function isNumber(val: string | string[] | undefined): val is string {
   return !Array.isArray(val) && val != null && `${+val}` === val && +val > 0;

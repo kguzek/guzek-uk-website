@@ -11,13 +11,15 @@ const serialiseError = (
 
 export async function ErrorComponent({
   errorCode,
+  errorMessage,
   errorResult,
-}:
+}: (
   | { errorCode: ErrorCode; errorResult?: never }
   | {
       errorCode?: never;
       errorResult: { ok: boolean; error: any; hasBody: boolean; data: any };
-    }) {
+    }
+) & { errorMessage?: string }) {
   const { data } = await useTranslations();
   if (!errorCode) {
     if (!errorResult)
@@ -34,7 +36,11 @@ export async function ErrorComponent({
         {errorCode} {data.error[errorCode].title}
       </h3>
       <h1 className="my-2 text-4xl font-extrabold">{errorCode}</h1>
-      <p>{data.error[errorCode].body}</p>
+      <p>
+        {errorMessage
+          ? decodeURIComponent(errorMessage)
+          : data.error[errorCode].body}
+      </p>
       <div className="mt-3 flex justify-center">
         <div className="link-container">
           {errorCode === ErrorCode.Unauthorized ? (

@@ -1,4 +1,4 @@
-export default function TvShowPreviewSkeleton({ idx }: { idx: number }) {
+export function TvShowPreviewSkeleton({ idx }: { idx: number }) {
   return (
     <div
       className="preview skeleton"

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import InputBox from "@/components/forms/input-box";
+import { InputBox } from "@/components/forms/input-box";
 import type { User } from "@/lib/types";
 import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";

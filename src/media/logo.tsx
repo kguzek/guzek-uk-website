@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-function Logo({ size = 80 }) {
+export function Logo({ size = 80 }) {
   return (
     <Link href="/" className="min-w-5 max-w-16 sm:max-w-none">
       <Image
@@ -13,5 +13,3 @@ function Logo({ size = 80 }) {
     </Link>
   );
 }
-
-export default Logo;
