@@ -46,6 +46,7 @@ export function LanguageSelector({ userLanguage }: { userLanguage: Language }) {
           <Link
             href={`/${lang.toLowerCase()}${pathname}`}
             key={lang}
+            prefetch={false}
             onClick={(evt) => {
               // Link is being used as a fallback for clients without JavaScript enabled
               // If it is enabled, we can handle the language change without a full page reload
