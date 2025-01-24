@@ -1,39 +1,3 @@
-.collapser {
-  width: 100%;
-  color: var(--color-primary-strong);
-}
-
-.downloads-widget {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  padding: 5px 5px 0;
-  border-top-left-radius: 10px;
-  background-color: var(--color-background-soft);
-  border: 2px solid var(--color-background);
-  z-index: 7;
-  box-shadow: 0 0 15px 15px var(--color-background-dark);
-  transition: opacity 300ms ease;
-  opacity: 0.8;
-}
-
-.downloads-widget:hover {
-  opacity: 1;
-}
-
-.downloads-widget.collapsed {
-  opacity: 0.6;
-}
-
-.downloads-widget.collapsed:hover {
-  opacity: 0.8;
-}
-
-.collapsible-container {
-  max-height: 90vh;
-  overflow-y: scroll;
-}
-
 .downloads-card-container {
   --card-width: 500px;
   max-width: 100%;
@@ -76,20 +40,4 @@
 
 .downloads-card .progress-bar.done {
   background-color: var(--color-accent);
-}
-
-@media screen and (max-width: 500px) {
-  body:has(.downloads-widget.expanded) {
-    overflow: hidden;
-  }
-
-  .downloads-widget {
-    border-top-right-radius: 10px;
-    opacity: 1;
-    left: 0;
-  }
-
-  .collapsible-container {
-    max-height: 85vh;
-  }
 }

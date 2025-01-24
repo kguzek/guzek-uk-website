@@ -5,6 +5,7 @@ import { clientToApi } from "@/lib/backend/client";
 import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import { Episode } from "@/lib/types";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useState } from "react";
 
 export function EpisodeWatchedIndicator({
@@ -46,7 +47,7 @@ export function EpisodeWatchedIndicator({
 
   return (
     <div
-      className="watched centred"
+      className="watched centred clickable"
       title={data.liveSeries.tvShow.markWatched(
         isWatched ? data.liveSeries.tvShow.un : "",
       )}
@@ -59,7 +60,7 @@ export function EpisodeWatchedIndicator({
         )
       }
     >
-      <i className={`clickable fas fa-eye${isWatched ? "" : "-slash"}`}></i>
+      {isWatched ? <EyeIcon className="text-primary-strong" /> : <EyeOffIcon />}
     </div>
   );
 }

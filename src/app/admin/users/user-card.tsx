@@ -1,12 +1,14 @@
 "use client";
 
+import { useState } from "react";
+import Link from "next/link";
+import { SettingsIcon, Trash2Icon, UserIcon } from "lucide-react";
 import { useModals } from "@/context/modal-context";
 import { clientToApi } from "@/lib/backend/client";
 import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import type { User } from "@/lib/types";
-import Link from "next/link";
-import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 export function UserCard({
   user,
@@ -47,17 +49,15 @@ export function UserCard({
         href={`/admin/users/${user.uuid}`}
         className="card group flex items-center gap-5"
       >
-        <i
-          className={`fa-solid fa-user ${user.admin ? "text-accent" : ""}`}
-        ></i>
+        <UserIcon className={cn({ "text-accent": user.admin })}></UserIcon>
         <div>
           <i>{user.username}</i>
           <div className="font-normal">{user.email}</div>
         </div>
-        <i className="fa-solid fa-gear transition-transform group-hover:rotate-180"></i>
+        <SettingsIcon className="ml-auto transition-transform group-hover:rotate-180" />
       </Link>
       <div className="delete" onClick={() => confirmDelete(user)}>
-        <i className="fa-solid fa-trash"></i>
+        <Trash2Icon />
       </div>
     </div>
   );

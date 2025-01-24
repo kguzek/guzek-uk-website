@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode, useState } from "react";
+import { HeartIcon, StarHalfIcon, StarIcon } from "lucide-react";
 import { ImageGallery } from "@/components/carousel";
 import type { Language } from "@/lib/enums";
 import type {
@@ -16,6 +17,7 @@ import { TRANSLATIONS } from "@/lib/translations";
 import { clientToApi } from "@/lib/backend/client";
 import { useModals } from "@/context/modal-context";
 import { TvShowContext } from "@/context/tv-show-context";
+import { cn } from "@/lib/utils";
 
 // Will issue a warning when trying to subscribe with more than 10 unwatched episodes
 const UNWATCHED_EPISODES_THRESHOLD = 10;
@@ -166,11 +168,13 @@ export function ShowDetails({
   return (
     <div className="flex flex-col gap-1">
       <div className="flex flex-wrap items-center gap-3">
-        <i
-          className={`clickable fa-${isLiked ? "solid text-error" : "regular text-background-soft"} fa-heart text-3xl`}
+        <button
+          className={cn("clickable text-3xl", { "text-error": isLiked })}
           title={data.liveSeries.tvShow[isLiked ? "unlike" : "like"]}
           onClick={handleLike}
-        ></i>
+        >
+          <HeartIcon fill={isLiked ? "currentColor" : "none"} />
+        </button>
         <h2 className="text-2xl font-bold text-accent-soft">
           {tvShowDetails.name}
         </h2>
@@ -196,27 +200,24 @@ export function ShowDetails({
               className="relative"
               title={`${(+tvShowDetails.rating).toFixed(1)}/10`}
             >
-              <div
-                className="absolute flex text-accent2"
-                style={{ width: `${+tvShowDetails.rating * 10}%` }}
-              >
-                {Array(10)
+              <div className="absolute flex overflow-hidden text-accent2 sm:gap-1">
+                {Array(Math.round(+tvShowDetails.rating))
                   .fill(0)
                   .map((_, idx) => (
-                    <i
+                    <StarIcon
                       key={`star-filled-${idx}`}
-                      className="fa-solid fa-star"
-                    ></i>
+                      fill="currentColor"
+                    ></StarIcon>
                   ))}
+                {+tvShowDetails.rating % 1 < 0.5 ? (
+                  <StarHalfIcon fill="currentColor" />
+                ) : null}
               </div>
-              <div className="flex">
+              <div className="flex sm:gap-1">
                 {Array(10)
                   .fill(0)
                   .map((_, idx) => (
-                    <i
-                      key={`star-empty-${idx}`}
-                      className="fa-regular fa-star"
-                    ></i>
+                    <StarIcon key={`star-empty-${idx}`}></StarIcon>
                   ))}
               </div>
             </div>

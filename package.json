@@ -10,7 +10,7 @@
   "description": "The front end of the \"guzek.uk\" website.",
   "private": true,
   "scripts": {
-    "dev": "next dev --experimental-https",
+    "dev": "next dev -p 443 --experimental-https",
     "build": "next build",
     "start": "next start"
   },

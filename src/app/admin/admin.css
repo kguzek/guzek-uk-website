@@ -12,15 +12,6 @@
   color: var(--color-accent);
 }
 
-.fa-gear {
-  margin-left: auto;
-  transition: transform 500ms ease;
-}
-
-.user:hover .fa-gear {
-  transform: rotate(120deg);
-}
-
 .input-box {
   margin-bottom: 0;
 }

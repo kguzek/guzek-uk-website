@@ -41,11 +41,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        <script
-          async
-          src="https://kit.fontawesome.com/b70d905b1a.js"
-          crossOrigin="anonymous"
-        ></script>
         <link rel="apple-touch-icon" href="/logo192.png" />
         <link rel="manifest" href="/manifest.json" />
       </head>

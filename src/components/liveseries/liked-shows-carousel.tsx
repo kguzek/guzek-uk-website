@@ -79,12 +79,10 @@ export function LikedShowsCarousel({
     scrollToCard(card, "start");
   }
 
-  // TODO: fix carousel arrows/scrollers
   function isScrollerVisible(direction: "left" | "right") {
     const { firstCard, lastCard, totalCards } = getDisplayedCards();
     const visible =
       direction === "left" ? firstCard > 1 : lastCard < totalCards;
-    // return `${direction} fa-arrow-${direction} ${visible ? "" : "hidden"}`;
     return visible;
   }
 

@@ -92,11 +92,8 @@ export function LiveSeriesProvider({
         socketFailed === undefined ? "Connection error" : "Unknown error:",
         message,
       );
-      setModalError(
-        socketFailed === undefined
-          ? data.liveSeries.websockets.connectionFailed
-          : data.liveSeries.websockets.error,
-      );
+      if (socketFailed !== undefined)
+        setModalError(data.liveSeries.websockets.error);
       socketFailed = true;
     };
     const poll = (data: DownloadedEpisode[]) =>

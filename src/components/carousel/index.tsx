@@ -4,6 +4,7 @@ import "./carousel.css";
 import { useScroll } from "@/hooks/scroll";
 import { useRef } from "react";
 import { cn } from "@/lib/utils";
+import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 
 export function ImageGallery({
   className = "",
@@ -94,16 +95,16 @@ export function CarouselArrow({
       )}
       onClick={onClick}
     >
-      <i
+      <div
         className={cn(
-          "fas text-4xl font-extrabold text-background transition-transform duration-300",
+          "scale-[175%] text-background transition-transform duration-300",
           {
-            "fa-arrow-left": left,
-            "fa-arrow-right": right,
-            "lg:group-hover:scale-125": visible,
+            "lg:scale-[125%] lg:group-hover:scale-[175%]": visible,
           },
         )}
-      ></i>
+      >
+        {left ? <ArrowLeftIcon /> : right ? <ArrowRightIcon /> : null}
+      </div>
     </button>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { ClockIcon, EyeIcon, EyeOffIcon } from "lucide-react";
 import type { Language } from "@/lib/enums";
 import type { Episode } from "@/lib/types";
 import { TRANSLATIONS } from "@/lib/translations";
@@ -31,13 +32,16 @@ export function WatchedIndicator({
           onClick={() =>
             updateWatchedEpisodes(season, seasonWatched ? [] : episodes)
           }
+          className="clickable"
         >
-          <i
-            className={`clickable fas text-center fa-eye${seasonWatched ? "" : "-slash"}`}
-          ></i>
+          {isSeasonWatched(season, episodes) ? (
+            <EyeIcon className="text-primary-strong" />
+          ) : (
+            <EyeOffIcon />
+          )}
         </div>
       ) : (
-        <i className="fa-regular fa-clock"></i>
+        <ClockIcon />
       )}
     </div>
   );

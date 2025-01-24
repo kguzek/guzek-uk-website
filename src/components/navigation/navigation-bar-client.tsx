@@ -42,7 +42,7 @@ export function MiniNavBar({
       : "";
 
   return (
-    <nav className="mini-navbar serif mt-2 flex">
+    <nav className="serif mt-2 flex justify-center gap-2 text-sm sm:text-base md:gap-4 md:text-lg lg:justify-start">
       {pages.map(({ link, label }, idx) => (
         <Link
           key={idx}

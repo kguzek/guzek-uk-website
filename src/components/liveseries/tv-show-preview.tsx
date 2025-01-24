@@ -8,6 +8,7 @@ import { TRANSLATIONS } from "@/lib/translations";
 import { clientToApi } from "@/lib/backend/client";
 import { useModals } from "@/context/modal-context";
 import { TvShowPreviewSkeleton } from "./tv-show-preview-skeleton";
+import { HeartIcon } from "lucide-react";
 
 export function TvShowPreview({
   idx,
@@ -61,22 +62,19 @@ export function TvShowPreview({
   return (
     <>
       <div className="w-[240px] rounded-md bg-primary pb-10">
-        <div className="flex w-full justify-between px-4 py-2">
+        <div className="flex w-full justify-between gap-1 px-4 py-2">
           <Link href={link} title={showDetails?.name} className="no-overflow">
             <p className="title serif cutoff text-background visited:text-background-soft">
               {showDetails?.name} ({showDetails?.country})
             </p>
           </Link>
-          <div
+          <button
             onClick={handleHeart}
+            className="clickable text-background"
             title={data.liveSeries.tvShow[isLiked ? "unlike" : "like"]}
           >
-            <i
-              className={`clickable text-background fa-${
-                isLiked ? "solid" : "regular"
-              } fa-heart`}
-            ></i>
-          </div>
+            <HeartIcon fill={isLiked ? "currentColor" : "none"} />
+          </button>
         </div>
         <Link href={link} title={showDetails?.name}>
           <img

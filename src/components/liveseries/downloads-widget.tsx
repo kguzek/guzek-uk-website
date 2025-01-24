@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { ChevronUpIcon, Trash2Icon } from "lucide-react";
 import type { DownloadedEpisode, User } from "@/lib/types";
 import { DownloadStatus } from "@/lib/enums";
 import type { Language } from "@/lib/enums";
@@ -12,6 +13,7 @@ import { useModals } from "@/context/modal-context";
 import { useLiveSeriesContext } from "@/context/liveseries-context";
 import "./downloads-widget.css";
 import { useLanguageSelector } from "@/context/language-selector-context";
+import { cn } from "@/lib/utils";
 
 export function DownloadsWidget({
   user,
@@ -55,21 +57,24 @@ export function DownloadsWidget({
   if (downloadedEpisodes.length === 0) return null;
 
   return (
-    <div className="downloads-widget">
+    <div
+      className={cn(
+        "fixed bottom-0 left-0 right-0 z-[7] rounded-t-xl bg-background-soft p-1 px-2 shadow-lg transition-opacity duration-300 hover:opacity-100 sm:left-[unset] sm:rounded-tr-none",
+        { "sm:opacity-50": collapsed, "sm:opacity-80": !collapsed },
+      )}
+    >
       <div
-        className="clickable collapser peer w-full text-center"
+        className="clickable peer flex justify-center"
         onClick={() => setCollapsed((old) => !old)}
       >
-        <i
-          className={`fas fa-chevron-up transition-transform ${
-            collapsed ? "" : "rotate-180"
-          }`}
-        ></i>
+        <ChevronUpIcon
+          className={`transition-transform ${collapsed ? "" : "rotate-180"}`}
+        ></ChevronUpIcon>
       </div>
       <div
         className={`collapsible ${collapsed ? "collapsed" : "expanded pb-2"}`}
       >
-        <div className="flex flex-col justify-around gap-2 overflow-hidden">
+        <div className="flex flex-col items-center justify-around gap-2 overflow-hidden">
           {downloadedEpisodes.map((episode, idx) => {
             const downloadProgress =
               (100 * (episode.progress ?? 0)).toFixed(1) + "%";
@@ -136,7 +141,7 @@ export function DownloadsWidget({
                   className="clickable delete"
                   onClick={() => handleDeleteEpisode(episode)}
                 >
-                  <i className="fas fa-trash"></i>
+                  <Trash2Icon />
                 </div>
               </div>
             );

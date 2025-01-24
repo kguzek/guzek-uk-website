@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { ChevronRightIcon, ClockIcon } from "lucide-react";
 import type {
   Episode as EpisodeType,
   TvShowDetails,
@@ -61,7 +62,7 @@ async function Episode({
             />
           </>
         ) : (
-          <i className="watched centred fa-regular fa-clock"></i>
+          <ClockIcon className="cursor-not-allowed" />
         )}
       </div>
     </div>
@@ -96,7 +97,7 @@ export async function EpisodesList({
       <div className="peer flex items-center gap-4">
         <label className="clickable flex items-center gap-4">
           <input type="checkbox" className="peer hidden" />
-          <i className="fas fa-caret-right transition-transform peer-checked:rotate-90"></i>
+          <ChevronRightIcon className="transition-transform peer-checked:rotate-90"></ChevronRightIcon>
           <h4 className="my-4 text-lg font-bold">{heading}</h4>
         </label>
         {children}

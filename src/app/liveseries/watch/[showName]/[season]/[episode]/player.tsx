@@ -30,9 +30,6 @@ export function Player({
   const [loadingFailed, setLoadingFailed] = useState<boolean | undefined>(
     false,
   );
-  const [currentIcon, setCurrentIcon] = useState("");
-  const [iconVisibility, setIconVisibility] = useState("hidden");
-  const [currentTimeout, setCurrentTimeout] = useState<null | number>(null);
   const router = useRouter();
   const { setModalError } = useModals();
   const data = TRANSLATIONS[userLanguage];
@@ -62,24 +59,6 @@ export function Player({
     setLoadingFailed(false);
   }
 
-  function setIcon(icon: string, faClass: string = "fa-solid") {
-    setCurrentIcon(`${faClass} fa-${icon}`);
-    if (!icon) return;
-    if (currentTimeout != null) clearTimeout(currentTimeout);
-    setIconVisibility("visible");
-    setCurrentTimeout(
-      window.setTimeout(() => {
-        setIconVisibility("hidden");
-        setCurrentTimeout(
-          window.setTimeout(() => {
-            setCurrentIcon("");
-            setCurrentTimeout(null);
-          }, 500),
-        );
-      }, 500),
-    );
-  }
-
   function onKeyPress(evt: React.KeyboardEvent<HTMLDivElement>) {
     if (!videoRef || !videoContainerRef) return;
     const video = videoRef.current;
@@ -93,20 +72,16 @@ export function Player({
         break;
       case "j": // Skip behind 10 s
         video.currentTime = Math.max(0, video.currentTime - 10);
-        setIcon("chevron-left");
         break;
       case "k": // Toggle pause
         if (video.paused || video.ended) {
           video.play();
-          setIcon("play");
         } else {
           video.pause();
-          setIcon("pause");
         }
         break;
       case "l": // Skip forward 10 s
         video.currentTime = Math.min(video.duration, video.currentTime + 10);
-        setIcon("chevron-right");
         break;
       case evt.key.match(/[0-9]/)?.input: // Skip to n/10 ths of the video's duration
         video.currentTime = video.duration * (+evt.key / 10);
@@ -124,10 +99,8 @@ export function Player({
         const subtitleTrack = video.textTracks[0];
         if (!subtitleTrack) break;
         if (subtitleTrack.mode === "showing") {
-          setIcon("closed-captioning", "fa-regular");
           subtitleTrack.mode = "hidden";
         } else {
-          setIcon("closed-captioning");
           subtitleTrack.mode = "showing";
         }
         break;
@@ -197,9 +170,6 @@ export function Player({
         <p className="centred">{data.liveSeries.watch.playbackError}</p>
       )}
       <div ref={videoContainerRef} className="video-container">
-        <div className={`video-icon ${iconVisibility} flex-column`}>
-          <i className={currentIcon}></i>
-        </div>
         <video
           ref={videoRef}
           className={loadingFailed ? "" : ""}

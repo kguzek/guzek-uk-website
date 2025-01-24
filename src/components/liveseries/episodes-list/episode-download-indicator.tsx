@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { DownloadIcon, TriangleIcon } from "lucide-react";
 import { clientToApi } from "@/lib/backend/client";
 import { DownloadStatus } from "@/lib/enums";
 import type { Language } from "@/lib/enums";
@@ -11,10 +14,9 @@ import type {
 } from "@/lib/types";
 import { TRANSLATIONS } from "@/lib/translations";
 import { useModals } from "@/context/modal-context";
-import { useEffect, useState } from "react";
 import { bytesToReadable, compareEpisodes } from "@/lib/util";
-import Link from "next/link";
 import { useLiveSeriesContext } from "@/context/liveseries-context";
+import { cn } from "@/lib/utils";
 
 export function EpisodeDownloadIndicator({
   user,
@@ -48,9 +50,10 @@ export function EpisodeDownloadIndicator({
   )}`;
 
   useEffect(() => {
-    setMetadata(
-      downloadedEpisodes.find((check) => compareEpisodes(check, episodeObject)),
+    const meta = downloadedEpisodes.find((check) =>
+      compareEpisodes(check, episodeObject),
     );
+    if (meta) setMetadata(meta);
   }, [downloadedEpisodes]);
 
   async function startDownload() {
@@ -81,48 +84,69 @@ export function EpisodeDownloadIndicator({
   const downloadStatus = metadata?.status ?? DownloadStatus.STOPPED;
   let downloadTooltip = data.liveSeries.episodes.downloadStatus[downloadStatus];
   const showProgress =
-    metadata &&
+    metadata != null &&
     [DownloadStatus.PENDING, DownloadStatus.VERIFYING].includes(downloadStatus);
-  if (showProgress) {
-    if (metadata.progress != null)
-      downloadTooltip += ` (${(metadata.progress * 100).toFixed(1)}%)`;
-    if (metadata.speed != null)
-      downloadTooltip = downloadTooltip.replace(
-        ")",
-        ` @ ${bytesToReadable(metadata.speed)}/s)`,
-      );
+  if (metadata?.progress != null) {
+    downloadTooltip += ` (${(metadata.progress * 100).toFixed(1)}%${metadata.speed ? ` @ ${bytesToReadable(metadata.speed)}/s` : ""})`;
   }
-  const downloadIcon = (
-    <i className={`fas fa-download status-${downloadStatus}`}></i>
-  );
-  const playIcon = <i className={`fas fa-play status-${downloadStatus}`}></i>;
-
-  const isStopped = downloadStatus === DownloadStatus.STOPPED;
 
   return (
     <>
-      <div
-        className={`flex flex-col ${isStopped ? "cursor-pointer" : ""}`}
-        title={downloadTooltip}
-        style={{ minWidth: 20 }}
-        onClick={isStopped ? startDownload : undefined}
-      >
-        {showProgress && (
-          <i
-            className="fas fa-download status-progress-bar"
-            style={{
-              backgroundSize: `${100 * (metadata?.progress ?? 0)}%`,
-            }}
-          ></i>
-        )}
-        {downloadStatus !== DownloadStatus.COMPLETE && downloadIcon}
-      </div>
-      <Link
-        href={`/liveseries/watch/${tvShow.name}/${episode.season}/${episode.episode}`}
-        title={data.liveSeries.episodes.downloadStatus[DownloadStatus.COMPLETE]}
-      >
-        {playIcon}
-      </Link>
+      {downloadStatus !== DownloadStatus.COMPLETE && (
+        <div
+          className={cn("relative", {
+            "clickable text-primary": downloadStatus === DownloadStatus.STOPPED,
+            "cursor-wait text-primary": showProgress,
+            "cursor-not-allowed text-error":
+              downloadStatus === DownloadStatus.FAILED,
+            "cursor-help text-accent2":
+              downloadStatus === DownloadStatus.UNKNOWN,
+          })}
+          title={downloadTooltip}
+          style={{ minWidth: 20 }}
+          onClick={
+            downloadStatus === DownloadStatus.STOPPED
+              ? startDownload
+              : undefined
+          }
+        >
+          {showProgress && (
+            <div
+              className="absolute overflow-hidden"
+              style={{
+                width: `${100 * (metadata?.progress ?? 0)}%`,
+              }}
+            >
+              <DownloadIcon
+                className={cn({
+                  "text-success": downloadStatus === DownloadStatus.PENDING,
+                  "text-accent2": downloadStatus === DownloadStatus.VERIFYING,
+                })}
+              ></DownloadIcon>
+            </div>
+          )}
+          <DownloadIcon />
+        </div>
+      )}
+      {!showProgress && (
+        <Link
+          href={`/liveseries/watch/${tvShow.name}/${episode.season}/${episode.episode}`}
+          title={
+            data.liveSeries.episodes.downloadStatus[DownloadStatus.COMPLETE]
+          }
+        >
+          <TriangleIcon
+            className={cn("clickable rotate-90", {
+              "text-primary": downloadStatus !== DownloadStatus.COMPLETE,
+            })}
+            fill={
+              downloadStatus === DownloadStatus.COMPLETE
+                ? "currentColor"
+                : "none"
+            }
+          />
+        </Link>
+      )}
     </>
   );
 }

@@ -202,7 +202,7 @@ body {
 }
 
 .delete {
-  color: var(--color-error);
+  @apply text-error;
   align-self: stretch;
   display: flex;
   align-items: center;
@@ -214,8 +214,8 @@ body {
 }
 
 .delete:hover {
+  @apply text-primary-strong;
   background-size: 100% 100%;
-  color: var(--color-primary-strong);
 }
 
 .hover-underline {

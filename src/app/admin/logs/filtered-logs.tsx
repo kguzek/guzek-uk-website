@@ -2,6 +2,20 @@
 
 import { useEffect, useState } from "react";
 import type { ComponentProps, ElementType, ReactNode } from "react";
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  BugIcon,
+  ChevronDownIcon,
+  CodeXmlIcon,
+  GlobeIcon,
+  HardDriveDownloadIcon,
+  HardDriveUploadIcon,
+  InfoIcon,
+  OctagonAlertIcon,
+  ShieldAlertIcon,
+  TriangleAlertIcon,
+} from "lucide-react";
 import { InputBox } from "@/components/forms/input-box";
 import { NumericValue } from "@/components/numeric-value/client";
 import { SyntaxHighlighted } from "@/components/syntax-highlighted";
@@ -40,21 +54,44 @@ function LogLevelIcon({
   selected?: boolean;
 }) {
   return (
-    <i
-      title={[level[0].toUpperCase(), level.slice(1)].join("")}
-      className={cn("clickable fa fa-solid min-w-8 text-center text-2xl", {
-        "fa-warning text-error": level === "crit",
-        "fa-exclamation-circle text-error": level === "error",
-        "fa-warning text-accent2": level === "warn",
-        "fa-info-circle text-success": level === "info",
-        "fa-download text-fuchsia-400": level === "request",
-        "fa-upload text-violet-500": level === "response",
-        "fa-globe text-orange-400": level === "http",
-        "fa-bug text-accent": level === "debug",
-        "fa-info-circle text-primary": level === "verbose",
+    <button
+      title={
+        level === "http"
+          ? level.toUpperCase()
+          : [level[0].toUpperCase(), level.slice(1)].join("")
+      }
+      className={cn("clickable min-w-8 text-center text-2xl", {
+        "text-error": level === "crit" || level === "error",
+        "text-accent2": level === "warn",
+        "text-accent": level === "info",
+        "text-fuchsia-400": level === "request",
+        "text-violet-500": level === "response",
+        "text-orange-400": level === "http",
+        "text-success": level === "debug",
+        "text-primary": level === "verbose",
         "text-background-soft": !selected,
       })}
-    ></i>
+    >
+      {level === "crit" ? (
+        <ShieldAlertIcon />
+      ) : level === "error" ? (
+        <OctagonAlertIcon />
+      ) : level === "warn" ? (
+        <TriangleAlertIcon />
+      ) : level === "info" ? (
+        <InfoIcon />
+      ) : level === "request" ? (
+        <HardDriveDownloadIcon />
+      ) : level === "response" ? (
+        <HardDriveUploadIcon />
+      ) : level === "http" ? (
+        <GlobeIcon />
+      ) : level === "debug" ? (
+        <BugIcon />
+      ) : level === "verbose" ? (
+        <InfoIcon />
+      ) : null}
+    </button>
   );
 }
 
@@ -200,13 +237,7 @@ export function FilteredLogs({
           }
         >
           <h4>Sort:</h4>
-          <div>
-            <i
-              className={`fa-solid fa-arrow-${
-                filter.ascending ? "up" : "down"
-              }`}
-            ></i>
-          </div>
+          <div>{filter.ascending ? <ArrowUpIcon /> : <ArrowDownIcon />}</div>
         </div>
       </div>
       <h3 id="logs-header">
@@ -285,14 +316,15 @@ function Log({
               <StyledLogComponent
                 tag="div"
                 log={log}
+                className="flex gap-1"
                 title={(collapsed ? "Expand" : "Collapse") + " log entry body"}
               >
-                <i className="fas fa-code mr-3"></i>
-                <i
-                  className={`fas fa-caret-up transition-transform ${
-                    collapsed ? "rotate-180" : ""
-                  }`}
-                ></i>
+                <CodeXmlIcon />
+                <ChevronDownIcon
+                  className={cn("transition-transform", {
+                    "-rotate-180": collapsed,
+                  })}
+                ></ChevronDownIcon>
               </StyledLogComponent>
             </div>
           )}

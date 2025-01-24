@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import { ErrorComponent } from "@/components/error-component";
 import type { LegacyLogEntry, LogEntry, LogResponse } from "@/lib/types";
 import { TRANSLATIONS } from "@/lib/translations";
@@ -96,7 +97,7 @@ export default async function Logs({
             href={`/admin/logs?date=${getUTCDateString(previousDate)}`}
             className="clickable"
           >
-            <i className="fa fa-arrow-left"></i>
+            <ArrowLeftIcon />
           </Link>
           <Link href={`/admin/logs`} className="clickable">
             {logDate.toLocaleDateString()}
@@ -105,7 +106,7 @@ export default async function Logs({
             href={`/admin/logs?date=${getUTCDateString(nextDate)}`}
             className="clickable"
           >
-            <i className="fa fa-arrow-right"></i>
+            <ArrowRightIcon />
           </Link>
         </div>
       </div>
