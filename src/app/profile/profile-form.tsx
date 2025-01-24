@@ -27,16 +27,15 @@ export function ProfileForm({
   const { setModalError, setModalInfo } = useModals();
   const data = TRANSLATIONS[userLanguage];
 
-  const isSubmitButtonDisabled = () =>
-    updating ||
-    serverUrl === "" ||
-    serverUrl === previousServerUrl ||
-    !serverUrl.match(/^https?:\/\/.+/);
-
   const detailsRequestPath = "auth/users/me/details";
 
   useEffect(() => {
-    setSubmitButtonDisabled(isSubmitButtonDisabled());
+    const isSubmitButtonDisabled =
+      updating ||
+      serverUrl === "" ||
+      serverUrl === previousServerUrl ||
+      !serverUrl.match(/^https?:\/\/.+/);
+    setSubmitButtonDisabled(isSubmitButtonDisabled);
   }, [serverUrl, previousServerUrl, updating]);
 
   async function handleUpdateServerUrl(evt: FormEvent) {
