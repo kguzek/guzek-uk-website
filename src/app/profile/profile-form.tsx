@@ -7,7 +7,7 @@ import type { User } from "@/lib/types";
 import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import { useModals } from "@/context/modal-context";
-import { clientToApi } from "@/lib/backend/client";
+import { clientToApi, triggerTokenRefresh } from "@/lib/backend/client";
 
 export function ProfileForm({
   user,
@@ -51,9 +51,7 @@ export function ProfileForm({
     if (result.ok) {
       setServerUrl(newServerUrl);
       setModalInfo(data.profile.serverUrlUpdated(newServerUrl));
-      // const newUser = { ...user, serverUrl: newServerUrl };
-      // TODO: implement setUser
-      // setUser(newUser);
+      await triggerTokenRefresh();
     }
     setUpdating(false);
   }

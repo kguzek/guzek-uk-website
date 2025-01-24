@@ -45,13 +45,13 @@ const requestNeedsCredentials = (
  */
 export async function clientToApi<T>(
   path: string,
-  accessToken: string,
+  accessToken: string = "",
   {
     user = null,
     userLanguage,
     setModalError,
     ...fetchOptions
-  }: ClientFetchOptions & FetchOptionsExtension,
+  }: ClientFetchOptions & FetchOptionsExtension = {},
 ) {
   const options = await prepareRequest(path, fetchOptions, accessToken);
 
@@ -73,4 +73,11 @@ export async function clientToApi<T>(
   }
 
   return result;
+}
+
+/** Performs a fetch to forcefully refresh the access token. Can be used to update the user information stored in the token. */
+export async function triggerTokenRefresh() {
+  const result = await clientToApi("auth/refresh");
+  if (result.ok) return;
+  console.error("Failed to refresh access token on client side:", result);
 }
