@@ -36,7 +36,7 @@ export function ProfileForm({
   const detailsRequestPath = "auth/users/me/details";
 
   useEffect(() => {
-    setSubmitButtonDisabled(!isSubmitButtonDisabled());
+    setSubmitButtonDisabled(isSubmitButtonDisabled());
   }, [serverUrl, previousServerUrl, updating]);
 
   async function handleUpdateServerUrl(evt: FormEvent) {
