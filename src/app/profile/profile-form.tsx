@@ -8,7 +8,6 @@ import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import { useModals } from "@/context/modal-context";
 import { clientToApi, triggerTokenRefresh } from "@/lib/backend/client";
-import { useRouter } from "next/navigation";
 
 export function ProfileForm({
   user,
@@ -19,25 +18,26 @@ export function ProfileForm({
   userLanguage: Language;
   accessToken: string;
 }) {
-  const [serverUrl, setServerUrl] = useState(user.serverUrl || "");
+  const [previousServerUrl, setPreviousServerUrl] = useState(
+    user.serverUrl || "",
+  );
+  const [serverUrl, setServerUrl] = useState(previousServerUrl);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
   const [updating, setUpdating] = useState(false);
   const { setModalError, setModalInfo } = useModals();
-  const router = useRouter();
   const data = TRANSLATIONS[userLanguage];
 
-  const isServerUrlValid = () =>
-    !updating &&
-    serverUrl &&
-    serverUrl !== "" &&
-    serverUrl !== (user.serverUrl ?? "") &&
-    serverUrl.match(/^https?:\/\/.+/);
+  const isSubmitButtonDisabled = () =>
+    updating ||
+    serverUrl === "" ||
+    serverUrl === previousServerUrl ||
+    !serverUrl.match(/^https?:\/\/.+/);
 
   const detailsRequestPath = "auth/users/me/details";
 
   useEffect(() => {
-    setSubmitButtonDisabled(!isServerUrlValid());
-  }, [serverUrl, updating]);
+    setSubmitButtonDisabled(!isSubmitButtonDisabled());
+  }, [serverUrl, previousServerUrl, updating]);
 
   async function handleUpdateServerUrl(evt: FormEvent) {
     evt.preventDefault();
@@ -52,9 +52,9 @@ export function ProfileForm({
     });
     if (result.ok) {
       setServerUrl(newServerUrl);
-      setModalInfo(data.profile.serverUrlUpdated(newServerUrl));
+      setPreviousServerUrl(newServerUrl);
       await triggerTokenRefresh();
-      router.refresh();
+      setModalInfo(data.profile.serverUrlUpdated(newServerUrl));
     }
     setUpdating(false);
   }
