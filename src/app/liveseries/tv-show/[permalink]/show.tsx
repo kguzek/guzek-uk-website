@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useState } from "react";
-import { HeartIcon, StarHalfIcon, StarIcon } from "lucide-react";
+import { HeartIcon, StarIcon } from "lucide-react";
 import { ImageGallery } from "@/components/carousel";
 import type { Language } from "@/lib/enums";
 import type {
@@ -200,20 +200,27 @@ export function ShowDetails({
               className="relative"
               title={`${(+tvShowDetails.rating).toFixed(1)}/10`}
             >
-              <div className="absolute flex overflow-hidden text-accent2 sm:gap-1">
-                {Array(Math.round(+tvShowDetails.rating))
-                  .fill(0)
-                  .map((_, idx) => (
-                    <StarIcon
-                      key={`star-filled-${idx}`}
-                      fill="currentColor"
-                    ></StarIcon>
-                  ))}
-                {+tvShowDetails.rating % 1 < 0.5 ? (
-                  <StarHalfIcon fill="currentColor" />
-                ) : null}
+              <div className="absolute w-full text-accent2">
+                <div className="grid w-fit grid-cols-10 sm:gap-1">
+                  {Array(Math.floor(+tvShowDetails.rating))
+                    .fill(0)
+                    .map((_, idx) => (
+                      <StarIcon
+                        key={`star-filled-${idx}`}
+                        fill="currentColor"
+                      ></StarIcon>
+                    ))}
+                  <div
+                    className="overflow-hidden"
+                    style={{
+                      width: `${(+tvShowDetails.rating % 1) * 100}%`,
+                    }}
+                  >
+                    <StarIcon fill="currentColor" />
+                  </div>
+                </div>
               </div>
-              <div className="flex sm:gap-1">
+              <div className="grid grid-cols-10 sm:gap-1">
                 {Array(10)
                   .fill(0)
                   .map((_, idx) => (
@@ -221,7 +228,9 @@ export function ShowDetails({
                   ))}
               </div>
             </div>
-            <span>({tvShowDetails.rating_count})</span>
+            <span className="text-xs sm:text-sm">
+              ({tvShowDetails.rating_count})
+            </span>
           </div>
         ) : null}
       </div>
