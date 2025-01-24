@@ -8,6 +8,7 @@ import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import { useModals } from "@/context/modal-context";
 import { clientToApi, triggerTokenRefresh } from "@/lib/backend/client";
+import { useRouter } from "next/navigation";
 
 export function ProfileForm({
   user,
@@ -22,6 +23,7 @@ export function ProfileForm({
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
   const [updating, setUpdating] = useState(false);
   const { setModalError, setModalInfo } = useModals();
+  const router = useRouter();
   const data = TRANSLATIONS[userLanguage];
 
   const isServerUrlValid = () =>
@@ -52,6 +54,7 @@ export function ProfileForm({
       setServerUrl(newServerUrl);
       setModalInfo(data.profile.serverUrlUpdated(newServerUrl));
       await triggerTokenRefresh();
+      router.refresh();
     }
     setUpdating(false);
   }

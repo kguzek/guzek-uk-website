@@ -67,15 +67,23 @@ export function UserEditor({
   }
 
   return (
-    <form className="flex w-[50%] flex-col gap-3" onSubmit={handleSubmit}>
+    <form
+      action={`https://auth.guzek.uk/auth/users/${user.uuid}/details`}
+      method="POST"
+      className="flex w-[50%] flex-col gap-3"
+      onSubmit={handleSubmit}
+    >
+      <input className="hidden" type="hidden" name="_method" value="PUT" />
       <InputBox
         label={data.profile.formDetails.username}
         value={username}
+        name="username"
         setValue={setUsername}
       />
       <InputBox
         label={data.profile.formDetails.email}
         value={email}
+        name="email"
         setValue={setEmail}
       />
       <InputBox
@@ -90,6 +98,7 @@ export function UserEditor({
         value={user.serverUrl ?? ""}
         setValue={() => {}}
         disabled
+        name="serverUrl"
         required={false}
       />
       <div>
@@ -98,6 +107,7 @@ export function UserEditor({
           required={false}
           label={data.profile.formDetails.administrator}
           value={admin}
+          name="admin"
           setValue={setAdmin}
         />
       </div>
