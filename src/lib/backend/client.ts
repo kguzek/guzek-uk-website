@@ -77,7 +77,7 @@ export async function clientToApi<T>(
 
 /** Performs a fetch to forcefully refresh the access token. Can be used to update the user information stored in the token. */
 export async function triggerTokenRefresh() {
-  const result = await clientToApi("auth/refresh");
+  const result = await clientToApi("auth/refresh", "", { method: "POST" });
   if (result.ok) return;
   console.error("Failed to refresh access token on client side:", result);
 }
