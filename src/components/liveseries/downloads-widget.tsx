@@ -72,7 +72,10 @@ export function DownloadsWidget({
         ></ChevronUpIcon>
       </div>
       <div
-        className={`collapsible ${collapsed ? "collapsed" : "expanded pb-2"}`}
+        className={cn("collapsible", {
+          collapsed,
+          "expanded pb-2": !collapsed,
+        })}
       >
         <div className="flex flex-col items-center justify-around gap-2 overflow-hidden">
           {downloadedEpisodes.map((episode, idx) => {

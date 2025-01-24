@@ -335,7 +335,10 @@ function Log({
       </div>
       {entry.hasBody && (
         <div
-          className={`log-container collapsible ${collapsed ? "collapsed" : "expanded"}`}
+          className={cn("log-container collapsible", {
+            collapsed,
+            expanded: !collapsed,
+          })}
         >
           <div className="no-overflow flex">
             <SyntaxHighlighted json={entry.body} />

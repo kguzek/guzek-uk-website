@@ -1,7 +1,7 @@
 {
   "name": "guzek-uk-website",
   "homepage": "https://www.guzek.uk/",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "engines": {
     "node": "^22.3.0"
   },
@@ -10,7 +10,7 @@
   "description": "The front end of the \"guzek.uk\" website.",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 443 --experimental-https",
+    "dev": "next dev --experimental-https",
     "build": "next build",
     "start": "next start"
   },
