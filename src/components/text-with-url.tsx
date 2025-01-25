@@ -10,7 +10,6 @@ const VALUE_URL_PATTERN = new RegExp("^(.+)(https://[^\\s]+)(\\s.+)?$");
 function splitUrlText(value?: string) {
   const text = value || "";
   const match = VALUE_URL_PATTERN.exec(text);
-  console.log(value, "->", match);
   return match ? match.slice(1) : [text, "", ""];
 }
 

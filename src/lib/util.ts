@@ -100,7 +100,6 @@ const UNIT_PREFIXES = ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi"];
 /** Converts a value in bytes to a human-readable form. E.g. (4096) => "4.00 KiB" */
 export function bytesToReadable(value: number) {
   const result = _bytesToReadable(value);
-  //console.debug(value, '->', result);
   return result;
 }
 
