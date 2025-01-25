@@ -248,7 +248,10 @@ export function ShowDetails({
       <small>
         {data.liveSeries.tvShow.source}:{" "}
         {tvShowDetails.description_source ? (
-          <Link href={tvShowDetails.description_source}>
+          <Link
+            href={tvShowDetails.description_source}
+            className="hover-underline text-accent"
+          >
             {decodeURI(tvShowDetails.description_source)}
           </Link>
         ) : (

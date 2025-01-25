@@ -48,7 +48,7 @@ export async function NavigationBar() {
             <MenuItems user={user} />
             <LanguageSelector userLanguage={userLanguage} />
           </ul>
-          <div className="hidden sm:block">
+          <div className="mx-3 hidden sm:block">
             <UserWidget user={user} userLanguage={userLanguage} />
           </div>
         </div>
