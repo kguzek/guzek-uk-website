@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { CustomMiddleware, MiddlewareFactory } from "./lib/types";
 import { authMiddleware } from "./middleware/auth-middleware";
 import { languageMiddleware } from "./middleware/language-middleware";
+import { redirectMiddleware } from "./middleware/redirect-middleware";
 
 function stackMiddlewares(...factories: MiddlewareFactory[]): CustomMiddleware {
   const current = factories.shift();
@@ -10,7 +11,11 @@ function stackMiddlewares(...factories: MiddlewareFactory[]): CustomMiddleware {
   return current(next);
 }
 
-export default stackMiddlewares(authMiddleware, languageMiddleware);
+export default stackMiddlewares(
+  authMiddleware,
+  languageMiddleware,
+  redirectMiddleware,
+);
 
 export const config = {
   matcher: [
