@@ -105,7 +105,6 @@ export function Player({
       )}
       <video
         ref={videoRef}
-        className={loadingFailed ? "" : ""}
         controls
         src={`${apiBase}liveseries/video/${path}`}
         autoPlay

@@ -12,12 +12,13 @@ export function NavBarItem({ item }: { item: MenuItem }) {
   // Handle edge case for index page ("/")
   const isActive =
     item.url === "/" ? pathname === "/" : pathname?.startsWith(item.url);
-  const className = "clickable nav-link" + (isActive ? " active" : "");
-  const A = item.localUrl ? Link : "a";
   return (
-    <A href={item.url} className={className}>
+    <Link
+      href={item.url}
+      className={cn("clickable nav-link", { active: isActive })}
+    >
       {item.title}
-    </A>
+    </Link>
   );
 }
 
