@@ -1,0 +1,266 @@
+.liveseries .loading-screen {
+  justify-content: center;
+}
+
+.shows-list {
+  gap: 10px;
+}
+
+.showing {
+  align-self: start;
+}
+
+.preview {
+  background-color: var(--color-primary);
+  border-radius: 5px;
+  padding: var(--preview-padding) 0;
+  color: var(--color-background);
+  width: var(--preview-width);
+}
+
+.previews,
+.previews-list {
+  gap: 15px;
+}
+
+.embed {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.embed iframe {
+  width: 50%;
+  height: auto;
+  aspect-ratio: 16/9;
+}
+
+.genre {
+  padding: 3px 5px;
+  border-radius: 5px;
+  background-color: var(--color-primary);
+  color: var(--color-background);
+  border: 1px solid var(--color-background-strong);
+}
+
+.preview-header {
+  padding: 0 var(--preview-padding);
+  font-size: medium;
+  margin-bottom: 20px;
+  justify-content: space-between;
+  --preview-width-inner: calc(
+    var(--preview-width) - 2 * var(--preview-padding)
+  );
+  width: var(--preview-width-inner);
+}
+
+.preview-header a {
+  width: calc(var(--preview-width-inner) - 1em);
+  color: var(--color-background);
+}
+
+.preview-header i {
+  width: 1em;
+}
+
+.preview-header .title {
+  margin: 0;
+}
+
+.liveseries .thumbnail {
+  display: block;
+  width: 100%;
+  height: 300px;
+  background-size: cover;
+  background-position: center;
+  object-fit: cover;
+}
+
+.scroll-x {
+  overflow-x: scroll;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.scroll-x::-webkit-scrollbar {
+  display: none;
+}
+
+.gallery {
+  width: 60%;
+}
+
+.episode-details {
+  width: 100%;
+}
+
+.episodes-container.collapsible {
+  transition:
+    grid-template-rows 400ms ease,
+    opacity 1s ease;
+}
+
+.episodes-header {
+  display: grid;
+  grid-template-columns: max-content 1.5rem;
+  align-items: center;
+}
+
+.episodes {
+  /* width: calc((480px + 5px * 2) * 2 + 10px); */
+  width: 100%;
+}
+
+.episode {
+  display: flex;
+  justify-content: space-between;
+  background-color: var(--color-background-soft);
+  color: var(--color-primary-strong);
+  padding: 5px;
+  border-radius: 5px;
+  width: calc(50% - 15px);
+  box-sizing: border-box;
+}
+
+.watched {
+  width: 1.5rem;
+}
+
+.search {
+  flex-direction: row;
+  gap: 20px;
+}
+
+.previews {
+  justify-content: start;
+  padding: 0;
+}
+
+.preview-header .skeleton-text {
+  background-color: var(--color-background);
+}
+
+.preview.skeleton .thumbnail {
+  background-color: var(--color-background-soft);
+}
+
+.home-carousel .carousel-scroller {
+  position: absolute;
+  opacity: 0;
+}
+
+.home-carousel:hover .carousel-scroller {
+  opacity: 0.8;
+}
+
+.home-carousel .carousel-scroller:hover {
+  opacity: 1;
+}
+
+.home-carousel .left {
+  left: 0;
+}
+
+.home-carousel .right {
+  right: 0;
+}
+
+.home-carousel .carousel-scroller.hidden {
+  opacity: 0;
+}
+
+.video-container {
+  container-type: inline-size;
+  position: relative;
+}
+
+.video-container video {
+  border-radius: 10px;
+}
+
+.video-container:fullscreen video,
+.video-container video:fullscreen {
+  border-radius: 0;
+}
+
+@media screen and (max-width: 980px) {
+  .episodes {
+    justify-content: center;
+  }
+
+  .episode {
+    width: 70%;
+  }
+
+  .embed iframe {
+    width: 80%;
+  }
+
+  .home-carousel {
+    --translate-left: -35%;
+  }
+
+  .home-carousel .carousel-scroller,
+  .home-carousel:hover .carousel-scroller {
+    opacity: 0.9;
+  }
+
+  .home-carousel .carousel-scroller.hidden {
+    opacity: 0;
+  }
+
+  .episode-controls {
+    font-size: 1rem;
+  }
+}
+
+@media screen and (max-width: 750px) {
+  .gallery {
+    width: 70%;
+  }
+
+  .episode {
+    width: 100%;
+  }
+
+  .embed iframe {
+    width: 100%;
+  }
+
+  .details h2 {
+    font-size: x-large;
+  }
+
+  .genres {
+    font-size: medium;
+  }
+
+  .episode-controls {
+    justify-content: center;
+    font-size: 0.9rem;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .episode-controls .separator {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 550px) {
+  .gallery {
+    width: 100%;
+  }
+
+  .search {
+    gap: 10px;
+  }
+
+  .details h2 {
+    font-size: large;
+  }
+
+  .genres {
+    font-size: small;
+  }
+}

@@ -1,0 +1,43 @@
+.downloads-card-container {
+  --card-width: 500px;
+  max-width: 100%;
+  box-sizing: border-box;
+  border-radius: 5px;
+  width: var(--card-width);
+  gap: 0;
+  background-color: var(--color-background);
+}
+
+.downloads-card {
+  flex-direction: column;
+  align-items: start;
+  padding: 10px;
+  width: 100%;
+}
+
+.downloads-card .eta {
+  margin-left: auto;
+}
+
+.downloads-card:last-child {
+  margin-bottom: 5px;
+}
+
+.downloads-card .progress-bar-container {
+  border-radius: 25px;
+  overflow: hidden;
+  background-color: var(--color-primary);
+  height: 16px;
+  width: 100%;
+}
+
+.downloads-card .progress-bar {
+  align-self: left;
+  height: 100%;
+  background-color: var(--color-success);
+  transition: width 400ms ease;
+}
+
+.downloads-card .progress-bar.done {
+  background-color: var(--color-accent);
+}

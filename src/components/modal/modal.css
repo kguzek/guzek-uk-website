@@ -1,0 +1,100 @@
+.modal-background {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  backdrop-filter: blur(6px);
+  visibility: visible;
+  transition: all 300ms ease;
+  opacity: 1;
+  transition: all 250ms ease;
+}
+
+.modal-background.modal-hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.modal {
+  --offset-y: 80px;
+  position: fixed;
+  top: var(--offset-y);
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: 50%;
+  background: var(--color-accent-soft);
+  padding: 10px 20px;
+  border-radius: 15px;
+  color: var(--color-background);
+  transition: transform 300ms ease;
+}
+
+.modal-hidden .modal {
+  transform: translateY(calc(-100% - var(--offset-y)));
+}
+
+.modal.error {
+  background-color: var(--color-error);
+  color: var(--color-primary-strong);
+}
+
+.modal.error .modal-buttons button {
+  background-color: var(--color-primary-strong);
+  color: var(--color-background-soft);
+}
+
+.modal p {
+  margin: 5px 0 10px;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  font-size: medium;
+  font-weight: bold;
+}
+
+.modal-buttons button {
+  @apply rounded-xl border-none px-3 py-1 uppercase hover:opacity-100;
+  color: var(--color-primary-strong);
+  min-width: 100px;
+  background-color: var(--color-background-soft);
+  opacity: 0.75;
+  transition: opacity 200ms ease;
+}
+
+button.btn-primary {
+  background-color: var(--color-success);
+}
+
+button.btn-secondary {
+  background-color: var(--color-error);
+}
+
+@media screen and (max-width: 980px) {
+  .modal {
+    box-sizing: border-box;
+    width: 70%;
+  }
+
+  .modal-buttons button {
+    opacity: 1;
+  }
+}
+
+@media screen and (max-width: 750px) {
+  .modal {
+    width: 90%;
+  }
+}
+
+@media screen and (max-width: 550px) {
+  .modal {
+    width: 95%;
+    padding: 5px 10px;
+    border-radius: 10px;
+  }
+}

@@ -7,6 +7,11 @@ build
 # misc
 .next
 .DS_Store
+.env
 
 # Shell scripts
 *.sh
+
+# SSL Certificates
+certificates
+*.pem

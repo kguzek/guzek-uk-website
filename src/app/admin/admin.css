@@ -1,0 +1,36 @@
+.cards {
+  width: 80%;
+}
+
+.card {
+  color: inherit;
+  width: 100%;
+  padding: 15px;
+}
+
+.admin {
+  color: var(--color-accent);
+}
+
+.input-box {
+  margin-bottom: 0;
+}
+
+.user-page .loading-screen {
+  margin-top: 15vh;
+  justify-content: start;
+  height: 30vh;
+}
+
+@media screen and (max-width: 1100px) {
+  .cards {
+    width: 90%;
+  }
+}
+
+@media screen and (max-width: 750px) {
+  .cards {
+    width: 100%;
+    font-size: medium;
+  }
+}
