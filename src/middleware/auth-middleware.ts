@@ -22,9 +22,10 @@ export const authMiddleware: MiddlewareFactory = (next) =>
 
     const response = await next(request);
     const { user } = await useAuth(request, response);
-    const [redirectFrom, redirectTo] = user?.admin
-      ? [ROUTES_REQUIRING_NOAUTH, "/profile"]
-      : [ROUTES_REQUIRING_AUTH, "/login"];
+    const [redirectFrom, redirectTo] =
+      user == null
+        ? [ROUTES_REQUIRING_AUTH, "/login"]
+        : [ROUTES_REQUIRING_NOAUTH, "/profile"];
     for (const route of redirectFrom) {
       if (request.nextUrl.pathname.startsWith(route)) {
         return redirect(redirectTo);
