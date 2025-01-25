@@ -1,5 +1,8 @@
 # The Guzek UK website
 
+
+![Guzek UK Tech Stack](https://github-readme-tech-stack.vercel.app/api/cards?title=Guzek+UK+Tech+Stack&align=center&lineCount=1&theme=tailwindcss&width=600&bg=%230f172a&badge=%231e293b&border=%231e293b&titleColor=%2338bdf8&line1=typescript%2Ctypescript%2Cauto%3Bnextdotjs%2Cnextjs%2Cauto%3Btailwindcss%2Ctailwind%2Cauto%3Blucide%2Clucide%2Cauto%3Bradixui%2Cradix+ui%2Cauto%3B)
+
 ## Intro
 
 This repository contains the source code for [Guzek UK](https://www.guzek.uk/), which is the personal portfolio website of Konrad Guzek.
