@@ -3,6 +3,7 @@ import type { CustomMiddleware, MiddlewareFactory } from "./lib/types";
 import { authMiddleware } from "./middleware/auth-middleware";
 import { languageMiddleware } from "./middleware/language-middleware";
 import { redirectMiddleware } from "./middleware/redirect-middleware";
+import { headerMiddleware } from "./middleware/header-middleware";
 
 function stackMiddlewares(...factories: MiddlewareFactory[]): CustomMiddleware {
   const current = factories.shift();
@@ -15,6 +16,7 @@ export default stackMiddlewares(
   authMiddleware,
   languageMiddleware,
   redirectMiddleware,
+  headerMiddleware,
 );
 
 export const config = {
