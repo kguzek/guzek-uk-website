@@ -277,7 +277,7 @@ export function ShowDetails({
       <h3 className="my-5 text-2xl font-bold">
         {data.liveSeries.tvShow.episodes}
       </h3>
-      {user?.serverUrl?.length && (
+      {user?.serverUrl != null && user.serverUrl.length > 0 && (
         <div style={{ width: "fit-content" }}>
           <InputBox
             type="checkbox"
