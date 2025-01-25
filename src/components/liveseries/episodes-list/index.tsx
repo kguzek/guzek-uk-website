@@ -82,12 +82,10 @@ export async function EpisodesList({
 }) {
   const { user } = await useAuth();
   let watchedEpisodes: ShowData<WatchedEpisodes> = {};
-  if (user && user.serverUrl) {
-    const [watchedEpisodesResult] = await Promise.all([
-      serverToApi<ShowData<WatchedEpisodes>>(
-        "liveseries/watched-episodes/personal",
-      ),
-    ]);
+  if (user != null) {
+    const watchedEpisodesResult = await serverToApi<ShowData<WatchedEpisodes>>(
+      "liveseries/watched-episodes/personal",
+    );
     if (watchedEpisodesResult.ok) {
       watchedEpisodes = watchedEpisodesResult.data;
     }

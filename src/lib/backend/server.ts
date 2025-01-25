@@ -6,6 +6,11 @@ import { useAuth } from "@/lib/backend/user";
 
 const EPISODATE_URL = "https://www.episodate.com/api/";
 
+function isUserSpecificPath(path: string) {
+  const parts = path.split("/");
+  return ["me", "personal"].some((part) => parts.includes(part));
+}
+
 /** Makes a server-to-server API call using cookie-based authentication.
  *
  * @param path The relative path to the API endpoint, where the base is inferred from the path or the `fetchOptions.api` parameter.
@@ -43,7 +48,7 @@ export async function serverToApi<T>(
     fetchOptions.api === "episodate"
       ? 3600
       : (fetchOptions.method != null && fetchOptions.method === "GET") ||
-          path.includes("/personal/")
+          isUserSpecificPath(path)
         ? 0
         : 300;
   const url = `${fetchOptions.api === "episodate" ? EPISODATE_URL : getUrlBase(path, user)}${path}${getSearchParams(fetchOptions.params)}`;
