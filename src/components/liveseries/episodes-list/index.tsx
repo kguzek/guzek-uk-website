@@ -35,15 +35,15 @@ async function Episode({
   const watchedInSeason = watchedEpisodes?.[tvShow.id]?.[+episode.season];
 
   return (
-    <div className="box-border flex w-full gap-2 rounded-lg bg-background-soft p-2 px-4">
-      <div className="mr-auto overflow-hidden">
-        <div className="flex gap-2" title={episode.name}>
+    <div className="box-border flex w-full flex-col items-center gap-2 rounded-lg bg-background-soft p-2 px-4 sm:flex-row sm:justify-between">
+      <div className="w-full self-start overflow-hidden">
+        <div className="grid grid-cols-[auto_1fr] gap-2" title={episode.name}>
           <i>{data.liveSeries.episodes.serialise(episode)}</i>
-          <div className="cutoff text-accent-soft">{episode.name}</div>
+          <div className="cutoff w-full text-accent-soft">{episode.name}</div>
         </div>
         <small>{airDate}</small>
       </div>
-      <div className="noshrink flex items-center gap-4">
+      <div className="flex items-center gap-4">
         {hasEpisodeAired(episode) ? (
           <>
             <EpisodeDownloadIndicator
@@ -103,7 +103,7 @@ export async function EpisodesList({
         {children}
       </div>
       <div className="collapsible collapsed peer-has-[:checked]:expanded">
-        <div className="episodes no-overflow grid gap-3 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+        <div className="episodes grid gap-3 overflow-hidden md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
           {episodes.map((episode, idx) => (
             <Episode
               key={`episode-unwatched-${idx}`}

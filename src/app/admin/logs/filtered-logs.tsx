@@ -340,7 +340,7 @@ function Log({
             expanded: !collapsed,
           })}
         >
-          <div className="no-overflow flex">
+          <div className="flex overflow-hidden">
             <SyntaxHighlighted json={entry.body} />
           </div>
         </div>

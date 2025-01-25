@@ -177,10 +177,6 @@ body {
   width: 250px;
 }
 
-.no-overflow {
-  overflow: hidden;
-}
-
 .cutoff {
   overflow: hidden;
   white-space: nowrap;

@@ -63,7 +63,11 @@ export function TvShowPreview({
     <>
       <div className="w-[240px] rounded-md bg-primary pb-10">
         <div className="flex w-full justify-between gap-1 px-4 py-2">
-          <Link href={link} title={showDetails?.name} className="no-overflow">
+          <Link
+            href={link}
+            title={showDetails?.name}
+            className="overflow-hidden"
+          >
             <p className="title serif cutoff text-background visited:text-background-soft">
               {showDetails?.name} ({showDetails?.country})
             </p>

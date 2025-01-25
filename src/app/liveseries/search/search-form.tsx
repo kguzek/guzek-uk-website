@@ -25,7 +25,7 @@ export function SearchForm({ userLanguage }: { userLanguage: Language }) {
     <form
       action="/liveseries/search"
       method="GET"
-      className="form-editor flex items-center gap-4"
+      className="form-editor items-center gap-4 sm:flex"
       onSubmit={(evt) => {
         evt.preventDefault();
         router.push(getSearchPath());

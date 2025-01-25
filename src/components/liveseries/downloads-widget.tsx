@@ -124,14 +124,14 @@ export function DownloadsWidget({
             );
             return (
               <div
-                className="downloads-card-container no-overflow flex"
+                className="downloads-card-container flex overflow-hidden"
                 key={key}
               >
                 {episode.status === DownloadStatus.COMPLETE ? (
                   <>
                     <Link
                       href={episodeLink}
-                      className="downloads-card-container no-overflow flex"
+                      className="downloads-card-container flex overflow-hidden"
                       onClick={() => setCollapsed(true)}
                     >
                       {card}
