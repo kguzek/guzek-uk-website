@@ -62,11 +62,11 @@ export function ProfileForm({
     <form
       action={`https://auth.guzek.uk/${detailsRequestPath}`}
       method="POST"
-      className="profile-form flex gap-10"
+      className="profile-form flex gap-x-4"
       onSubmit={handleUpdateServerUrl}
     >
       <input className="hidden" type="hidden" name="_method" value="PUT" />
-      <div style={{ width: "100%" }}>
+      <div className="w-full">
         <InputBox
           label={data.profile.formDetails.serverUrl}
           value={serverUrl}
