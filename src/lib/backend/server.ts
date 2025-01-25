@@ -42,11 +42,10 @@ export async function serverToApi<T>(
   options.next.revalidate =
     fetchOptions.api === "episodate"
       ? 3600
-      : !fetchOptions.method || fetchOptions.method === "GET"
-        ? 300
-        : useCredentials
-          ? 0
-          : 5;
+      : (fetchOptions.method != null && fetchOptions.method === "GET") ||
+          path.includes("/personal/")
+        ? 0
+        : 300;
   const url = `${fetchOptions.api === "episodate" ? EPISODATE_URL : getUrlBase(path, user)}${path}${getSearchParams(fetchOptions.params)}`;
   // console.debug("", options.method ?? "GET", url);
   return await fetchFromApi<T>(url, options);
