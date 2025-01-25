@@ -7,7 +7,7 @@ import { getTitle } from "@/lib/util";
 import { useTranslations } from "@/providers/translation-provider";
 
 type Props = {
-  params: Promise<{ page: any }>;
+  params: Promise<{ page: string[] }>;
 };
 
 const pageFromParams = async ({ params }: Props) =>
