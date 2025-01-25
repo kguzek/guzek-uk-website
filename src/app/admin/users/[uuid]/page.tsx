@@ -5,7 +5,7 @@ import { serverToApi } from "@/lib/backend/server";
 import { useTranslations } from "@/providers/translation-provider";
 import { UserEditor } from "./user-editor";
 import { ErrorCode } from "@/lib/enums";
-import { useAuth } from "@/lib/backend/user";
+import { useAuth } from "@/providers/auth-provider";
 
 interface Props {
   params: Promise<{ uuid: string }>;

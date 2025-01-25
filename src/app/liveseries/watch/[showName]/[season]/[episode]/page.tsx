@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { ErrorComponent } from "@/components/error-component";
 import { ErrorCode } from "@/lib/enums";
-import { useAuth } from "@/lib/backend/user";
+import { useAuth } from "@/providers/auth-provider";
 import { useTranslations } from "@/providers/translation-provider";
 import { Player } from "./player";
 

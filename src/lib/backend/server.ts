@@ -1,8 +1,8 @@
-import { cookies } from "next/headers";
 import { getSearchParams } from "../backend";
+import { useAuth } from "@/providers/auth-provider";
+import { useTranslations } from "@/providers/translation-provider";
 import { fetchFromApi, getUrlBase, prepareRequest } from ".";
 import type { ServerFetchOptions } from ".";
-import { useAuth } from "@/lib/backend/user";
 
 const EPISODATE_URL = "https://www.episodate.com/api/";
 
@@ -31,12 +31,12 @@ export async function serverToApi<T>(
   fetchOptions: ServerFetchOptions = {},
   useCredentials: boolean = true,
 ) {
-  const cookieStore = await cookies();
-  if (!fetchOptions.params?.lang) {
-    const lang = cookieStore.get("lang")?.value || "EN";
-    fetchOptions.params = { ...fetchOptions.params, lang };
-  }
   const { accessToken, user } = await useAuth();
+
+  if (!fetchOptions.params?.lang) {
+    const { userLanguage } = await useTranslations();
+    fetchOptions.params = { ...fetchOptions.params, lang: userLanguage };
+  }
 
   const options = await prepareRequest(
     path,

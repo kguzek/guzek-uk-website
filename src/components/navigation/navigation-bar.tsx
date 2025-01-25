@@ -2,7 +2,7 @@ import { serverToApi } from "@/lib/backend/server";
 import { NavBarItem } from "./navigation-bar-client";
 import { UserWidget } from "./user-widget";
 import { MenuItem, User } from "@/lib/types";
-import { useAuth } from "@/lib/backend/user";
+import { useAuth } from "@/providers/auth-provider";
 import { Logo } from "@/media/logo";
 import { PAGE_NAME } from "@/lib/util";
 import { LanguageSelector } from "./language-selector";

@@ -9,7 +9,7 @@ import {
   type TvShowDetails,
 } from "@/lib/types";
 import { getTitle } from "@/lib/util";
-import { useAuth } from "@/lib/backend/user";
+import { useAuth } from "@/providers/auth-provider";
 import { useTranslations } from "@/providers/translation-provider";
 import { ShowDetails } from "./show";
 import { EpisodesList } from "@/components/liveseries/episodes-list";
@@ -60,6 +60,7 @@ async function getShowDetails(params: Props["params"]) {
 export default async function TvShow({ params }: Props) {
   const { permalink } = await params;
   const { data, userLanguage } = await useTranslations();
+  const { user, accessToken } = await useAuth();
   const showResult = await serverToApi<{ tvShow: TvShowDetails }>(
     "show-details",
     {
@@ -70,21 +71,29 @@ export default async function TvShow({ params }: Props) {
   if (!showResult.ok) {
     return <ErrorComponent errorCode={ErrorCode.NotFound} />;
   }
-  const showsResult = await serverToApi<UserShows>("liveseries/shows/personal");
-  const liked =
-    showsResult.ok &&
-    showsResult.data.likedShows?.includes(showResult.data.tvShow.id);
-  const subscribed =
-    showsResult.ok &&
-    showsResult.data.subscribedShows?.includes(showResult.data.tvShow.id);
-  const watchedEpisodesResult = await serverToApi<ShowData<WatchedEpisodes>>(
-    "liveseries/watched-episodes/personal",
-  );
-  const watchedEpisodes =
-    (watchedEpisodesResult.ok &&
-      watchedEpisodesResult.data[showResult.data.tvShow.id]) ||
-    [];
-  const { user, accessToken } = await useAuth();
+  let liked = false;
+  let subscribed = false;
+  let watchedEpisodes: WatchedEpisodes = {};
+  if (user != null) {
+    const showsResult = await serverToApi<UserShows>(
+      "liveseries/shows/personal",
+    );
+    if (showsResult.ok) {
+      liked =
+        showsResult.data.likedShows?.includes(showResult.data.tvShow.id) ??
+        false;
+      subscribed =
+        showsResult.data.subscribedShows?.includes(showResult.data.tvShow.id) ??
+        false;
+    }
+    const watchedEpisodesResult = await serverToApi<ShowData<WatchedEpisodes>>(
+      "liveseries/watched-episodes/personal",
+    );
+    if (watchedEpisodesResult.ok) {
+      watchedEpisodes =
+        watchedEpisodesResult.data[showResult.data.tvShow.id] ?? {};
+    }
+  }
 
   return (
     <ShowDetails

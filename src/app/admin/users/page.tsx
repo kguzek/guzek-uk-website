@@ -6,7 +6,7 @@ import { ErrorComponent } from "@/components/error-component";
 import { ErrorCode } from "@/lib/enums";
 import { UserCard } from "./user-card";
 import { getTitle } from "@/lib/util";
-import { useAuth } from "@/lib/backend/user";
+import { useAuth } from "@/providers/auth-provider";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data } = await useTranslations();

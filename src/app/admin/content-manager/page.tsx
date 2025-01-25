@@ -7,7 +7,7 @@ import { PagesForm } from "./pages-form";
 import { ErrorCode } from "@/lib/enums";
 import { getTitle } from "@/lib/util";
 import { CreatePageButton } from "./create-page-button";
-import { useAuth } from "@/lib/backend/user";
+import { useAuth } from "@/providers/auth-provider";
 
 type PageId = MenuItem["id"];
 

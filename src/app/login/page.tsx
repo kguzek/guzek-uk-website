@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getTitle } from "@/lib/util";
 import { useTranslations } from "@/providers/translation-provider";
-import { useAuth } from "@/lib/backend/user";
+import { useAuth } from "@/providers/auth-provider";
 import { LogInForm } from "./form";
 import { PageSkeleton } from "@/components/pages/skeleton";
 

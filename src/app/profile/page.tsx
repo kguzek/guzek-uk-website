@@ -1,4 +1,4 @@
-import { useAuth } from "@/lib/backend/user";
+import { useAuth } from "@/providers/auth-provider";
 import { useTranslations } from "@/providers/translation-provider";
 import { ProfileForm } from "./profile-form";
 import { LogoutButton } from "./logout-button";

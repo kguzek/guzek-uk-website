@@ -11,7 +11,7 @@ import { useTranslations } from "@/providers/translation-provider";
 import { EpisodeWatchedIndicator } from "./episode-watched-indicator";
 import { serverToApi } from "@/lib/backend/server";
 import { EpisodeDownloadIndicator } from "./episode-download-indicator";
-import { useAuth } from "@/lib/backend/user";
+import { useAuth } from "@/providers/auth-provider";
 
 async function Episode({
   episode,

@@ -5,7 +5,7 @@ import { NumericValue } from "@/components/numeric-value";
 import { TvShowPreview } from "./tv-show-preview";
 import { TRANSLATIONS } from "@/lib/translations";
 import { serverToApi } from "@/lib/backend/server";
-import { useAuth } from "@/lib/backend/user";
+import { useAuth } from "@/providers/auth-provider";
 
 const RESULTS_PER_PAGE = 20;
 
