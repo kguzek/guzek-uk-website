@@ -46,7 +46,9 @@ export function SearchForm({ userLanguage }: { userLanguage: Language }) {
           {data.liveSeries.search.search}
         </Link>
       ) : (
-        <button className="btn w-full">{data.liveSeries.search.search}</button>
+        <button className="btn w-full sm:w-[unset]">
+          {data.liveSeries.search.search}
+        </button>
       )}
     </form>
   );
