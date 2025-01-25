@@ -10,7 +10,7 @@ It serves as a showcase of projects as well as the homepage of [LiveSeries](http
 
 ## Pages
 
-The page contains standard portfolio website features, such as brief "about me" on the homepage as well as a "projects" page outlining some of the more recent apps I've been working on. The most interesting feature of the website is the "LiveSeries" page, which is explained in the next section.
+The page contains standard portfolio website features, such as brief "about me" on the homepage as well as a "projects" page outlining some of the more recent apps I've been working on. It also features a tailor-made login system, with on-site account registration and secure credentials storage. The most interesting feature of the website is the "LiveSeries" page, which is explained in the next section.
 
 ## LiveSeries
 
