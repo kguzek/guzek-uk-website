@@ -83,14 +83,7 @@ export default async function Logs({
 
   return (
     <div>
-      <div
-        className="flex"
-        style={{
-          marginBottom: "15px",
-          width: "100%",
-          position: "relative",
-        }}
-      >
+      <div className="relative mb-4 flex w-full">
         <h3 className="absolute text-2xl font-bold">{data.admin.logs.title}</h3>
         <div className="mx-auto mt-0 flex gap-3">
           <Link

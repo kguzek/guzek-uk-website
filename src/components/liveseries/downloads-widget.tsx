@@ -85,7 +85,7 @@ export function DownloadsWidget({
             const key = `downloads-card-${idx}`;
             const card = (
               <div className="downloads-card flex">
-                <div style={{ width: "100%" }}>
+                <div className="w-full">
                   <span>
                     {episode.showName} {serialise(episode)}
                   </span>

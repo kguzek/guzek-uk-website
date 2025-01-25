@@ -131,10 +131,7 @@ export function Player({
         {decodeURIComponent(showName)}{" "}
         {data.liveSeries.episodes.serialise(episodeObject)}
       </h2>
-      <div
-        className="flex flex-col items-center text-sm sm:text-xl md:flex-row md:items-start"
-        style={{ marginBottom: "10px" }}
-      >
+      <div className="mb-2 flex flex-col items-center text-sm sm:text-xl md:flex-row md:items-start">
         <div className="flex gap-3">
           {season > 1 && (
             <>

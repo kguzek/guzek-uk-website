@@ -187,8 +187,7 @@ export function ShowDetails({
           {tvShowDetails.genres.map((genre, idx) => (
             <div
               key={`genre-${genre}-${idx}`}
-              className="clickable whitespace-nowrap rounded-md bg-primary px-2 text-background"
-              style={{ cursor: "default" }}
+              className="clickable cursor-default whitespace-nowrap rounded-md bg-primary px-2 text-background"
             >
               {genre}
             </div>
@@ -278,7 +277,7 @@ export function ShowDetails({
         {data.liveSeries.tvShow.episodes}
       </h3>
       {user?.serverUrl != null && user.serverUrl.length > 0 && (
-        <div style={{ width: "fit-content" }}>
+        <div className="w-fit">
           <InputBox
             type="checkbox"
             label={data.liveSeries.tvShow.subscribe}

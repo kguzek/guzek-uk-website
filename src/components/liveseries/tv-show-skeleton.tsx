@@ -1,26 +1,13 @@
 export function TvShowSkeleton() {
   return (
     <div className="details skeleton">
-      <h2 className="skeleton-text" style={{ height: 32 }}></h2>
+      <h2 className="skeleton-text h-8"></h2>
       <div className="flex flex-wrap">
-        <div
-          className="skeleton-text"
-          style={{
-            height: 30,
-            width: "20%",
-            backgroundColor: "var(--color-primary)",
-          }}
-        ></div>
-        <div
-          className="skeleton-text"
-          style={{ height: 30, width: "30%" }}
-        ></div>
+        <div className="skeleton-text h-8 w-1/5 bg-primary"></div>
+        <div className="skeleton-text h-8 w-1/3"></div>
       </div>
-      <p className="skeleton-text" style={{ height: 25, width: 300 }}></p>
-      <p
-        className="skeleton-text"
-        style={{ height: "50vh", width: "100%" }}
-      ></p>
+      <p className="skeleton-text h-6 w-72"></p>
+      <p className="skeleton-text h-[50vh] w-full"></p>
     </div>
   );
 }

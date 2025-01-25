@@ -8,9 +8,9 @@ export function useScroll(ref: RefObject<HTMLElement | null>) {
   function handleScroll() {
     const elem = ref.current;
     setScroll(elem?.scrollLeft ?? 0);
-    setTotalWidth(elem?.scrollWidth ?? 1);
+    setTotalWidth(elem?.scrollWidth || 1);
     // TODO: maybe this should be .offsetWidth?
-    setVisibleWidth(elem?.clientWidth ?? 1);
+    setVisibleWidth(elem?.clientWidth || 1);
   }
 
   useEffect(() => {
