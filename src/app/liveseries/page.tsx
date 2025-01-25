@@ -103,12 +103,18 @@ export default async function Home() {
             {data.liveSeries.home.noLikes}
           </p>
           <p>
-            <Link href="/liveseries/search">
+            <Link
+              href="/liveseries/search"
+              className="hover-underline text-accent"
+            >
               {data.liveSeries.search.label}
             </Link>
           </p>
           <p>
-            <Link href="/liveseries/most-popular">
+            <Link
+              href="/liveseries/most-popular"
+              className="hover-underline text-accent"
+            >
               {data.liveSeries.home.explore} {data.liveSeries.mostPopular.title}{" "}
               {data.liveSeries.home.shows}
             </Link>

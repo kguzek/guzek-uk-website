@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { MenuItem } from "@/lib/types";
 import "./navigation.css";
+import { cn } from "@/lib/utils";
 
 export function NavBarItem({ item }: { item: MenuItem }) {
   const pathname = usePathname();
@@ -46,7 +47,7 @@ export function MiniNavBar({
       {pages.map(({ link, label }, idx) => (
         <Link
           key={idx}
-          className={`clickable nav-link ${getClassName(link)}`}
+          className={cn("clickable nav-link", getClassName(link))}
           href={`/${pathBase}/${link}`}
         >
           {label}

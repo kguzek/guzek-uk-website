@@ -59,7 +59,7 @@ export function DownloadsWidget({
   return (
     <div
       className={cn(
-        "fixed bottom-0 left-0 right-0 z-[7] rounded-t-xl bg-background-soft p-1 px-2 shadow-lg transition-opacity duration-300 hover:opacity-100 sm:left-[unset] sm:rounded-tr-none",
+        "fixed bottom-0 left-0 right-0 z-[7] rounded-t-xl border-2 border-background bg-background-soft p-1 px-2 shadow-lg transition-opacity duration-300 hover:opacity-100 sm:left-[unset] sm:rounded-tr-none",
         { "sm:opacity-50": collapsed, "sm:opacity-80": !collapsed },
       )}
     >
@@ -68,7 +68,7 @@ export function DownloadsWidget({
         onClick={() => setCollapsed((old) => !old)}
       >
         <ChevronUpIcon
-          className={`transition-transform ${collapsed ? "" : "rotate-180"}`}
+          className={cn("transition-transform", { "rotate-180": !collapsed })}
         ></ChevronUpIcon>
       </div>
       <div
@@ -114,9 +114,9 @@ export function DownloadsWidget({
                 </div>
                 <div className="progress-bar-container">
                   <div
-                    className={`progress-bar ${
-                      episode.status === DownloadStatus.COMPLETE ? "done" : ""
-                    }`}
+                    className={cn("progress-bar", {
+                      done: episode.status === DownloadStatus.COMPLETE,
+                    })}
                     style={{ width: downloadProgress }}
                   ></div>
                 </div>

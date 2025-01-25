@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode, useState } from "react";
+import Link from "next/link";
 import { HeartIcon, StarIcon } from "lucide-react";
 import { ImageGallery } from "@/components/carousel";
 import type { Language } from "@/lib/enums";
@@ -247,9 +248,9 @@ export function ShowDetails({
       <small>
         {data.liveSeries.tvShow.source}:{" "}
         {tvShowDetails.description_source ? (
-          <a href={tvShowDetails.description_source}>
+          <Link href={tvShowDetails.description_source}>
             {decodeURI(tvShowDetails.description_source)}
-          </a>
+          </Link>
         ) : (
           data.liveSeries.tvShow.unknown.toLowerCase()
         )}

@@ -96,6 +96,7 @@ type BodilessFetchOptions = {
 };
 export type BaseFetchOptions = (BodyFetchOptions | BodilessFetchOptions) & {
   params?: Record<string, string>;
+  headers?: Record<string, string>;
 };
 
 export type ClientFetchOptions = BaseFetchOptions;
@@ -118,6 +119,7 @@ export async function prepareRequest(
   };
   const headers: HeadersInit = {
     Accept: "application/json",
+    ...fetchOptions.headers,
   };
   if (useCredentials && accessToken) {
     headers.Authorization = `Bearer ${accessToken}`;
@@ -180,29 +182,34 @@ export async function fetchFromApi<T>(url: string, options: RequestInit) {
     } as const;
   }
   let data: T;
-  try {
-    // Use this method because sometimes res.json() fails with weird errors
-    data = parseResponseBody(body.trim());
-  } catch (error) {
-    console.error(
-      "FAILED to parse JSON from",
-      method,
-      url,
-      "with status:",
-      res.status,
-      res.statusText,
-      error,
-      "and response body:",
-      body,
-    );
-    return {
-      failed: false,
-      res,
-      hasBody: false,
-      ok: false,
-      data: null,
-      error: null,
-    } as const;
+  if (res.headers.get("Content-Type")?.includes("application/json")) {
+    try {
+      // Use this method because sometimes res.json() fails with weird errors
+      data = parseResponseBody(body.trim());
+    } catch (error) {
+      console.error(
+        "FAILED to parse JSON from",
+        method,
+        url,
+        "with status:",
+        res.status,
+        res.statusText,
+        error,
+        "and response body:",
+        body,
+      );
+      return {
+        failed: false,
+        res,
+        hasBody: false,
+        ok: false,
+        data: null,
+        error: null,
+      } as const;
+    }
+  } else {
+    console.warn("Non-JSON response received, proceeding");
+    data = body as T;
   }
 
   // console.debug("...", res.status, res.statusText);

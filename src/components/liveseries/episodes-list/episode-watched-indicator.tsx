@@ -19,7 +19,7 @@ export function EpisodeWatchedIndicator({
   showId: number;
   episode: Episode;
   watchedInSeason: number[];
-  accessToken: string;
+  accessToken: string | null;
 }) {
   const [isWatched, setIsWatched] = useState(
     watchedInSeason.includes(episode.episode),
@@ -28,6 +28,10 @@ export function EpisodeWatchedIndicator({
   const data = TRANSLATIONS[userLanguage];
 
   async function updateWatchedEpisodes(episodes: number[]) {
+    if (accessToken == null) {
+      setModalError(data.liveSeries.home.login);
+      return;
+    }
     const result = await clientToApi(
       `liveseries/watched-episodes/personal/${showId}/${episode.season}`,
       accessToken,
@@ -46,7 +50,7 @@ export function EpisodeWatchedIndicator({
   }
 
   return (
-    <div
+    <button
       className="watched centred clickable"
       title={data.liveSeries.tvShow.markWatched(
         isWatched ? data.liveSeries.tvShow.un : "",
@@ -61,6 +65,6 @@ export function EpisodeWatchedIndicator({
       }
     >
       {isWatched ? <EyeIcon className="text-primary-strong" /> : <EyeOffIcon />}
-    </div>
+    </button>
   );
 }

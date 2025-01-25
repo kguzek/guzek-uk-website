@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Language } from "@/lib/enums";
 import { useLanguageSelector } from "@/context/language-selector-context";
+import { cn } from "@/lib/utils";
 // import { useTranslations } from "@/providers/translation-provider";
 // import { InferGetServerSidePropsType } from "next";
 // import { NextRequest } from "next/server";
@@ -59,7 +60,11 @@ export function LanguageSelector({ userLanguage }: { userLanguage: Language }) {
             // I'm using selectedButtonRef.current as a check to see if it's being rendered on the client or server side
             // Since the server side doesn't have a window object, it can't calculate the offset values, so it won't render the marker
             // The same is true for clients without JavaScript enabled, so the marker is applied via CSS instead
-            className={`${userLanguage === lang ? (selectedButtonRef.current ? "" : "rounded-md bg-accent") : "clickable"} w-8 py-2 text-center text-xs font-semibold`}
+            className={cn("w-8 py-2 text-center text-xs font-semibold", {
+              "rounded-md bg-accent":
+                userLanguage === lang && selectedButtonRef.current == null,
+              clickable: userLanguage !== lang,
+            })}
           >
             {lang}
           </Link>

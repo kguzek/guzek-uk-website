@@ -1,9 +1,11 @@
-import { NextResponse } from "next/server";
 import { ErrorComponent } from "@/components/error-component";
 import { ErrorCode } from "@/lib/enums";
 import { useAuth } from "@/providers/auth-provider";
 import { useTranslations } from "@/providers/translation-provider";
 import { Player } from "./player";
+import { TextWithUrl } from "@/components/text-with-url";
+import { serverToApi } from "@/lib/backend/server";
+import Link from "next/link";
 
 function isNumber(val: string | string[] | undefined): val is string {
   return !Array.isArray(val) && val != null && `${+val}` === val && +val > 0;
@@ -14,32 +16,92 @@ interface Props {
 }
 
 export default async function Watch({ params }: Props) {
-  const { userLanguage } = await useTranslations();
-  const { showName, season, episode } = await params;
+  const { data, userLanguage } = await useTranslations();
+  const {
+    showName,
+    season: seasonString,
+    episode: episodeString,
+  } = await params;
   if (
     Array.isArray(showName) ||
-    !(showName && isNumber(season) && isNumber(episode))
+    !(showName && isNumber(seasonString) && isNumber(episodeString))
   ) {
     return <ErrorComponent errorCode={ErrorCode.NotFound} />;
   }
   const { user, accessToken } = await useAuth();
-  if (!user) {
-    return NextResponse.redirect("/login");
-  }
-  if (!user.serverUrl) {
-    return NextResponse.redirect("/profile?redirect_reason=no_server_url");
-  }
   if (!accessToken) {
     return <ErrorComponent errorCode={ErrorCode.Unauthorized} />;
   }
+  if (!user.serverUrl) {
+    // console.warn("User without server URL accessed /liveseries/watch");
+    return (
+      <ErrorComponent
+        errorCode={ErrorCode.Forbidden}
+        errorMessage={<TextWithUrl>{data.liveSeries.explanation}</TextWithUrl>}
+      />
+    );
+  }
+
+  const season = +seasonString;
+  const episode = +episodeString;
+
+  const statResult = await serverToApi(
+    `liveseries/video/${showName}/${season}/${episode}`,
+    { headers: { Range: "bytes=0-1" } },
+  );
+
+  const episodeObject = { episode, season };
+
   return (
-    <Player
-      showName={showName}
-      season={+season}
-      episode={+episode}
-      apiBase={user.serverUrl}
-      accessToken={accessToken}
-      userLanguage={userLanguage}
-    />
+    <div>
+      <h2 className="my-6 text-3xl font-bold">
+        {decodeURIComponent(showName)}{" "}
+        {data.liveSeries.episodes.serialise(episodeObject)}
+      </h2>
+      <div className="mb-2 flex flex-col items-center text-sm sm:text-xl md:flex-row md:items-start">
+        <div className="flex gap-3">
+          {season > 1 && (
+            <>
+              <Link href={`/liveseries/watch/${showName}/${season - 1}/1`}>
+                {data.liveSeries.watch.previous} {data.liveSeries.tvShow.season}
+              </Link>
+              |
+            </>
+          )}
+          <Link href={`/liveseries/watch/${showName}/${season + 1}/1`}>
+            {data.liveSeries.watch.next} {data.liveSeries.tvShow.season}
+          </Link>
+        </div>
+        <span className="mx-3 hidden md:block">|</span>
+        <div className="flex gap-3">
+          {episode > 1 && (
+            <>
+              <Link
+                href={`/liveseries/watch/${showName}/${season}/${episode - 1}`}
+              >
+                {data.liveSeries.watch.previous}{" "}
+                {data.liveSeries.tvShow.episode}
+              </Link>
+              |
+            </>
+          )}
+          <Link href={`/liveseries/watch/${showName}/${season}/${episode + 1}`}>
+            {data.liveSeries.watch.next} {data.liveSeries.tvShow.episode}
+          </Link>
+        </div>
+      </div>
+      {statResult.ok ? (
+        <Player
+          showName={showName}
+          season={season}
+          episode={episode}
+          apiBase={user.serverUrl}
+          accessToken={accessToken}
+          userLanguage={userLanguage}
+        />
+      ) : (
+        <ErrorComponent errorResult={statResult} />
+      )}
+    </div>
   );
 }

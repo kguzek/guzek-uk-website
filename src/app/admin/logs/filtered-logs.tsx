@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { ComponentProps, ElementType, ReactNode } from "react";
+import Link from "next/link";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -282,13 +283,13 @@ function Log({
                 {entry.ip && (
                   <span>
                     (
-                    <a
+                    <Link
                       href={IP_LOOKUP_URL + entry.ip}
                       target="_blank"
                       className="clickable hover-underline"
                     >
                       {entry.ip}
-                    </a>
+                    </Link>
                     )
                   </span>
                 )}

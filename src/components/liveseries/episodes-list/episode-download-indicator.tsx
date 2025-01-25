@@ -25,13 +25,13 @@ export function EpisodeDownloadIndicator({
   tvShow,
   accessToken,
 }: {
-  user: User;
   userLanguage: Language;
   episode: Episode;
   tvShow: TvShowDetails;
-  accessToken: string;
+  user: User | null;
+  accessToken: string | null;
 }) {
-  const { setModalError } = useModals();
+  const { setModalError, setModalInfo } = useModals();
   const { downloadedEpisodes } = useLiveSeriesContext();
 
   const episodeObject = {
@@ -57,6 +57,14 @@ export function EpisodeDownloadIndicator({
   }, [downloadedEpisodes]);
 
   async function startDownload() {
+    if (user == null || accessToken == null) {
+      setModalError(data.liveSeries.home.login);
+      return;
+    }
+    if (!user.serverUrl) {
+      setModalInfo(data.liveSeries.explanation);
+      return;
+    }
     const result = await clientToApi(
       "liveseries/downloaded-episodes",
       accessToken,
@@ -128,7 +136,7 @@ export function EpisodeDownloadIndicator({
           <DownloadIcon />
         </div>
       )}
-      {!showProgress && (
+      {!showProgress && user != null && (
         <Link
           href={`/liveseries/watch/${tvShow.name}/${episode.season}/${episode.episode}`}
           title={

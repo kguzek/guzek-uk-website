@@ -3,6 +3,7 @@ import { ErrorCode } from "@/lib/enums";
 import { PAGE_NAME } from "@/lib/util";
 import { Translation, TRANSLATIONS } from "@/lib/translations";
 import { useTranslations } from "@/providers/translation-provider";
+import { ReactNode } from "react";
 
 const serialiseError = (
   error: ErrorCode,
@@ -19,7 +20,7 @@ export async function ErrorComponent({
       errorCode?: never;
       errorResult: { ok: boolean; error: any; hasBody: boolean; data: any };
     }
-) & { errorMessage?: string }) {
+) & { errorMessage?: ReactNode }) {
   const { data } = await useTranslations();
   if (!errorCode) {
     if (!errorResult)
@@ -36,11 +37,15 @@ export async function ErrorComponent({
         {errorCode} {data.error[errorCode].title}
       </h3>
       <h1 className="my-2 text-4xl font-extrabold">{errorCode}</h1>
-      <p>
-        {errorMessage
-          ? decodeURIComponent(errorMessage)
-          : data.error[errorCode].body}
-      </p>
+      {errorMessage ? (
+        typeof errorMessage === "string" ? (
+          <p>{decodeURIComponent(errorMessage)}</p>
+        ) : (
+          errorMessage
+        )
+      ) : (
+        <p>{data.error[errorCode].body}</p>
+      )}
       <div className="mt-3 flex justify-center">
         <div className="link-container">
           {errorCode === ErrorCode.Unauthorized ? (

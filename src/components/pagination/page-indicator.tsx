@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getSearchParams } from "@/lib/backend";
 import { TRANSLATIONS } from "@/lib/translations";
 import type { Language } from "@/lib/enums";
+import { cn } from "@/lib/utils";
 
 export function PageIndicator({
   page,
@@ -40,9 +41,11 @@ export function PageIndicator({
           ? "#"
           : getSearchParams({ ...searchParams, page: page.toString() })
       }
-      className={`page-indicator serif ${
-        disabled ? "disabled" : page === currentPage ? "current-page" : ""
-      } ${direction ? "auxiliary" : ""}`}
+      className={cn("page-indicator serif", {
+        disabled,
+        "current-page": page === currentPage && !disabled,
+        auxiliary: !!direction,
+      })}
       onClick={(evt) => {
         (loading.length > 0 || disabled) && evt.preventDefault();
       }}

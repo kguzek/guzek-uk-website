@@ -58,9 +58,8 @@
     margin-right: 10vw;
   }
 
-  .clickable:hover {
-    opacity: 85%;
-    cursor: pointer;
+  .clickable {
+    @apply cursor-pointer hover:opacity-85;
   }
 
   .collapsible {
@@ -209,7 +208,7 @@ body {
 }
 
 .delete {
-  @apply text-error;
+  @apply text-error hover:text-primary-strong hover:[background-size:_100%_100%];
   align-self: stretch;
   display: flex;
   align-items: center;
@@ -220,24 +219,13 @@ body {
   transition: all 200ms ease;
 }
 
-.delete:hover {
-  @apply text-primary-strong;
-  background-size: 100% 100%;
-}
-
 .hover-underline {
-  background: linear-gradient(
-      to right,
-      var(--color-primary),
-      var(--color-primary)
-    )
-    no-repeat bottom;
+  @apply bg-right-bottom bg-no-repeat hover:bg-left-bottom hover:[background-size:_100%_2px];
+  background-image: linear-gradient(currentColor, currentColor);
   background-size: 0 2px;
-  transition: background-size 200ms;
-}
-
-.hover-underline:hover {
-  background-size: 100% 2px;
+  transition:
+    300ms background-size,
+    0ms background-position ease-in;
 }
 
 [disabled] {

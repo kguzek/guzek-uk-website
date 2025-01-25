@@ -31,23 +31,6 @@
   transition: transform 300ms ease;
 }
 
-.modal a {
-  color: var(--color-accent);
-  --underline-color: var(--color-accent);
-  transition: background-size 300ms ease;
-  background-image: linear-gradient(
-    var(--underline-color),
-    var(--underline-color)
-  );
-  background-size: 0% 2px;
-  background-position: left bottom;
-  background-repeat: no-repeat;
-}
-
-.modal a:hover {
-  background-size: 100% 2px;
-}
-
 .modal-hidden .modal {
   transform: translateY(calc(-100% - var(--offset-y)));
 }
@@ -75,19 +58,12 @@
 }
 
 .modal-buttons button {
-  text-transform: uppercase;
-  border: none;
-  border-radius: 10px;
-  padding: 5px 10px;
+  @apply rounded-xl border-none px-3 py-1 uppercase hover:opacity-100;
   color: var(--color-primary-strong);
   min-width: 100px;
   background-color: var(--color-background-soft);
   opacity: 0.75;
   transition: opacity 200ms ease;
-}
-
-.modal-buttons button:hover {
-  opacity: 1;
 }
 
 button.btn-primary {

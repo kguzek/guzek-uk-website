@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import React, { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useModals } from "@/context/modal-context";
 import { TRANSLATIONS } from "@/lib/translations";
@@ -25,7 +24,6 @@ export function Player({
   accessToken: string;
   userLanguage: Language;
 }) {
-  const videoContainerRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [loadingFailed, setLoadingFailed] = useState<boolean | undefined>(
     false,
@@ -33,15 +31,6 @@ export function Player({
   const router = useRouter();
   const { setModalError } = useModals();
   const data = TRANSLATIONS[userLanguage];
-
-  useEffect(() => {
-    window.addEventListener("fullscreenchange", onFullscreenChange);
-    return () => {
-      window.removeEventListener("fullscreenchange", onFullscreenChange);
-    };
-  }, []);
-
-  const episodeObject = { episode, season };
 
   function onLoadStart() {
     setLoadingFailed(undefined);
@@ -60,16 +49,10 @@ export function Player({
   }
 
   function onKeyPress(evt: React.KeyboardEvent<HTMLDivElement>) {
-    if (!videoRef || !videoContainerRef) return;
+    if (!videoRef) return;
     const video = videoRef.current;
-    const videoContainer = videoContainerRef.current;
-    if (!video || !videoContainer) return;
+    if (!video) return;
     switch (evt.key) {
-      case "f": // Toggle fullscreen
-        document.fullscreenElement == null
-          ? videoContainer.requestFullscreen()
-          : document.exitFullscreen();
-        break;
       case "j": // Skip behind 10 s
         video.currentTime = Math.max(0, video.currentTime - 10);
         break;
@@ -109,16 +92,6 @@ export function Player({
     }
   }
 
-  function onFullscreenChange(evt: Event) {
-    if (!videoRef || !videoContainerRef) return;
-    const video = videoRef.current;
-    const videoContainer = videoContainerRef.current;
-    if (!video || !videoContainer || evt.target !== video) return;
-    // Synchronise player fullscreen button and actual state
-    // This feature probably won't be implemented, but I'm leaving the boilerplate here
-    // ...
-  }
-
   function onEnded() {
     router.push(`/liveseries/watch/${showName}/${season}/${episode + 1}`);
   }
@@ -127,67 +100,29 @@ export function Player({
 
   return (
     <div onKeyDown={onKeyPress}>
-      <h2 className="my-6 text-3xl font-bold">
-        {decodeURIComponent(showName)}{" "}
-        {data.liveSeries.episodes.serialise(episodeObject)}
-      </h2>
-      <div className="mb-2 flex flex-col items-center text-sm sm:text-xl md:flex-row md:items-start">
-        <div className="flex gap-3">
-          {season > 1 && (
-            <>
-              <Link href={`/liveseries/watch/${showName}/${season - 1}/1`}>
-                {data.liveSeries.watch.previous} {data.liveSeries.tvShow.season}
-              </Link>
-              |
-            </>
-          )}
-          <Link href={`/liveseries/watch/${showName}/${season + 1}/1`}>
-            {data.liveSeries.watch.next} {data.liveSeries.tvShow.season}
-          </Link>
-        </div>
-        <span className="mx-3 hidden md:block">|</span>
-        <div className="flex gap-3">
-          {episode > 1 && (
-            <>
-              <Link
-                href={`/liveseries/watch/${showName}/${season}/${episode - 1}`}
-              >
-                {data.liveSeries.watch.previous}{" "}
-                {data.liveSeries.tvShow.episode}
-              </Link>
-              |
-            </>
-          )}
-          <Link href={`/liveseries/watch/${showName}/${season}/${episode + 1}`}>
-            {data.liveSeries.watch.next} {data.liveSeries.tvShow.episode}
-          </Link>
-        </div>
-      </div>
       {loadingFailed && (
         <p className="centred">{data.liveSeries.watch.playbackError}</p>
       )}
-      <div ref={videoContainerRef} className="video-container">
-        <video
-          ref={videoRef}
-          className={loadingFailed ? "" : ""}
-          controls
-          src={`${apiBase}liveseries/video/${path}`}
-          autoPlay
-          onError={onError}
-          onLoadStart={onLoadStart}
-          onLoadedData={onLoad}
-          crossOrigin="anonymous"
-          onEnded={onEnded}
-        >
-          <track
-            label="English"
-            kind="subtitles"
-            srcLang="en"
-            src={`${apiBase}liveseries/subtitles/${path}`}
-            default
-          />
-        </video>
-      </div>
+      <video
+        ref={videoRef}
+        className={loadingFailed ? "" : ""}
+        controls
+        src={`${apiBase}liveseries/video/${path}`}
+        autoPlay
+        onError={onError}
+        onLoadStart={onLoadStart}
+        onLoadedData={onLoad}
+        crossOrigin="anonymous"
+        onEnded={onEnded}
+      >
+        <track
+          label="English"
+          kind="subtitles"
+          srcLang="en"
+          src={`${apiBase}liveseries/subtitles/${path}`}
+          default
+        />
+      </video>
     </div>
   );
 }
