@@ -58,7 +58,7 @@
 
   .underlined {
     @apply bg-left-bottom;
-    background-size: 100% 2px;
+    background-size: 100% 1px;
   }
 
   .collapsible {
@@ -217,7 +217,7 @@ body {
 .hover-underline {
   @apply hover:underlined bg-right-bottom bg-no-repeat;
   background-image: linear-gradient(currentColor, currentColor);
-  background-size: 0 2px;
+  background-size: 0 1px;
   transition:
     300ms background-size,
     0ms background-position ease-in;

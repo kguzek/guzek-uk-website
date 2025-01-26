@@ -135,3 +135,5 @@ export type CustomMiddleware = (
 export type MiddlewareFactory = (
   middleware: CustomMiddleware,
 ) => CustomMiddleware;
+
+export type ModalHandler = (primary: boolean) => void;

@@ -18,7 +18,11 @@ export const redirectMiddleware: MiddlewareFactory = (next) =>
     if (host === "guzek.uk") {
       return redirect();
     }
-    if (host?.endsWith(".guzek.uk") && request.nextUrl.protocol === "http:") {
+    if (
+      host?.endsWith(".guzek.uk") &&
+      request.nextUrl.protocol === "http:" &&
+      process.env.NODE_ENV !== "development"
+    ) {
       return redirect();
     }
     return next(request);

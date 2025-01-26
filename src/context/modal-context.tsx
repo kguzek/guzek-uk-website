@@ -1,8 +1,9 @@
 "use client";
 
 import { createContext, ReactNode, useContext, useState } from "react";
-import { Modal, ModalHandler } from "@/components/modal";
+import { Modal } from "@/components/modal";
 import type { Language } from "@/lib/enums";
+import type { ModalHandler } from "@/lib/types";
 import { TRANSLATIONS } from "@/lib/translations";
 
 export const ModalContext = createContext<{
@@ -37,9 +38,9 @@ export function ModalProvider({
   userLanguage: Language;
 }) {
   const [modalChoice, setModalChoice] = useState<string | undefined>();
-  const [modalChoiceResolve, setModalChoiceResolve] = useState<ModalHandler>(
-    () => () => {},
-  );
+  const [onClickModalChoice, setOnClickModalChoice] = useState<
+    ModalHandler | undefined
+  >();
   const [modalError, setModalError] = useState<string | undefined>();
   const [modalInfo, setModalInfo] = useState<string | undefined>();
   const data = TRANSLATIONS[userLanguage];
@@ -51,7 +52,7 @@ export function ModalProvider({
         setModalChoice: (message) =>
           new Promise((resolve) => {
             setModalChoice(message);
-            setModalChoiceResolve(() => resolve);
+            setOnClickModalChoice(() => resolve);
           }),
         modalError,
         setModalError,
@@ -64,7 +65,7 @@ export function ModalProvider({
         labelPrimary={data.modal.yes}
         labelSecondary={data.modal.no}
         onClick={(primary) => {
-          modalChoiceResolve(primary);
+          onClickModalChoice?.(primary);
           setModalChoice("");
         }}
       />
