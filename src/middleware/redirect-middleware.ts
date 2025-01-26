@@ -4,16 +4,22 @@ import type { MiddlewareFactory } from "@/lib/types";
 
 export const redirectMiddleware: MiddlewareFactory = (next) =>
   async function (request) {
-    const requestHeaders = await headers();
-    const host = requestHeaders.get("host");
-    if (host === "guzek.uk") {
-      return NextResponse.redirect(
+    const redirect = () =>
+      NextResponse.redirect(
         new URL(
           "https://www.guzek.uk" +
             request.nextUrl.pathname +
             request.nextUrl.search,
         ),
       );
+
+    const requestHeaders = await headers();
+    const host = requestHeaders.get("host");
+    if (host === "guzek.uk") {
+      return redirect();
+    }
+    if (host?.endsWith(".guzek.uk") && request.nextUrl.protocol === "http:") {
+      return redirect();
     }
     return next(request);
   };
