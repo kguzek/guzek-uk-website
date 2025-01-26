@@ -50,6 +50,7 @@ export type Translation = Readonly<{
       addPage: string;
       formDetails: {
         title: string;
+        label: string;
         url: string;
         adminOnly: string;
         shouldFetch: string;

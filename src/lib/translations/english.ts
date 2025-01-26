@@ -83,6 +83,7 @@ export const ENGLISH: Translation = {
       addPage: "Create page",
       formDetails: {
         title: "Title",
+        label: "Label",
         url: "URL",
         adminOnly: "Admin only",
         localUrl: "Dynamic",

@@ -32,7 +32,7 @@ export default async function ContentManager() {
   const pageContent: Record<PageId, PageContent> = {};
   const pageIdentifiers: Map<PageId, string> = new Map();
   for (const page of menuItemsResult.data) {
-    pageIdentifiers.set(page.id, `${page.title} '${page.url}'`);
+    pageIdentifiers.set(page.id, `${page.label || page.title} <${page.url}>`);
     if (!page.shouldFetch) continue;
     const contentResult = await serverToApi<PageContent>(`pages/${page.id}`);
     if (!contentResult.ok) {

@@ -10,7 +10,7 @@ import { LoadingButton } from "@/components/loading/loading-button";
 import { InputArea } from "@/components/forms/input-area";
 import { clientToApi } from "@/lib/backend/client";
 
-const TEXT_PAGE_PROPERTIES = ["title", "url"] as const;
+const TEXT_PAGE_PROPERTIES = ["title", "label", "url"] as const;
 const BOOL_PAGE_PROPERTIES = ["adminOnly", "localUrl", "shouldFetch"] as const;
 
 export function PagesForm({
@@ -45,6 +45,7 @@ export function PagesForm({
             originalPage={selectedPage as MenuItem}
             pageContent={pageContent[selectedPageId]}
             accessToken={accessToken}
+            pageIdentifiers={pageIdentifiers}
           />
         )}
       </div>
@@ -57,11 +58,13 @@ function PagesEditor({
   originalPage,
   pageContent,
   accessToken,
+  pageIdentifiers,
 }: {
   userLanguage: Language;
   originalPage: MenuItem;
   pageContent: PageContent | undefined;
   accessToken: string;
+  pageIdentifiers: Map<number, string>;
 }) {
   const [page, setPage] = useState<MenuItem>(originalPage);
   const [content, setContent] = useState(pageContent?.content ?? "");
@@ -101,7 +104,8 @@ function PagesEditor({
     });
     if (result.ok) {
       setUnsavedChanges(false);
-      setModalInfo(`Successfully updated '${page.title}' (${userLanguage}).`);
+      const identifier = pageIdentifiers.get(page.id) || page.id;
+      setModalInfo(`Successfully updated ${identifier} (${userLanguage}).`);
     }
     setClickedSubmit(false);
   }
@@ -113,7 +117,7 @@ function PagesEditor({
           key={idx}
           label={data.admin.contentManager.formDetails[property]}
           setValue={(val: string) => handleUpdate(property, val)}
-          value={page[property]}
+          value={page[property] || ""}
           required
         />
       ))}

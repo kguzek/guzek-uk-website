@@ -8,6 +8,7 @@ export interface PageContent {
 
 export interface MenuItem {
   id: number;
+  label?: string;
   title: string;
   url: string;
   localUrl: boolean;

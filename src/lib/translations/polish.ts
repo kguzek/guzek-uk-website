@@ -84,6 +84,7 @@ export const POLISH: Translation = {
       addPage: "Stwórz stronę",
       formDetails: {
         title: "Tytuł",
+        label: "Etykieta",
         url: "URL",
         adminOnly: "Ukryta",
         localUrl: "Dynamiczna",

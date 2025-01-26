@@ -18,7 +18,7 @@ export function NavBarItem({ item }: { item: MenuItem }) {
         "hover-underlined text-primary-strong": isActive,
       })}
     >
-      {item.title}
+      {item.label || item.title}
     </Link>
   );
 }
