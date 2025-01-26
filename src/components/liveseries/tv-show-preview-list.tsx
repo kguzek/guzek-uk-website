@@ -1,5 +1,5 @@
 import { Language } from "@/lib/enums";
-import { UserShows, type TvShowList } from "@/lib/types";
+import type { UserShows, TvShowList } from "@/lib/types";
 import { Paginator } from "@/components/pagination/paginator";
 import { NumericValue } from "@/components/numeric-value";
 import { TvShowPreview } from "./tv-show-preview";
