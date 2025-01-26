@@ -26,8 +26,7 @@ export function LogInForm({ userLanguage }: { userLanguage: Language }) {
       login,
       password,
     };
-    let result;
-    result = await clientToApi("auth/tokens", "", {
+    const result = await clientToApi("auth/tokens", "", {
       method: "POST",
       body,
     });
