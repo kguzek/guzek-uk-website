@@ -25,6 +25,7 @@ export function LanguageSelector({ userLanguage }: { userLanguage: Language }) {
   setLanguage,
 }: InferGetServerSidePropsType<typeof getServerSideProps>*/
   const [language, setLanguage] = useState(userLanguage);
+  const [isClicked, setIsClicked] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const { selectedButtonRef, markerStyle, updateMarkerStyle } =
@@ -40,7 +41,9 @@ export function LanguageSelector({ userLanguage }: { userLanguage: Language }) {
     <div className="my-4 flex flex-col items-center lg:my-0 lg:mr-4">
       <div className="flex gap-1">
         <div
-          className="absolute -z-10 rounded-md bg-accent transition-all duration-300"
+          className={cn("absolute -z-10 rounded-md bg-accent", {
+            "transition-all duration-300": isClicked,
+          })}
           style={markerStyle}
         ></div>
         {Object.keys(TRANSLATIONS).map((lang) => (
@@ -54,6 +57,8 @@ export function LanguageSelector({ userLanguage }: { userLanguage: Language }) {
               evt.preventDefault();
               setLanguage(lang as Language);
               setLanguageCookie(lang);
+              setIsClicked(true);
+              setTimeout(() => setIsClicked(false), 300);
               router.refresh();
             }}
             ref={language === lang ? selectedButtonRef : null}
