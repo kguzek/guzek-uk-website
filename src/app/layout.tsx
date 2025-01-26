@@ -4,17 +4,18 @@ import Script from "next/script";
 import { Raleway, Roboto_Slab } from "next/font/google";
 import { NavigationBar } from "@/components/navigation/navigation-bar";
 import { Footer } from "@/components/footer";
-import { ModalProviderWrapper } from "@/context/modal-context-provider";
+import { ModalProvider } from "@/context/modal-context";
 import { LanguageCookie } from "@/components/language-cookie";
 import { LanguageSelectorProvider } from "@/context/language-selector-context";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 import "./forms.css";
+import { useTranslations } from "@/providers/translation-provider";
 
 export const metadata: Metadata = {
-  title: "Guzek UK",
+  title: "Konrad Guzek – Software Engineer, Web Developer, Student | Guzek UK",
   description:
-    "The portfiolio website of Konrad Guzek, a Polish software developer from the UK.",
+    "The portfiolio website of Konrad Guzek, a Polish software developer from the UK. Specialising in web development and software engineering. Home to LiveSeries – free TV show subscriptions, tracking and streaming.",
   keywords: [
     "portfolio",
     "web developer",
@@ -47,23 +48,32 @@ const robotoSlab = Roboto_Slab({
   variable: "--font-roboto-slab",
 });
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const { userLanguage } = await useTranslations();
   return (
-    <html lang="en" className={cn(raleway.variable, robotoSlab.variable)}>
+    <html
+      lang={userLanguage.toLowerCase()}
+      className={cn(raleway.variable, robotoSlab.variable)}
+    >
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/logo192.png" />
         <link rel="manifest" href="/manifest.json" />
+        <link rel="canonical" href="https://www.guzek.uk" />
       </head>
       <body>
-        <ModalProviderWrapper>
+        <ModalProvider userLanguage={userLanguage}>
           <LanguageSelectorProvider>
             <LanguageCookie />
             <NavigationBar />
             {children}
             <Footer />
           </LanguageSelectorProvider>
-        </ModalProviderWrapper>
+        </ModalProvider>
       </body>
       <Script src="https://scripts.simpleanalyticscdn.com/latest.js" />
     </html>
