@@ -13,10 +13,10 @@ function stackMiddlewares(...factories: MiddlewareFactory[]): CustomMiddleware {
 }
 
 export default stackMiddlewares(
+  headerMiddleware,
+  redirectMiddleware,
   authMiddleware,
   languageMiddleware,
-  redirectMiddleware,
-  headerMiddleware,
 );
 
 export const config = {
