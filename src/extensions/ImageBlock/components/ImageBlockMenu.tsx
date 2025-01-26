@@ -7,7 +7,7 @@ import { Toolbar } from "@/components/ui/Toolbar";
 import { Icon } from "@/components/ui/Icon";
 import { ImageBlockWidth } from "./ImageBlockWidth";
 import { MenuProps } from "@/components/forms/tiptap/menus/types";
-import { getRenderContainer } from "@/lib/utils";
+import { getRenderContainer } from "@/lib/utils/getRenderContainer";
 import { ImageUpload } from "@/extensions/ImageUpload/view";
 
 export const ImageBlockMenu = ({

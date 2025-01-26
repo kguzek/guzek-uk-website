@@ -1,4 +1,4 @@
-import { isScriptUrl } from "@/lib/utils";
+import { isScriptUrl } from "@/lib/util";
 import { mergeAttributes } from "@tiptap/core";
 import TiptapLink from "@tiptap/extension-link";
 import { Plugin } from "@tiptap/pm/state";
