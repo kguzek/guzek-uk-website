@@ -34,17 +34,21 @@ export const viewport: Viewport = {
 
 const raleway = Raleway({
   subsets: ["latin", "latin-ext"],
+  preload: true,
+  display: "swap",
   variable: "--font-raleway",
 });
 
 const robotoSlab = Roboto_Slab({
   subsets: ["latin", "latin-ext"],
+  preload: true,
+  display: "swap",
   variable: "--font-roboto-slab",
 });
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={cn(raleway.className, robotoSlab.className)}>
+    <html lang="en" className={cn(raleway.variable, robotoSlab.variable)}>
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/logo192.png" />

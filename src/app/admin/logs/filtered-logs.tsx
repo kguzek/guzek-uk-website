@@ -170,7 +170,7 @@ export function FilteredLogs({
   }, [logs, filter]);
 
   return (
-    <div className="cards flex-column stretch gap-3">
+    <div className="flex-column stretch w-full gap-3 text-xs sm:w-[90%] sm:text-base md:w-4/5">
       <div className="flex items-center gap-3">
         <h4>Log levels:</h4>
         {LOG_LEVELS.map((level, idx) => {

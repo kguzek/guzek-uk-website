@@ -4,7 +4,6 @@ import { ErrorComponent } from "@/components/error-component";
 import { ErrorCode } from "@/lib/enums";
 import { useTranslations } from "@/providers/translation-provider";
 import { useAuth } from "@/providers/auth-provider";
-import "./admin.css";
 
 export default async function AdminLayout({
   children,

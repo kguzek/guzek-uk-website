@@ -68,7 +68,7 @@ export function TvShowPreview({
             title={showDetails?.name}
             className="overflow-hidden"
           >
-            <p className="title serif cutoff text-background visited:text-background-soft">
+            <p className="title cutoff font-serif text-background visited:text-background-soft">
               {showDetails?.name} ({showDetails?.country})
             </p>
           </Link>

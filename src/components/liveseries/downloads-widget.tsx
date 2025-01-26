@@ -84,15 +84,15 @@ export function DownloadsWidget({
             const episodeLink = `/liveseries/watch/${episode.showName}/${episode.season}/${episode.episode}`;
             const key = `downloads-card-${idx}`;
             const card = (
-              <div className="downloads-card flex">
+              <div className="flex w-full flex-col items-start p-2 text-sm sm:text-base">
                 <div className="w-full">
                   <span>
                     {episode.showName} {serialise(episode)}
                   </span>
-                  <span className="serif"> {downloadProgress}</span>
+                  <span className="font-serif"> {downloadProgress}</span>
                   {episode.speed != null &&
                     episode.status === DownloadStatus.PENDING && (
-                      <span className="serif">
+                      <span className="font-serif">
                         {" "}
                         ({bytesToReadable(episode.speed)}/s)
                       </span>
@@ -107,16 +107,19 @@ export function DownloadsWidget({
                     </span>
                   )}
                   {episode.eta != null && episode.eta > 0 && (
-                    <span className="eta">
+                    <span className="ml-auto">
                       {" " + getDuration(episode.eta * 1000).formatted}
                     </span>
                   )}
                 </div>
-                <div className="progress-bar-container">
+                <div className="mb-[5px] h-4 w-full overflow-hidden rounded-full bg-primary">
                   <div
-                    className={cn("progress-bar", {
-                      done: episode.status === DownloadStatus.COMPLETE,
-                    })}
+                    className={cn(
+                      "h-full self-start bg-success transition-all duration-[400ms]",
+                      {
+                        "bg-accent": episode.status === DownloadStatus.COMPLETE,
+                      },
+                    )}
                     style={{ width: downloadProgress }}
                   ></div>
                 </div>
@@ -144,7 +147,7 @@ export function DownloadsWidget({
                   className="clickable delete"
                   onClick={() => handleDeleteEpisode(episode)}
                 >
-                  <Trash2Icon />
+                  <Trash2Icon className="scale-75 sm:scale-100" />
                 </div>
               </div>
             );

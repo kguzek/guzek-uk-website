@@ -70,7 +70,7 @@ export function UserEditor({
     <form
       action={`https://auth.guzek.uk/auth/users/${user.uuid}/details`}
       method="POST"
-      className="flex w-[50%] flex-col gap-3"
+      className="flex w-[50%] flex-col"
       onSubmit={handleSubmit}
     >
       <input className="hidden" type="hidden" name="_method" value="PUT" />
@@ -111,7 +111,7 @@ export function UserEditor({
           setValue={setAdmin}
         />
       </div>
-      <div className="grid w-fit grid-cols-[auto_1fr] gap-2 text-sm">
+      <div className="mb-5 grid w-fit grid-cols-[auto_1fr] gap-2 text-sm">
         {user.created_at && (
           <>
             <p>User created:</p>
@@ -125,7 +125,6 @@ export function UserEditor({
           </>
         )}
       </div>
-      <br />
       {loading ? (
         <LoadingButton />
       ) : (

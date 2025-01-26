@@ -45,12 +45,8 @@
     );
   }
 
-  .serif {
-    font-family: "Roboto Slab", serif;
-  }
-
   .text {
-    font-family: "Raleway", sans-serif;
+    font-family: @apply font-sans;
     font-weight: 500;
     margin-left: 10vw;
     margin-right: 10vw;
@@ -58,6 +54,11 @@
 
   .clickable {
     @apply cursor-pointer hover:opacity-85;
+  }
+
+  .underlined {
+    @apply bg-left-bottom;
+    background-size: 100% 2px;
   }
 
   .collapsible {
@@ -168,7 +169,7 @@ html {
 body {
   background-color: var(--color-background);
   color: var(--color-primary);
-  font-family: "Roboto Slab", serif;
+  font-family: @apply font-serif;
   font-size: 1.2rem;
   min-height: 100%;
   padding: 10px 2em;
@@ -206,11 +207,7 @@ body {
 }
 
 .delete {
-  @apply text-error hover:text-primary-strong hover:[background-size:_100%_100%];
-  align-self: stretch;
-  display: flex;
-  align-items: center;
-  padding: 15px;
+  @apply flex cursor-pointer items-center self-stretch p-1 text-error hover:text-primary-strong hover:[background-size:_100%_100%] sm:p-3;
   background: linear-gradient(var(--color-error), var(--color-error)) no-repeat
     right;
   background-size: 0 100%;
@@ -218,12 +215,16 @@ body {
 }
 
 .hover-underline {
-  @apply bg-right-bottom bg-no-repeat hover:bg-left-bottom hover:[background-size:_100%_2px];
+  @apply hover:underlined bg-right-bottom bg-no-repeat;
   background-image: linear-gradient(currentColor, currentColor);
   background-size: 0 2px;
   transition:
     300ms background-size,
     0ms background-position ease-in;
+}
+
+.hover-underlined {
+  @apply underlined;
 }
 
 [disabled] {

@@ -42,7 +42,7 @@ function syntaxHighlight(json: any) {
 
 export function SyntaxHighlighted({ json }: { json: any }) {
   return (
-    <div className="syntax">
+    <div className="box-border w-full p-3">
       <pre>
         <code
           dangerouslySetInnerHTML={{

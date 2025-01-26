@@ -52,7 +52,7 @@ export async function TvShowPreviewList({
 
   return (
     <div className="flex flex-col items-center">
-      <small className="showing">
+      <small className="self-start">
         {data.liveSeries.tvShowList.showing} <NumericValue value={startIdx} />-
         <NumericValue value={endIdx} /> {data.liveSeries.tvShowList.of}{" "}
         <NumericValue value={tvShows.total} />

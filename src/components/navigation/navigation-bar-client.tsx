@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { MenuItem } from "@/lib/types";
-import "./navigation.css";
 import { cn } from "@/lib/utils";
 
 export function NavBarItem({ item }: { item: MenuItem }) {
@@ -15,7 +14,9 @@ export function NavBarItem({ item }: { item: MenuItem }) {
   return (
     <Link
       href={item.url}
-      className={cn("clickable nav-link", { active: isActive })}
+      className={cn("hover-underline text-primary", {
+        "hover-underlined text-primary-strong": isActive,
+      })}
     >
       {item.title}
     </Link>
@@ -34,21 +35,19 @@ export function MiniNavBar({
 }) {
   const pathname = usePathname();
 
-  const getClassName = (path: string) =>
-    (
-      path
-        ? pathname.startsWith(`/${pathBase}/${path}`)
-        : [`/${pathBase}`, `/${pathBase}/`].includes(pathname)
-    )
-      ? " active"
-      : "";
+  const isActive = (path: string) =>
+    path
+      ? pathname.startsWith(`/${pathBase}/${path}`)
+      : [`/${pathBase}`, `/${pathBase}/`].includes(pathname);
 
   return (
-    <nav className="serif mt-2 flex justify-center gap-2 text-sm sm:text-base md:gap-4 md:text-lg lg:justify-start">
+    <nav className="mt-2 flex justify-center gap-2 font-serif text-sm sm:text-base md:gap-4 md:text-lg lg:justify-start">
       {pages.map(({ link, label }, idx) => (
         <Link
           key={idx}
-          className={cn("clickable nav-link", getClassName(link))}
+          className={cn("clickable hover-underline font-sans text-primary", {
+            "hover-underlined text-primary-strong": isActive(link),
+          })}
           href={`/${pathBase}/${link}`}
         >
           {label}

@@ -2,7 +2,7 @@ import type { Config } from "tailwindcss";
 import typography from "@tailwindcss/typography";
 
 const config: Config = {
-  content: ["./src/**/*.{ts,tsx}"],
+  content: ["./src/**/*.tsx"],
   theme: {
     extend: {
       typography: (theme: (theme: string) => any) => ({
@@ -36,6 +36,10 @@ const config: Config = {
         accent2: "#c9b86e",
         success: "#3dc983",
         error: "#b64949",
+      },
+      fontFamily: {
+        sans: ["var(--font-raleway)"],
+        serif: ["var(--font-roboto-slab)"],
       },
     },
   },

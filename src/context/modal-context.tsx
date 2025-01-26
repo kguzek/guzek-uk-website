@@ -69,7 +69,7 @@ export function ModalProvider({
         }}
       />
       <Modal
-        className="error"
+        variant="error"
         value={modalError}
         onClick={() => setModalError("")}
       />

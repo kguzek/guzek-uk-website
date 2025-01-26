@@ -26,19 +26,21 @@ export function UserWidget({
   return (
     <Link
       href={user ? "/profile" : "/login"}
-      className={cn("clickable nav-link max-w-[90%] sm:max-w-full", {
-        active: isActive,
-      })}
-      onClick={() => {}}
+      className="group max-w-[90%] font-light text-primary sm:max-w-full"
     >
       <div className="flex flex-col items-center gap-1">
         <Image alt="User avatar" width={40} height={40} src={imgUrl} />
-        <b
-          className="max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-[1.2rem] sm:max-w-80 lg:max-w-40"
+        <p
+          className={cn(
+            "hover-underline group-hover:underlined max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-[1.2rem] sm:max-w-80 lg:max-w-40",
+            {
+              "hover-underlined text-primary-strong": isActive,
+            },
+          )}
           title={user?.username}
         >
           {user?.username || data.loginShort}
-        </b>
+        </p>
       </div>
     </Link>
   );

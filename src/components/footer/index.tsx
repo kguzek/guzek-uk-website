@@ -4,6 +4,7 @@ import { useTranslations } from "@/providers/translation-provider";
 
 export async function Footer() {
   const { data } = await useTranslations();
+  const version = process.env.npm_package_version;
   return (
     <footer className="mt-10">
       <hr />
@@ -18,7 +19,9 @@ export async function Footer() {
             {data.footer(new Date().getFullYear().toString())}
           </Link>
         </small>
-        <small className="text-xs">Next (no-JS)</small>
+        <small className="text-xs">
+          Next.js (main{version ? ` v${version}` : ""})
+        </small>
       </div>
     </footer>
   );

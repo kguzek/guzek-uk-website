@@ -1,9 +1,3 @@
-.syntax {
-  width: 100%;
-  padding: 10px;
-  box-sizing: border-box;
-}
-
 pre {
   border: 2px solid var(--color-background-soft);
   background-color: var(--color-background);
@@ -35,4 +29,3 @@ pre {
 .key {
   color: var(--color-primary);
 }
-

@@ -41,7 +41,7 @@ export function PageIndicator({
           ? "#"
           : getSearchParams({ ...searchParams, page: page.toString() })
       }
-      className={cn("page-indicator serif", {
+      className={cn("page-indicator font-serif", {
         disabled,
         "current-page": page === currentPage && !disabled,
         auxiliary: !!direction,

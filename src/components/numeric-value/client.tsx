@@ -9,5 +9,5 @@ export function NumericValue({
   userLanguage: Language;
 }) {
   const data = TRANSLATIONS[userLanguage];
-  return <span className="serif">{data.numberFormat.format(+value)}</span>;
+  return <span className="font-serif">{data.numberFormat.format(+value)}</span>;
 }

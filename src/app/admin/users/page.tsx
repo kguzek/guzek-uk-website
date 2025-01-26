@@ -32,7 +32,7 @@ export default async function Users() {
     <div>
       <h3 className="my-5 text-2xl font-bold">{data.admin.users.title}</h3>
       <div className="users flex-column">
-        <div className="cards flex-column gap-4">
+        <div className="flex-column w-full gap-4 text-xs sm:w-[90%] sm:text-base md:w-4/5">
           {usersResult.data.map((user, key) => (
             <UserCard
               key={`user-${user.uuid || key}`}
