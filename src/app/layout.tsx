@@ -15,7 +15,7 @@ import { useTranslations } from "@/providers/translation-provider";
 export const metadata: Metadata = {
   title: "Konrad Guzek – Software Engineer, Web Developer, Student | Guzek UK",
   description:
-    "The portfiolio website of Konrad Guzek, a Polish software developer from the UK. Specialising in web development and software engineering. Home to LiveSeries – free TV show subscriptions, tracking and streaming.",
+    "The portfiolio website of Konrad Guzek, a Polish software developer from the UK. Home to LiveSeries – free TV show tracking & streaming.",
   keywords: [
     "portfolio",
     "web developer",
