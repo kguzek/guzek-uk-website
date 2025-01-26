@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Raleway, Roboto_Slab } from "next/font/google";
 import { NavigationBar } from "@/components/navigation/navigation-bar";
 import { Footer } from "@/components/footer";
@@ -64,6 +65,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           </LanguageSelectorProvider>
         </ModalProviderWrapper>
       </body>
+      <Script src="https://scripts.simpleanalyticscdn.com/latest.js" />
     </html>
   );
 }
