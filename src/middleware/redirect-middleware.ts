@@ -16,10 +16,6 @@ export const redirectMiddleware: MiddlewareFactory = (next) =>
     const requestHeaders = await headers();
     const host = requestHeaders.get("host") ?? "";
     if (["guzek.uk", "konrad.s.solvro.pl"].includes(host)) {
-      console.log(
-        "Redirecting request to www subdomain at",
-        request.nextUrl.href,
-      );
       return redirect();
     }
     if (
@@ -27,7 +23,6 @@ export const redirectMiddleware: MiddlewareFactory = (next) =>
       request.nextUrl.protocol === "http:" &&
       process.env.NODE_ENV !== "development"
     ) {
-      console.log("Redirecting request to HTTPS at", request.nextUrl.href);
       return redirect();
     }
     return next(request);
