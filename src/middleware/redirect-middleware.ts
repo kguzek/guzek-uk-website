@@ -14,12 +14,12 @@ export const redirectMiddleware: MiddlewareFactory = (next) =>
       );
 
     const requestHeaders = await headers();
-    const host = requestHeaders.get("host");
-    if (host === "guzek.uk") {
+    const host = requestHeaders.get("host") ?? "";
+    if (["guzek.uk", "konrad.s.solvro.pl"].includes(host)) {
       return redirect();
     }
     if (
-      host?.endsWith(".guzek.uk") &&
+      host.endsWith(".guzek.uk") &&
       request.nextUrl.protocol === "http:" &&
       process.env.NODE_ENV !== "development"
     ) {
