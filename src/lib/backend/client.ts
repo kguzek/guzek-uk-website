@@ -1,9 +1,9 @@
 import {
   ClientFetchOptions,
+  commonTriggerRevalidation,
   fetchFromApi,
   getUrlBase,
   prepareRequest,
-  triggerRevalidation,
 } from ".";
 import { getSearchParams } from "../backend";
 import { getErrorMessage } from "../util";
@@ -74,6 +74,12 @@ export async function clientToApi<T>(
 
   return result;
 }
+
+/** Makes a request to the Next server to revalidate the tag corresponding to the path, and logs a message on failure. */
+export const triggerRevalidation = (path: string) =>
+  commonTriggerRevalidation(path, (path, fetchOptions) =>
+    clientToApi(path, "", fetchOptions),
+  );
 
 /** Performs a fetch to forcefully refresh the access token. Can be used to update the user information stored in the token. */
 export async function triggerTokenRefresh() {

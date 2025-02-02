@@ -1,4 +1,4 @@
-import { getSearchParams } from "../backend";
+import { commonTriggerRevalidation, getSearchParams } from "../backend";
 import { useAuth } from "@/providers/auth-provider";
 import { useTranslations } from "@/providers/translation-provider";
 import { fetchFromApi, getUrlBase, prepareRequest } from ".";
@@ -55,3 +55,7 @@ export async function serverToApi<T>(
   // console.debug("", options.method ?? "GET", url);
   return await fetchFromApi<T>(url, options);
 }
+
+/** Makes a request to the Next server to revalidate the tag corresponding to the path, and logs a message on failure. */
+export const triggerRevalidation = (path: string) =>
+  commonTriggerRevalidation(path, serverToApi);

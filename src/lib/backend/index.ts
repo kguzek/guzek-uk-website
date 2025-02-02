@@ -243,16 +243,18 @@ export function pathToTag(path: string) {
   return parts.slice(0, 2).join("/");
 }
 
-/** Makes a request to the Next server to revalidate the tag corresponding to the path, and logs a message on failure. */
-export async function triggerRevalidation(path: string) {
-  const url = "/api/revalidate";
+export async function commonTriggerRevalidation(
+  path: string,
+  resultGenerator: (
+    path: string,
+    fetchOptions: FetchOptions,
+  ) => ReturnType<typeof fetchFromApi>,
+) {
   const tag = pathToTag(path);
-  const request = await prepareRequest(
-    url,
-    { method: "POST", body: { tag } },
-    null,
-  );
-  const result = await fetchFromApi(url, request);
+  const result = await resultGenerator("api/revalidate", {
+    method: "POST",
+    body: { tag },
+  });
   if (!result.ok) {
     console.warn(
       "Failed to trigger revalidation for tag",

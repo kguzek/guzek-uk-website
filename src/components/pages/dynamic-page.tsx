@@ -2,7 +2,7 @@ import { ErrorComponent } from "@/components/error-component";
 import { ErrorCode } from "@/lib/enums";
 import type { MenuItem, PageContent } from "@/lib/types";
 import { serverToApi } from "@/lib/backend/server";
-import { triggerRevalidation } from "@/lib/backend";
+import { triggerRevalidation } from "@/lib/backend/server";
 
 export async function getPageBySlug(slug: string) {
   const result = await serverToApi<MenuItem[]>("pages");
