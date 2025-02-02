@@ -98,7 +98,7 @@ export type BaseFetchOptions = (BodyFetchOptions | BodilessFetchOptions) & {
 export type ClientFetchOptions = BaseFetchOptions;
 
 export type ServerFetchOptions = BaseFetchOptions & {
-  api?: "episodate";
+  api?: "episodate" | "next";
 };
 
 type FetchOptions = ClientFetchOptions | ServerFetchOptions;
@@ -251,9 +251,10 @@ export async function commonTriggerRevalidation(
   ) => ReturnType<typeof fetchFromApi>,
 ) {
   const tag = pathToTag(path);
-  const result = await resultGenerator("api/revalidate", {
+  const result = await resultGenerator("revalidate", {
     method: "POST",
     body: { tag },
+    api: "next",
   });
   if (!result.ok) {
     console.warn(

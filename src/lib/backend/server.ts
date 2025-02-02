@@ -5,6 +5,7 @@ import { fetchFromApi, getUrlBase, prepareRequest } from ".";
 import type { ServerFetchOptions } from ".";
 
 const EPISODATE_URL = "https://www.episodate.com/api/";
+const NEXT_URL = "https://www.guzek.uk/api/";
 
 function isUserSpecificPath(path: string) {
   const parts = path.split("/");
@@ -51,7 +52,7 @@ export async function serverToApi<T>(
           isUserSpecificPath(path)
         ? 0
         : 300;
-  const url = `${fetchOptions.api === "episodate" ? EPISODATE_URL : getUrlBase(path, user)}${path}${getSearchParams(fetchOptions.params)}`;
+  const url = `${fetchOptions.api === "episodate" ? EPISODATE_URL : fetchOptions.api === "next" ? NEXT_URL : getUrlBase(path, user)}${path}${getSearchParams(fetchOptions.params)}`;
   // console.debug("", options.method ?? "GET", url);
   return await fetchFromApi<T>(url, options);
 }
