@@ -56,10 +56,10 @@ export function Modal({
 
   return (
     <div
-      className={cn(
-        "visible fixed left-0 top-0 z-30 h-screen w-full opacity-100 backdrop-blur-sm transition-all duration-300",
-        { "modal-hidden invisible opacity-0": !value },
-      )}
+    // className={cn(
+    //   "visible fixed left-0 top-0 z-30 h-screen w-full opacity-100 backdrop-blur-sm transition-all duration-300",
+    //   { "modal-hidden invisible opacity-0": !value },
+    // )}
     >
       <div
         className={cn(
