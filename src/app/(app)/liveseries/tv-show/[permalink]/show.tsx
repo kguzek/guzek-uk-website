@@ -15,10 +15,10 @@ import type {
 import { ImageGallery } from "@/components/carousel";
 import { InputBox } from "@/components/forms/input-box";
 import { TvShowSkeleton } from "@/components/liveseries/tv-show-skeleton";
-import { useModals } from "@/context/modal-context";
-import { TvShowContext } from "@/context/tv-show-context";
 import { clientToApi } from "@/lib/backend/client";
 import { cn } from "@/lib/cn";
+import { useModals } from "@/lib/context/modal-context";
+import { TvShowContext } from "@/lib/context/tv-show-context";
 import { TRANSLATIONS } from "@/lib/translations";
 import { getEpisodeAirDate, isInvalidDate } from "@/lib/util";
 

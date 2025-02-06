@@ -8,9 +8,9 @@ import type {
   WatchedEpisodes,
 } from "@/lib/types";
 import { serverToApi } from "@/lib/backend/server";
+import { getAuth } from "@/lib/providers/auth-provider";
+import { getTranslations } from "@/lib/providers/translation-provider";
 import { getEpisodeAirDate, hasEpisodeAired } from "@/lib/util";
-import { getAuth } from "@/providers/auth-provider";
-import { getTranslations } from "@/providers/translation-provider";
 
 import { EpisodeDownloadIndicator } from "./episode-download-indicator";
 import { EpisodeWatchedIndicator } from "./episode-watched-indicator";

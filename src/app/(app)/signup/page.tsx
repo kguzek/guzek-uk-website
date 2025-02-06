@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { getAuth } from "@/lib/providers/auth-provider";
+import { getTranslations } from "@/lib/providers/translation-provider";
 import { getTitle } from "@/lib/util";
-import { getAuth } from "@/providers/auth-provider";
-import { getTranslations } from "@/providers/translation-provider";
 
 import { SignUpForm } from "./signup-form";
 

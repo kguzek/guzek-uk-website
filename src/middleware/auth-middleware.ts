@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import type { MiddlewareFactory } from "@/lib/types";
-import { getAuth } from "@/providers/auth-provider";
+import { getAuth } from "@/lib/providers/auth-provider";
 
 const ROUTES_REQUIRING_AUTH = [
   "/profile",

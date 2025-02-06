@@ -14,9 +14,9 @@ import { EpisodesList } from "@/components/liveseries/episodes-list";
 import { LikedShowsCarousel } from "@/components/liveseries/liked-shows-carousel";
 import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
+import { getAuth } from "@/lib/providers/auth-provider";
+import { getTranslations } from "@/lib/providers/translation-provider";
 import { getTitle, hasEpisodeAired } from "@/lib/util";
-import { getAuth } from "@/providers/auth-provider";
-import { getTranslations } from "@/providers/translation-provider";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data } = await getTranslations();
