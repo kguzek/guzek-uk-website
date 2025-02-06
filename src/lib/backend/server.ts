@@ -1,5 +1,5 @@
-import { useAuth } from "@/providers/auth-provider";
-import { useTranslations } from "@/providers/translation-provider";
+import { getAuth } from "@/providers/auth-provider";
+import { getTranslations } from "@/providers/translation-provider";
 
 import type { ServerFetchOptions } from ".";
 import { fetchFromApi, getUrlBase, prepareRequest } from ".";
@@ -33,10 +33,10 @@ export async function serverToApi<T>(
   fetchOptions: ServerFetchOptions = {},
   useCredentials: boolean = true,
 ) {
-  const { accessToken, user } = await useAuth();
+  const { accessToken, user } = await getAuth();
 
   if (!fetchOptions.params?.lang) {
-    const { userLanguage } = await useTranslations();
+    const { userLanguage } = await getTranslations();
     fetchOptions.params = { ...fetchOptions.params, lang: userLanguage };
   }
 

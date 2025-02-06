@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 
 import type { MiddlewareFactory } from "@/lib/types";
-import { useAuth } from "@/providers/auth-provider";
+import { getAuth } from "@/providers/auth-provider";
 
-const ROUTES_REQUIRING_AUTH = ["/profile", "/admin", "/liveseries/watch"];
+const ROUTES_REQUIRING_AUTH = [
+  "/profile",
+  "/admin-legacy",
+  "/liveseries/watch",
+];
 const ROUTES_REQUIRING_NOAUTH = ["/login", "/signup"];
-const ROUTES_REQUIRING_ADMIN = ["/admin"];
+const ROUTES_REQUIRING_ADMIN = ["/admin-legacy"];
 
 export const authMiddleware: MiddlewareFactory = (next) =>
   async function (request) {
@@ -22,7 +26,7 @@ export const authMiddleware: MiddlewareFactory = (next) =>
     }
 
     const response = await next(request);
-    const { user } = await useAuth(request, response);
+    const { user } = await getAuth(request, response);
     const [redirectFrom, redirectTo] =
       user == null
         ? [ROUTES_REQUIRING_AUTH, "/login"]

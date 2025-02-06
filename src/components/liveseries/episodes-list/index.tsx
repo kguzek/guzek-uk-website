@@ -9,8 +9,8 @@ import type {
 } from "@/lib/types";
 import { serverToApi } from "@/lib/backend/server";
 import { getEpisodeAirDate, hasEpisodeAired } from "@/lib/util";
-import { useAuth } from "@/providers/auth-provider";
-import { useTranslations } from "@/providers/translation-provider";
+import { getAuth } from "@/providers/auth-provider";
+import { getTranslations } from "@/providers/translation-provider";
 
 import { EpisodeDownloadIndicator } from "./episode-download-indicator";
 import { EpisodeWatchedIndicator } from "./episode-watched-indicator";
@@ -24,8 +24,8 @@ async function Episode({
   tvShow: TvShowDetails;
   watchedEpisodes: ShowData<WatchedEpisodes> | null;
 }) {
-  const { data, userLanguage } = await useTranslations();
-  const { user, accessToken } = await useAuth();
+  const { data, userLanguage } = await getTranslations();
+  const { user, accessToken } = await getAuth();
 
   const airDate = data.dateTimeFormat.format(getEpisodeAirDate(episode));
 
@@ -77,7 +77,7 @@ export async function EpisodesList({
   episodes: EpisodeType[];
   children?: ReactNode;
 }) {
-  const { user } = await useAuth();
+  const { user } = await getAuth();
   let watchedEpisodes: ShowData<WatchedEpisodes> = {};
   if (user != null) {
     const watchedEpisodesResult = await serverToApi<ShowData<WatchedEpisodes>>(

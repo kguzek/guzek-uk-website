@@ -4,7 +4,7 @@ import { NumericValue } from "@/components/numeric-value";
 import { Paginator } from "@/components/pagination/paginator";
 import { serverToApi } from "@/lib/backend/server";
 import { TRANSLATIONS } from "@/lib/translations";
-import { useAuth } from "@/providers/auth-provider";
+import { getAuth } from "@/providers/auth-provider";
 
 import { TvShowPreview } from "./tv-show-preview";
 
@@ -36,7 +36,7 @@ export async function TvShowPreviewList({
   if (tvShowsRaw?.total === "0")
     return <p>{data.liveSeries.search.noResults}</p>;
 
-  const { accessToken } = await useAuth();
+  const { accessToken } = await getAuth();
   const userShowsResult = await serverToApi<UserShows>(
     "liveseries/shows/personal",
   );
