@@ -4,8 +4,8 @@ import { ErrorComponent } from "@/components/error-component";
 import { TextWithUrl } from "@/components/text-with-url";
 import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
-import { getAuth } from "@/providers/auth-provider";
-import { getTranslations } from "@/providers/translation-provider";
+import { getAuth } from "@/lib/providers/auth-provider";
+import { getTranslations } from "@/lib/providers/translation-provider";
 
 import { Player } from "./player";
 

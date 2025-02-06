@@ -3,8 +3,8 @@ import type { TvShowList, UserShows } from "@/lib/types";
 import { NumericValue } from "@/components/numeric-value";
 import { Paginator } from "@/components/pagination/paginator";
 import { serverToApi } from "@/lib/backend/server";
+import { getAuth } from "@/lib/providers/auth-provider";
 import { TRANSLATIONS } from "@/lib/translations";
-import { getAuth } from "@/providers/auth-provider";
 
 import { TvShowPreview } from "./tv-show-preview";
 

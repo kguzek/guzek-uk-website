@@ -2,9 +2,9 @@ import type { User } from "@/lib/types";
 import { ErrorComponent } from "@/components/error-component";
 import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
+import { getAuth } from "@/lib/providers/auth-provider";
+import { getTranslations } from "@/lib/providers/translation-provider";
 import { getTitle } from "@/lib/util";
-import { getAuth } from "@/providers/auth-provider";
-import { getTranslations } from "@/providers/translation-provider";
 
 import { UserEditor } from "./user-editor";
 

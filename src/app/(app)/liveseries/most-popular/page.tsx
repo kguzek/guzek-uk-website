@@ -1,8 +1,8 @@
 import type { TvShowList } from "@/lib/types";
 import { TvShowPreviewList } from "@/components/liveseries/tv-show-preview-list";
 import { serverToApi } from "@/lib/backend/server";
+import { getTranslations } from "@/lib/providers/translation-provider";
 import { getTitle } from "@/lib/util";
-import { getTranslations } from "@/providers/translation-provider";
 
 export async function generateMetadata() {
   const { data } = await getTranslations();

@@ -1,9 +1,9 @@
 import type { MenuItem, User } from "@/lib/types";
+import { Logo } from "@/components/logo";
 import { serverToApi } from "@/lib/backend/server";
+import { getAuth } from "@/lib/providers/auth-provider";
+import { getTranslations } from "@/lib/providers/translation-provider";
 import { PAGE_NAME } from "@/lib/util";
-import { Logo } from "@/media/logo";
-import { getAuth } from "@/providers/auth-provider";
-import { getTranslations } from "@/providers/translation-provider";
 
 import { LanguageSelector } from "./language-selector";
 import { NavBarItem } from "./navigation-bar-client";

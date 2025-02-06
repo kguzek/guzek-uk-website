@@ -6,8 +6,8 @@ import type { Language } from "@/lib/enums";
 import type { LikedShows } from "@/lib/types";
 import { CarouselArrow, CarouselIndicator } from "@/components/carousel";
 import { TvShowPreview } from "@/components/liveseries/tv-show-preview";
-import { useModals } from "@/context/modal-context";
-import { useScroll } from "@/hooks/scroll";
+import { useModals } from "@/lib/context/modal-context";
+import { useScroll } from "@/lib/hooks/scroll";
 import { TRANSLATIONS } from "@/lib/translations";
 import { scrollToElement } from "@/lib/util";
 

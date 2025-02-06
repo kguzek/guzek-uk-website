@@ -6,10 +6,10 @@ import Script from "next/script";
 import { Footer } from "@/components/footer";
 import { LanguageCookie } from "@/components/language-cookie";
 import { NavigationBar } from "@/components/navigation/navigation-bar";
-import { LanguageSelectorProvider } from "@/context/language-selector-context";
-import { ModalProvider } from "@/context/modal-context";
 import { cn } from "@/lib/cn";
-import { getTranslations } from "@/providers/translation-provider";
+import { LanguageSelectorProvider } from "@/lib/context/language-selector-context";
+import { ModalProvider } from "@/lib/context/modal-context";
+import { getTranslations } from "@/lib/providers/translation-provider";
 
 import "./forms.css";
 import "./globals.css";

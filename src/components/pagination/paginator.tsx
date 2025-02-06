@@ -1,4 +1,4 @@
-import { getTranslations } from "@/providers/translation-provider";
+import { getTranslations } from "@/lib/providers/translation-provider";
 
 import { PageIndicator } from "./page-indicator";
 

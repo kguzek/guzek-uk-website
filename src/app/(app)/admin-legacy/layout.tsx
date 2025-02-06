@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import { ErrorComponent } from "@/components/error-component";
 import { MiniNavBar } from "@/components/navigation/navigation-bar-client";
 import { ErrorCode } from "@/lib/enums";
-import { getAuth } from "@/providers/auth-provider";
-import { getTranslations } from "@/providers/translation-provider";
+import { getAuth } from "@/lib/providers/auth-provider";
+import { getTranslations } from "@/lib/providers/translation-provider";
 
 export default async function AdminLayout({
   children,

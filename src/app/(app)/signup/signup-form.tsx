@@ -7,8 +7,8 @@ import { useEffect, useState } from "react";
 import type { Language } from "@/lib/enums";
 import { InputBox } from "@/components/forms/input-box";
 import { LoadingButton } from "@/components/loading/loading-button";
-import { useModals } from "@/context/modal-context";
 import { clientToApi } from "@/lib/backend/client";
+import { useModals } from "@/lib/context/modal-context";
 import { TRANSLATIONS } from "@/lib/translations";
 
 export function SignUpForm({ userLanguage }: { userLanguage: Language }) {

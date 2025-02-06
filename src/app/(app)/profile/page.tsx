@@ -1,7 +1,7 @@
 import { PageSkeleton } from "@/components/pages/skeleton";
+import { getAuth } from "@/lib/providers/auth-provider";
+import { getTranslations } from "@/lib/providers/translation-provider";
 import { getTitle } from "@/lib/util";
-import { getAuth } from "@/providers/auth-provider";
-import { getTranslations } from "@/providers/translation-provider";
 
 import { LogoutButton } from "./logout-button";
 import { ProfileForm } from "./profile-form";

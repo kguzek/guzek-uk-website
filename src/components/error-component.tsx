@@ -3,9 +3,9 @@ import Link from "next/link";
 
 import type { Translation } from "@/lib/translations";
 import { ErrorCode } from "@/lib/enums";
+import { getTranslations } from "@/lib/providers/translation-provider";
 import { TRANSLATIONS } from "@/lib/translations";
 import { PAGE_NAME } from "@/lib/util";
-import { getTranslations } from "@/providers/translation-provider";
 
 const serialiseError = (
   error: ErrorCode,

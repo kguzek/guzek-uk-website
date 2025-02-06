@@ -1,7 +1,7 @@
 import Link from "next/link";
 
-import { Logo } from "@/media/logo";
-import { getTranslations } from "@/providers/translation-provider";
+import { Logo } from "@/components/logo";
+import { getTranslations } from "@/lib/providers/translation-provider";
 
 export async function Footer() {
   const { data } = await getTranslations();

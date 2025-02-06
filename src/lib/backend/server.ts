@@ -1,5 +1,5 @@
-import { getAuth } from "@/providers/auth-provider";
-import { getTranslations } from "@/providers/translation-provider";
+import { getAuth } from "@/lib/providers/auth-provider";
+import { getTranslations } from "@/lib/providers/translation-provider";
 
 import type { ServerFetchOptions } from ".";
 import { fetchFromApi, getUrlBase, prepareRequest } from ".";

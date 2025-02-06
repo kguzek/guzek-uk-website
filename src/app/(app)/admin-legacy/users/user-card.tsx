@@ -6,9 +6,9 @@ import { SettingsIcon, Trash2Icon, UserIcon } from "lucide-react";
 
 import type { Language } from "@/lib/enums";
 import type { User } from "@/lib/types";
-import { useModals } from "@/context/modal-context";
 import { clientToApi } from "@/lib/backend/client";
 import { cn } from "@/lib/cn";
+import { useModals } from "@/lib/context/modal-context";
 import { TRANSLATIONS } from "@/lib/translations";
 
 export function UserCard({

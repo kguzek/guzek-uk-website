@@ -1,7 +1,7 @@
 import { ErrorComponent } from "@/components/error-component";
 import { ErrorCode } from "@/lib/enums";
+import { getTranslations } from "@/lib/providers/translation-provider";
 import { getTitle } from "@/lib/util";
-import { getTranslations } from "@/providers/translation-provider";
 
 type Props = {
   params: Promise<{ code: string }>;

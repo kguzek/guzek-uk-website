@@ -6,9 +6,9 @@ import type { LegacyLogEntry, LogEntry, LogResponse } from "@/lib/types";
 import { ErrorComponent } from "@/components/error-component";
 import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
+import { getTranslations } from "@/lib/providers/translation-provider";
 import { TRANSLATIONS } from "@/lib/translations";
 import { getTitle, getUTCDateString } from "@/lib/util";
-import { getTranslations } from "@/providers/translation-provider";
 
 import { FilteredLogs } from "./filtered-logs";
 

@@ -5,8 +5,8 @@ import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 import type { Language } from "@/lib/enums";
 import type { Episode } from "@/lib/types";
-import { useModals } from "@/context/modal-context";
 import { clientToApi } from "@/lib/backend/client";
+import { useModals } from "@/lib/context/modal-context";
 import { TRANSLATIONS } from "@/lib/translations";
 
 export function EpisodeWatchedIndicator({

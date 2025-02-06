@@ -2,9 +2,9 @@ import type { ReactNode } from "react";
 
 import { DownloadsWidget } from "@/components/liveseries/downloads-widget";
 import { MiniNavBar } from "@/components/navigation/navigation-bar-client";
-import { LiveSeriesProvider } from "@/context/liveseries-context";
-import { getAuth } from "@/providers/auth-provider";
-import { getTranslations } from "@/providers/translation-provider";
+import { LiveSeriesProvider } from "@/lib/context/liveseries-context";
+import { getAuth } from "@/lib/providers/auth-provider";
+import { getTranslations } from "@/lib/providers/translation-provider";
 
 export default async function LiveSeriesLayout({
   children,

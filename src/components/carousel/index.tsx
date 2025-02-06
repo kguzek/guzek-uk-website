@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 
-import { useScroll } from "@/hooks/scroll";
 import { cn } from "@/lib/cn";
+import { useScroll } from "@/lib/hooks/scroll";
 import { CAROUSEL_INDICATOR_FULL_WIDTH } from "@/lib/types";
 import { scrollToElement } from "@/lib/util";
 
