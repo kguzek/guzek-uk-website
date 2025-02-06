@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { DownloadsWidget } from "@/components/liveseries/downloads-widget";
 import { MiniNavBar } from "@/components/navigation/navigation-bar-client";

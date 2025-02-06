@@ -4,10 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { cn } from "@/lib/cn";
-import { TRANSLATIONS } from "@/lib/translations";
 import type { Language } from "@/lib/enums";
 import type { User } from "@/lib/types";
+import { cn } from "@/lib/cn";
+import { TRANSLATIONS } from "@/lib/translations";
 
 export function UserWidget({
   user,

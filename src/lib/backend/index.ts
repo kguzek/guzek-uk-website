@@ -1,4 +1,4 @@
-import { User } from "../types";
+import type { User } from "../types";
 
 const USE_LOCAL_API_URL = false;
 // const USE_LOCAL_API_URL = true;

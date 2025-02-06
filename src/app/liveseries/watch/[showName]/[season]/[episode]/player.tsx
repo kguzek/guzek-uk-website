@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
 
+import type { Language } from "@/lib/enums";
 import { useModals } from "@/context/modal-context";
-import { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 
 const VIDEO_FRAME_RATE = 25; // frames per second

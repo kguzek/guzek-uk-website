@@ -1,4 +1,5 @@
-import { RefObject, useEffect, useState } from "react";
+import type { RefObject } from "react";
+import { useEffect, useState } from "react";
 
 export function useScroll(ref: RefObject<HTMLElement | null>) {
   const [scroll, setScroll] = useState(0);

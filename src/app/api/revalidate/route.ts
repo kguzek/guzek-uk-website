@@ -1,5 +1,6 @@
+import type { NextRequest } from "next/server";
 import { revalidateTag } from "next/cache";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   let body;

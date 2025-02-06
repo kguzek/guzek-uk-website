@@ -1,9 +1,17 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import { HeartIcon, StarIcon } from "lucide-react";
 
+import type { Language } from "@/lib/enums";
+import type {
+  Episode as EpisodeType,
+  TvShowDetails,
+  User,
+  WatchedEpisodes,
+} from "@/lib/types";
 import { ImageGallery } from "@/components/carousel";
 import { InputBox } from "@/components/forms/input-box";
 import { TvShowSkeleton } from "@/components/liveseries/tv-show-skeleton";
@@ -13,13 +21,6 @@ import { clientToApi } from "@/lib/backend/client";
 import { cn } from "@/lib/cn";
 import { TRANSLATIONS } from "@/lib/translations";
 import { getEpisodeAirDate, isInvalidDate } from "@/lib/util";
-import type { Language } from "@/lib/enums";
-import type {
-  Episode as EpisodeType,
-  TvShowDetails,
-  User,
-  WatchedEpisodes,
-} from "@/lib/types";
 
 // Will issue a warning when trying to subscribe with more than 10 unwatched episodes
 const UNWATCHED_EPISODES_THRESHOLD = 10;

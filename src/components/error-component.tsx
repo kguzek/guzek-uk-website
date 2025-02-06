@@ -1,8 +1,9 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
-import { ReactNode } from "react";
 
+import type { Translation } from "@/lib/translations";
 import { ErrorCode } from "@/lib/enums";
-import { Translation, TRANSLATIONS } from "@/lib/translations";
+import { TRANSLATIONS } from "@/lib/translations";
 import { PAGE_NAME } from "@/lib/util";
 import { useTranslations } from "@/providers/translation-provider";
 

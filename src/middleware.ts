@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 
+import type { CustomMiddleware, MiddlewareFactory } from "@/lib/types";
 import { authMiddleware } from "@/middleware/auth-middleware";
 import { headerMiddleware } from "@/middleware/header-middleware";
 import { languageMiddleware } from "@/middleware/language-middleware";
 import { redirectMiddleware } from "@/middleware/redirect-middleware";
-import type { CustomMiddleware, MiddlewareFactory } from "@/lib/types";
 
 function stackMiddlewares(...factories: MiddlewareFactory[]): CustomMiddleware {
   const current = factories.shift();

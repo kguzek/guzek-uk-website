@@ -1,9 +1,9 @@
 import { useAuth } from "@/providers/auth-provider";
 import { useTranslations } from "@/providers/translation-provider";
 
+import type { ServerFetchOptions } from ".";
 import { fetchFromApi, getUrlBase, prepareRequest } from ".";
 import { commonTriggerRevalidation, getSearchParams } from "../backend";
-import type { ServerFetchOptions } from ".";
 
 const EPISODATE_URL = "https://www.episodate.com/api/";
 const NEXT_URL = "https://www.guzek.uk/api/";

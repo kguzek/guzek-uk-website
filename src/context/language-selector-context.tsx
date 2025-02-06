@@ -1,15 +1,7 @@
 "use client";
 
-import {
-  createContext,
-  CSSProperties,
-  ReactNode,
-  RefObject,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import type { CSSProperties, ReactNode, RefObject } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 export const LanguageSelectorContext = createContext<
   | {

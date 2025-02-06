@@ -1,5 +1,5 @@
+import type { MenuItem, User } from "@/lib/types";
 import { serverToApi } from "@/lib/backend/server";
-import { MenuItem, User } from "@/lib/types";
 import { PAGE_NAME } from "@/lib/util";
 import { Logo } from "@/media/logo";
 import { useAuth } from "@/providers/auth-provider";

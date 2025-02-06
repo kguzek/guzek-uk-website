@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import type { Language } from "@/lib/enums";
 import { useLanguageSelector } from "@/context/language-selector-context";
 import { cn } from "@/lib/cn";
-import { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import { setLanguageCookie } from "@/lib/util";
 

@@ -1,4 +1,4 @@
-import { Language } from "@/lib/enums";
+import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 
 export function NumericValue({

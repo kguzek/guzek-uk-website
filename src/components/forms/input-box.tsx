@@ -1,6 +1,7 @@
 "use client";
 
-import { ChangeEvent, createRef, ReactNode, useEffect } from "react";
+import type { ChangeEvent, ReactNode } from "react";
+import { createRef, useEffect } from "react";
 
 import { cn } from "@/lib/cn";
 
