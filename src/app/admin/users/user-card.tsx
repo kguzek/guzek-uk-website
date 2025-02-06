@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { useState } from "react";
-
 import { SettingsIcon, Trash2Icon, UserIcon } from "lucide-react";
 
 import { useModals } from "@/context/modal-context";
 import { clientToApi } from "@/lib/backend/client";
 import { cn } from "@/lib/cn";
-import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
+import type { Language } from "@/lib/enums";
 import type { User } from "@/lib/types";
 
 export function UserCard({

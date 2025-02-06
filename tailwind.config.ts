@@ -5,7 +5,7 @@ const config: Config = {
   content: ["./src/**/*.tsx"],
   theme: {
     extend: {
-      typography: (theme: (theme: string) => any) => ({
+      typography: (theme: (theme: string) => unknown) => ({
         DEFAULT: {
           css: {
             color: "inherit",

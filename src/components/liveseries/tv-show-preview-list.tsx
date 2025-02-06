@@ -3,8 +3,8 @@ import { Paginator } from "@/components/pagination/paginator";
 import { serverToApi } from "@/lib/backend/server";
 import { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
-import type { TvShowList, UserShows } from "@/lib/types";
 import { useAuth } from "@/providers/auth-provider";
+import type { TvShowList, UserShows } from "@/lib/types";
 
 import { TvShowPreview } from "./tv-show-preview";
 

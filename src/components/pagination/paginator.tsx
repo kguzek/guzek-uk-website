@@ -1,6 +1,7 @@
 import { useTranslations } from "@/providers/translation-provider";
 
 import { PageIndicator } from "./page-indicator";
+
 import "./pagination.css";
 
 export async function Paginator({
@@ -25,7 +26,7 @@ export async function Paginator({
   if (currentPage > 4) {
     if (currentPage === numPages) {
       pages.push(2);
-      currentPage > 5 && pages.push(undefined);
+      if (currentPage > 5) pages.push(undefined);
     } else {
       pages.push(currentPage === 5 ? 2 : undefined);
     }
@@ -37,7 +38,7 @@ export async function Paginator({
 
   if (currentPage < numPages - 3) {
     if (currentPage === 1) {
-      currentPage < numPages - 5 && pages.push(undefined);
+      if (currentPage < numPages - 5) pages.push(undefined);
       pages.push(numPages - 1);
     } else {
       pages.push(currentPage === numPages - 4 ? numPages - 1 : undefined);

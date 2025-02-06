@@ -41,13 +41,17 @@ function parseResponseBody(body: string) {
   for (let offset = 0; offset < body.length / 2; offset++) {
     try {
       return JSON.parse(body.substring(offset, body.length - offset));
-    } catch {}
+    } catch {
+      console.debug("Failed to parse JSON with offset", offset);
+    }
   }
   for (let start = 0; start < body.length; start++) {
     for (let end = body.length; end > start; end--) {
       try {
         return JSON.parse(body.substring(start, end));
-      } catch {}
+      } catch {
+        console.debug("Failed to parse JSON with start", start, "and end", end);
+      }
     }
   }
   throw new Error("No substring of the body yields valid JSON.");
@@ -83,6 +87,7 @@ export function getUrlBase(path: string, user: User | null) {
 
 type BodyFetchOptions = {
   method: "POST" | "PUT" | "PATCH";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   body: Record<string, any>;
 };
 

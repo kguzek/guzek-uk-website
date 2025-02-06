@@ -3,15 +3,19 @@
  * @type {import("prettier").Config}
  */
 const config = {
-  plugins: ["@trivago/prettier-plugin-sort-imports"],
+  plugins: ["@ianvs/prettier-plugin-sort-imports"],
   importOrder: [
     "^(react|next|payload)(/.+)?$",
     "<THIRD_PARTY_MODULES>",
+    "<TYPES>",
+    "",
     "^@/.*$",
+    "<TYPES>^(@/)",
+    "",
     "^[./]",
+    "<TYPES>^[./]",
   ],
-  importOrderSeparation: true,
-  importOrderSortSpecifiers: true,
+  importOrderTypeScriptVersion: "5.7.2",
   trailingComma: "all",
   semi: true,
   tabWidth: 2,

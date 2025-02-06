@@ -1,5 +1,4 @@
 import { useRef } from "react";
-
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 
 import { useScroll } from "@/hooks/scroll";

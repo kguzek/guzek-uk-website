@@ -6,8 +6,8 @@ import type { FormEvent } from "react";
 import { InputBox } from "@/components/forms/input-box";
 import { useModals } from "@/context/modal-context";
 import { clientToApi, triggerTokenRefresh } from "@/lib/backend/client";
-import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
+import type { Language } from "@/lib/enums";
 import type { User } from "@/lib/types";
 
 export function ProfileForm({

@@ -1,10 +1,10 @@
 "use client";
 
-import { ReactNode, createContext, useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 
 import { Modal } from "@/components/modal";
-import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
+import type { Language } from "@/lib/enums";
 import type { ModalHandler } from "@/lib/types";
 
 export const ModalContext = createContext<{

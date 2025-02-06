@@ -26,11 +26,12 @@ const divmod = (dividend: number, divisor: number) => [
 
 /** Converts a duration in milliseconds to duration object. */
 export function getDuration(milliseconds: number) {
-  let seconds, minutes, hours, days;
+  let seconds, minutes, hours;
   [seconds, milliseconds] = divmod(milliseconds, 1000);
   [minutes, seconds] = divmod(seconds, 60);
   [hours, minutes] = divmod(minutes, 60);
-  [days, hours] = divmod(hours, 24);
+  const [days, hoursRemainder] = divmod(hours, 24);
+  hours = hoursRemainder;
   let formatted = "";
   if (days) formatted += ` ${days}d`;
   if (hours) formatted += ` ${hours}h`;
@@ -86,15 +87,16 @@ const STATUS_CODES: Record<number, string> = {
  * with another fallback to displaying a generic error message in the user's language. */
 export const getErrorMessage = (
   res: Response,
-  json: any,
+  json: any, //eslint-disable-line @typescript-eslint/no-explicit-any
   data: Translation,
 ): string =>
   (json[`${res.status} ${STATUS_CODES[res.status] || res.statusText}`] ??
     JSON.stringify(json)) ||
   data.unknownError;
 
-export const getUTCDateString = (dateInit: any) =>
-  new Date(dateInit).toISOString().split("T")[0];
+export const getUTCDateString = (
+  ...dateInit: ConstructorParameters<typeof Date>
+) => new Date(...dateInit).toISOString().split("T")[0];
 
 const UNIT_PREFIXES = ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi"];
 

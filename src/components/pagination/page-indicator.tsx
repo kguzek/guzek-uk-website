@@ -4,8 +4,8 @@ import Link from "next/link";
 
 import { getSearchParams } from "@/lib/backend";
 import { cn } from "@/lib/cn";
-import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
+import type { Language } from "@/lib/enums";
 
 export function PageIndicator({
   page,
@@ -22,7 +22,7 @@ export function PageIndicator({
   disabled?: boolean;
   userLanguage: Language;
 }) {
-  let loading = [];
+  const loading = [];
   let displayValue;
   const data = TRANSLATIONS[userLanguage];
 
@@ -48,7 +48,7 @@ export function PageIndicator({
         auxiliary: !!direction,
       })}
       onClick={(evt) => {
-        (loading.length > 0 || disabled) && evt.preventDefault();
+        if (loading.length > 0 || disabled) evt.preventDefault();
       }}
     >
       {displayValue}

@@ -1,6 +1,5 @@
 import { ErrorComponent } from "@/components/error-component";
-import { serverToApi } from "@/lib/backend/server";
-import { triggerRevalidation } from "@/lib/backend/server";
+import { serverToApi, triggerRevalidation } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
 import type { MenuItem, PageContent } from "@/lib/types";
 
