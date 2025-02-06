@@ -2,8 +2,8 @@ import { cookies } from "next/headers";
 import type { NextRequest, NextResponse } from "next/server";
 
 import { serverToApi } from "@/lib/backend/server";
-import type { User } from "@/lib/types";
 import { isInvalidDate } from "@/lib/util";
+import type { User } from "@/lib/types";
 
 const USER_REQUIRED_PROPERTIES = [
   "uuid",
@@ -29,19 +29,19 @@ function parseJwt(token: string): string {
   return Buffer.from(payload, "base64").toString();
 }
 
-function validateUser(parsedUser: any) {
+function validateUser(parsedUser: { [key: string]: unknown }) {
   for (const property of USER_REQUIRED_PROPERTIES) {
     if (parsedUser[property] !== undefined) continue;
     console.warn("User", parsedUser, "is missing required property", property);
     return null;
   }
   for (const dateString of [parsedUser.created_at, parsedUser.modified_at]) {
-    if (isInvalidDate(new Date(dateString))) {
+    if (typeof dateString !== "string" || isInvalidDate(new Date(dateString))) {
       console.warn("User", parsedUser, "has invalid date string", dateString);
       return null;
     }
   }
-  return parsedUser as AccessTokenPayload;
+  return parsedUser as unknown as AccessTokenPayload;
 }
 
 /** Extracts and parses the user object from the JWT access token. */

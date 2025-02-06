@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ReactNode } from "react";
 
 import { ErrorCode } from "@/lib/enums";
-import { TRANSLATIONS, Translation } from "@/lib/translations";
+import { Translation, TRANSLATIONS } from "@/lib/translations";
 import { PAGE_NAME } from "@/lib/util";
 import { useTranslations } from "@/providers/translation-provider";
 
@@ -19,6 +19,7 @@ export async function ErrorComponent({
   | { errorCode: ErrorCode; errorResult?: never }
   | {
       errorCode?: never;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       errorResult: { ok: boolean; error: any; hasBody: boolean; data: any };
     }
 ) & { errorMessage?: ReactNode }) {

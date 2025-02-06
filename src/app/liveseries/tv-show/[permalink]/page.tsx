@@ -2,16 +2,11 @@ import { ErrorComponent } from "@/components/error-component";
 import { EpisodesList } from "@/components/liveseries/episodes-list";
 import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
-import {
-  Episode,
-  ShowData,
-  type TvShowDetails,
-  UserShows,
-  WatchedEpisodes,
-} from "@/lib/types";
+import { Episode, ShowData, UserShows, WatchedEpisodes } from "@/lib/types";
 import { getTitle } from "@/lib/util";
 import { useAuth } from "@/providers/auth-provider";
 import { useTranslations } from "@/providers/translation-provider";
+import type { TvShowDetails } from "@/lib/types";
 
 import { ShowDetails } from "./show";
 import { WatchedIndicator } from "./watched-indicator";

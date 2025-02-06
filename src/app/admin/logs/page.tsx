@@ -1,15 +1,14 @@
-import type { Metadata } from "next";
 import Link from "next/link";
-
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
+import type { Metadata } from "next";
 
 import { ErrorComponent } from "@/components/error-component";
 import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
-import type { LegacyLogEntry, LogEntry, LogResponse } from "@/lib/types";
 import { getTitle, getUTCDateString } from "@/lib/util";
 import { useTranslations } from "@/providers/translation-provider";
+import type { LegacyLogEntry, LogEntry, LogResponse } from "@/lib/types";
 
 import { FilteredLogs } from "./filtered-logs";
 

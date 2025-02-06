@@ -35,6 +35,7 @@ export interface LegacyLogEntry {
   level: LogLevel;
   message: string | NodeJS.ErrnoException;
   label: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata: any;
   timestamp: string;
 }
@@ -42,6 +43,7 @@ export interface LegacyLogEntry {
 export interface LogEntry {
   level: LogLevel;
   message: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata: { filename: string; [key: string]: any };
   timestamp: string;
 }

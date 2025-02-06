@@ -3,10 +3,10 @@
 import { ClockIcon, EyeIcon, EyeOffIcon } from "lucide-react";
 
 import { useTvShowContext } from "@/context/tv-show-context";
-import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
-import type { Episode } from "@/lib/types";
 import { hasEpisodeAired } from "@/lib/util";
+import type { Language } from "@/lib/enums";
+import type { Episode } from "@/lib/types";
 
 export function WatchedIndicator({
   season,

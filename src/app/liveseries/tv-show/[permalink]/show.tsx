@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { ReactNode, useState } from "react";
-
 import { HeartIcon, StarIcon } from "lucide-react";
 
 import { ImageGallery } from "@/components/carousel";
@@ -12,15 +11,15 @@ import { useModals } from "@/context/modal-context";
 import { TvShowContext } from "@/context/tv-show-context";
 import { clientToApi } from "@/lib/backend/client";
 import { cn } from "@/lib/cn";
-import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
+import { getEpisodeAirDate, isInvalidDate } from "@/lib/util";
+import type { Language } from "@/lib/enums";
 import type {
   Episode as EpisodeType,
   TvShowDetails,
   User,
   WatchedEpisodes,
 } from "@/lib/types";
-import { getEpisodeAirDate, isInvalidDate } from "@/lib/util";
 
 // Will issue a warning when trying to subscribe with more than 10 unwatched episodes
 const UNWATCHED_EPISODES_THRESHOLD = 10;
@@ -244,7 +243,7 @@ export function ShowDetails({
         className="mb-2 mt-1"
         dangerouslySetInnerHTML={{
           // Trim description end from line breaks
-          __html: tvShowDetails.description.replace(/(\<br\s?\>|\\n|\s)*$/, ""),
+          __html: tvShowDetails.description.replace(/(<br\s?>|\\n|\s)*$/, ""),
         }}
       ></blockquote>
       <small>

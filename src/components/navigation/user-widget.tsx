@@ -5,8 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/cn";
-import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
+import type { Language } from "@/lib/enums";
 import type { User } from "@/lib/types";
 
 export function UserWidget({
@@ -20,7 +20,7 @@ export function UserWidget({
   const data = TRANSLATIONS[userLanguage];
   // TODO: add user.url
   const imgUrl =
-    (user && Object.hasOwn(user, "url") && (user as any).url) ||
+    // (user && Object.hasOwn(user, "url") && (user as unknown as any).url) ||
     "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/default-avatar.png";
   const isActive =
     pathname != null && ["/profile", "/login"].includes(pathname);

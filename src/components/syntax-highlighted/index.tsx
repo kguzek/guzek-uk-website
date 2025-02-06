@@ -12,6 +12,7 @@ import "./syntax-highlighted.css";
 
 // Adapted from StackOverflow
 // https://stackoverflow.com/questions/4810841/pretty-print-json-using-javascript
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function syntaxHighlight(json: any) {
   if (typeof json !== "string") {
     try {
@@ -27,8 +28,8 @@ function syntaxHighlight(json: any) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
   return json.replace(
-    /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
-    (match: any) => {
+    /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g,
+    (match: string) => {
       const cls = match.startsWith('"')
         ? match.endsWith(":")
           ? "key"
@@ -41,6 +42,7 @@ function syntaxHighlight(json: any) {
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function SyntaxHighlighted({ json }: { json: any }) {
   return (
     <div className="box-border w-full p-3">

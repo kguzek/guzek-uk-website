@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
 import { ChevronUpIcon, Trash2Icon } from "lucide-react";
 
 import { useLanguageSelector } from "@/context/language-selector-context";
@@ -11,10 +10,10 @@ import { useModals } from "@/context/modal-context";
 import { clientToApi } from "@/lib/backend/client";
 import { cn } from "@/lib/cn";
 import { DownloadStatus } from "@/lib/enums";
-import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
-import type { DownloadedEpisode, User } from "@/lib/types";
 import { bytesToReadable, getDuration } from "@/lib/util";
+import type { Language } from "@/lib/enums";
+import type { DownloadedEpisode, User } from "@/lib/types";
 
 import "./downloads-widget.css";
 

@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 import { useModals } from "@/context/modal-context";
 import { clientToApi } from "@/lib/backend/client";
-import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import { Episode } from "@/lib/types";
+import type { Language } from "@/lib/enums";
 
 export function EpisodeWatchedIndicator({
   userLanguage,

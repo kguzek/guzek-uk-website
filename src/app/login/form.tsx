@@ -7,8 +7,8 @@ import { InputBox } from "@/components/forms/input-box";
 import { LoadingButton } from "@/components/loading/loading-button";
 import { useModals } from "@/context/modal-context";
 import { clientToApi } from "@/lib/backend/client";
-import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
+import type { Language } from "@/lib/enums";
 
 export function LogInForm({ userLanguage }: { userLanguage: Language }) {
   const [login, setLogin] = useState("");

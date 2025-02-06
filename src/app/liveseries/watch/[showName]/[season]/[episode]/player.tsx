@@ -80,12 +80,11 @@ export function Player({
         );
         break;
       case "c": // Toggle subtitles
-        const subtitleTrack = video.textTracks[0];
-        if (!subtitleTrack) break;
-        if (subtitleTrack.mode === "showing") {
-          subtitleTrack.mode = "hidden";
+        if (!video.textTracks[0]) break;
+        if (video.textTracks[0].mode === "showing") {
+          video.textTracks[0].mode = "hidden";
         } else {
-          subtitleTrack.mode = "showing";
+          video.textTracks[0].mode = "showing";
         }
         break;
       default:
