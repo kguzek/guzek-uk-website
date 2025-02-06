@@ -1,16 +1,18 @@
-import { ReactNode } from "react";
 import { Metadata, Viewport } from "next";
-import Script from "next/script";
 import { Raleway, Roboto_Slab } from "next/font/google";
-import { NavigationBar } from "@/components/navigation/navigation-bar";
+import Script from "next/script";
+import { ReactNode } from "react";
+
 import { Footer } from "@/components/footer";
-import { ModalProvider } from "@/context/modal-context";
 import { LanguageCookie } from "@/components/language-cookie";
+import { NavigationBar } from "@/components/navigation/navigation-bar";
 import { LanguageSelectorProvider } from "@/context/language-selector-context";
-import { cn } from "@/lib/utils";
-import "./globals.css";
-import "./forms.css";
+import { ModalProvider } from "@/context/modal-context";
+import { cn } from "@/lib/cn";
 import { useTranslations } from "@/providers/translation-provider";
+
+import "./forms.css";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Konrad Guzek – Software Engineer, Web Developer, Student | Guzek UK",

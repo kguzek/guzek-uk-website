@@ -1,6 +1,7 @@
+import { Metadata } from "next";
+
 import { getTitle } from "@/lib/util";
 import { useTranslations } from "@/providers/translation-provider";
-import { Metadata } from "next";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data } = await useTranslations();

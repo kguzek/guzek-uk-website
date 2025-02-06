@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getTitle } from "@/lib/util";
-import { useTranslations } from "@/providers/translation-provider";
-import { useAuth } from "@/providers/auth-provider";
-import { LogInForm } from "./form";
+
 import { PageSkeleton } from "@/components/pages/skeleton";
+import { getTitle } from "@/lib/util";
+import { useAuth } from "@/providers/auth-provider";
+import { useTranslations } from "@/providers/translation-provider";
+
+import { LogInForm } from "./form";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data } = await useTranslations();

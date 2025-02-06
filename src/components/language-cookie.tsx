@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
+
 import Cookies from "js-cookie";
+
 import { setLanguageCookie } from "@/lib/util";
 
 export function LanguageCookie() {

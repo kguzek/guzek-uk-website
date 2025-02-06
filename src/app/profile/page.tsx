@@ -1,9 +1,10 @@
-import { useAuth } from "@/providers/auth-provider";
-import { useTranslations } from "@/providers/translation-provider";
-import { ProfileForm } from "./profile-form";
-import { LogoutButton } from "./logout-button";
 import { PageSkeleton } from "@/components/pages/skeleton";
 import { getTitle } from "@/lib/util";
+import { useAuth } from "@/providers/auth-provider";
+import { useTranslations } from "@/providers/translation-provider";
+
+import { LogoutButton } from "./logout-button";
+import { ProfileForm } from "./profile-form";
 
 export async function generateMetadata() {
   const { data } = await useTranslations();

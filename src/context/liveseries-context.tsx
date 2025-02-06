@@ -1,19 +1,21 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import {
-  createContext,
   ReactNode,
+  createContext,
   useContext,
   useEffect,
   useState,
 } from "react";
+
 import { DownloadStatus } from "@/lib/enums";
 import type { Language } from "@/lib/enums";
+import { TRANSLATIONS } from "@/lib/translations";
 import type { DownloadedEpisode, User } from "@/lib/types";
 import { compareEpisodes } from "@/lib/util";
+
 import { useModals } from "./modal-context";
-import { TRANSLATIONS } from "@/lib/translations";
-import { usePathname } from "next/navigation";
 
 const LiveSeriesContext = createContext<
   | {

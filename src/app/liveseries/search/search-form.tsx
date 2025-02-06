@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
 import { InputBox } from "@/components/forms/input-box";
-import { TRANSLATIONS } from "@/lib/translations";
 import type { Language } from "@/lib/enums";
+import { TRANSLATIONS } from "@/lib/translations";
 
 export function SearchForm({ userLanguage }: { userLanguage: Language }) {
   const [inputValue, setInputValue] = useState("");

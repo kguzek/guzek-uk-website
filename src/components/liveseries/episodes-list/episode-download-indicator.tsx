@@ -1,22 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+
 import { DownloadIcon, TriangleIcon } from "lucide-react";
+
+import { useLiveSeriesContext } from "@/context/liveseries-context";
+import { useModals } from "@/context/modal-context";
 import { clientToApi } from "@/lib/backend/client";
+import { cn } from "@/lib/cn";
 import { DownloadStatus } from "@/lib/enums";
 import type { Language } from "@/lib/enums";
+import { TRANSLATIONS } from "@/lib/translations";
 import type {
   DownloadedEpisode,
   Episode,
   TvShowDetails,
   User,
 } from "@/lib/types";
-import { TRANSLATIONS } from "@/lib/translations";
-import { useModals } from "@/context/modal-context";
 import { bytesToReadable, compareEpisodes } from "@/lib/util";
-import { useLiveSeriesContext } from "@/context/liveseries-context";
-import { cn } from "@/lib/utils";
 
 export function EpisodeDownloadIndicator({
   user,

@@ -1,10 +1,12 @@
 "use client";
 
 import { ReactNode, useEffect, useState } from "react";
+
 import type { ClassValue } from "clsx";
+
 import { TextWithUrl } from "@/components/text-with-url";
+import { cn } from "@/lib/cn";
 import type { ModalHandler } from "@/lib/types";
-import { cn } from "@/lib/utils";
 
 // const MODAL_DISAPPEARS_AFTER_MS = 10_000;
 

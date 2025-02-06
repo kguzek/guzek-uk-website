@@ -1,13 +1,14 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+
 import { InputBox } from "@/components/forms/input-box";
 import { LoadingButton } from "@/components/loading/loading-button";
+import { useModals } from "@/context/modal-context";
+import { clientToApi } from "@/lib/backend/client";
 import { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import { User } from "@/lib/types";
-import { useModals } from "@/context/modal-context";
-import { clientToApi } from "@/lib/backend/client";
 
 export function UserEditor({
   user: originalUser,

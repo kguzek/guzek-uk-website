@@ -1,12 +1,13 @@
 "use client";
 
-import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { FormEvent, useState } from "react";
+
 import { LoadingButton } from "@/components/loading/loading-button";
+import { useModals } from "@/context/modal-context";
+import { clientToApi } from "@/lib/backend/client";
 import { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
-import { clientToApi } from "@/lib/backend/client";
-import { useModals } from "@/context/modal-context";
 
 export function LogoutButton({
   userLanguage,

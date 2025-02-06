@@ -1,7 +1,8 @@
-import { Language } from "./enums";
-import type { Episode, DownloadedEpisode } from "./types";
-import { Translation } from "./translations";
 import Cookies from "js-cookie";
+
+import { Language } from "./enums";
+import { Translation } from "./translations";
+import type { DownloadedEpisode, Episode } from "./types";
 
 export const PAGE_NAME = "Guzek UK";
 

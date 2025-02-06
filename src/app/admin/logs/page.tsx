@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
+
 import { ErrorComponent } from "@/components/error-component";
-import type { LegacyLogEntry, LogEntry, LogResponse } from "@/lib/types";
-import { TRANSLATIONS } from "@/lib/translations";
-import { getTitle, getUTCDateString } from "@/lib/util";
-import { ErrorCode } from "@/lib/enums";
 import { serverToApi } from "@/lib/backend/server";
+import { ErrorCode } from "@/lib/enums";
+import { TRANSLATIONS } from "@/lib/translations";
+import type { LegacyLogEntry, LogEntry, LogResponse } from "@/lib/types";
+import { getTitle, getUTCDateString } from "@/lib/util";
 import { useTranslations } from "@/providers/translation-provider";
+
 import { FilteredLogs } from "./filtered-logs";
 
 export async function generateMetadata(): Promise<Metadata> {

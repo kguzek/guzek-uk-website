@@ -1,7 +1,8 @@
+import { NextResponse } from "next/server";
+
 import { Language } from "@/lib/enums";
 import { MiddlewareFactory } from "@/lib/types";
 import { getLanguageCookieOptions } from "@/lib/util";
-import { NextResponse } from "next/server";
 
 export const languageMiddleware: MiddlewareFactory = (next) =>
   async function (request) {

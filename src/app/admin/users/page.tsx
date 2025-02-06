@@ -1,12 +1,14 @@
 import { Metadata } from "next";
-import type { User } from "@/lib/types";
-import { useTranslations } from "@/providers/translation-provider";
-import { serverToApi } from "@/lib/backend/server";
+
 import { ErrorComponent } from "@/components/error-component";
+import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
-import { UserCard } from "./user-card";
+import type { User } from "@/lib/types";
 import { getTitle } from "@/lib/util";
 import { useAuth } from "@/providers/auth-provider";
+import { useTranslations } from "@/providers/translation-provider";
+
+import { UserCard } from "./user-card";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data } = await useTranslations();

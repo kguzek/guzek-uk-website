@@ -1,11 +1,13 @@
+import Link from "next/link";
+
 import { ErrorComponent } from "@/components/error-component";
+import { TextWithUrl } from "@/components/text-with-url";
+import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
 import { useAuth } from "@/providers/auth-provider";
 import { useTranslations } from "@/providers/translation-provider";
+
 import { Player } from "./player";
-import { TextWithUrl } from "@/components/text-with-url";
-import { serverToApi } from "@/lib/backend/server";
-import Link from "next/link";
 
 function isNumber(val: string | string[] | undefined): val is string {
   return !Array.isArray(val) && val != null && `${+val}` === val && +val > 0;

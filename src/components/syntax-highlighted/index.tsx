@@ -1,4 +1,5 @@
 "use client";
+
 import "./syntax-highlighted.css";
 
 // const SAMPLE_JSON = {

@@ -1,10 +1,13 @@
+import { useRef } from "react";
+
+import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
+
+import { useScroll } from "@/hooks/scroll";
+import { cn } from "@/lib/cn";
 import { CAROUSEL_INDICATOR_FULL_WIDTH } from "@/lib/types";
 import { scrollToElement } from "@/lib/util";
+
 import "./carousel.css";
-import { useScroll } from "@/hooks/scroll";
-import { useRef } from "react";
-import { cn } from "@/lib/utils";
-import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 
 export function ImageGallery({
   className = "",
