@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 import { getTitle } from "@/lib/util";
 import { useTranslations } from "@/providers/translation-provider";

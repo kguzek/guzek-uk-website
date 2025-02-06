@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { ErrorComponent } from "@/components/error-component";
 import { MiniNavBar } from "@/components/navigation/navigation-bar-client";

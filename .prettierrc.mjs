@@ -5,15 +5,15 @@
 const config = {
   plugins: ["@ianvs/prettier-plugin-sort-imports"],
   importOrder: [
+    "<TYPES>^(react|next|payload)(/.+)?$",
     "^(react|next|payload)(/.+)?$",
     "<THIRD_PARTY_MODULES>",
-    "<TYPES>",
     "",
-    "^@/.*$",
     "<TYPES>^(@/)",
+    "^@/.*$",
     "",
-    "^[./]",
     "<TYPES>^[./]",
+    "^[./]",
   ],
   importOrderTypeScriptVersion: "5.7.2",
   trailingComma: "all",

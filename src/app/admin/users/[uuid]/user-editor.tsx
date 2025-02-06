@@ -1,14 +1,15 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import type { FormEvent } from "react";
+import { useState } from "react";
 
+import type { Language } from "@/lib/enums";
+import type { User } from "@/lib/types";
 import { InputBox } from "@/components/forms/input-box";
 import { LoadingButton } from "@/components/loading/loading-button";
 import { useModals } from "@/context/modal-context";
 import { clientToApi } from "@/lib/backend/client";
-import { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
-import { User } from "@/lib/types";
 
 export function UserEditor({
   user: originalUser,

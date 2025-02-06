@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { cn } from "@/lib/cn";
 import type { MenuItem } from "@/lib/types";
+import { cn } from "@/lib/cn";
 
 export function NavBarItem({ item }: { item: MenuItem }) {
   const pathname = usePathname();

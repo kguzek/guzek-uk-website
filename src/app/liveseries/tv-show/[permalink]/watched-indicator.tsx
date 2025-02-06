@@ -2,11 +2,11 @@
 
 import { ClockIcon, EyeIcon, EyeOffIcon } from "lucide-react";
 
+import type { Language } from "@/lib/enums";
+import type { Episode } from "@/lib/types";
 import { useTvShowContext } from "@/context/tv-show-context";
 import { TRANSLATIONS } from "@/lib/translations";
 import { hasEpisodeAired } from "@/lib/util";
-import type { Language } from "@/lib/enums";
-import type { Episode } from "@/lib/types";
 
 export function WatchedIndicator({
   season,

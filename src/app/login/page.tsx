@@ -1,5 +1,5 @@
-import Link from "next/link";
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { PageSkeleton } from "@/components/pages/skeleton";
 import { getTitle } from "@/lib/util";

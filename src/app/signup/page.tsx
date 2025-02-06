@@ -1,5 +1,5 @@
-import Link from "next/link";
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { getTitle } from "@/lib/util";
 import { useAuth } from "@/providers/auth-provider";

@@ -1,5 +1,7 @@
+import type { ClientFetchOptions } from ".";
+import type { Language } from "../enums";
+import type { User } from "../types";
 import {
-  ClientFetchOptions,
   commonTriggerRevalidation,
   fetchFromApi,
   getUrlBase,
@@ -8,8 +10,6 @@ import {
 import { getSearchParams } from "../backend";
 import { TRANSLATIONS } from "../translations";
 import { getErrorMessage } from "../util";
-import type { Language } from "../enums";
-import type { User } from "../types";
 
 type FetchOptionsExtension = { user?: User | null } & (
   | {

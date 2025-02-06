@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import { Dispatch, SetStateAction } from "react";
+import type { NextRequest, NextResponse } from "next/server";
+import type { Dispatch, SetStateAction } from "react";
 
-import { DownloadStatus, LOG_LEVELS } from "./enums";
+import type { DownloadStatus, LOG_LEVELS } from "./enums";
 
 export interface PageContent {
   content: string;

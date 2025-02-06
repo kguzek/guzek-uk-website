@@ -1,19 +1,14 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
+import type { Language } from "@/lib/enums";
+import type { DownloadedEpisode, User } from "@/lib/types";
 import { DownloadStatus } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import { compareEpisodes } from "@/lib/util";
-import type { Language } from "@/lib/enums";
-import type { DownloadedEpisode, User } from "@/lib/types";
 
 import { useModals } from "./modal-context";
 

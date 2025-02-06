@@ -4,13 +4,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { DownloadIcon, TriangleIcon } from "lucide-react";
 
-import { useLiveSeriesContext } from "@/context/liveseries-context";
-import { useModals } from "@/context/modal-context";
-import { clientToApi } from "@/lib/backend/client";
-import { cn } from "@/lib/cn";
-import { DownloadStatus } from "@/lib/enums";
-import { TRANSLATIONS } from "@/lib/translations";
-import { bytesToReadable, compareEpisodes } from "@/lib/util";
 import type { Language } from "@/lib/enums";
 import type {
   DownloadedEpisode,
@@ -18,6 +11,13 @@ import type {
   TvShowDetails,
   User,
 } from "@/lib/types";
+import { useLiveSeriesContext } from "@/context/liveseries-context";
+import { useModals } from "@/context/modal-context";
+import { clientToApi } from "@/lib/backend/client";
+import { cn } from "@/lib/cn";
+import { DownloadStatus } from "@/lib/enums";
+import { TRANSLATIONS } from "@/lib/translations";
+import { bytesToReadable, compareEpisodes } from "@/lib/util";
 
 export function EpisodeDownloadIndicator({
   user,

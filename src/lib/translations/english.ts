@@ -1,4 +1,4 @@
-import { Translation } from ".";
+import type { Translation } from ".";
 import {
   LIVESERIES_SERVER_HOMEPAGE,
   LONG_DATE_FORMAT,

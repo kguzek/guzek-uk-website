@@ -1,14 +1,15 @@
 "use client";
 
+import type { MouseEvent } from "react";
 import Link from "next/link";
-import { MouseEvent, useState } from "react";
+import { useState } from "react";
 import { HeartIcon } from "lucide-react";
 
+import type { Language } from "@/lib/enums";
+import type { TvShowDetailsShort } from "@/lib/types";
 import { useModals } from "@/context/modal-context";
 import { clientToApi } from "@/lib/backend/client";
 import { TRANSLATIONS } from "@/lib/translations";
-import { TvShowDetailsShort } from "@/lib/types";
-import type { Language } from "@/lib/enums";
 
 import { TvShowPreviewSkeleton } from "./tv-show-preview-skeleton";
 

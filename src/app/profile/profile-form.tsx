@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { useEffect, useState } from "react";
 
+import type { Language } from "@/lib/enums";
+import type { User } from "@/lib/types";
 import { InputBox } from "@/components/forms/input-box";
 import { useModals } from "@/context/modal-context";
 import { clientToApi, triggerTokenRefresh } from "@/lib/backend/client";
 import { TRANSLATIONS } from "@/lib/translations";
-import type { Language } from "@/lib/enums";
-import type { User } from "@/lib/types";
 
 export function ProfileForm({
   user,

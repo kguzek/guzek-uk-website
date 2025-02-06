@@ -1,6 +1,7 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
+import type { ReactNode} from "react";
+import { useEffect, useState } from "react";
 import type { ClassValue } from "clsx";
 
 import { TextWithUrl } from "@/components/text-with-url";

@@ -1,12 +1,12 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
+import type { User } from "@/lib/types";
 import { ErrorComponent } from "@/components/error-component";
 import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
 import { getTitle } from "@/lib/util";
 import { useAuth } from "@/providers/auth-provider";
 import { useTranslations } from "@/providers/translation-provider";
-import type { User } from "@/lib/types";
 
 import { UserCard } from "./user-card";
 
