@@ -1,12 +1,13 @@
 import { serverToApi } from "@/lib/backend/server";
+import { MenuItem, User } from "@/lib/types";
+import { PAGE_NAME } from "@/lib/util";
+import { Logo } from "@/media/logo";
+import { useAuth } from "@/providers/auth-provider";
+import { useTranslations } from "@/providers/translation-provider";
+
+import { LanguageSelector } from "./language-selector";
 import { NavBarItem } from "./navigation-bar-client";
 import { UserWidget } from "./user-widget";
-import { MenuItem, User } from "@/lib/types";
-import { useAuth } from "@/providers/auth-provider";
-import { Logo } from "@/media/logo";
-import { PAGE_NAME } from "@/lib/util";
-import { LanguageSelector } from "./language-selector";
-import { useTranslations } from "@/providers/translation-provider";
 
 export async function NavigationBar() {
   const { userLanguage } = await useTranslations();

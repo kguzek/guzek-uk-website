@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import type { MiddlewareFactory } from "@/lib/types";
 import { useAuth } from "@/providers/auth-provider";
 

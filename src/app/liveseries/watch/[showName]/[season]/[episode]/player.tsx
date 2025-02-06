@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import React, { useRef, useState } from "react";
+
 import { useModals } from "@/context/modal-context";
-import { TRANSLATIONS } from "@/lib/translations";
 import { Language } from "@/lib/enums";
+import { TRANSLATIONS } from "@/lib/translations";
 
 const VIDEO_FRAME_RATE = 25; // frames per second
 const VIDEO_FRAME_LENGTH = 1 / VIDEO_FRAME_RATE; // seconds per frame

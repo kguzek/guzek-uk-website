@@ -1,9 +1,10 @@
 import { ReactNode } from "react";
-import { MiniNavBar } from "@/components/navigation/navigation-bar-client";
+
 import { ErrorComponent } from "@/components/error-component";
+import { MiniNavBar } from "@/components/navigation/navigation-bar-client";
 import { ErrorCode } from "@/lib/enums";
-import { useTranslations } from "@/providers/translation-provider";
 import { useAuth } from "@/providers/auth-provider";
+import { useTranslations } from "@/providers/translation-provider";
 
 export default async function AdminLayout({
   children,
@@ -22,7 +23,7 @@ export default async function AdminLayout({
       <MiniNavBar
         pathBase="admin"
         pages={[
-          { link: "content-manager", label: data.admin.contentManager.title },
+          // { link: "content-manager", label: data.admin.contentManager.title },
           { link: "users", label: data.admin.users.title },
           { link: "logs", label: data.admin.logs.title },
         ]}

@@ -1,11 +1,12 @@
 "use client";
 
 import { ClockIcon, EyeIcon, EyeOffIcon } from "lucide-react";
-import type { Language } from "@/lib/enums";
-import type { Episode } from "@/lib/types";
-import { TRANSLATIONS } from "@/lib/translations";
-import { hasEpisodeAired } from "@/lib/util";
+
 import { useTvShowContext } from "@/context/tv-show-context";
+import type { Language } from "@/lib/enums";
+import { TRANSLATIONS } from "@/lib/translations";
+import type { Episode } from "@/lib/types";
+import { hasEpisodeAired } from "@/lib/util";
 
 export function WatchedIndicator({
   season,

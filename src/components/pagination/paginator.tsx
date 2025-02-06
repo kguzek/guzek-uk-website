@@ -1,4 +1,5 @@
 import { useTranslations } from "@/providers/translation-provider";
+
 import { PageIndicator } from "./page-indicator";
 import "./pagination.css";
 

@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { ErrorCode } from "@/lib/enums";
-import { PAGE_NAME } from "@/lib/util";
-import { Translation, TRANSLATIONS } from "@/lib/translations";
-import { useTranslations } from "@/providers/translation-provider";
 import { ReactNode } from "react";
+
+import { ErrorCode } from "@/lib/enums";
+import { TRANSLATIONS, Translation } from "@/lib/translations";
+import { PAGE_NAME } from "@/lib/util";
+import { useTranslations } from "@/providers/translation-provider";
 
 const serialiseError = (
   error: ErrorCode,

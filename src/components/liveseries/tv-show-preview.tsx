@@ -1,14 +1,17 @@
 "use client";
 
-import { MouseEvent, useState } from "react";
 import Link from "next/link";
-import { TvShowDetailsShort } from "@/lib/types";
+import { MouseEvent, useState } from "react";
+
+import { HeartIcon } from "lucide-react";
+
+import { useModals } from "@/context/modal-context";
+import { clientToApi } from "@/lib/backend/client";
 import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
-import { clientToApi } from "@/lib/backend/client";
-import { useModals } from "@/context/modal-context";
+import { TvShowDetailsShort } from "@/lib/types";
+
 import { TvShowPreviewSkeleton } from "./tv-show-preview-skeleton";
-import { HeartIcon } from "lucide-react";
 
 export function TvShowPreview({
   idx,

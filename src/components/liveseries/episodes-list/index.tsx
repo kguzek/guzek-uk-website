@@ -1,17 +1,20 @@
 import { ReactNode } from "react";
+
 import { ChevronRightIcon, ClockIcon } from "lucide-react";
+
+import { serverToApi } from "@/lib/backend/server";
 import type {
   Episode as EpisodeType,
+  ShowData,
   TvShowDetails,
   WatchedEpisodes,
-  ShowData,
 } from "@/lib/types";
 import { getEpisodeAirDate, hasEpisodeAired } from "@/lib/util";
-import { useTranslations } from "@/providers/translation-provider";
-import { EpisodeWatchedIndicator } from "./episode-watched-indicator";
-import { serverToApi } from "@/lib/backend/server";
-import { EpisodeDownloadIndicator } from "./episode-download-indicator";
 import { useAuth } from "@/providers/auth-provider";
+import { useTranslations } from "@/providers/translation-provider";
+
+import { EpisodeDownloadIndicator } from "./episode-download-indicator";
+import { EpisodeWatchedIndicator } from "./episode-watched-indicator";
 
 async function Episode({
   episode,

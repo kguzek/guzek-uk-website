@@ -1,8 +1,9 @@
 import { cookies } from "next/headers";
 import type { NextRequest, NextResponse } from "next/server";
+
+import { serverToApi } from "@/lib/backend/server";
 import type { User } from "@/lib/types";
 import { isInvalidDate } from "@/lib/util";
-import { serverToApi } from "@/lib/backend/server";
 
 const USER_REQUIRED_PROPERTIES = [
   "uuid",

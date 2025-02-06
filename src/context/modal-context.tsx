@@ -1,10 +1,11 @@
 "use client";
 
-import { createContext, ReactNode, useContext, useState } from "react";
+import { ReactNode, createContext, useContext, useState } from "react";
+
 import { Modal } from "@/components/modal";
 import type { Language } from "@/lib/enums";
-import type { ModalHandler } from "@/lib/types";
 import { TRANSLATIONS } from "@/lib/translations";
+import type { ModalHandler } from "@/lib/types";
 
 export const ModalContext = createContext<{
   modalChoice: string | undefined;

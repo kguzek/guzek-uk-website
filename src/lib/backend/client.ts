@@ -6,10 +6,10 @@ import {
   prepareRequest,
 } from ".";
 import { getSearchParams } from "../backend";
-import { getErrorMessage } from "../util";
 import type { Language } from "../enums";
-import type { User } from "../types";
 import { TRANSLATIONS } from "../translations";
+import type { User } from "../types";
+import { getErrorMessage } from "../util";
 
 type FetchOptionsExtension = { user?: User | null } & (
   | {

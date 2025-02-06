@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { scrollToElement } from "@/lib/util";
+
 import { CarouselArrow, CarouselIndicator } from "@/components/carousel";
 import { TvShowPreview } from "@/components/liveseries/tv-show-preview";
+import { useModals } from "@/context/modal-context";
 import { useScroll } from "@/hooks/scroll";
-import type { LikedShows } from "@/lib/types";
 import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
-import { useModals } from "@/context/modal-context";
+import type { LikedShows } from "@/lib/types";
+import { scrollToElement } from "@/lib/util";
 
 // Number of skeleton cards to display when loading liked show ids
 const SKELETON_CARDS_COUNT = 4;

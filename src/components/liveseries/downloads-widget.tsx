@@ -1,19 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+
 import { ChevronUpIcon, Trash2Icon } from "lucide-react";
-import type { DownloadedEpisode, User } from "@/lib/types";
+
+import { useLanguageSelector } from "@/context/language-selector-context";
+import { useLiveSeriesContext } from "@/context/liveseries-context";
+import { useModals } from "@/context/modal-context";
+import { clientToApi } from "@/lib/backend/client";
+import { cn } from "@/lib/cn";
 import { DownloadStatus } from "@/lib/enums";
 import type { Language } from "@/lib/enums";
-import { bytesToReadable, getDuration } from "@/lib/util";
 import { TRANSLATIONS } from "@/lib/translations";
-import { clientToApi } from "@/lib/backend/client";
-import { useModals } from "@/context/modal-context";
-import { useLiveSeriesContext } from "@/context/liveseries-context";
+import type { DownloadedEpisode, User } from "@/lib/types";
+import { bytesToReadable, getDuration } from "@/lib/util";
+
 import "./downloads-widget.css";
-import { useLanguageSelector } from "@/context/language-selector-context";
-import { cn } from "@/lib/utils";
 
 export function DownloadsWidget({
   user,

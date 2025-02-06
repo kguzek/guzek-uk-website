@@ -1,21 +1,22 @@
-import Link from "next/link";
 import type { Metadata } from "next";
-import { EpisodesList } from "@/components/liveseries/episodes-list";
+import Link from "next/link";
+
 import { ErrorComponent } from "@/components/error-component";
+import { EpisodesList } from "@/components/liveseries/episodes-list";
 import { LikedShowsCarousel } from "@/components/liveseries/liked-shows-carousel";
+import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
 import type {
   Episode,
+  LikedShows,
   ShowData,
   TvShowDetails,
-  WatchedEpisodes,
-  LikedShows,
   UserShows,
+  WatchedEpisodes,
 } from "@/lib/types";
 import { getTitle, hasEpisodeAired } from "@/lib/util";
-import { useTranslations } from "@/providers/translation-provider";
-import { serverToApi } from "@/lib/backend/server";
 import { useAuth } from "@/providers/auth-provider";
+import { useTranslations } from "@/providers/translation-provider";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data } = await useTranslations();

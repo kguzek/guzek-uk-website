@@ -1,12 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { User } from "@/lib/types";
+
+import { cn } from "@/lib/cn";
 import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
+import type { User } from "@/lib/types";
 
 export function UserWidget({
   user,

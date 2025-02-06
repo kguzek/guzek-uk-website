@@ -1,11 +1,12 @@
-import { Language } from "@/lib/enums";
-import type { UserShows, TvShowList } from "@/lib/types";
-import { Paginator } from "@/components/pagination/paginator";
 import { NumericValue } from "@/components/numeric-value";
-import { TvShowPreview } from "./tv-show-preview";
-import { TRANSLATIONS } from "@/lib/translations";
+import { Paginator } from "@/components/pagination/paginator";
 import { serverToApi } from "@/lib/backend/server";
+import { Language } from "@/lib/enums";
+import { TRANSLATIONS } from "@/lib/translations";
+import type { TvShowList, UserShows } from "@/lib/types";
 import { useAuth } from "@/providers/auth-provider";
+
+import { TvShowPreview } from "./tv-show-preview";
 
 const RESULTS_PER_PAGE = 20;
 

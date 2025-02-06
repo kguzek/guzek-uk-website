@@ -1,10 +1,12 @@
-import { useTranslations } from "@/providers/translation-provider";
-import { SearchForm } from "./search-form";
+import { Metadata } from "next";
+
+import { TvShowPreviewList } from "@/components/liveseries/tv-show-preview-list";
 import { serverToApi } from "@/lib/backend/server";
 import { TvShowList } from "@/lib/types";
-import { TvShowPreviewList } from "@/components/liveseries/tv-show-preview-list";
 import { getTitle } from "@/lib/util";
-import { Metadata } from "next";
+import { useTranslations } from "@/providers/translation-provider";
+
+import { SearchForm } from "./search-form";
 
 export async function generateMetadata({
   searchParams,

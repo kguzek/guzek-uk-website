@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
 import { headers } from "next/headers";
+import { NextResponse } from "next/server";
+
 import type { MiddlewareFactory } from "@/lib/types";
 
 export const redirectMiddleware: MiddlewareFactory = (next) =>

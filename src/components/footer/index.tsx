@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import { Logo } from "@/media/logo";
 import { useTranslations } from "@/providers/translation-provider";
 

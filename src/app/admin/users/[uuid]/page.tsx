@@ -1,11 +1,12 @@
 import { ErrorComponent } from "@/components/error-component";
+import { serverToApi } from "@/lib/backend/server";
+import { ErrorCode } from "@/lib/enums";
 import type { User } from "@/lib/types";
 import { getTitle } from "@/lib/util";
-import { serverToApi } from "@/lib/backend/server";
-import { useTranslations } from "@/providers/translation-provider";
-import { UserEditor } from "./user-editor";
-import { ErrorCode } from "@/lib/enums";
 import { useAuth } from "@/providers/auth-provider";
+import { useTranslations } from "@/providers/translation-provider";
+
+import { UserEditor } from "./user-editor";
 
 interface Props {
   params: Promise<{ uuid: string }>;

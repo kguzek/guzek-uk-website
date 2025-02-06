@@ -1,6 +1,6 @@
 import { TvShowPreviewList } from "@/components/liveseries/tv-show-preview-list";
-import { TvShowList } from "@/lib/types";
 import { serverToApi } from "@/lib/backend/server";
+import { TvShowList } from "@/lib/types";
 import { getTitle } from "@/lib/util";
 import { useTranslations } from "@/providers/translation-provider";
 

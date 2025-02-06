@@ -1,13 +1,14 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { FormEvent, useEffect, useState } from "react";
+
 import { InputBox } from "@/components/forms/input-box";
 import { LoadingButton } from "@/components/loading/loading-button";
-import type { Language } from "@/lib/enums";
 import { useModals } from "@/context/modal-context";
-import { TRANSLATIONS } from "@/lib/translations";
 import { clientToApi } from "@/lib/backend/client";
+import type { Language } from "@/lib/enums";
+import { TRANSLATIONS } from "@/lib/translations";
 
 export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
   const [email, setEmail] = useState("");

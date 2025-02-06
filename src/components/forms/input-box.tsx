@@ -1,7 +1,8 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { ChangeEvent, createRef, ReactNode, useEffect } from "react";
+import { ChangeEvent, ReactNode, createRef, useEffect } from "react";
+
+import { cn } from "@/lib/cn";
 
 export function InputBox({
   label,

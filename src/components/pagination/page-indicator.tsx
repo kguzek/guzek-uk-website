@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+
 import { getSearchParams } from "@/lib/backend";
-import { TRANSLATIONS } from "@/lib/translations";
+import { cn } from "@/lib/cn";
 import type { Language } from "@/lib/enums";
-import { cn } from "@/lib/utils";
+import { TRANSLATIONS } from "@/lib/translations";
 
 export function PageIndicator({
   page,
