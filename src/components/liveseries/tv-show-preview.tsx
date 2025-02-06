@@ -1,6 +1,7 @@
 "use client";
 
 import type { MouseEvent } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { HeartIcon } from "lucide-react";
@@ -84,7 +85,7 @@ export function TvShowPreview({
           </button>
         </div>
         <Link href={link} title={showDetails?.name}>
-          <img
+          <Image
             className="block h-[300px] w-full bg-cover bg-center object-cover"
             src={showDetails?.image_thumbnail_path}
             alt={showDetails?.name + " thumbnail"}

@@ -5,7 +5,7 @@ import type { Translation } from "@/lib/translations";
 import { ErrorCode } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import { PAGE_NAME } from "@/lib/util";
-import { useTranslations } from "@/providers/translation-provider";
+import { getTranslations } from "@/providers/translation-provider";
 
 const serialiseError = (
   error: ErrorCode,
@@ -24,7 +24,7 @@ export async function ErrorComponent({
       errorResult: { ok: boolean; error: any; hasBody: boolean; data: any };
     }
 ) & { errorMessage?: ReactNode }) {
-  const { data } = await useTranslations();
+  const { data } = await getTranslations();
   if (!errorCode) {
     if (!errorResult)
       throw new Error("ErrorComponent called with no errorCode or errorResult");

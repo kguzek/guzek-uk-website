@@ -1,4 +1,4 @@
-import { useTranslations } from "@/providers/translation-provider";
+import { getTranslations } from "@/providers/translation-provider";
 
 import { PageIndicator } from "./page-indicator";
 
@@ -13,7 +13,7 @@ export async function Paginator({
   numPages: number;
   searchParams: Record<string, string>;
 }) {
-  const { userLanguage } = await useTranslations();
+  const { userLanguage } = await getTranslations();
   const pages: (undefined | number)[] = [1];
 
   function addPage(page: number) {

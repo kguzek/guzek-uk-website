@@ -1,10 +1,10 @@
 import Link from "next/link";
 
 import { Logo } from "@/media/logo";
-import { useTranslations } from "@/providers/translation-provider";
+import { getTranslations } from "@/providers/translation-provider";
 
 export async function Footer() {
-  const { data } = await useTranslations();
+  const { data } = await getTranslations();
   const version = process.env.npm_package_version;
   return (
     <footer className="mt-10">

@@ -5,7 +5,7 @@ import { TRANSLATIONS } from "@/lib/translations";
 
 const DEFAULT_LANGUAGE = Language.EN;
 
-export async function useTranslations() {
+export async function getTranslations() {
   const cookieStore = await cookies();
   let language = DEFAULT_LANGUAGE;
   const languageString = cookieStore.get("lang")?.value;

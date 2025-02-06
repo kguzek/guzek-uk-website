@@ -1,15 +1,21 @@
 // @ts-check
 
-import eslint from "@eslint/js";
-import tseslint from "typescript-eslint";
+import { FlatCompat } from "@eslint/eslintrc";
 
-export default tseslint.config(
-  eslint.configs.recommended,
-  tseslint.configs.recommended,
-  {
+const compat = new FlatCompat({
+  // import.meta.dirname is available after Node.js v20.11.0
+  baseDirectory: import.meta.dirname,
+});
+
+const config = [
+  ...compat.config({
+    extends: ["next/core-web-vitals", "next/typescript"],
     rules: {
       "@typescript-eslint/consistent-type-imports": "error",
       "@typescript-eslint/no-import-type-side-effects": "error",
+      "react-hooks/exhaustive-deps": "off",
     },
-  },
-);
+  }),
+];
+
+export default config;

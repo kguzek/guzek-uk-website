@@ -131,7 +131,7 @@ function tokenWillExpireSoon(exp: number, thresholdMinutes = 5) {
  *
  * @param response If provided, the request object to use for automatically refreshing the access token and saving the new one to cookies.
  */
-export async function useAuth(
+export async function getAuth(
   request?: NextRequest,
   response?: NextResponse,
 ): Promise<

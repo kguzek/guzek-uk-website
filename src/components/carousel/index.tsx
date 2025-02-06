@@ -8,6 +8,8 @@ import { scrollToElement } from "@/lib/util";
 
 import "./carousel.css";
 
+import Image from "next/image";
+
 export function ImageGallery({
   className = "",
   images,
@@ -53,7 +55,7 @@ export function ImageGallery({
       <CarouselArrow left onClick={previousImage} />
       <div ref={carouselRef} className={cn("carousel scroll-x", className)}>
         {images.map((url, idx) => (
-          <img
+          <Image
             key={idx}
             id={`image-${idx + 1}`}
             alt={`gallery image ${idx + 1}`}

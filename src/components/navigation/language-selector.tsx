@@ -10,13 +10,13 @@ import { cn } from "@/lib/cn";
 import { TRANSLATIONS } from "@/lib/translations";
 import { setLanguageCookie } from "@/lib/util";
 
-// import { useTranslations } from "@/providers/translation-provider";
+// import { getTranslations } from "@/providers/translation-provider";
 // import { InferGetServerSidePropsType } from "next";
 // import { NextRequest } from "next/server";
 
 // function getServerSideProps(req: NextRequest) {
 //   return {
-//     props: useTranslations(req),
+//     props: getTranslations(req),
 //   };
 // }
 
