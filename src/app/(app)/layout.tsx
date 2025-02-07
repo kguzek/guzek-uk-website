@@ -59,7 +59,7 @@ export default async function RootLayout({
   return (
     <html
       lang={userLanguage.toLowerCase()}
-      className={cn(raleway.variable, robotoSlab.variable)}
+      className={cn("dark", raleway.variable, robotoSlab.variable)}
     >
       <head>
         <link rel="icon" href="/favicon.ico" />

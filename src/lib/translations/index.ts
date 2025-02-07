@@ -72,6 +72,9 @@ export type Translation = Readonly<{
     yes: string;
     no: string;
   };
+  projects: {
+    title: string;
+  };
   liveSeries: {
     title: string;
     whatsThis: string;

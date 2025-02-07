@@ -62,6 +62,8 @@ export function ImageGallery({
             src={url}
             onLoad={onLoadImage}
             onError={onLoadImage}
+            width={1000}
+            height={600}
           />
         ))}
       </div>

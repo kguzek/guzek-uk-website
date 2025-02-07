@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 
-import { isAdmin, validateUrl } from "@/lib/payload";
+import { ALPHANUMERIC_PATTERN, isAdmin, validateUrl } from "@/lib/payload";
 
 export const Projects: CollectionConfig = {
   slug: "projects",
@@ -12,6 +12,14 @@ export const Projects: CollectionConfig = {
   },
   fields: [
     {
+      name: "slug",
+      type: "text",
+      required: true,
+      unique: true,
+      validate: (value?: string | null) =>
+        ALPHANUMERIC_PATTERN.test(value ?? "") || "Invalid slug",
+    },
+    {
       name: "title",
       type: "text",
       localized: true,
@@ -19,49 +27,33 @@ export const Projects: CollectionConfig = {
     },
     {
       name: "description",
-      type: "text",
+      type: "richText",
       localized: true,
       required: true,
     },
     {
-      name: "url",
-      label: "URL",
-      type: "text",
-      validate: validateUrl,
-    },
-    {
       name: "repository",
+      label: "Repository URL",
       type: "text",
       validate: validateUrl,
     },
     {
-      name: "images",
-      type: "array",
-      fields: [
-        {
-          name: "image",
-          type: "relationship",
-          relationTo: "media",
-        },
-        {
-          name: "isMain",
-          label: "Main image",
-          type: "checkbox",
-          defaultValue: false,
-        },
-      ],
-      validate: (images) => {
-        if (!images) return "You must upload at least one image.";
-        let numMainImages = 0;
-        for (const image of images) {
-          const isMain = (image as { isMain: boolean }).isMain;
-          if (isMain) numMainImages++;
-          if (numMainImages > 1) {
-            return "You can only have one main image.";
-          }
-        }
-        return numMainImages === 1 || "There must a main image selected.";
-      },
+      name: "url",
+      label: "Showcase URL",
+      type: "text",
+      validate: validateUrl,
+    },
+    {
+      name: "mainImage",
+      type: "relationship",
+      relationTo: "media",
+      required: true,
+    },
+    {
+      name: "extraImages",
+      type: "relationship",
+      relationTo: "media",
+      hasMany: true,
     },
   ],
 };
