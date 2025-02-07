@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 
 import { DownloadsWidget } from "@/components/liveseries/downloads-widget";
-import { MiniNavBar } from "@/components/navigation/navigation-bar-client";
 import { LiveSeriesProvider } from "@/lib/context/liveseries-context";
 import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
@@ -11,7 +10,7 @@ export default async function LiveSeriesLayout({
 }: {
   children: ReactNode;
 }) {
-  const { data, userLanguage } = await getTranslations();
+  const { userLanguage } = await getTranslations();
   const { user, accessToken } = await getAuth();
   return (
     <div className="text liveseries">
@@ -27,17 +26,6 @@ export default async function LiveSeriesLayout({
             accessToken={accessToken}
           />
         )}
-        <MiniNavBar
-          pathBase="liveseries"
-          pages={[
-            { link: "", label: data.liveSeries.home.title },
-            { link: "search", label: data.liveSeries.search.title },
-            {
-              link: "most-popular",
-              label: data.liveSeries.mostPopular.title,
-            },
-          ]}
-        />
         {children}
       </LiveSeriesProvider>
     </div>

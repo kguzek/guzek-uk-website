@@ -105,6 +105,9 @@ export const POLISH: Translation = {
     yes: "Tak",
     no: "Nie",
   },
+  projects: {
+    title: "Projekty",
+  },
   liveSeries: {
     title: "LiveSeries",
     whatsThis: "Co to?",

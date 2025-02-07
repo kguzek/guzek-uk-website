@@ -1,6 +1,7 @@
 import type { CollectionConfig, NumberField } from "payload";
 
 import {
+  ALPHANUMERIC_PATTERN,
   isAdmin,
   isAdminFieldLevel,
   isAdminOrSelf,
@@ -47,7 +48,7 @@ export const Users: CollectionConfig = {
       minLength: 4,
       maxLength: 20,
       validate: (value?: string | null) =>
-        /^[a-zA-Z0-9][\w-]+[a-zA-Z0-9]$/.test(value ?? "") ||
+        ALPHANUMERIC_PATTERN.test(value ?? "") ||
         "Invalid username. Allowed characters: a-z, A-Z, 0-9, _, -",
     },
     {

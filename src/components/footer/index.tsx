@@ -21,7 +21,7 @@ export async function Footer() {
           </Link>
         </small>
         <small className="text-xs">
-          Next.js (main{version ? ` v${version}` : ""})
+          Next.js (payload{version ? ` v${version}` : ""})
         </small>
       </div>
     </footer>

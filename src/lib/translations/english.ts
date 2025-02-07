@@ -104,6 +104,9 @@ export const ENGLISH: Translation = {
     yes: "Yes",
     no: "No",
   },
+  projects: {
+    title: "Projects",
+  },
   liveSeries: {
     title: "LiveSeries",
     whatsThis: "What's this?",

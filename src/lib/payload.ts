@@ -5,6 +5,8 @@ import type {
   ValidateOptions,
 } from "payload";
 
+export const ALPHANUMERIC_PATTERN = /^[a-zA-Z0-9][\w-]+[a-zA-Z0-9]$/;
+
 export const isAdminFieldLevel: FieldAccess = ({ req: { user } }) =>
   user?.role === "admin";
 

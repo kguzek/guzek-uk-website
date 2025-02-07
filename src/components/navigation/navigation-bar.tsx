@@ -5,13 +5,35 @@ import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { PAGE_NAME } from "@/lib/util";
 
+import type { Parallels } from "./navigation-bar-client";
 import { LanguageSelector } from "./language-selector";
-import { NavBarItem } from "./navigation-bar-client";
+import { Breadcrumbs, NavBarItem } from "./navigation-bar-client";
 import { UserWidget } from "./user-widget";
 
 export async function NavigationBar() {
-  const { userLanguage } = await getTranslations();
+  const { data, userLanguage } = await getTranslations();
   const { user } = await getAuth();
+  const projectSlugs = [{ label: "Slav King", path: "slav-king" }];
+  const parallels: Parallels = [
+    null,
+    [
+      { label: data.liveSeries.title, path: "liveseries" },
+      { label: data.projects.title, path: "projects" },
+      user
+        ? { label: data.profile.title, path: "profile" }
+        : { label: data.profile.formDetails.login, path: "login" },
+    ],
+    {
+      liveseries: [
+        { label: data.liveSeries.search.title, path: "search" },
+        {
+          label: data.liveSeries.mostPopular.title,
+          path: "most-popular",
+        },
+      ],
+      projects: projectSlugs,
+    },
+  ];
   return (
     <>
       <nav className="flex items-center gap-4 px-4 py-2 lg:gap-6">
@@ -53,6 +75,7 @@ export async function NavigationBar() {
         </div>
       </nav>
       <hr />
+      <Breadcrumbs parallels={parallels} />
     </>
   );
 }

@@ -133,17 +133,27 @@ export interface Media {
  */
 export interface Project {
   id: number;
+  slug: string;
   title: string;
-  description: string;
-  url?: string | null;
+  description: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
   repository?: string | null;
-  images?:
-    | {
-        image?: (number | null) | Media;
-        isMain?: boolean | null;
-        id?: string | null;
-      }[]
-    | null;
+  url?: string | null;
+  mainImage: number | Media;
+  extraImages?: (number | Media)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -288,17 +298,13 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "projects_select".
  */
 export interface ProjectsSelect<T extends boolean = true> {
+  slug?: T;
   title?: T;
   description?: T;
-  url?: T;
   repository?: T;
-  images?:
-    | T
-    | {
-        image?: T;
-        isMain?: T;
-        id?: T;
-      };
+  url?: T;
+  mainImage?: T;
+  extraImages?: T;
   updatedAt?: T;
   createdAt?: T;
 }

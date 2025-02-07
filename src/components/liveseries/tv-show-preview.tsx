@@ -89,6 +89,8 @@ export function TvShowPreview({
             className="block h-[300px] w-full bg-cover bg-center object-cover"
             src={showDetails?.image_thumbnail_path}
             alt={showDetails?.name + " thumbnail"}
+            width={240}
+            height={600}
           />
         </Link>
       </div>

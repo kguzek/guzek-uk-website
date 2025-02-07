@@ -1,7 +1,9 @@
 import type { Config } from "tailwindcss";
 import typography from "@tailwindcss/typography";
+import tailwindAnimate from "tailwindcss-animate";
 
 const config: Config = {
+  darkMode: ["class"],
   content: ["./src/**/*.tsx"],
   theme: {
     extend: {
@@ -41,9 +43,14 @@ const config: Config = {
         sans: ["var(--font-raleway)"],
         serif: ["var(--font-roboto-slab)"],
       },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
     },
   },
-  plugins: [typography],
+  plugins: [typography, tailwindAnimate],
 };
 
 export default config;

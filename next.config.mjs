@@ -11,6 +11,13 @@ const nextConfig = {
         hostname:
           "avatar-management--avatars.us-west-2.prod.public.atl-paas.net",
       },
+      {
+        // GitHub project shields
+        hostname: "img.shields.io",
+      },
+      {
+        hostname: "static.episodate.com",
+      },
     ],
   },
 };
