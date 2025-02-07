@@ -29,7 +29,7 @@ export function UserWidget({
       href={user ? "/profile" : "/login"}
       className="group max-w-[90%] font-light text-primary sm:max-w-full"
     >
-      <div className="flex flex-col items-center gap-1">
+      <div className="flex flex-col items-center gap-1 min-w-20">
         <Image alt="User avatar" width={40} height={40} src={imgUrl} />
         <p
           className={cn(

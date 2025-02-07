@@ -16,5 +16,6 @@ export async function getTranslations() {
   return {
     data: TRANSLATIONS[language],
     userLanguage: language,
-  };
+    userLocale: language === Language.PL ? "pl" : "en",
+  } as const;
 }

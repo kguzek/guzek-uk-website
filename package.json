@@ -2,6 +2,7 @@
   "name": "guzek-uk-website",
   "homepage": "https://www.guzek.uk/",
   "version": "3.1.0",
+  "type": "module",
   "engines": {
     "node": "^22.3.0"
   },
@@ -17,6 +18,7 @@
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.21.0",
+    "@payloadcms/email-nodemailer": "^3.21.0",
     "@payloadcms/next": "^3.21.0",
     "@payloadcms/payload-cloud": "^3.21.0",
     "@payloadcms/richtext-lexical": "^3.21.0",
