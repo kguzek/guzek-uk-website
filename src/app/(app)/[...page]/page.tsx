@@ -10,17 +10,17 @@ type Props = {
   params: Promise<{ page: string[] }>;
 };
 
-const pageFromParams = async ({ params }: Props) =>
+const slugFromParams = async ({ params }: Props) =>
   `/${(await params).page.join("/")}`;
 
 export async function generateMetadata(props: Props) {
   const { data } = await getTranslations();
-  const currentPage = await getPageBySlug(await pageFromParams(props));
+  const currentPage = await getPageBySlug(await slugFromParams(props));
   return {
     title: getTitle(currentPage?.title || data.error[ErrorCode.NotFound].title),
   };
 }
 
 export default async function Page(props: Props) {
-  return <DynamicPageLoader page={await pageFromParams(props)} />;
+  return <DynamicPageLoader slug={await slugFromParams(props)} />;
 }

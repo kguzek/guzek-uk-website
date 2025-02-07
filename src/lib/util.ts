@@ -4,6 +4,8 @@ import type { Translation } from "./translations";
 import type { DownloadedEpisode, Episode } from "./types";
 import { Language } from "./enums";
 
+const PRODUCTION_MODE = process.env.NODE_ENV !== "development";
+
 export const PAGE_NAME = "Guzek UK";
 
 export function getTitle(
@@ -125,8 +127,8 @@ export const getLanguageCookieOptions = () =>
     expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
     path: "/",
     sameSite: "lax",
-    domain: ".guzek.uk",
-    secure: process.env.NODE_ENV !== "development",
+    domain: PRODUCTION_MODE ? ".guzek.uk" : undefined,
+    secure: PRODUCTION_MODE,
   }) as const;
 
 export function setLanguageCookie(langString: string) {

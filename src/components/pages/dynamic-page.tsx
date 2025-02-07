@@ -1,15 +1,25 @@
-import type { MenuItem, PageContent } from "@/lib/types";
+import { getPayload } from "payload";
+import config from "@payload-config";
+import { RichText } from "@payloadcms/richtext-lexical/react";
+
+import type { Page } from "@/payload-types";
 import { ErrorComponent } from "@/components/error-component";
-import { serverToApi, triggerRevalidation } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
+import { getTranslations } from "@/lib/providers/translation-provider";
 
 export async function getPageBySlug(slug: string) {
-  const result = await serverToApi<MenuItem[]>("pages");
-  if (!result.ok) {
-    console.error("Failed to fetch pages", result);
+  const { userLocale } = await getTranslations();
+  const payload = await getPayload({ config });
+  const result = await payload.find({
+    collection: "pages",
+    where: { slug: { equals: slug } },
+    limit: 1,
+    locale: userLocale,
+  });
+  if (result.totalDocs === 0) {
     return null;
   }
-  return result.data.find((item) => item.shouldFetch && item.url === slug);
+  return result.docs[0];
 }
 
 type SchemaValue = string | Record<string, string>;
@@ -80,8 +90,8 @@ const SCHEMA_LD_DEFINITIONS: {
   },
 };
 
-function JsonLdScript({ page }: { page: MenuItem }) {
-  const definition = SCHEMA_LD_DEFINITIONS[page.url];
+function JsonLdScript({ page }: { page: Page }) {
+  const definition = SCHEMA_LD_DEFINITIONS[page.slug];
   if (definition == null) return null;
   return (
     <script
@@ -91,23 +101,15 @@ function JsonLdScript({ page }: { page: MenuItem }) {
   );
 }
 
-export async function DynamicPageLoader({ page }: { page: string }) {
-  const currentPage = await getPageBySlug(page);
-  if (!currentPage) return <ErrorComponent errorCode={ErrorCode.NotFound} />;
-  const result = await serverToApi<PageContent>(`pages/${currentPage.id}`);
-  if (!result.ok) return <ErrorComponent errorResult={result} />;
-  if (!result.data.content) {
-    console.error("Failed to fetch page content; response data:", result.data);
-    await triggerRevalidation(`pages/${currentPage.id}`);
-    return <ErrorComponent errorCode={ErrorCode.NotFound} />;
-  }
+export async function DynamicPageLoader({ slug }: { slug: string }) {
+  const page = await getPageBySlug(slug);
+  if (!page) return <ErrorComponent errorCode={ErrorCode.NotFound} />;
   return (
     <div className="text flex justify-center">
-      <JsonLdScript page={currentPage} />
-      <div
-        className="page-content prose mt-6"
-        dangerouslySetInnerHTML={{ __html: result.data.content }}
-      ></div>
+      <JsonLdScript page={page} />
+      <div className="prose mt-6">
+        <RichText data={page.content} />
+      </div>
     </div>
   );
 }

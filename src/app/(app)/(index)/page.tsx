@@ -12,5 +12,5 @@ export async function generateMetadata() {
 }
 
 export default function Index() {
-  return <DynamicPageLoader page="/" />;
+  return <DynamicPageLoader slug="/" />;
 }
