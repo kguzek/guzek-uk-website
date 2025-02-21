@@ -11,6 +11,9 @@ const ROUTES_REQUIRING_AUTH = [
 const ROUTES_REQUIRING_NOAUTH = ["/login", "/signup"];
 const ROUTES_REQUIRING_ADMIN = ["/admin-legacy"];
 
+const PAGINATED_REGEX =
+  /^(\/liveseries\/(?:search\/[^\/]+|most-popular))(?:\/[^\/]*[^\/\d].*)?$/;
+
 export const authMiddleware: MiddlewareFactory = (next) =>
   async function (request) {
     function redirect(to: string) {
@@ -42,6 +45,12 @@ export const authMiddleware: MiddlewareFactory = (next) =>
           return redirect("/error/403");
         }
       }
+    }
+
+    // redirect to first page of liveseries/search/:query and liveseries/most-popular if the page is invalid or missing
+    const match = PAGINATED_REGEX.exec(request.nextUrl.pathname);
+    if (match != null) {
+      return redirect(`${match[1]}/1`);
     }
     return response;
   };

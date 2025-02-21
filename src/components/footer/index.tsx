@@ -7,7 +7,7 @@ export async function Footer() {
   const { data } = await getTranslations();
   const version = process.env.npm_package_version;
   return (
-    <footer className="mt-10">
+    <footer className="py-4">
       <hr />
       <div className="mt-4 flex items-center justify-center gap-3">
         <Logo size={20} />

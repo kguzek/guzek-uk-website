@@ -7,7 +7,7 @@ import type { LikedShows } from "@/lib/types";
 import { CarouselArrow, CarouselIndicator } from "@/components/carousel";
 import { TvShowPreview } from "@/components/liveseries/tv-show-preview";
 import { useModals } from "@/lib/context/modal-context";
-import { useScroll } from "@/lib/hooks/scroll";
+import { useElementScroll } from "@/lib/hooks/element-scroll";
 import { TRANSLATIONS } from "@/lib/translations";
 import { scrollToElement } from "@/lib/util";
 
@@ -33,7 +33,7 @@ export function LikedShowsCarousel({
     scroll: carouselScroll,
     totalWidth: carouselTotalWidth,
     visibleWidth: carouselVisibleWidth,
-  } = useScroll(carouselRef);
+  } = useElementScroll(carouselRef);
 
   useEffect(() => {
     if (!likedShowIds) {

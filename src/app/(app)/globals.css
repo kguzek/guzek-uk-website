@@ -12,6 +12,9 @@
 
   --card-width: 240px;
   --card-padding: 20px;
+
+  --navbar-height-sm: 100px;
+  --navbar-height: 80px;
 }
 
 @tailwind base;
@@ -79,6 +82,18 @@
     grid-template-rows: 1fr;
   }
 
+  @keyframes jump {
+    0%,
+    100% {
+      transform: translate-y-0;
+      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+    50% {
+      @apply -translate-y-1/4;
+      animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    }
+  }
+
   .skeleton {
     animation: 4s ease skeleton infinite;
     opacity: 0.4;
@@ -116,6 +131,14 @@
     background-color: var(--color-accent);
     padding: 10px;
     display: block;
+  }
+
+  .genre {
+    padding: 3px 5px;
+    border-radius: 5px;
+    background-color: var(--color-primary);
+    color: var(--color-background);
+    border: 1px solid var(--color-background-strong);
   }
 }
 
@@ -162,16 +185,12 @@ video.hidden {
 }
 
 html {
-  background-color: var(--color-background-strong);
   height: 95%;
 }
 
 body {
-  background-color: var(--color-background);
-  color: var(--color-primary);
   font-family: @apply font-serif;
   font-size: 1.2rem;
-  min-height: 100%;
 }
 
 .color-primary {

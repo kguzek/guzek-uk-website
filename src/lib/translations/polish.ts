@@ -57,23 +57,23 @@ export const POLISH: Translation = {
   error: {
     400: {
       title: "Błąd Zapytania",
-      body: "Zapytanie nie zostało zrozumiane. Spróbuj ponownie.",
+      body: "Zapytanie nie zostało zrozumiane. Spróbuj ponownie",
     },
     401: {
       title: "Nieautoryzowano",
-      body: "Ta strona jest dostępna tylko dla zalogowanych użytkowników.",
+      body: "Ta strona jest dostępna tylko dla zalogowanych użytkowników",
     },
     403: {
       title: "Zabroniono",
-      body: "Nie masz uprawnień do wyświetlania tego zasobu.",
+      body: "Nie masz uprawnień do wyświetlania tego zasobu",
     },
     404: {
       title: "Nie Znaleziono",
-      body: "Nie znaleziono zasobu, którego szukasz.",
+      body: "Nie znaleziono zasobu, którego szukasz",
     },
     500: {
       title: "Błąd Serwera",
-      body: "Nastąpił błąd serwera. Spróbuj ponownie później.",
+      body: "Nastąpił błąd serwera. Spróbuj ponownie później",
     },
   },
   admin: {
@@ -116,6 +116,8 @@ export const POLISH: Translation = {
       showing: "Wynik",
       of: "z",
       page: "Strona",
+      next: "Następna",
+      previous: "Poprzednia",
     },
     tvShow: {
       title: "Dane Serialu",

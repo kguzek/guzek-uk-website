@@ -3,7 +3,7 @@
 import type { ChangeEvent, ReactNode } from "react";
 import { createRef, useEffect } from "react";
 
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 export function InputBox<V extends string | number | boolean>({
   label,

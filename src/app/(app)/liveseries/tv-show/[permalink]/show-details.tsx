@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { HeartIcon, StarIcon } from "lucide-react";
@@ -12,17 +13,24 @@ import type {
   User,
   WatchedEpisodes,
 } from "@/lib/types";
-import { ImageGallery } from "@/components/carousel";
 import { InputBox } from "@/components/forms/input-box";
 import { TvShowSkeleton } from "@/components/liveseries/tv-show-skeleton";
+import {
+  Carousel,
+  CarouselArrows,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { clientToApi } from "@/lib/backend/client";
-import { cn } from "@/lib/cn";
 import { useModals } from "@/lib/context/modal-context";
 import { TvShowContext } from "@/lib/context/tv-show-context";
 import { TRANSLATIONS } from "@/lib/translations";
 import { getEpisodeAirDate, isInvalidDate } from "@/lib/util";
+import { cn } from "@/lib/utils";
 
-// Will issue a warning when trying to subscribe with more than 10 unwatched episodes
+/** Will issue a warning when trying to subscribe with more than 10 unwatched episodes. */
 const UNWATCHED_EPISODES_THRESHOLD = 10;
 
 export function ShowDetails({
@@ -44,7 +52,6 @@ export function ShowDetails({
   accessToken: string | null;
   children: ReactNode;
 }) {
-  const [numImagesLoaded, setNumImagesLoaded] = useState(0);
   const [isLiked, setIsLiked] = useState(liked);
   const [isSubscribed, setIsSubscribed] = useState(subscribed);
   const [watchedInShow, setWatchedInShow] = useState(watchedEpisodes);
@@ -163,11 +170,6 @@ export function ShowDetails({
   );
   const unwatchedEpisodesCount = totalEpisodes - watchedEpisodesCount;
 
-  const imagesLoading = numImagesLoaded < tvShowDetails.pictures.length;
-  if (imagesLoading && !imagesLoading) {
-    // TODO: remove this
-  }
-
   return (
     <div className="flex flex-col gap-1">
       <div className="flex flex-wrap items-center gap-3">
@@ -273,11 +275,28 @@ export function ShowDetails({
           <h3 className="my-5 text-2xl font-bold">
             {data.liveSeries.tvShow.images}
           </h3>
-          <ImageGallery
+          {/* <ImageGallery
             className="gallery"
             images={tvShowDetails.pictures}
-            onLoadImage={() => setNumImagesLoaded((old) => old + 1)}
-          />
+            onLoadImage={() => {}}
+          /> */}
+          <div className="flex justify-center">
+            <Carousel>
+              <CarouselContent>
+                {tvShowDetails.pictures.map((url, idx) => (
+                  <CarouselItem key={`image-${idx}`} className="max-w-fit">
+                    <Image
+                      src={url}
+                      alt={`Gallery image ${idx + 1}`}
+                      width={1000}
+                      height={600}
+                    />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselArrows />
+            </Carousel>
+          </div>
         </>
       )}
       <h3 className="my-5 text-2xl font-bold">

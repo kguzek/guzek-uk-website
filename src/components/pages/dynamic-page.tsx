@@ -103,7 +103,18 @@ function JsonLdScript({ page }: { page: Page }) {
 
 export async function DynamicPageLoader({ slug }: { slug: string }) {
   const page = await getPageBySlug(slug);
-  if (!page) return <ErrorComponent errorCode={ErrorCode.NotFound} />;
+  const { data } = await getTranslations();
+  if (!page)
+    return (
+      <ErrorComponent
+        errorCode={ErrorCode.NotFound}
+        errorMessage={
+          <p>
+            {data.error[404].body}: <code className="genre">{slug}</code>
+          </p>
+        }
+      />
+    );
   return (
     <div className="text flex justify-center">
       <JsonLdScript page={page} />
