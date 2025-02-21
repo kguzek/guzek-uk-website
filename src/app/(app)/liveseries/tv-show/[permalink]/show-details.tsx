@@ -20,8 +20,6 @@ import {
   CarouselArrows,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 import { clientToApi } from "@/lib/backend/client";
 import { useModals } from "@/lib/context/modal-context";

@@ -117,7 +117,7 @@ export function DownloadsWidget({
                 <div className="mb-[5px] h-4 w-full overflow-hidden rounded-full bg-primary">
                   <div
                     className={cn(
-                      "duration-[400ms] h-full self-start bg-success transition-all",
+                      "h-full self-start bg-success transition-all [transition-duration:400ms]",
                       {
                         "bg-accent": episode.status === DownloadStatus.COMPLETE,
                       },
