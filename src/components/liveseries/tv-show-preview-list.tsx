@@ -20,11 +20,9 @@ const DUMMY_TV_SHOWS = {
 export async function TvShowPreviewList({
   tvShows: tvShowsRaw,
   userLanguage,
-  searchParams,
 }: {
   tvShows?: TvShowList;
   userLanguage: Language;
-  searchParams: Record<string, string>;
 }) {
   const data = TRANSLATIONS[userLanguage];
 
@@ -33,9 +31,10 @@ export async function TvShowPreviewList({
   const startIdx = 1 + (tvShows.page - 1) * RESULTS_PER_PAGE;
   const endIdx = Math.min(+tvShows.total, startIdx + RESULTS_PER_PAGE - 1);
 
-  if (tvShowsRaw?.total === "0")
+  // The API used to return a string but now it returns a number. Using this to be safe.
+  if (tvShowsRaw?.total?.toString() === "0") {
     return <p>{data.liveSeries.search.noResults}</p>;
-
+  }
   const { accessToken } = await getAuth();
   const userShowsResult = await serverToApi<UserShows>(
     "liveseries/shows/personal",
@@ -44,11 +43,7 @@ export async function TvShowPreviewList({
     (userShowsResult.ok && userShowsResult.data.likedShows) || [];
 
   const paginator = (
-    <Paginator
-      currentPage={tvShows.page}
-      numPages={tvShows.pages}
-      searchParams={searchParams}
-    />
+    <Paginator currentPage={tvShows.page} totalPages={tvShows.pages} />
   );
 
   return (

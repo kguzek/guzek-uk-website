@@ -5,11 +5,11 @@ import Script from "next/script";
 
 import { Footer } from "@/components/footer";
 import { LanguageCookie } from "@/components/language-cookie";
-import { NavigationBar } from "@/components/navigation/navigation-bar";
-import { cn } from "@/lib/cn";
+import { Navigation } from "@/components/navigation";
 import { LanguageSelectorProvider } from "@/lib/context/language-selector-context";
 import { ModalProvider } from "@/lib/context/modal-context";
 import { getTranslations } from "@/lib/providers/translation-provider";
+import { cn } from "@/lib/utils";
 
 import "./forms.css";
 import "./globals.css";
@@ -59,7 +59,11 @@ export default async function RootLayout({
   return (
     <html
       lang={userLanguage.toLowerCase()}
-      className={cn("dark", raleway.variable, robotoSlab.variable)}
+      className={cn(
+        "dark bg-background-strong",
+        raleway.variable,
+        robotoSlab.variable,
+      )}
     >
       <head>
         <link rel="icon" href="/favicon.ico" />
@@ -67,15 +71,17 @@ export default async function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <link rel="canonical" href="https://www.guzek.uk" />
       </head>
-      <body>
-        <ModalProvider userLanguage={userLanguage}>
-          <LanguageSelectorProvider>
-            <LanguageCookie />
-            <NavigationBar />
-            {children}
-            <Footer />
-          </LanguageSelectorProvider>
-        </ModalProvider>
+      <body className="text-primary">
+        <div className="mt-[--navbar-height] flex min-h-[calc(100vh-var(--navbar-height))] flex-col pt-1 sm:mt-[--navbar-height-sm] sm:min-h-[calc(100vh-var(--navbar-height-sm))]">
+          <ModalProvider userLanguage={userLanguage}>
+            <LanguageSelectorProvider>
+              <LanguageCookie />
+              <Navigation />
+              <main className="flex-grow">{children}</main>
+              <Footer />
+            </LanguageSelectorProvider>
+          </ModalProvider>
+        </div>
       </body>
       <Script
         data-collect-dnt="true"

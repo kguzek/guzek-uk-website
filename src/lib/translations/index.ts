@@ -83,6 +83,8 @@ export type Translation = Readonly<{
       showing: string;
       of: string;
       page: string;
+      next: string;
+      previous: string;
     };
     tvShow: {
       title: string;

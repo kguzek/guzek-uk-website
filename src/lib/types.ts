@@ -2,6 +2,11 @@ import type { NextRequest, NextResponse } from "next/server";
 import type { Dispatch, SetStateAction } from "react";
 
 import type { DownloadStatus, LOG_LEVELS } from "./enums";
+import type { getTranslations } from "./providers/translation-provider";
+
+export type UserLocale = Awaited<
+  ReturnType<typeof getTranslations>
+>["userLocale"];
 
 export interface PageContent {
   content: string;

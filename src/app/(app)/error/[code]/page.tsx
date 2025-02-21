@@ -1,22 +1,22 @@
 import { ErrorComponent } from "@/components/error-component";
 import { ErrorCode } from "@/lib/enums";
 import { getTranslations } from "@/lib/providers/translation-provider";
-import { getTitle } from "@/lib/util";
+import { getTitle, isNumber } from "@/lib/util";
 
 type Props = {
   params: Promise<{ code: string }>;
   searchParams: Promise<{ message?: string }>;
 };
 
+const isErrorCode = (code: number): code is ErrorCode => code in ErrorCode;
+
 async function propsToErrorCode({ params, searchParams }: Props) {
-  const { code } = await params;
+  const { code: codeString } = await params;
   const { message } = await searchParams;
-  if (!code || isNaN(+code) || !Object.keys(ErrorCode).includes(code))
-    return { code: ErrorCode.NotFound, description: undefined };
-  return {
-    code: +code as ErrorCode,
-    message,
-  };
+  const code = +codeString;
+  if (!isNumber(codeString) || !isErrorCode(code))
+    return { code: ErrorCode.NotFound, message: undefined };
+  return { code, message };
 }
 
 export async function generateMetadata(props: Props) {

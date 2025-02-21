@@ -47,7 +47,7 @@ export async function ErrorComponent({
           errorMessage
         )
       ) : (
-        <p>{data.error[errorCode].body}</p>
+        <p>{data.error[errorCode].body}.</p>
       )}
       <div className="mt-3 flex justify-center">
         <div className="link-container">

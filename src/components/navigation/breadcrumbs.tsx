@@ -5,8 +5,7 @@ import { usePathname } from "next/navigation";
 import { Fragment } from "react";
 import { ChevronDown } from "lucide-react";
 
-import type { MenuItem } from "@/lib/types";
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -21,58 +20,6 @@ import {
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu";
 
-export function NavBarItem({ item }: { item: MenuItem }) {
-  const pathname = usePathname();
-
-  // Handle edge case for index page ("/")
-  const isActive =
-    item.url === "/" ? pathname === "/" : pathname?.startsWith(item.url);
-  return (
-    <Link
-      href={item.url}
-      className={cn("hover-underline text-primary", {
-        "hover-underlined text-primary-strong": isActive,
-      })}
-    >
-      {item.label || item.title}
-    </Link>
-  );
-}
-
-export function MiniNavBar({
-  pathBase,
-  pages,
-}: {
-  pathBase: string;
-  pages: {
-    link: string;
-    label: string;
-  }[];
-}) {
-  const pathname = usePathname();
-
-  const isActive = (path: string) =>
-    path
-      ? pathname.startsWith(`/${pathBase}/${path}`)
-      : [`/${pathBase}`, `/${pathBase}/`].includes(pathname);
-
-  return (
-    <nav className="mt-2 flex justify-center gap-2 font-serif text-sm sm:text-base md:gap-4 md:text-lg lg:justify-start">
-      {pages.map(({ link, label }, idx) => (
-        <Link
-          key={idx}
-          className={cn("clickable hover-underline font-sans text-primary", {
-            "hover-underlined text-primary-strong": isActive(link),
-          })}
-          href={`/${pathBase}/${link}`}
-        >
-          {label}
-        </Link>
-      ))}
-    </nav>
-  );
-}
-
 const capitalize = (value: string) =>
   value
     .split("-")
@@ -80,7 +27,7 @@ const capitalize = (value: string) =>
     .join(" ")
     .replace("Liveseries", "LiveSeries");
 
-export type Parallel = { label: string; path: string };
+export type Parallel = { label: string; slug: string };
 export type Parallels = (null | Parallel[] | Record<string, Parallel[]>)[];
 
 export function Breadcrumbs({ parallels }: { parallels: Parallels }) {
@@ -104,6 +51,13 @@ export function Breadcrumbs({ parallels }: { parallels: Parallels }) {
   );
 }
 
+const getParallelsAt = (parallels: Parallels, parts: string[], idx: number) =>
+  parallels[idx] == null
+    ? null
+    : Array.isArray(parallels[idx])
+      ? parallels[idx]
+      : parallels[idx][parts[idx - 1]];
+
 function BreadcrumbSegment({
   parallels,
   idx,
@@ -115,13 +69,13 @@ function BreadcrumbSegment({
   part: string;
   parts: string[];
 }) {
-  console.log(part, parallels[idx]);
-  const currentParallels = parallels[idx]
-    ? Array.isArray(parallels[idx])
-      ? parallels[idx]
-      : parallels[idx][parts[1]]
-    : null;
-  const capitalized = part ? capitalize(part) : "Home";
+  const currentParallels = getParallelsAt(parallels, parts, idx);
+  function localisePart(part: string) {
+    if (currentParallels == null) return capitalize(part);
+    const parallel = currentParallels.find((item) => item.slug === part);
+    return parallel == null ? capitalize(part) : parallel.label;
+  }
+  const capitalized = part ? localisePart(part) : "Home";
   const numParts = parts.length - 1;
   const className = {
     "text-primary": idx < numParts,
@@ -146,7 +100,7 @@ function BreadcrumbSegment({
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               {currentParallels
-                .filter((item) => item.path !== part || part !== "tv-show")
+                .filter((item) => item.slug !== part || part !== "tv-show")
                 .map((item, parallelIdx) => (
                   <DropdownMenuItem
                     asChild
@@ -154,7 +108,7 @@ function BreadcrumbSegment({
                     className="cursor-pointer"
                   >
                     <Link
-                      href={`${parts.slice(0, idx).join("/")}/${item.path}`}
+                      href={`${parts.slice(0, idx).join("/")}/${item.slug}`}
                     >
                       {item.label}
                     </Link>
@@ -167,9 +121,7 @@ function BreadcrumbSegment({
             className={cn("hover-underline !text-primary", className)}
             asChild
           >
-            <Link href={`/${parts.slice(0, idx + 1).join("/")}`}>
-              {capitalized}
-            </Link>
+            <Link href={parts.slice(0, idx + 1).join("/")}>{capitalized}</Link>
           </BreadcrumbLink>
         )}
       </BreadcrumbItem>

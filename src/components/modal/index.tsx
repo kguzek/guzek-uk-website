@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import type { ModalHandler } from "@/lib/types";
 import { TextWithUrl } from "@/components/text-with-url";
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 // const MODAL_DISAPPEARS_AFTER_MS = 10_000;
 

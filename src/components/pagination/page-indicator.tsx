@@ -4,8 +4,10 @@ import Link from "next/link";
 
 import type { Language } from "@/lib/enums";
 import { getSearchParams } from "@/lib/backend";
-import { cn } from "@/lib/cn";
 import { TRANSLATIONS } from "@/lib/translations";
+import { cn } from "@/lib/utils";
+
+/** UNUSED as of 2025-02-21 */
 
 export function PageIndicator({
   page,

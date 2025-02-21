@@ -13,7 +13,7 @@ import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { getTitle } from "@/lib/util";
 
-import { ShowDetails } from "./show";
+import { ShowDetails } from "./show-details";
 import { WatchedIndicator } from "./watched-indicator";
 
 interface Props {

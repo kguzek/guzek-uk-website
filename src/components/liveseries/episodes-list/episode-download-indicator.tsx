@@ -12,12 +12,12 @@ import type {
   User,
 } from "@/lib/types";
 import { clientToApi } from "@/lib/backend/client";
-import { cn } from "@/lib/cn";
 import { useLiveSeriesContext } from "@/lib/context/liveseries-context";
 import { useModals } from "@/lib/context/modal-context";
 import { DownloadStatus } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import { bytesToReadable, compareEpisodes } from "@/lib/util";
+import { cn } from "@/lib/utils";
 
 export function EpisodeDownloadIndicator({
   user,

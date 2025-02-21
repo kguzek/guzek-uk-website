@@ -1,8 +1,12 @@
+import { redirect } from "next/navigation";
+
 import type { TvShowList } from "@/lib/types";
+import { ErrorComponent } from "@/components/error-component";
 import { TvShowPreviewList } from "@/components/liveseries/tv-show-preview-list";
 import { serverToApi } from "@/lib/backend/server";
+import { ErrorCode } from "@/lib/enums";
 import { getTranslations } from "@/lib/providers/translation-provider";
-import { getTitle } from "@/lib/util";
+import { getTitle, isNumber } from "@/lib/util";
 
 export async function generateMetadata() {
   const { data } = await getTranslations();
@@ -12,17 +16,23 @@ export async function generateMetadata() {
 }
 
 export default async function MostPopular({
-  searchParams,
+  params,
 }: {
-  searchParams: Promise<Record<string, string>>;
+  params: Promise<{ page: string }>;
 }) {
   const { data, userLanguage } = await getTranslations();
-  const params = await searchParams;
+  const { page } = await params;
+  if (!isNumber(page)) {
+    return <ErrorComponent errorCode={ErrorCode.NotFound} />;
+  }
 
   const result = await serverToApi<TvShowList>("most-popular", {
     api: "episodate",
-    params: { page: params.page || "1" },
+    params: { page },
   });
+  if (result.ok && result.data.page !== +page) {
+    redirect(`./${result.data.page}`);
+  }
 
   return (
     <>
@@ -36,7 +46,6 @@ export default async function MostPopular({
       <TvShowPreviewList
         userLanguage={userLanguage}
         tvShows={result.ok ? result.data : undefined}
-        searchParams={params}
       />
     </>
   );

@@ -5,10 +5,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import type { Language } from "@/lib/enums";
-import { cn } from "@/lib/cn";
 import { useLanguageSelector } from "@/lib/context/language-selector-context";
 import { TRANSLATIONS } from "@/lib/translations";
 import { setLanguageCookie } from "@/lib/util";
+import { cn } from "@/lib/utils";
 
 // import { getTranslations } from "@/providers/translation-provider";
 // import { InferGetServerSidePropsType } from "next";

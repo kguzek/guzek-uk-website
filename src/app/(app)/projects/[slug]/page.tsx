@@ -3,15 +3,16 @@ import Link from "next/link";
 import { getPayload } from "payload";
 import config from "@payload-config";
 import { RichText } from "@payloadcms/richtext-lexical/react";
+import { ArrowUpRight } from "lucide-react";
 
+import type { UserLocale } from "@/lib/types";
 import type { Media } from "@/payload-types";
 import { ErrorComponent } from "@/components/error-component";
 import {
   Carousel,
+  CarouselArrows,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 import { ErrorCode } from "@/lib/enums";
 import { getTranslations } from "@/lib/providers/translation-provider";
@@ -29,17 +30,38 @@ export const isImage = (image: Media | number): image is MediaImage =>
 
 const propsToSlug = async ({ params }: Props) => (await params).slug;
 
-const BADGE_LABELS: Record<"en" | "pl", { released: string; updated: string }> =
-  {
-    en: {
-      released: "first+released",
-      updated: "last+updated",
-    },
-    pl: {
-      released: "opublikowano",
-      updated: "ostatnio+zaktualizowane",
-    },
-  };
+const BADGE_LABELS = {
+  "created-at": {
+    en: "first+released",
+    pl: "opublikowano",
+  },
+  "last-commit": {
+    en: "last+updated",
+    pl: "ostatnia+aktualizacja",
+  },
+};
+
+function Badge({
+  repository,
+  locale,
+  badge,
+}: {
+  repository: string;
+  locale: UserLocale;
+  badge: keyof typeof BADGE_LABELS;
+}) {
+  const url = `${repository.replace("github.com", `img.shields.io/github/${badge}`)}?style=for-the-badge&label=${BADGE_LABELS[badge][locale]}`;
+  return (
+    <Image
+      className="m-0 h-8 w-auto rounded-lg"
+      src={url}
+      alt={BADGE_LABELS[badge][locale]}
+      height={0}
+      width={0}
+      unoptimized // needed to serve SVGs
+    />
+  );
+}
 
 export default async function ProjectPage(props: Props) {
   const payload = await getPayload({ config });
@@ -61,25 +83,29 @@ export default async function ProjectPage(props: Props) {
     <div className="text flex justify-center">
       <div className="prose mt-6">
         <h2 className="mb-2">{project.title}</h2>
-        {project.url && <Link href={project.url}>{project.url}</Link>}
+        {project.url && (
+          <Link
+            className="group flex items-center gap-2 bg-none"
+            href={project.url}
+          >
+            <div className="hover-underline group-hover:hover-underlined text-accent">
+              {project.url}
+            </div>
+            <ArrowUpRight className="group-hover:animate-jump text-primary transition-all [transition-duration:300ms] group-hover:text-primary-strong" />
+          </Link>
+        )}
         {project.repository && (
           <>
-            <div className="mt-2 flex gap-2">
-              <Image
-                className="m-0"
-                src={`${project.repository.replace("github.com", "img.shields.io/github/created-at")}?style=for-the-badge&label=${BADGE_LABELS[userLocale].released}`}
-                alt="Created at"
-                width={250}
-                height={28}
-                unoptimized // needed to serve SVGs
+            <div className="mt-2 grid grid-cols-[auto_auto] gap-x-2">
+              <Badge
+                repository={project.repository}
+                locale={userLocale}
+                badge="created-at"
               />
-              <Image
-                className="m-0"
-                src={`${project.repository.replace("github.com", "img.shields.io/github/last-commit")}?style=for-the-badge&label=${BADGE_LABELS[userLocale].updated}`}
-                alt="Last updated"
-                width={250}
-                height={28}
-                unoptimized
+              <Badge
+                repository={project.repository}
+                locale={userLocale}
+                badge="last-commit"
               />
             </div>
           </>
@@ -95,22 +121,19 @@ export default async function ProjectPage(props: Props) {
         {project.extraImages && (
           <Carousel>
             <CarouselContent>
-              {[project.mainImage, ...project.extraImages]
-                .filter(isImage)
-                .map((image) => (
-                  <CarouselItem key={image.url} className="flex justify-center">
-                    <Image
-                      src={image.url}
-                      alt={image.alt}
-                      width={image.width}
-                      height={0}
-                      className="max-h-96 w-full object-contain"
-                    />
-                  </CarouselItem>
-                ))}
+              {project.extraImages.filter(isImage).map((image) => (
+                <CarouselItem key={image.url} className="flex justify-center">
+                  <Image
+                    src={image.url}
+                    alt={image.alt}
+                    width={image.width}
+                    height={0}
+                    className="max-h-96 w-full object-contain"
+                  />
+                </CarouselItem>
+              ))}
             </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
+            <CarouselArrows />
           </Carousel>
         )}
         {project.repository ? (

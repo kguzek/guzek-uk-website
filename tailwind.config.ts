@@ -48,6 +48,9 @@ const config: Config = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      animation: {
+        jump: "jump 1s infinite",
+      },
     },
   },
   plugins: [typography, tailwindAnimate],

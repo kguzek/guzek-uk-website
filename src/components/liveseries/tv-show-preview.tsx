@@ -65,20 +65,20 @@ export function TvShowPreview({
 
   return (
     <>
-      <div className="w-[240px] rounded-md bg-primary pb-10">
+      <div className="w-[240px] rounded-md bg-background pb-10">
         <div className="flex w-full justify-between gap-1 px-4 py-2">
           <Link
             href={link}
             title={showDetails?.name}
             className="overflow-hidden"
           >
-            <p className="title cutoff font-serif text-background visited:text-background-soft">
+            <p className="title cutoff font-serif text-primary-strong">
               {showDetails?.name} ({showDetails?.country})
             </p>
           </Link>
           <button
             onClick={handleHeart}
-            className="clickable text-background"
+            className="clickable text-primary"
             title={data.liveSeries.tvShow[isLiked ? "unlike" : "like"]}
           >
             <HeartIcon fill={isLiked ? "currentColor" : "none"} />

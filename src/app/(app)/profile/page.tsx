@@ -28,7 +28,7 @@ export default async function Profile() {
     <div className="text">
       <h2 className="my-6 text-3xl font-bold">{data.profile.title}</h2>
       <h3 className="my-5 text-2xl font-bold">{data.profile.body}</h3>
-      <main className="space-y-3">
+      <div className="space-y-3">
         <p>
           {data.profile.formDetails.type}:{" "}
           <span className="clickable genre">
@@ -73,7 +73,7 @@ export default async function Profile() {
           ) : null}
         </div>
         <LogoutButton userLanguage={userLanguage} accessToken={accessToken} />
-      </main>
+      </div>
     </div>
   );
 }

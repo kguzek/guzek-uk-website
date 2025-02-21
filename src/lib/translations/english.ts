@@ -56,23 +56,23 @@ export const ENGLISH: Translation = {
   error: {
     400: {
       title: "Bad Request",
-      body: "The request was invalid.",
+      body: "The request was invalid",
     },
     401: {
       title: "Unauthorized",
-      body: "This page is only available to logged in users.",
+      body: "This page is only available to logged in users",
     },
     403: {
       title: "Forbidden",
-      body: "You do not have permission to view this resource.",
+      body: "You do not have permission to view this resource",
     },
     404: {
       title: "Not Found",
-      body: "The requested resource was not found.",
+      body: "The requested resource was not found",
     },
     500: {
       title: "Server Error",
-      body: "An error occurred while processing your request.",
+      body: "An error occurred while processing your request",
     },
   },
   admin: {
@@ -115,6 +115,8 @@ export const ENGLISH: Translation = {
       showing: "Showing",
       of: "of",
       page: "Page",
+      next: "Next",
+      previous: "Previous",
     },
     tvShow: {
       title: "Show Details",

@@ -56,6 +56,9 @@ export function scrollToElement(
 
 export const isInvalidDate = (date: Date) => date.toString() === "Invalid Date";
 
+export const isNumber = (value: string): value is `${number}` =>
+  (+value).toString() === value;
+
 export const getEpisodeAirDate = (episode: Episode, addSpace = false): Date => {
   // This is needed in order to interpret the `air_date` as a date given in UTC+0
   const correctedDateString = episode.air_date + (addSpace ? " Z" : "Z");

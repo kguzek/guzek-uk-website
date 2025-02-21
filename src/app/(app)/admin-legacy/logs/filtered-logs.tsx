@@ -23,9 +23,9 @@ import type { LogEntry, LogLevel, StateSetter } from "@/lib/types";
 import { InputBox } from "@/components/forms/input-box";
 import { NumericValue } from "@/components/numeric-value/client";
 import { SyntaxHighlighted } from "@/components/syntax-highlighted";
-import { cn } from "@/lib/cn";
 import { LOG_LEVELS } from "@/lib/enums";
 import { scrollToElement } from "@/lib/util";
+import { cn } from "@/lib/utils";
 
 const IP_LOOKUP_URL = "https://www.ip-tracker.org/locator/ip-lookup.php?ip=";
 

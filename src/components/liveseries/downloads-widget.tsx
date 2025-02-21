@@ -7,13 +7,13 @@ import { ChevronUpIcon, Trash2Icon } from "lucide-react";
 import type { Language } from "@/lib/enums";
 import type { DownloadedEpisode, User } from "@/lib/types";
 import { clientToApi } from "@/lib/backend/client";
-import { cn } from "@/lib/cn";
 import { useLanguageSelector } from "@/lib/context/language-selector-context";
 import { useLiveSeriesContext } from "@/lib/context/liveseries-context";
 import { useModals } from "@/lib/context/modal-context";
 import { DownloadStatus } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import { bytesToReadable, getDuration } from "@/lib/util";
+import { cn } from "@/lib/utils";
 
 import "./downloads-widget.css";
 

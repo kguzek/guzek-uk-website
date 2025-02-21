@@ -6,8 +6,8 @@ import { usePathname } from "next/navigation";
 
 import type { Language } from "@/lib/enums";
 import type { User } from "@/lib/types";
-import { cn } from "@/lib/cn";
 import { TRANSLATIONS } from "@/lib/translations";
+import { cn } from "@/lib/utils";
 
 export function UserWidget({
   user,
