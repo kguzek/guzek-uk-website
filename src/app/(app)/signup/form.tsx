@@ -7,7 +7,7 @@ import { CircleAlert } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import type { LogInSchema } from "@/lib/backend/schemas";
+import type { SignUpSchema } from "@/lib/backend/schemas";
 import type { Language } from "@/lib/enums";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,28 +20,33 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { clientToApi } from "@/lib/backend/client";
-import { logInSchema } from "@/lib/backend/schemas";
+import { signUpSchema } from "@/lib/backend/schemas";
 import { TRANSLATIONS } from "@/lib/translations";
+import { getErrorMessage } from "@/lib/util";
 
-export function LogInForm({ userLanguage }: { userLanguage: Language }) {
+export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
   const router = useRouter();
-  const form = useForm<LogInSchema>({
-    resolver: zodResolver(logInSchema),
-    defaultValues: {
-      login: "",
-      password: "",
-    },
-  });
-  const { mutateAsync, isPending, isSuccess } = useMutation({
-    mutationFn: (values: LogInSchema) => login(values),
-  });
 
   const data = TRANSLATIONS[userLanguage];
+  const form = useForm<SignUpSchema>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      username: "",
+      email: "",
+      password: "",
+      password2: "",
+    },
+  });
 
-  async function login(values: LogInSchema) {
-    const result = await clientToApi("auth/tokens", "", {
+  const { mutateAsync, isPending, isSuccess } = useMutation({
+    mutationFn: (values: SignUpSchema) => signUp(values),
+  });
+
+  async function signUp(values: SignUpSchema) {
+    const result = await clientToApi("auth/users", "", {
       method: "POST",
       body: values,
+      // userLanguage,
     });
     if (result.ok) {
       router.push("/profile");
@@ -49,7 +54,9 @@ export function LogInForm({ userLanguage }: { userLanguage: Language }) {
       router.prefetch("/liveseries");
     } else {
       throw new Error(
-        result.failed ? "ERR_UNKNOWN" : "ERR_INVALID_CREDENTIALS",
+        result.failed
+          ? "ERR_UNKNOWN"
+          : getErrorMessage(result.res, result.error, data),
       );
     }
   }
@@ -67,9 +74,7 @@ export function LogInForm({ userLanguage }: { userLanguage: Language }) {
               icon: <CircleAlert className="text-error not-first:hidden" />,
               message: (
                 <p className="ml-2">
-                  {error === "ERR_UNKNOWN"
-                    ? data.networkError
-                    : data.profile.invalidCredentials}
+                  {error === "ERR_UNKNOWN" ? data.networkError : error}
                 </p>
               ),
             }),
@@ -78,12 +83,29 @@ export function LogInForm({ userLanguage }: { userLanguage: Language }) {
       >
         <FormField
           control={form.control}
-          name="login"
+          name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{data.profile.formDetails.loginPrompt}</FormLabel>
+              <FormLabel>{data.profile.formDetails.username}</FormLabel>
               <FormControl>
-                <Input placeholder="jan.kowalski@gmail.com" {...field} />
+                <Input placeholder="jankow" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{data.profile.formDetails.email}</FormLabel>
+              <FormControl>
+                <Input
+                  type="email"
+                  placeholder="jan.kowalski@gmail.com"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -95,6 +117,19 @@ export function LogInForm({ userLanguage }: { userLanguage: Language }) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>{data.profile.formDetails.password}</FormLabel>
+              <FormControl>
+                <Input type="password" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password2"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{data.profile.formDetails.passwordRepeat}</FormLabel>
               <FormControl>
                 <Input type="password" {...field} />
               </FormControl>

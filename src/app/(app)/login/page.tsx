@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { PageSkeleton } from "@/components/pages/skeleton";
+import { Button } from "@/components/ui/button";
 import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { getTitle } from "@/lib/util";
@@ -30,9 +31,9 @@ export default async function LogIn() {
     <div className="mt-10 flex flex-col items-center gap-3">
       <LogInForm userLanguage={userLanguage} />
       <p className="mt-3">{data.profile.formDetails.or}</p>
-      <Link href="/signup">
-        <i>{data.profile.formDetails.signup}</i>
-      </Link>
+      <Button variant="ghost" asChild>
+        <Link href="/signup">{data.profile.formDetails.signup}</Link>
+      </Button>
     </div>
   );
 }
