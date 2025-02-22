@@ -35,7 +35,7 @@ export function Breadcrumbs({ parallels }: { parallels: Parallels }) {
   if (pathname === "/") return null;
   const parts = pathname.split("/");
   return (
-    <Breadcrumb className="text mb-4 mt-6">
+    <Breadcrumb className="text mt-6 mb-4">
       <BreadcrumbList className="text-lg">
         {parts.map((part, idx) => (
           <BreadcrumbSegment
@@ -79,7 +79,7 @@ function BreadcrumbSegment({
   const numParts = parts.length - 1;
   const className = {
     "text-primary": idx < numParts,
-    "hover-underlined": idx === numParts,
+    underlined: idx === numParts,
   };
   return (
     <Fragment key={idx}>
@@ -87,7 +87,7 @@ function BreadcrumbSegment({
       <BreadcrumbItem>
         {currentParallels ? (
           <DropdownMenu>
-            <DropdownMenuTrigger className="group flex items-center gap-1 outline-none">
+            <DropdownMenuTrigger className="group flex items-center gap-1 outline-hidden">
               <div
                 className={cn(
                   "hover-underline group-hover:underlined text-primary-strong",
@@ -117,11 +117,13 @@ function BreadcrumbSegment({
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
-          <BreadcrumbLink
-            className={cn("hover-underline !text-primary", className)}
-            asChild
-          >
-            <Link href={parts.slice(0, idx + 1).join("/")}>{capitalized}</Link>
+          <BreadcrumbLink className={cn(className)} asChild>
+            <Link
+              className="text-primary! hover-underline"
+              href={parts.slice(0, idx + 1).join("/") || "/"}
+            >
+              {capitalized}
+            </Link>
           </BreadcrumbLink>
         )}
       </BreadcrumbItem>

@@ -27,15 +27,15 @@ export function UserWidget({
   return (
     <Link
       href={user ? "/profile" : "/login"}
-      className="group max-w-[90%] font-light text-primary sm:max-w-full"
+      className="group text-primary max-w-[90%] font-light sm:max-w-full"
     >
       <div className="flex min-w-20 flex-col items-center gap-1">
         <Image alt="User avatar" width={40} height={40} src={imgUrl} />
         <p
           className={cn(
-            "hover-underline group-hover:underlined max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-[1.2rem] sm:max-w-80 lg:max-w-40",
+            "hover-underline group-hover:underlined max-w-full overflow-hidden text-[1.2rem] text-ellipsis whitespace-nowrap sm:max-w-80 lg:max-w-40",
             {
-              "hover-underlined text-primary-strong": isActive,
+              "underlined text-primary-strong": isActive,
             },
           )}
           title={user?.username}

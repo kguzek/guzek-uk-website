@@ -72,12 +72,12 @@ export default async function RootLayout({
         <link rel="canonical" href="https://www.guzek.uk" />
       </head>
       <body className="text-primary">
-        <div className="mt-[--navbar-height] flex min-h-[calc(100vh-var(--navbar-height))] flex-col pt-1 sm:mt-[--navbar-height-sm] sm:min-h-[calc(100vh-var(--navbar-height-sm))]">
+        <div className="mt-(--navbar-height) flex min-h-[calc(100vh-var(--navbar-height))] flex-col pt-1 sm:mt-(--navbar-height-sm) sm:min-h-[calc(100vh-var(--navbar-height-sm))]">
           <ModalProvider userLanguage={userLanguage}>
             <LanguageSelectorProvider>
               <LanguageCookie />
               <Navigation />
-              <main className="flex-grow">{children}</main>
+              <main className="grow">{children}</main>
               <Footer />
             </LanguageSelectorProvider>
           </ModalProvider>

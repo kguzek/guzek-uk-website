@@ -32,11 +32,11 @@ async function Episode({
   const watchedInSeason = watchedEpisodes?.[tvShow.id]?.[+episode.season];
 
   return (
-    <div className="box-border flex w-full flex-col items-center gap-2 rounded-lg bg-background-soft p-2 px-4 sm:flex-row sm:justify-between">
+    <div className="bg-background-soft box-border flex w-full flex-col items-center gap-2 rounded-lg p-2 px-4 sm:flex-row sm:justify-between">
       <div className="w-full self-start overflow-hidden">
         <div className="grid grid-cols-[auto_1fr] gap-2" title={episode.name}>
           <i>{data.liveSeries.episodes.serialise(episode)}</i>
-          <div className="cutoff w-full text-accent-soft">{episode.name}</div>
+          <div className="cutoff text-accent-soft w-full">{episode.name}</div>
         </div>
         <small>{airDate}</small>
       </div>
@@ -92,7 +92,7 @@ export async function EpisodesList({
       <div className="peer flex items-center gap-4">
         <label className="clickable flex items-center gap-4">
           <input type="checkbox" className="peer hidden" />
-          <ChevronRightIcon className="transition-transform peer-checked:rotate-90"></ChevronRightIcon>
+          <ChevronRightIcon className="transition-transform duration-300 peer-checked:rotate-90"></ChevronRightIcon>
           <h4 className="my-4 text-lg font-bold">{heading}</h4>
         </label>
         {children}

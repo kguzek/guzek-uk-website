@@ -263,7 +263,7 @@ export function ShowDetails({
       {tvShowDetails.youtube_link && (
         <div className="mt-5 flex w-full justify-center">
           <iframe
-            className="aspect-[16/9] h-auto w-full md:w-3/4 lg:w-1/2"
+            className="aspect-16/9 h-auto w-full md:w-3/4 lg:w-1/2"
             src={`https://www.youtube.com/embed/${tvShowDetails.youtube_link}`}
           ></iframe>
         </div>

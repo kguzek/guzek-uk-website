@@ -88,10 +88,10 @@ export default async function ProjectPage(props: Props) {
             className="group flex items-center gap-2 bg-none"
             href={project.url}
           >
-            <div className="hover-underline group-hover:hover-underlined text-accent">
+            <div className="hover-underline group-hover:underlined text-accent">
               {project.url}
             </div>
-            <ArrowUpRight className="group-hover:animate-jump text-primary transition-all [transition-duration:300ms] group-hover:text-primary-strong" />
+            <ArrowUpRight className="group-hover:animate-jump text-primary group-hover:text-primary-strong transition-all [transition-duration:300ms]" />
           </Link>
         )}
         {project.repository && (

@@ -54,7 +54,7 @@ const PaginationLink = ({
         variant: isActive ? "outline" : "ghost",
         size,
       }),
-      "hover:disabled:!text-red-500",
+      "hover:disabled:text-red-500!",
       className,
     )}
     {...props}

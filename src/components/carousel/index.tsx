@@ -90,7 +90,7 @@ export function CarouselArrow({
   return (
     <button
       className={cn(
-        "group flex h-16 w-16 items-center justify-center rounded-full bg-background-soft p-4 transition-all duration-300 lg:absolute",
+        "group bg-background-soft flex h-16 w-16 items-center justify-center rounded-full p-4 transition-all duration-300 lg:absolute",
         {
           "order-3 lg:left-0 lg:order-1 lg:translate-x-[-50%]": left,
           "order-5 lg:right-0 lg:order-3 lg:translate-x-[50%]": right,
@@ -103,7 +103,7 @@ export function CarouselArrow({
     >
       <div
         className={cn(
-          "scale-[175%] text-background transition-transform duration-300",
+          "text-background scale-[175%] transition-transform duration-300",
           {
             "lg:scale-[125%] lg:group-hover:scale-[175%]": visible,
           },
@@ -130,13 +130,13 @@ export function CarouselIndicator({
 
   return (
     <div
-      className="order-4 h-3 overflow-hidden rounded-full bg-primary"
+      className="bg-primary order-4 h-3 overflow-hidden rounded-full"
       style={{
         width: CAROUSEL_INDICATOR_FULL_WIDTH,
       }}
     >
       <div
-        className="h-3 bg-accent"
+        className="bg-accent h-3"
         style={{
           width,
           transform: `translateX(${

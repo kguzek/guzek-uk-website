@@ -27,12 +27,12 @@ export function NavigationBar({
   return (
     <nav
       className={cn(
-        "fixed top-0 flex h-[--navbar-height] w-screen items-center gap-4 border-0 border-b border-solid border-transparent bg-background-strong/50 px-4 py-2 backdrop-blur-lg transition-colors duration-1000 sm:h-[--navbar-height-sm] md:px-10 lg:gap-6",
+        "bg-background-strong/50 fixed top-0 flex h-(--navbar-height) w-screen items-center gap-4 border-0 border-b border-solid border-transparent px-4 py-2 backdrop-blur-lg transition-colors duration-1000 sm:h-(--navbar-height-sm) sm:px-10 lg:gap-6",
         { "border-primary": scrollY > 0 },
       )}
     >
       <Logo size={80} />
-      <p className="whitespace-nowrap font-bold sm:text-3xl">{PAGE_NAME}</p>
+      <p className="font-bold whitespace-nowrap sm:text-3xl">{PAGE_NAME}</p>
       <div className="ml-auto flex flex-row-reverse lg:flex-row">
         {/* Hamburger */}
         <label
@@ -45,18 +45,18 @@ export function NavigationBar({
             id="hamburger"
             className="peer hidden"
           />
-          <div className="mb-1 w-6 transform rounded-full bg-primary pt-1 transition-transform peer-checked:translate-y-2 peer-checked:-rotate-45"></div>
-          <div className="mb-1 w-6 rounded-full bg-primary pt-1 opacity-100 transition-opacity peer-checked:opacity-0"></div>
-          <div className="w-6 transform rounded-full bg-primary pt-1 transition-transform peer-checked:-translate-y-2 peer-checked:rotate-45"></div>
+          <div className="bg-primary mb-1 w-6 transform rounded-full pt-1 transition-transform duration-300 peer-checked:translate-y-2 peer-checked:-rotate-45"></div>
+          <div className="bg-primary mb-1 w-6 rounded-full pt-1 opacity-100 transition-opacity peer-checked:opacity-0"></div>
+          <div className="bg-primary w-6 transform rounded-full pt-1 transition-transform duration-300 peer-checked:-translate-y-2 peer-checked:rotate-45"></div>
         </label>
         {/* Click outside menu to hide */}
         <label
           htmlFor="hamburger"
           aria-controls="menu"
-          className="pointer-events-none fixed left-0 top-0 z-10 h-screen w-screen opacity-0 backdrop-blur-[6px] transition-opacity duration-300 peer-has-[:checked]:pointer-events-auto peer-has-[:checked]:opacity-50 lg:hidden"
+          className="pointer-events-none fixed top-0 left-0 z-10 h-screen w-screen opacity-0 backdrop-blur-[6px] transition-opacity duration-300 peer-has-checked:pointer-events-auto peer-has-checked:opacity-50 lg:hidden"
         ></label>
         {/* Menu */}
-        <ul className="invisible absolute right-0 top-0 z-20 w-full origin-top translate-y-[-100%] select-none items-center gap-6 rounded-b-lg border-0 border-b-2 border-primary bg-background bg-opacity-50 pb-4 opacity-0 shadow-lg shadow-background-strong backdrop-blur-lg backdrop-filter transition-[opacity,transform,visibility] duration-300 peer-has-[:checked]:visible peer-has-[:checked]:translate-y-0 peer-has-[:checked]:scale-100 peer-has-[:checked]:opacity-100 sm:right-10 sm:top-3 sm:w-[50%] sm:origin-top-right sm:translate-y-0 sm:scale-[25%] sm:rounded-lg sm:border-2 sm:border-solid sm:pt-4 lg:visible lg:static lg:flex lg:w-full lg:transform-none lg:border-none lg:bg-transparent lg:pb-0 lg:opacity-100 lg:shadow-none lg:backdrop-blur-none xl:pt-0">
+        <ul className="border-primary bg-background bg-opacity-50 shadow-background-strong invisible absolute top-0 right-0 z-20 w-full origin-top translate-y-[-100%] items-center gap-6 rounded-b-lg border-0 border-b-2 pb-4 opacity-0 shadow-lg backdrop-blur-lg backdrop-filter transition-all duration-300 select-none peer-has-checked:visible peer-has-checked:translate-y-0 peer-has-checked:scale-100 peer-has-checked:opacity-100 sm:top-3 sm:right-10 sm:w-[50%] sm:origin-top-right sm:translate-y-0 sm:scale-[25%] sm:rounded-lg sm:border-2 sm:border-solid sm:pt-4 lg:visible lg:static lg:flex lg:w-full lg:scale-100 lg:transform-none lg:border-none lg:bg-transparent lg:pt-0 lg:pb-0 lg:opacity-100 lg:shadow-none lg:backdrop-blur-none">
           <div className="mt-5 flex justify-center sm:hidden">
             <UserWidget user={user} userLanguage={userLanguage} />
           </div>
@@ -81,7 +81,7 @@ export function NavBarItem({ item }: { item: MenuItem }) {
     <Link
       href={item.url}
       className={cn("hover-underline text-primary", {
-        "hover-underlined text-primary-strong": isActive,
+        "underlined text-primary-strong": isActive,
       })}
     >
       {item.label || item.title}
@@ -111,8 +111,8 @@ export function MiniNavBar({
       {pages.map(({ link, label }, idx) => (
         <Link
           key={idx}
-          className={cn("clickable hover-underline font-sans text-primary", {
-            "hover-underlined text-primary-strong": isActive(link),
+          className={cn("clickable hover-underline text-primary font-sans", {
+            "underlined text-primary-strong": isActive(link),
           })}
           href={`/${pathBase}/${link}`}
         >
