@@ -12,6 +12,7 @@ import type {
 import { ErrorComponent } from "@/components/error-component";
 import { EpisodesList } from "@/components/liveseries/episodes-list";
 import { LikedShowsCarousel } from "@/components/liveseries/liked-shows-carousel";
+import { Tile } from "@/components/tile";
 import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
 import { getAuth } from "@/lib/providers/auth-provider";
@@ -99,7 +100,7 @@ export default async function Home() {
           : ""}
       </h3>
       {user == null || likedShowIds?.length === 0 ? (
-        <>
+        <Tile className="items-start">
           <p className="mb-3 whitespace-pre-wrap">
             {data.liveSeries.home.noLikes}
           </p>
@@ -120,7 +121,7 @@ export default async function Home() {
               {data.liveSeries.home.shows}
             </Link>
           </p>
-        </>
+        </Tile>
       ) : (
         <>
           <LikedShowsCarousel
@@ -129,7 +130,7 @@ export default async function Home() {
             userLanguage={userLanguage}
             accessToken={accessToken}
           />
-          <h3 className="mb-5 mt-10 text-2xl font-bold">
+          <h3 className="mt-10 mb-5 text-2xl font-bold">
             {data.liveSeries.tvShow.unwatched} {data.liveSeries.tvShow.episodes}
           </h3>
           {totalUnwatchedEpisodes === 0 ? (

@@ -6,9 +6,9 @@ import {
   MoreHorizontalIcon,
 } from "lucide-react";
 
-import type { ButtonProps } from "@/components/ui/button";
-import { buttonVariants } from "@/components/ui/button";
+import type { ButtonProps } from "@/ui/button";
 import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/ui/button";
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
   return (
@@ -41,15 +41,16 @@ function PaginationItem({ ...props }: React.ComponentProps<"li">) {
 
 type PaginationLinkProps = {
   isActive?: boolean;
-} & Pick<ButtonProps, "disabled" | "size"> &
+} & Pick<ButtonProps, "disabled" | "size" | "variant"> &
   React.ComponentProps<typeof Link>;
 
 function PaginationLink({
   className,
   isActive,
-  size = "icon",
+  size = "sm-icon",
   href,
   disabled,
+  variant,
   ...props
 }: PaginationLinkProps) {
   return (
@@ -59,8 +60,12 @@ function PaginationLink({
       data-active={isActive}
       className={cn(
         buttonVariants({
-          variant: disabled ? "disabled" : isActive ? "default" : "ghost",
-          size,
+          variant: disabled
+            ? "disabled"
+            : isActive
+              ? "default"
+              : (variant ?? "outline"),
+          size: size,
         }),
         className,
       )}
@@ -78,7 +83,8 @@ function PaginationPrevious({
     <PaginationLink
       aria-label="Go to previous page"
       size="default"
-      className={cn("gap-1 px-2.5 sm:pl-2.5", className)}
+      className={cn("gap-1 px-2.5 md:mr-2 md:pl-2.5", className)}
+      variant="ghost"
       {...props}
     >
       <ChevronLeftIcon />
@@ -97,7 +103,8 @@ function PaginationNext({
     <PaginationLink
       aria-label="Go to next page"
       size="default"
-      className={cn("gap-1 px-2.5 sm:pr-2.5", className)}
+      className={cn("gap-1 px-2.5 md:ml-2 md:pr-2.5", className)}
+      variant="ghost"
       {...props}
     >
       {props.children == null ? null : (
@@ -116,10 +123,13 @@ function PaginationEllipsis({
     <span
       aria-hidden
       data-slot="pagination-ellipsis"
-      className={cn("flex size-9 items-center justify-center", className)}
+      className={cn(
+        "flex h-9 w-6 items-center justify-center sm:size-9",
+        className,
+      )}
       {...props}
     >
-      <MoreHorizontalIcon className="size-4" />
+      <MoreHorizontalIcon className="size-3 sm:size-4" />
       <span className="sr-only">More pages</span>
     </span>
   );

@@ -102,13 +102,13 @@ export function EpisodeDownloadIndicator({
   return (
     <>
       {downloadStatus !== DownloadStatus.COMPLETE && (
-        <div
+        <button
           className={cn("relative", {
             "clickable text-primary": downloadStatus === DownloadStatus.STOPPED,
-            "cursor-wait text-primary": showProgress,
-            "cursor-not-allowed text-error":
+            "text-primary cursor-wait": showProgress,
+            "text-error cursor-not-allowed":
               downloadStatus === DownloadStatus.FAILED,
-            "cursor-help text-accent2":
+            "text-accent2 cursor-help":
               downloadStatus === DownloadStatus.UNKNOWN,
           })}
           title={downloadTooltip}
@@ -135,7 +135,7 @@ export function EpisodeDownloadIndicator({
             </div>
           )}
           <DownloadIcon />
-        </div>
+        </button>
       )}
       {!showProgress && user != null && (
         <Link

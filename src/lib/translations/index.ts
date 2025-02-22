@@ -92,6 +92,8 @@ export type Translation = Readonly<{
       present: string;
       source: string;
       images: string;
+      previousImage: string;
+      nextImage: string;
       episodes: string;
       noEpisodes: string;
       episode: string;

@@ -7,6 +7,7 @@ import type {
   TvShowDetails,
   WatchedEpisodes,
 } from "@/lib/types";
+import { Tile } from "@/components/tile";
 import { serverToApi } from "@/lib/backend/server";
 import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
@@ -32,13 +33,13 @@ async function Episode({
   const watchedInSeason = watchedEpisodes?.[tvShow.id]?.[+episode.season];
 
   return (
-    <div className="bg-background-soft box-border flex w-full flex-col items-center gap-2 rounded-lg p-2 px-4 sm:flex-row sm:justify-between">
+    <div className="bg-background box-border flex w-full flex-col items-center gap-2 rounded-lg p-2 px-4 sm:flex-row sm:justify-between">
       <div className="w-full self-start overflow-hidden">
         <div className="grid grid-cols-[auto_1fr] gap-2" title={episode.name}>
-          <i>{data.liveSeries.episodes.serialise(episode)}</i>
+          <p>{data.liveSeries.episodes.serialise(episode)}</p>
           <div className="cutoff text-accent-soft w-full">{episode.name}</div>
         </div>
-        <small>{airDate}</small>
+        <small className="text-background-soft">{airDate}</small>
       </div>
       <div className="flex items-center gap-4">
         {hasEpisodeAired(episode) ? (
@@ -88,25 +89,30 @@ export async function EpisodesList({
     }
   }
   return (
-    <div>
+    <div className="group">
       <div className="peer flex items-center gap-4">
         <label className="clickable flex items-center gap-4">
           <input type="checkbox" className="peer hidden" />
-          <ChevronRightIcon className="transition-transform duration-300 peer-checked:rotate-90"></ChevronRightIcon>
+          <ChevronRightIcon className="transition-transform duration-300 group-focus-within:rotate-90 peer-checked:rotate-90"></ChevronRightIcon>
           <h4 className="my-4 text-lg font-bold">{heading}</h4>
         </label>
         {children}
       </div>
-      <div className="collapsible collapsed peer-has-[:checked]:expanded">
-        <div className="episodes grid gap-3 overflow-hidden md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-          {episodes.map((episode, idx) => (
-            <Episode
-              key={`episode-unwatched-${idx}`}
-              episode={episode}
-              tvShow={tvShow}
-              watchedEpisodes={watchedEpisodes}
-            />
-          ))}
+      <div className="collapsible collapsed peer-has-checked:expanded group-focus-within:expanded">
+        <div className="overflow-hidden">
+          <Tile
+            containerClassName="w-full"
+            className="grid w-full gap-3 xl:grid-cols-2 xl:gap-x-6 xl:gap-y-4"
+          >
+            {episodes.map((episode, idx) => (
+              <Episode
+                key={`episode-unwatched-${idx}`}
+                episode={episode}
+                tvShow={tvShow}
+                watchedEpisodes={watchedEpisodes}
+              />
+            ))}
+          </Tile>
         </div>
       </div>
     </div>

@@ -54,8 +54,8 @@ export async function Paginator({
 
   return (
     <Pagination>
-      <PaginationContent className="my-2 flex-wrap justify-center gap-y-2 sm:flex-nowrap">
-        <div className="order-1 flex w-full justify-center gap-1 sm:order-2">
+      <PaginationContent className="my-2 w-full flex-wrap justify-center gap-y-2 md:flex-nowrap">
+        <div className="order-1 flex w-full min-w-1/2 justify-center gap-1 md:order-2 md:w-[unset] lg:min-w-1/4">
           {pages.map((page, idx) => (
             <PaginationItem key={`page-${page}-${idx}`}>
               {page == null ? (
@@ -71,7 +71,7 @@ export async function Paginator({
             </PaginationItem>
           ))}
         </div>
-        <PaginationItem className="order-2 sm:order-1">
+        <PaginationItem className="order-2 md:order-1">
           <PaginationPrevious
             disabled={currentPage === 1}
             href={getHref(currentPage - 1)}

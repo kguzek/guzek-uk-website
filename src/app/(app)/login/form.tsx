@@ -9,7 +9,10 @@ import { toast } from "sonner";
 
 import type { LogInSchema } from "@/lib/backend/schemas";
 import type { Language } from "@/lib/enums";
-import { Button } from "@/components/ui/button";
+import { clientToApi, NetworkError } from "@/lib/backend/client2";
+import { logInSchema } from "@/lib/backend/schemas";
+import { TRANSLATIONS } from "@/lib/translations";
+import { Button } from "@/ui/button";
 import {
   Form,
   FormControl,
@@ -17,11 +20,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { clientToApi } from "@/lib/backend/client";
-import { logInSchema } from "@/lib/backend/schemas";
-import { TRANSLATIONS } from "@/lib/translations";
+} from "@/ui/form";
+import { Input } from "@/ui/input";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function LogInForm({ userLanguage }: { userLanguage: Language }) {
   const router = useRouter();
@@ -38,36 +40,33 @@ export function LogInForm({ userLanguage }: { userLanguage: Language }) {
 
   const data = TRANSLATIONS[userLanguage];
 
-  async function login(values: LogInSchema) {
-    const result = await clientToApi("auth/tokens", "", {
+  async function login({ login, password }: LogInSchema) {
+    const data = EMAIL_REGEX.test(login)
+      ? { email: login }
+      : { username: login };
+    const result = await clientToApi("users/login", {
       method: "POST",
-      body: values,
+      body: { ...data, password },
     });
-    if (result.ok) {
-      router.push("/profile");
-      router.refresh();
-      router.prefetch("/liveseries");
-    } else {
-      throw new Error(
-        result.failed ? "ERR_UNKNOWN" : "ERR_INVALID_CREDENTIALS",
-      );
-    }
+    console.info("Logged in:", result);
+    router.push("/profile");
+    router.prefetch("/liveseries");
   }
 
   return (
     <Form {...form}>
       <form
-        action="https://auth.guzek.uk/auth/tokens"
+        action="TODO: nojs-login"
         method="POST"
         className="grid gap-4"
-        onSubmit={form.handleSubmit(() => {
-          toast.promise(mutateAsync(form.getValues()), {
+        onSubmit={form.handleSubmit((values) => {
+          toast.promise(mutateAsync(values), {
             loading: `${data.profile.loading}...`,
             error: (error) => ({
               icon: <CircleAlert className="text-error not-first:hidden" />,
               message: (
                 <p className="ml-2">
-                  {error === "ERR_UNKNOWN"
+                  {error instanceof NetworkError
                     ? data.networkError
                     : data.profile.invalidCredentials}
                 </p>

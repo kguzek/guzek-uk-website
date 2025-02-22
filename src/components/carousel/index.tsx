@@ -53,7 +53,10 @@ export function ImageGallery({
   return (
     <div className="relative flex flex-wrap items-center justify-center gap-2">
       <CarouselArrow left onClick={previousImage} />
-      <div ref={carouselRef} className={cn("carousel scroll-x", className)}>
+      <div
+        ref={carouselRef}
+        className={cn("carousel no-scrollbar overflow-x-scroll", className)}
+      >
         {images.map((url, idx) => (
           <Image
             key={idx}

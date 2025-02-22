@@ -7,15 +7,12 @@ import { ArrowUpRight } from "lucide-react";
 
 import type { UserLocale } from "@/lib/types";
 import type { Media } from "@/payload-types";
+import { CarouselArrows } from "@/components/carousel/carousel-arrows";
 import { ErrorComponent } from "@/components/error-component";
-import {
-  Carousel,
-  CarouselArrows,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
+import { Tile } from "@/components/tile";
 import { ErrorCode } from "@/lib/enums";
 import { getTranslations } from "@/lib/providers/translation-provider";
+import { Carousel, CarouselContent, CarouselItem } from "@/ui/carousel";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -53,7 +50,7 @@ function Badge({
   const url = `${repository.replace("github.com", `img.shields.io/github/${badge}`)}?style=for-the-badge&label=${BADGE_LABELS[badge][locale]}`;
   return (
     <Image
-      className="m-0 h-8 w-auto rounded-lg"
+      className="m-0 h-5 w-auto rounded-md sm:h-8 sm:rounded-lg"
       src={url}
       alt={BADGE_LABELS[badge][locale]}
       height={0}
@@ -65,7 +62,7 @@ function Badge({
 
 export default async function ProjectPage(props: Props) {
   const payload = await getPayload({ config });
-  const { userLocale } = await getTranslations();
+  const { data, userLocale } = await getTranslations();
   const { docs } = await payload.find({
     collection: "projects",
     locale: userLocale,
@@ -117,28 +114,30 @@ export default async function ProjectPage(props: Props) {
           width={project.mainImage.width}
           height={project.mainImage.height}
         />
-        <RichText data={project.description} />
-        {project.extraImages && (
-          <Carousel>
-            <CarouselContent>
-              {project.extraImages.filter(isImage).map((image) => (
-                <CarouselItem key={image.url} className="flex justify-center">
-                  <Image
-                    src={image.url}
-                    alt={image.alt}
-                    width={image.width}
-                    height={0}
-                    className="max-h-96 w-full object-contain"
-                  />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselArrows />
-          </Carousel>
-        )}
-        {project.repository ? (
-          <Link href={project.repository}>Check it out on GitHub!</Link>
-        ) : null}
+        <Tile>
+          <RichText data={project.description} />
+          {project.extraImages && (
+            <Carousel className="sm:mx-12">
+              <CarouselContent>
+                {project.extraImages.filter(isImage).map((image) => (
+                  <CarouselItem key={image.url} className="flex justify-center">
+                    <Image
+                      src={image.url}
+                      alt={image.alt}
+                      width={image.width}
+                      height={0}
+                      className="max-h-96 w-full object-contain"
+                    />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselArrows data={data} />
+            </Carousel>
+          )}
+          {project.repository ? (
+            <Link href={project.repository}>Check it out on GitHub!</Link>
+          ) : null}
+        </Tile>
       </div>
     </div>
   );

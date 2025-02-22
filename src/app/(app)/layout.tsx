@@ -13,8 +13,9 @@ import { cn } from "@/lib/utils";
 
 import "./globals.css";
 
-import { Toaster } from "@/components/ui/sonner";
 import { QueryProvider } from "@/lib/providers/query-provider";
+import { Toaster } from "@/ui/sonner";
+import { TooltipProvider } from "@/ui/tooltip";
 
 export const metadata: Metadata = {
   title: "Konrad Guzek – Software Engineer, Web Developer, Student | Guzek UK",
@@ -75,17 +76,19 @@ export default async function RootLayout({
       </head>
       <body className="text-primary bg-gradient-main">
         <QueryProvider>
-          <div className="flex min-h-screen flex-col pt-(--navbar-height) sm:pt-(--navbar-height-sm)">
-            <ModalProvider userLanguage={userLanguage}>
-              <LanguageSelectorProvider>
-                <LanguageCookie />
-                <Navigation />
-                <main className="grow">{children}</main>
-                <Footer />
-              </LanguageSelectorProvider>
-            </ModalProvider>
-          </div>
-          <Toaster />
+          <TooltipProvider>
+            <div className="flex min-h-screen flex-col pt-(--navbar-height) sm:pt-(--navbar-height-sm)">
+              <ModalProvider userLanguage={userLanguage}>
+                <LanguageSelectorProvider>
+                  <LanguageCookie />
+                  <Navigation />
+                  <main className="grow">{children}</main>
+                  <Footer />
+                </LanguageSelectorProvider>
+              </ModalProvider>
+            </div>
+            <Toaster />
+          </TooltipProvider>
         </QueryProvider>
       </body>
       <Script

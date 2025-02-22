@@ -2,60 +2,85 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Search } from "lucide-react";
+import { useForm } from "react-hook-form";
 
 import type { Language } from "@/lib/enums";
-import { InputBox } from "@/components/forms/input-box";
+import { Tile } from "@/components/tile";
 import { TRANSLATIONS } from "@/lib/translations";
 import { getTitle } from "@/lib/util";
+import { Button } from "@/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/ui/form";
+import { Input } from "@/ui/input";
 
 export function SearchForm({ userLanguage }: { userLanguage: Language }) {
-  const [inputValue, setInputValue] = useState("");
   const router = useRouter();
   const data = TRANSLATIONS[userLanguage];
 
+  const form = useForm({ defaultValues: { search: "" } });
+
   function getSearchPath() {
-    const trimmed = inputValue.trim();
-    if (!trimmed) return "";
-    return `/liveseries/search/${encodeURIComponent(trimmed)}/1`;
+    const { search } = form.getValues();
+    return `/liveseries/search/${search}/1`;
   }
 
-  const path = getSearchPath();
+  const label = (
+    <>
+      <Search /> {data.liveSeries.search.search}
+    </>
+  );
 
   return (
     <>
       <h2 className="my-6 text-3xl font-bold">
         {getTitle(data.liveSeries.search.title, data.liveSeries.title, false)}
       </h2>
-      <form
-        action="/liveseries/search"
-        method="GET"
-        className="form-editor items-center gap-4 sm:flex"
-        onSubmit={(evt) => {
-          evt.preventDefault();
-          router.push(getSearchPath());
-        }}
-      >
-        <InputBox
-          label={data.liveSeries.search.label}
-          type="search"
-          value={inputValue}
-          setValue={setInputValue}
-          required={true}
-          placeholder={data.liveSeries.search.prompt}
-          autofocus
-          name="q"
-        />
-        {path ? (
-          <Link href={path} role="submit" className="btn">
-            {data.liveSeries.search.search}
-          </Link>
-        ) : (
-          <button className="btn w-full sm:w-[unset]">
-            {data.liveSeries.search.search}
-          </button>
-        )}
-      </form>
+      <div className="w-full">
+        <Tile containerClassName="w-full" className="w-full items-stretch">
+          <Form {...form}>
+            <form
+              action="/liveseries/search"
+              method="GET"
+              className="flex flex-col gap-4 sm:flex-row sm:items-end"
+              onSubmit={(evt) => {
+                evt.preventDefault();
+                router.push(getSearchPath());
+              }}
+            >
+              <FormField
+                control={form.control}
+                name="search"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>{data.liveSeries.search.label}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={data.liveSeries.search.prompt}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {form.getFieldState("search").invalid ? (
+                <Button disabled>{label}</Button>
+              ) : (
+                <Button asChild>
+                  <Link href={getSearchPath()}>{label}</Link>
+                </Button>
+              )}
+            </form>
+          </Form>
+        </Tile>
+      </div>
     </>
   );
 }

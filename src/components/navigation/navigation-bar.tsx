@@ -59,7 +59,7 @@ export function NavigationBar({
   return (
     <nav
       className={cn(
-        "fixed top-0 flex h-(--navbar-height) w-screen items-center gap-4 border-0 border-b border-solid border-transparent bg-transparent px-4 py-2 [transition:all_300ms_ease,border-color_1s_ease] sm:h-(--navbar-height-sm) sm:px-10 lg:gap-6",
+        "fixed top-0 z-10 flex h-(--navbar-height) w-screen items-center gap-4 border-0 border-b border-solid border-transparent bg-transparent px-4 py-2 [transition:all_300ms_ease,border-color_1s_ease] sm:h-(--navbar-height-sm) sm:px-10 lg:gap-6",
         {
           "border-background-soft bg-background-strong/70 backdrop-blur-2xl":
             scrollY > 0,
@@ -89,10 +89,10 @@ export function NavigationBar({
         <label
           htmlFor="hamburger"
           aria-controls="menu"
-          className="pointer-events-none fixed top-0 left-0 z-10 h-screen w-screen opacity-0 backdrop-blur-sm transition-opacity duration-300 peer-has-checked:pointer-events-auto peer-has-checked:opacity-100 lg:hidden"
+          className="bg-background-strong/25 pointer-events-none fixed top-0 left-0 z-10 h-screen w-screen opacity-0 backdrop-blur-sm transition-opacity duration-300 peer-has-checked:pointer-events-auto peer-has-checked:opacity-100 lg:hidden"
         ></label>
         {/* Menu */}
-        <ul className="border-background-soft bg-background-strong/50 shadow-background-strong invisible absolute top-0 right-0 z-20 w-full origin-top translate-y-[-100%] items-center gap-6 rounded-b-lg border-0 border-b pb-4 opacity-0 shadow-lg backdrop-blur-2xl transition-all duration-300 select-none peer-has-checked:visible peer-has-checked:translate-y-0 peer-has-checked:scale-100 peer-has-checked:opacity-100 sm:top-3 sm:right-10 sm:w-[50%] sm:origin-top-right sm:translate-y-0 sm:scale-[25%] sm:rounded-lg sm:border sm:border-solid sm:pt-4 lg:visible lg:static lg:flex lg:w-full lg:scale-100 lg:transform-none lg:border-none lg:bg-transparent lg:pt-0 lg:pb-0 lg:opacity-100 lg:shadow-none lg:backdrop-blur-none">
+        <ul className="border-background-soft bg-gradient-main/50 shadow-background-strong invisible absolute top-0 right-0 z-20 w-full origin-top translate-y-[-100%] items-center gap-6 rounded-b-lg border-0 border-b pb-4 opacity-0 shadow-lg backdrop-blur-2xl transition-all duration-300 select-none peer-has-checked:visible peer-has-checked:translate-y-0 peer-has-checked:scale-100 peer-has-checked:opacity-100 sm:top-3 sm:right-10 sm:w-[50%] sm:origin-top-right sm:translate-y-0 sm:scale-[25%] sm:rounded-lg sm:border sm:border-solid sm:pt-4 lg:visible lg:static lg:flex lg:w-full lg:scale-100 lg:transform-none lg:border-none lg:bg-transparent lg:pt-0 lg:pb-0 lg:opacity-100 lg:shadow-none lg:backdrop-blur-none">
           <div className="mt-5 flex justify-center sm:hidden">
             <UserWidget user={user} userLanguage={userLanguage} />
           </div>

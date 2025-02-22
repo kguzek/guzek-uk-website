@@ -7,15 +7,15 @@ import { RichText } from "@payloadcms/richtext-lexical/react";
 import { ArrowUpRight } from "lucide-react";
 
 import { DynamicPageLoader } from "@/components/pages/dynamic-page";
+import { getTranslations } from "@/lib/providers/translation-provider";
+import { cn } from "@/lib/utils";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { getTranslations } from "@/lib/providers/translation-provider";
-import { cn } from "@/lib/utils";
+} from "@/ui/card";
 
 import { isImage } from "./[slug]/page";
 
@@ -45,13 +45,10 @@ export default async function ProjectsPage() {
     <>
       <DynamicPageLoader slug="/projects" />
 
-      <div className="text">
-        <div className="grid w-full gap-4 lg:grid-cols-2">
+      <div className="text flex justify-center">
+        <div className="grid w-full max-w-[640px] gap-4 lg:max-w-max lg:grid-cols-2">
           {projects.docs.map((project) => (
-            <Card
-              className="group outline-background-soft dark:bg-background outline"
-              key={project.id}
-            >
+            <Card className="group" key={project.id}>
               <CardHeader className="flex w-full flex-row justify-between gap-x-4 gap-y-1 sm:h-32 sm:items-center">
                 <div>
                   <CardTitle className="text-primary-strong">
@@ -91,7 +88,7 @@ export default async function ProjectsPage() {
                         />
                       ) : null,
                     )}
-                  <ArrowUpRight className="group-hover:animate-jump group-hover:text-primary-strong sm:text-primary -translate-y-1/4 transition-all duration-300 group-hover:scale-125" />
+                  <ArrowUpRight className="group-hover:animate-jump group-hover:text-primary-strong sm:text-primary transition-all duration-300 group-hover:scale-125" />
                 </Link>
               </CardHeader>
               <CardContent>

@@ -12,22 +12,23 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-accent border-none shadow-xs text-primary-foreground shadow-sm hover:bg-accent/80",
+          "bg-accent/80 border-none shadow-xs text-primary-strong shadow-sm hover:bg-accent",
         destructive:
           "bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90",
-        outline:
-          "border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground",
+        outline: "border border-input shadow-xs hover:bg-accent",
         secondary:
           "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
-        ghost: "border hover:border-primary",
+        ghost: "border border-background-soft hover:border-primary-strong",
         link: "text-primary underline-offset-4 hover-underline",
         disabled: "pointer-events-none text-primary/50",
       },
       size: {
         default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
         lg: "h-10 rounded-md px-8",
-        icon: "h-9 w-9",
+        sm: "h-9 min-w-9 rounded-md px-2 text-sm",
+        "sm-icon":
+          "h-7 min-w-7 text-xs sm:h-9 sm:min-w-9 sm:rounded-md sm:px-2 lg:text-sm",
+        icon: "h-9 w-9 text-xs",
       },
     },
     defaultVariants: {

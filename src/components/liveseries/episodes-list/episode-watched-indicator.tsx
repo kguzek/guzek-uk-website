@@ -52,7 +52,7 @@ export function EpisodeWatchedIndicator({
 
   return (
     <button
-      className="watched centred clickable"
+      className="watched clickable"
       title={data.liveSeries.tvShow.markWatched(
         isWatched ? data.liveSeries.tvShow.un : "",
       )}

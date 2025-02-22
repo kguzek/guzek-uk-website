@@ -9,7 +9,10 @@ import { toast } from "sonner";
 
 import type { SignUpSchema } from "@/lib/backend/schemas";
 import type { Language } from "@/lib/enums";
-import { Button } from "@/components/ui/button";
+import { clientToApi, HttpError } from "@/lib/backend/client2";
+import { signUpSchema } from "@/lib/backend/schemas";
+import { TRANSLATIONS } from "@/lib/translations";
+import { Button } from "@/ui/button";
 import {
   Form,
   FormControl,
@@ -17,12 +20,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { clientToApi } from "@/lib/backend/client";
-import { signUpSchema } from "@/lib/backend/schemas";
-import { TRANSLATIONS } from "@/lib/translations";
-import { getErrorMessage } from "@/lib/util";
+} from "@/ui/form";
+import { Input } from "@/ui/input";
 
 export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
   const router = useRouter();
@@ -43,38 +42,32 @@ export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
   });
 
   async function signUp(values: SignUpSchema) {
-    const result = await clientToApi("auth/users", "", {
+    const result = await clientToApi("users", {
       method: "POST",
       body: values,
       // userLanguage,
     });
-    if (result.ok) {
-      router.push("/profile");
-      router.refresh();
-      router.prefetch("/liveseries");
-    } else {
-      throw new Error(
-        result.failed
-          ? "ERR_UNKNOWN"
-          : getErrorMessage(result.res, result.error, data),
-      );
-    }
+    console.info("Created new user:", result);
+    router.push("/profile");
+    router.prefetch("/liveseries");
   }
 
   return (
     <Form {...form}>
       <form
-        action="https://auth.guzek.uk/auth/tokens"
+        action="TODO: nojs-signup"
         method="POST"
         className="grid gap-4"
-        onSubmit={form.handleSubmit(() => {
-          toast.promise(mutateAsync(form.getValues()), {
+        onSubmit={form.handleSubmit((values) => {
+          toast.promise(mutateAsync(values), {
             loading: `${data.profile.loading}...`,
             error: (error) => ({
               icon: <CircleAlert className="text-error not-first:hidden" />,
               message: (
                 <p className="ml-2">
-                  {error === "ERR_UNKNOWN" ? data.networkError : error}
+                  {error instanceof HttpError
+                    ? error.message
+                    : data.networkError}
                 </p>
               ),
             }),

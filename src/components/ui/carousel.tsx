@@ -5,8 +5,10 @@ import * as React from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Button } from "@/ui/button";
+
+import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
 type CarouselApi = UseEmblaCarouselType[1];
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>;
@@ -31,7 +33,7 @@ type CarouselContextProps = {
 
 const CarouselContext = React.createContext<CarouselContextProps | null>(null);
 
-function useCarousel() {
+export function useCarousel() {
   const context = React.useContext(CarouselContext);
 
   if (!context) {
@@ -119,7 +121,7 @@ function Carousel({
     >
       <div
         onKeyDownCapture={handleKeyDown}
-        className={cn("relative", className)}
+        className={cn("relative grid place-items-center", className)}
         role="region"
         aria-roledescription="carousel"
         data-slot="carousel"
@@ -137,7 +139,10 @@ function CarouselContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       ref={carouselRef}
-      className="overflow-hidden"
+      className={cn("no-scrollbar", {
+        "overflow-x-scroll": orientation === "horizontal",
+        "overflow-y-scroll": orientation === "vertical",
+      })}
       data-slot="carousel-content"
     >
       <div
@@ -174,29 +179,37 @@ function CarouselPrevious({
   className,
   variant = "outline",
   size = "icon",
+  title,
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: React.ComponentProps<typeof Button> & { title: string }) {
   const { orientation, scrollPrev, canScrollPrev } = useCarousel();
 
   return (
-    <Button
-      data-slot="carousel-previous"
-      variant={variant}
-      size={size}
-      className={cn(
-        "absolute size-8 rounded-full",
-        orientation === "horizontal"
-          ? "top-1/2 -left-12 -translate-y-1/2"
-          : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
-        className,
-      )}
-      disabled={!canScrollPrev}
-      onClick={scrollPrev}
-      {...props}
-    >
-      <ArrowLeft />
-      <span className="sr-only">Previous slide</span>
-    </Button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          data-slot="carousel-previous"
+          variant={variant}
+          size={size}
+          className={cn(
+            "absolute size-6 rounded-full sm:size-8",
+            orientation === "horizontal"
+              ? "top-1/2 -left-3 -translate-y-1/2 sm:-left-12"
+              : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
+            className,
+          )}
+          disabled={!canScrollPrev}
+          onClick={scrollPrev}
+          {...props}
+        >
+          <ArrowLeft />
+          <span className="sr-only">{title}</span>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        <span>{title}</span>
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
@@ -204,44 +217,37 @@ function CarouselNext({
   className,
   variant = "outline",
   size = "icon",
+  title,
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: React.ComponentProps<typeof Button> & { title: string }) {
   const { orientation, scrollNext, canScrollNext } = useCarousel();
 
   return (
-    <Button
-      data-slot="carousel-next"
-      variant={variant}
-      size={size}
-      className={cn(
-        "absolute size-8 rounded-full",
-        orientation === "horizontal"
-          ? "top-1/2 -right-12 -translate-y-1/2"
-          : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
-        className,
-      )}
-      disabled={!canScrollNext}
-      onClick={scrollNext}
-      {...props}
-    >
-      <ArrowRight />
-      <span className="sr-only">Next slide</span>
-    </Button>
-  );
-}
-
-export function CarouselArrows({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
-  return (
-    <div
-      className={cn("mt-4 flex w-full justify-center gap-4 sm:mt-0", className)}
-      {...props}
-    >
-      <CarouselPrevious />
-      <CarouselNext />
-    </div>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          data-slot="carousel-next"
+          variant={variant}
+          size={size}
+          className={cn(
+            "absolute size-6 rounded-full sm:size-8",
+            orientation === "horizontal"
+              ? "top-1/2 -right-3 -translate-y-1/2 sm:-right-12"
+              : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
+            className,
+          )}
+          disabled={!canScrollNext}
+          onClick={scrollNext}
+          {...props}
+        >
+          <ArrowRight />
+          <span className="sr-only">{title}</span>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        <span>{title}</span>
+      </TooltipContent>
+    </Tooltip>
   );
 }
 

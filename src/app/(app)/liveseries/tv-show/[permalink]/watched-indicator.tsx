@@ -23,27 +23,23 @@ export function WatchedIndicator({
   const allEpisodesAired = episodes.every(hasEpisodeAired);
   const seasonWatched = isSeasonWatched(season, episodes);
 
-  return (
-    <div className="centred">
-      {allEpisodesAired ? (
-        <div
-          title={data.liveSeries.tvShow.markAllWatched(
-            seasonWatched ? data.liveSeries.tvShow.un : "",
-          )}
-          onClick={() =>
-            updateWatchedEpisodes(season, seasonWatched ? [] : episodes)
-          }
-          className="clickable"
-        >
-          {isSeasonWatched(season, episodes) ? (
-            <EyeIcon className="text-primary-strong" />
-          ) : (
-            <EyeOffIcon />
-          )}
-        </div>
-      ) : (
-        <ClockIcon />
+  return allEpisodesAired ? (
+    <button
+      title={data.liveSeries.tvShow.markAllWatched(
+        seasonWatched ? data.liveSeries.tvShow.un : "",
       )}
-    </div>
+      onClick={() =>
+        updateWatchedEpisodes(season, seasonWatched ? [] : episodes)
+      }
+      className="clickable"
+    >
+      {isSeasonWatched(season, episodes) ? (
+        <EyeIcon className="text-primary-strong" />
+      ) : (
+        <EyeOffIcon />
+      )}
+    </button>
+  ) : (
+    <ClockIcon />
   );
 }

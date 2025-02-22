@@ -98,7 +98,7 @@ export function LikedShowsCarousel({
       <ul
         ref={carouselRef}
         id="previews"
-        className="scroll-x flex w-full gap-4"
+        className="no-scrollbar flex w-full gap-4 overflow-x-scroll"
       >
         {toMap.map((showId, idx) => (
           <li key={`home-preview ${showId} ${idx}`}>

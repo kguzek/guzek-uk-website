@@ -56,9 +56,11 @@ async function SearchResults({
 }) {
   const { data, userLanguage } = await getTranslations();
 
+  const decodedQuery = decodeURIComponent(query);
+
   const result = await serverToApi<TvShowList>("search", {
     api: "episodate",
-    params: { q: query, page },
+    params: { q: decodedQuery, page },
   });
   if (result.ok && result.data.page !== +page) {
     redirect(`./${result.data.page}`);
@@ -66,7 +68,7 @@ async function SearchResults({
 
   return (
     <>
-      <h3>{`${data.liveSeries.search.results} "${query}"`}</h3>
+      <h3>{`${data.liveSeries.search.results} "${decodedQuery}"`}</h3>
       <TvShowPreviewList
         tvShows={result.data ?? undefined}
         userLanguage={userLanguage}
