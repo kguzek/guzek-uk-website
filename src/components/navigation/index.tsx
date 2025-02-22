@@ -1,14 +1,14 @@
 import { getPayload } from "payload";
 import config from "@payload-config";
 
-import type { MenuItem, User } from "@/lib/types";
+import type { MenuItem } from "@/lib/types";
 import { serverToApi } from "@/lib/backend/server";
 import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
 
 import type { Parallels } from "./breadcrumbs";
 import { Breadcrumbs } from "./breadcrumbs";
-import { NavBarItem, NavigationBar } from "./navigation-bar";
+import { NavigationBar } from "./navigation-bar";
 
 export async function Navigation() {
   const { data, userLanguage } = await getTranslations();
@@ -42,24 +42,21 @@ export async function Navigation() {
       })),
     },
   ] satisfies Parallels;
+
+  const menuItemsResult = await serverToApi<MenuItem[]>("pages");
+  const menuItems =
+    menuItemsResult.ok && menuItemsResult.hasBody ? menuItemsResult.data : [];
+  const filteredMenuItems = menuItems.filter(
+    (item) => user?.admin || !item.adminOnly,
+  );
   return (
     <>
-      <NavigationBar user={user} userLanguage={userLanguage}>
-        <MenuItems user={user} />
-      </NavigationBar>
+      <NavigationBar
+        user={user}
+        menuItems={filteredMenuItems}
+        userLanguage={userLanguage}
+      />
       <Breadcrumbs parallels={parallels} />
     </>
   );
-}
-
-export async function MenuItems({ user }: { user: User | null }) {
-  const result = await serverToApi<MenuItem[]>("pages");
-  const menuItems = result.ok && result.hasBody ? result.data : [];
-  return menuItems
-    .filter((item) => user?.admin || !item.adminOnly)
-    .map((item) => (
-      <li className="py-2 text-center" key={`nav-link-${item.id}`}>
-        <NavBarItem item={item} />
-      </li>
-    ));
 }

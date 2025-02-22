@@ -51,6 +51,10 @@ const config: Config = {
       animation: {
         jump: "jump 1s infinite",
       },
+      backgroundImage: {
+        "gradient-main":
+          "radial-gradient(circle at bottom, hsl(195 2 13) 0%, hsl(195 2 9) 20%, transparent 100%)",
+      },
     },
   },
   plugins: [typography, tailwindAnimate],
