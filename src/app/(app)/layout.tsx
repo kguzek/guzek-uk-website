@@ -11,10 +11,10 @@ import { ModalProvider } from "@/lib/context/modal-context";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { cn } from "@/lib/utils";
 
-import "./forms.css";
 import "./globals.css";
 
 import { Toaster } from "@/components/ui/sonner";
+import { QueryProvider } from "@/lib/providers/query-provider";
 
 export const metadata: Metadata = {
   title: "Konrad Guzek – Software Engineer, Web Developer, Student | Guzek UK",
@@ -74,17 +74,19 @@ export default async function RootLayout({
         <link rel="canonical" href="https://www.guzek.uk" />
       </head>
       <body className="text-primary bg-gradient-main">
-        <div className="flex min-h-screen flex-col pt-(--navbar-height) sm:pt-(--navbar-height-sm)">
-          <ModalProvider userLanguage={userLanguage}>
-            <LanguageSelectorProvider>
-              <LanguageCookie />
-              <Navigation />
-              <main className="grow">{children}</main>
-              <Footer />
-            </LanguageSelectorProvider>
-          </ModalProvider>
-        </div>
-        <Toaster />
+        <QueryProvider>
+          <div className="flex min-h-screen flex-col pt-(--navbar-height) sm:pt-(--navbar-height-sm)">
+            <ModalProvider userLanguage={userLanguage}>
+              <LanguageSelectorProvider>
+                <LanguageCookie />
+                <Navigation />
+                <main className="grow">{children}</main>
+                <Footer />
+              </LanguageSelectorProvider>
+            </ModalProvider>
+          </div>
+          <Toaster />
+        </QueryProvider>
       </body>
       <Script
         data-collect-dnt="true"
