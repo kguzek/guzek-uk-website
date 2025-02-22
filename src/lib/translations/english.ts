@@ -115,8 +115,8 @@ export const ENGLISH: Translation = {
       showing: "Showing",
       of: "of",
       page: "Page",
-      next: "Next",
       previous: "Previous",
+      next: "Next",
     },
     tvShow: {
       title: "Show Details",
@@ -124,6 +124,8 @@ export const ENGLISH: Translation = {
       present: "Present",
       source: "Source",
       images: "Gallery",
+      previousImage: "Previous image",
+      nextImage: "Next image",
       episodes: "Episodes",
       noEpisodes: "No episodes to list.",
       episode: "Episode",

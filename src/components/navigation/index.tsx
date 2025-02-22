@@ -24,9 +24,12 @@ export async function Navigation() {
     [
       { label: data.liveSeries.title, slug: "liveseries" },
       { label: data.projects.title, slug: "projects" },
-      user
-        ? { label: data.profile.title, slug: "profile" }
-        : { label: data.profile.formDetails.login, slug: "login" },
+      ...(user
+        ? [{ label: data.profile.title, slug: "profile" }]
+        : [
+            { label: data.profile.formDetails.login, slug: "login" },
+            { label: data.profile.formDetails.signup, slug: "signup" },
+          ]),
     ],
     {
       liveseries: [

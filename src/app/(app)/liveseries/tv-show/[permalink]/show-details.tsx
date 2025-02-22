@@ -13,20 +13,17 @@ import type {
   User,
   WatchedEpisodes,
 } from "@/lib/types";
+import { CarouselArrows } from "@/components/carousel/carousel-arrows";
 import { InputBox } from "@/components/forms/input-box";
 import { TvShowSkeleton } from "@/components/liveseries/tv-show-skeleton";
-import {
-  Carousel,
-  CarouselArrows,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
 import { clientToApi } from "@/lib/backend/client";
 import { useModals } from "@/lib/context/modal-context";
 import { TvShowContext } from "@/lib/context/tv-show-context";
 import { TRANSLATIONS } from "@/lib/translations";
 import { getEpisodeAirDate, isInvalidDate } from "@/lib/util";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/ui/badge";
+import { Carousel, CarouselContent, CarouselItem } from "@/ui/carousel";
 
 /** Will issue a warning when trying to subscribe with more than 10 unwatched episodes. */
 const UNWATCHED_EPISODES_THRESHOLD = 10;
@@ -178,22 +175,17 @@ export function ShowDetails({
         >
           <HeartIcon fill={isLiked ? "currentColor" : "none"} />
         </button>
-        <h2 className="text-2xl font-bold text-accent-soft">
+        <h2 className="text-accent-soft text-2xl font-bold">
           {tvShowDetails.name}
         </h2>
         <small className="text-xl">
-          ({formatDate("start")} – {formatDate("end")})
+          ({formatDate("start")}–{formatDate("end")})
         </small>
       </div>
       <div className="my-1 flex flex-wrap gap-3">
         <div className="flex items-center gap-2">
           {tvShowDetails.genres.map((genre, idx) => (
-            <div
-              key={`genre-${genre}-${idx}`}
-              className="clickable cursor-default whitespace-nowrap rounded-md bg-primary px-2 text-background"
-            >
-              {genre}
-            </div>
+            <Badge key={`genre-${genre}-${idx}`}>{genre}</Badge>
           ))}
         </div>
         {tvShowDetails.rating ? (
@@ -202,7 +194,7 @@ export function ShowDetails({
               className="relative"
               title={`${(+tvShowDetails.rating).toFixed(1)}/10`}
             >
-              <div className="absolute w-full text-accent2">
+              <div className="group text-accent2 absolute w-full">
                 <div className="grid w-fit grid-cols-10 sm:gap-1">
                   {Array(Math.floor(+tvShowDetails.rating))
                     .fill(0)
@@ -222,7 +214,7 @@ export function ShowDetails({
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-10 sm:gap-1">
+              <div className="text-background-soft grid grid-cols-10 sm:gap-1">
                 {Array(10)
                   .fill(0)
                   .map((_, idx) => (
@@ -240,14 +232,17 @@ export function ShowDetails({
         <i className="font-serif font-normal">{tvShowDetails.network}</i> (
         {tvShowDetails.country}) | {tvShowDetails.runtime} min
       </p>
-      <blockquote
-        className="mb-2 mt-1"
-        dangerouslySetInnerHTML={{
-          // Trim description end from line breaks
-          __html: tvShowDetails.description.replace(/(<br\s?>|\\n|\s)*$/, ""),
-        }}
-      ></blockquote>
-      <small>
+      <label className="border-background-soft mt-1 mb-2 rounded-sm border-l-[5px] pl-2.5 text-sm sm:text-base md:text-lg">
+        <input type="checkbox" className="peer hidden" />
+        <blockquote
+          className="line-clamp-6 cursor-s-resize peer-checked:line-clamp-none peer-checked:cursor-n-resize"
+          dangerouslySetInnerHTML={{
+            // Trim description end from line breaks
+            __html: tvShowDetails.description.replace(/(<br\s?>|\\n|\s)*$/, ""),
+          }}
+        />
+      </label>
+      <small className="text-xs md:text-sm">
         {data.liveSeries.tvShow.source}:{" "}
         {tvShowDetails.description_source ? (
           <Link
@@ -279,10 +274,13 @@ export function ShowDetails({
             onLoadImage={() => {}}
           /> */}
           <div className="flex justify-center">
-            <Carousel>
+            <Carousel className="sm:min-h-[300px] sm:max-w-[400px]">
               <CarouselContent>
                 {tvShowDetails.pictures.map((url, idx) => (
-                  <CarouselItem key={`image-${idx}`} className="max-w-fit">
+                  <CarouselItem
+                    key={`image-${idx}`}
+                    className="flex max-w-fit items-center"
+                  >
                     <Image
                       src={url}
                       alt={`Gallery image ${idx + 1}`}
@@ -292,7 +290,7 @@ export function ShowDetails({
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselArrows />
+              <CarouselArrows data={data} />
             </Carousel>
           </div>
         </>

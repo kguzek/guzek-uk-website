@@ -26,7 +26,7 @@ export type ErrorResponseBody = { [code: string]: string };
 
 const SANDWICHED_JSON_PATTERN = /.*?(\{.*\}).*?/;
 
-function parseResponseBody(body: string) {
+export function parseResponseBody(body: string) {
   try {
     return JSON.parse(body);
   } catch {

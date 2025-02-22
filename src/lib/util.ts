@@ -73,7 +73,7 @@ export const getEpisodeAirDate = (episode: Episode, addSpace = false): Date => {
 export const hasEpisodeAired = (episode: Episode) =>
   new Date() > getEpisodeAirDate(episode);
 
-const STATUS_CODES: Record<number, string> = {
+const STATUS_CODES: { [code in number]?: string } = {
   200: "OK",
   201: "Created",
   204: "No Content",
@@ -95,8 +95,9 @@ export const getErrorMessage = (
   json: any, //eslint-disable-line @typescript-eslint/no-explicit-any
   data: Translation,
 ): string =>
-  (json[`${res.status} ${STATUS_CODES[res.status] || res.statusText}`] ??
-    JSON.stringify(json)) ||
+  (json != null &&
+    (json[`${res.status} ${STATUS_CODES[res.status] ?? res.statusText}`] ??
+      JSON.stringify(json))) ||
   data.unknownError;
 
 export const getUTCDateString = (

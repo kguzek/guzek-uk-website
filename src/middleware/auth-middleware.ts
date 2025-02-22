@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import type { MiddlewareFactory } from "@/lib/types";
+import { PAGINATED_REGEX_INVALID } from "@/lib/constants";
 import { getAuth } from "@/lib/providers/auth-provider";
 
 const ROUTES_REQUIRING_AUTH = [
@@ -10,9 +11,6 @@ const ROUTES_REQUIRING_AUTH = [
 ];
 const ROUTES_REQUIRING_NOAUTH = ["/login", "/signup"];
 const ROUTES_REQUIRING_ADMIN = ["/admin-legacy"];
-
-const PAGINATED_REGEX =
-  /^(\/liveseries\/(?:search\/[^\/]+|most-popular))(?:\/[^\/]*[^\/\d].*)?$/;
 
 export const authMiddleware: MiddlewareFactory = (next) =>
   async function (request) {
@@ -48,7 +46,7 @@ export const authMiddleware: MiddlewareFactory = (next) =>
     }
 
     // redirect to first page of liveseries/search/:query and liveseries/most-popular if the page is invalid or missing
-    const match = PAGINATED_REGEX.exec(request.nextUrl.pathname);
+    const match = PAGINATED_REGEX_INVALID.exec(request.nextUrl.pathname);
     if (match != null) {
       return redirect(`${match[1]}/1`);
     }

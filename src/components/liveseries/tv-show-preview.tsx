@@ -11,6 +11,7 @@ import type { TvShowDetailsShort } from "@/lib/types";
 import { clientToApi } from "@/lib/backend/client";
 import { useModals } from "@/lib/context/modal-context";
 import { TRANSLATIONS } from "@/lib/translations";
+import { cn } from "@/lib/utils";
 
 import { TvShowPreviewSkeleton } from "./tv-show-preview-skeleton";
 
@@ -64,36 +65,34 @@ export function TvShowPreview({
   }`;
 
   return (
-    <>
-      <div className="bg-background-strong outline-background-soft w-[240px] rounded-md pb-10 outline">
-        <div className="flex w-full justify-between gap-1 px-4 py-2">
-          <Link
-            href={link}
-            title={showDetails?.name}
-            className="overflow-hidden"
-          >
-            <p className="title cutoff text-primary font-serif">
-              {showDetails?.name} ({showDetails?.country})
-            </p>
-          </Link>
-          <button
-            onClick={handleHeart}
-            className="clickable text-primary"
-            title={data.liveSeries.tvShow[isLiked ? "unlike" : "like"]}
-          >
-            <HeartIcon fill={isLiked ? "currentColor" : "none"} />
-          </button>
-        </div>
-        <Link href={link} title={showDetails?.name}>
-          <Image
-            className="text-primary block h-[300px] w-full bg-cover bg-center object-cover italic"
-            src={showDetails?.image_thumbnail_path}
-            alt={showDetails?.name + " thumbnail"}
-            width={240}
-            height={600}
-          />
+    <div className="bg-background-strong shadow-background-strong outline-background hover:outline-background-soft w-[240px] rounded-md pb-10 outline transition-all duration-300 hover:z-1 hover:-translate-y-2 hover:drop-shadow-2xl">
+      <div className="flex w-full justify-between gap-1 px-4 py-2">
+        <Link href={link} title={showDetails?.name} className="overflow-hidden">
+          <p className="cutoff text-primary">
+            {showDetails?.name} ({showDetails?.country})
+          </p>
         </Link>
+
+        <button
+          onClick={handleHeart}
+          className={cn(
+            "text-primary hover:text-error transition-colors duration-300",
+            { "text-error": isLiked },
+          )}
+          title={data.liveSeries.tvShow[isLiked ? "unlike" : "like"]}
+        >
+          <HeartIcon fill={isLiked ? "currentColor" : "none"} />
+        </button>
       </div>
-    </>
+      <Link href={link} title={showDetails?.name}>
+        <Image
+          className="text-primary block h-[300px] w-full bg-cover bg-center object-cover italic"
+          src={showDetails?.image_thumbnail_path}
+          alt={showDetails?.name + " thumbnail"}
+          width={240}
+          height={600}
+        />
+      </Link>
+    </div>
   );
 }

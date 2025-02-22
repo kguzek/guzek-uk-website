@@ -118,8 +118,10 @@ export async function DynamicPageLoader({ slug }: { slug: string }) {
   return (
     <div className="text flex justify-center">
       <JsonLdScript page={page} />
-      <div className="prose mt-6">
-        <RichText data={page.content} />
+      <div className="mt-6">
+        <div className="prose">
+          <RichText data={page.content} />
+        </div>
       </div>
     </div>
   );

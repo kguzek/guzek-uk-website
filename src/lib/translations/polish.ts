@@ -116,8 +116,8 @@ export const POLISH: Translation = {
       showing: "Wynik",
       of: "z",
       page: "Strona",
-      next: "Następna",
       previous: "Poprzednia",
+      next: "Następna",
     },
     tvShow: {
       title: "Dane Serialu",
@@ -125,6 +125,8 @@ export const POLISH: Translation = {
       present: "Obecnie",
       source: "Źródło",
       images: "Galeria",
+      previousImage: "Poprzednie zdjęcie",
+      nextImage: "Następne zdjęcie",
       episodes: "Odcinki",
       noEpisodes: "Brak odcinków do wyświetlenia.",
       episode: "Odcinek",

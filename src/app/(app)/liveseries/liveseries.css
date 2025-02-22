@@ -23,15 +23,6 @@
   object-fit: cover;
 }
 
-.scroll-x {
-  overflow-x: scroll;
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-}
-.scroll-x::-webkit-scrollbar {
-  display: none;
-}
-
 .gallery {
   width: 60%;
 }
