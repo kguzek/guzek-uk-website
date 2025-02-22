@@ -8,14 +8,11 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        hostname:
-          "avatar-management--avatars.us-west-2.prod.public.atl-paas.net",
-      },
-      {
         // GitHub project shields
         hostname: "img.shields.io",
       },
       {
+        // Episodate API TV Show thumbnails
         hostname: "static.episodate.com",
       },
     ],

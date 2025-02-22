@@ -14,6 +14,8 @@ import { cn } from "@/lib/utils";
 import "./forms.css";
 import "./globals.css";
 
+import { Toaster } from "@/components/ui/sonner";
+
 export const metadata: Metadata = {
   title: "Konrad Guzek – Software Engineer, Web Developer, Student | Guzek UK",
   description:
@@ -71,8 +73,8 @@ export default async function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <link rel="canonical" href="https://www.guzek.uk" />
       </head>
-      <body className="text-primary">
-        <div className="mt-(--navbar-height) flex min-h-[calc(100vh-var(--navbar-height))] flex-col pt-1 sm:mt-(--navbar-height-sm) sm:min-h-[calc(100vh-var(--navbar-height-sm))]">
+      <body className="text-primary bg-gradient-main">
+        <div className="flex min-h-screen flex-col pt-(--navbar-height) sm:pt-(--navbar-height-sm)">
           <ModalProvider userLanguage={userLanguage}>
             <LanguageSelectorProvider>
               <LanguageCookie />
@@ -82,6 +84,7 @@ export default async function RootLayout({
             </LanguageSelectorProvider>
           </ModalProvider>
         </div>
+        <Toaster />
       </body>
       <Script
         data-collect-dnt="true"

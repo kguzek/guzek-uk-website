@@ -65,14 +65,14 @@ export function TvShowPreview({
 
   return (
     <>
-      <div className="w-[240px] rounded-md bg-background pb-10">
+      <div className="bg-background-strong outline-background-soft w-[240px] rounded-md pb-10 outline">
         <div className="flex w-full justify-between gap-1 px-4 py-2">
           <Link
             href={link}
             title={showDetails?.name}
             className="overflow-hidden"
           >
-            <p className="title cutoff font-serif text-primary-strong">
+            <p className="title cutoff text-primary font-serif">
               {showDetails?.name} ({showDetails?.country})
             </p>
           </Link>
@@ -86,7 +86,7 @@ export function TvShowPreview({
         </div>
         <Link href={link} title={showDetails?.name}>
           <Image
-            className="block h-[300px] w-full bg-cover bg-center object-cover"
+            className="text-primary block h-[300px] w-full bg-cover bg-center object-cover italic"
             src={showDetails?.image_thumbnail_path}
             alt={showDetails?.name + " thumbnail"}
             width={240}

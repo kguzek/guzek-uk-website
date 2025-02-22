@@ -1,4 +1,8 @@
 @import "tailwindcss";
+/*
+  ---break---
+*/
+@custom-variant dark (&:is(.dark *));
 
 @config '../../../tailwind.config.ts';
 
@@ -134,25 +138,28 @@
   border: 1px solid var(--color-background-strong);
 }
 
-@layer base {
-  :root {
-    --color-primary: #bbb;
-    --color-primary-strong: #fff;
-    --color-background: #262322;
-    --color-background-strong: #0b0a09;
-    --color-background-soft: #5e5954;
-    --color-accent: #2596be;
-    --color-accent-soft: #c9dae0;
-    --color-accent2: #c9b86e;
-    --color-success: #3dc983;
-    --color-error: #b64949;
+@utility layout-two-column {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
 
-    --card-width: 240px;
-    --card-padding: 20px;
-
-    --navbar-height-sm: 100px;
-    --navbar-height: 80px;
+  & img {
+    margin: 0;
   }
+}
+
+@utility cutoff {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@utility delete {
+  @apply text-error hover:text-primary-strong flex cursor-pointer items-center self-stretch p-1 hover:[background-size:_100%_100%] sm:p-3;
+  background: linear-gradient(var(--color-error), var(--color-error)) no-repeat
+    right;
+  background-size: 0 100%;
+  transition: all 200ms ease;
 }
 
 @layer utilities {
@@ -182,33 +189,26 @@
   }
 }
 
-@utility layout-two-column {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-
-  & img {
-    margin: 0;
-  }
-}
-
-@utility cutoff {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-@utility delete {
-  @apply text-error hover:text-primary-strong flex cursor-pointer items-center self-stretch p-1 hover:[background-size:_100%_100%] sm:p-3;
-  background: linear-gradient(var(--color-error), var(--color-error)) no-repeat
-    right;
-  background-size: 0 100%;
-  transition: all 200ms ease;
-}
-
 @layer base {
   :root {
     --radius: 0.5rem;
+
+    --color-primary: #bbb;
+    --color-primary-strong: #fff;
+    --color-background: #262322;
+    --color-background-strong: hsl(30 10 4);
+    --color-background-soft: hsl(30 6 35);
+    --color-accent: #2596be;
+    --color-accent-soft: #c9dae0;
+    --color-accent2: #c9b86e;
+    --color-success: #3dc983;
+    --color-error: #b64949;
+
+    --card-width: 240px;
+    --card-padding: 20px;
+
+    --navbar-height-sm: 100px;
+    --navbar-height: 80px;
   }
 
   a {

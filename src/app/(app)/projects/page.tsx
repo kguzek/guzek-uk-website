@@ -49,7 +49,7 @@ export default async function ProjectsPage() {
         <div className="grid w-full gap-4 lg:grid-cols-2">
           {projects.docs.map((project) => (
             <Card
-              className="group outline-background-soft dark:bg-background outline outline-1"
+              className="group outline-background-soft dark:bg-background outline"
               key={project.id}
             >
               <CardHeader className="flex w-full flex-row justify-between gap-x-4 gap-y-1 sm:h-32 sm:items-center">
