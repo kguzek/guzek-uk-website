@@ -113,7 +113,7 @@ function StyledLogComponent<T extends ElementType>({
     <Tag
       {...props}
       className={cn(
-        "whitespace-pre-wrap break-all rounded-3xl bg-primary px-4 py-3 text-background",
+        "bg-primary text-background rounded-3xl px-4 py-3 break-all whitespace-pre-wrap",
         {
           "text-error": log.level === "crit",
           "bg-background text-error": log.level === "error",
@@ -267,7 +267,7 @@ function Log({
 
   return (
     <div>
-      <div className="flex flex-col gap-1 rounded-2xl bg-background-soft px-6 py-4 text-primary-strong">
+      <div className="bg-background-soft text-primary-strong flex flex-col gap-1 rounded-2xl px-6 py-4">
         <div className="flex w-full items-center justify-between">
           <div className="flex gap-3">
             <div
@@ -298,7 +298,7 @@ function Log({
             </small>
           </div>
           <div
-            className="clickable rounded-xl bg-accent px-3"
+            className="clickable bg-accent rounded-xl px-3"
             onClick={() =>
               setFilter((old) => ({
                 ...old,
@@ -323,7 +323,7 @@ function Log({
               >
                 <CodeXmlIcon />
                 <ChevronDownIcon
-                  className={cn("transition-transform", {
+                  className={cn("transition-transform duration-300", {
                     "-rotate-180": collapsed,
                   })}
                 ></ChevronDownIcon>

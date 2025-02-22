@@ -45,17 +45,17 @@ export function UserCard({
 
   if (isDeleted) return null;
   return (
-    <div className="flex w-full overflow-hidden rounded-2xl bg-primary transition-all duration-300 hover:-translate-y-1 hover:opacity-100 lg:opacity-70">
+    <div className="bg-primary flex w-full overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:opacity-100 lg:opacity-70">
       <Link
         href={`/admin-legacy/users/${user.uuid}`}
-        className="group flex w-full items-center gap-5 px-2 py-3 text-background sm:px-3"
+        className="group text-background flex w-full items-center gap-5 px-2 py-3 sm:px-3"
       >
         <UserIcon className={cn({ "text-accent": user.admin })}></UserIcon>
         <div>
           <i>{user.username}</i>
           <div className="font-normal">{user.email}</div>
         </div>
-        <SettingsIcon className="ml-auto scale-75 transition-transform group-hover:rotate-180 sm:scale-100" />
+        <SettingsIcon className="ml-auto scale-75 transition-transform duration-300 group-hover:rotate-180 sm:scale-100" />
       </Link>
       <div className="delete" onClick={() => confirmDelete(user)}>
         <Trash2Icon className="scale-75 sm:scale-100" />

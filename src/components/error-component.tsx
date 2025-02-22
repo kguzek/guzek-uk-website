@@ -50,7 +50,8 @@ export async function ErrorComponent({
         <p>{data.error[errorCode].body}.</p>
       )}
       <div className="mt-3 flex justify-center">
-        <div className="link-container">
+        {/* TODO: flex stretch w-250px */}
+        <div className="">
           {errorCode === ErrorCode.Unauthorized ? (
             <Link href="/login" className="btn">
               {data.profile.formDetails.login}

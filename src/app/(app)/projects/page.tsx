@@ -25,7 +25,7 @@ import { isImage } from "./[slug]/page";
 const htmlWithoutLinks: JSXConvertersFunction = ({ defaultConverters }) => ({
   ...defaultConverters,
   link: (link) => (
-    <span className="hover-underline cursor-pointer whitespace-pre-wrap text-primary-strong">
+    <span className="hover-underline text-primary-strong cursor-pointer whitespace-pre-wrap">
       {link.node.children
         .map((child) => (child as unknown as { text: string }).text)
         .join(" ")}
@@ -49,7 +49,7 @@ export default async function ProjectsPage() {
         <div className="grid w-full gap-4 lg:grid-cols-2">
           {projects.docs.map((project) => (
             <Card
-              className="group outline outline-1 outline-background-soft dark:bg-background"
+              className="group outline-background-soft dark:bg-background outline outline-1"
               key={project.id}
             >
               <CardHeader className="flex w-full flex-row justify-between gap-x-4 gap-y-1 sm:h-32 sm:items-center">
@@ -91,13 +91,13 @@ export default async function ProjectsPage() {
                         />
                       ) : null,
                     )}
-                  <ArrowUpRight className="ease group-hover:animate-jump transition-all duration-300 group-hover:scale-125 group-hover:text-primary-strong sm:text-primary" />
+                  <ArrowUpRight className="group-hover:animate-jump group-hover:text-primary-strong sm:text-primary -translate-y-1/4 transition-all duration-300 group-hover:scale-125" />
                 </Link>
               </CardHeader>
               <CardContent>
                 <Link href={`/projects/${project.slug}`}>
                   <RichText
-                    className="line-clamp-3 text-xs text-primary transition-all duration-300 hover:text-primary-strong sm:text-base"
+                    className="text-primary hover:text-primary-strong line-clamp-3 text-xs transition-all duration-300 sm:text-base"
                     data={project.description}
                     converters={htmlWithoutLinks}
                   />

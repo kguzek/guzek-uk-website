@@ -61,7 +61,7 @@ export function DownloadsWidget({
   return (
     <div
       className={cn(
-        "fixed bottom-0 left-0 right-0 z-[7] rounded-t-xl border-2 border-background bg-background-soft p-1 px-2 shadow-lg transition-opacity duration-300 hover:opacity-100 sm:left-[unset] sm:rounded-tr-none",
+        "border-background bg-background-soft fixed right-0 bottom-0 left-0 z-7 rounded-t-xl border-2 p-1 px-2 shadow-lg transition-opacity duration-300 hover:opacity-100 sm:left-[unset] sm:rounded-tr-none",
         { "sm:opacity-50": collapsed, "sm:opacity-80": !collapsed },
       )}
     >
@@ -70,7 +70,9 @@ export function DownloadsWidget({
         onClick={() => setCollapsed((old) => !old)}
       >
         <ChevronUpIcon
-          className={cn("transition-transform", { "rotate-180": !collapsed })}
+          className={cn("transition-transform duration-300", {
+            "rotate-180": !collapsed,
+          })}
         ></ChevronUpIcon>
       </div>
       <div
@@ -114,10 +116,10 @@ export function DownloadsWidget({
                     </span>
                   )}
                 </div>
-                <div className="mb-[5px] h-4 w-full overflow-hidden rounded-full bg-primary">
+                <div className="bg-primary mb-[5px] h-4 w-full overflow-hidden rounded-full">
                   <div
                     className={cn(
-                      "h-full self-start bg-success transition-all [transition-duration:400ms]",
+                      "bg-success h-full self-start transition-all [transition-duration:400ms]",
                       {
                         "bg-accent": episode.status === DownloadStatus.COMPLETE,
                       },

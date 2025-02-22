@@ -77,7 +77,7 @@ export function ProfileForm({
           info={
             <button
               type="button"
-              className="clickable !cursor-help border-none bg-none text-primary-strong"
+              className="clickable cursor-help! border-none bg-none text-primary-strong"
               onClick={(evt) => {
                 evt.preventDefault();
                 setModalInfo(data.liveSeries.explanation);

@@ -3,11 +3,11 @@ import typography from "@tailwindcss/typography";
 import tailwindAnimate from "tailwindcss-animate";
 
 const config: Config = {
-  darkMode: ["class"],
+  darkMode: "class",
   content: ["./src/**/*.tsx"],
   theme: {
     extend: {
-      typography: (theme: (theme: string) => unknown) => ({
+      typography: ({ theme }) => ({
         DEFAULT: {
           css: {
             color: "inherit",
