@@ -19,9 +19,7 @@ export function ProfileForm({
   userLanguage: Language;
   accessToken: string;
 }) {
-  const [previousServerUrl, setPreviousServerUrl] = useState(
-    user.serverUrl || "",
-  );
+  const [previousServerUrl, setPreviousServerUrl] = useState(user.serverUrl || "");
   const [serverUrl, setServerUrl] = useState(previousServerUrl);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
   const [updating, setUpdating] = useState(false);
@@ -77,7 +75,7 @@ export function ProfileForm({
           info={
             <button
               type="button"
-              className="clickable cursor-help! border-none bg-none text-primary-strong"
+              className="clickable text-primary-strong cursor-help! border-none bg-none"
               onClick={(evt) => {
                 evt.preventDefault();
                 setModalInfo(data.liveSeries.explanation);

@@ -29,9 +29,8 @@ export function DownloadsWidget({
   const { downloadedEpisodes } = useLiveSeriesContext();
   const { updateMarkerStyle } = useLanguageSelector();
   const [collapsed, setCollapsed] = useState(
-    downloadedEpisodes.find(
-      (episode) => episode.status === DownloadStatus.PENDING,
-    ) == null,
+    downloadedEpisodes.find((episode) => episode.status === DownloadStatus.PENDING) ==
+      null,
   );
   const { setModalError, setModalChoice, setModalInfo } = useModals();
   const data = TRANSLATIONS[userLanguage];
@@ -83,8 +82,7 @@ export function DownloadsWidget({
       >
         <div className="flex flex-col items-center justify-around gap-2 overflow-hidden">
           {downloadedEpisodes.map((episode, idx) => {
-            const downloadProgress =
-              (100 * (episode.progress ?? 0)).toFixed(1) + "%";
+            const downloadProgress = (100 * (episode.progress ?? 0)).toFixed(1) + "%";
             const episodeLink = `/liveseries/watch/${episode.showName}/${episode.season}/${episode.episode}`;
             const key = `downloads-card-${idx}`;
             const card = (
@@ -94,19 +92,16 @@ export function DownloadsWidget({
                     {episode.showName} {serialise(episode)}
                   </span>
                   <span className="font-serif"> {downloadProgress}</span>
-                  {episode.speed != null &&
-                    episode.status === DownloadStatus.PENDING && (
-                      <span className="font-serif">
-                        {" "}
-                        ({bytesToReadable(episode.speed)}/s)
-                      </span>
-                    )}
+                  {episode.speed != null && episode.status === DownloadStatus.PENDING && (
+                    <span className="font-serif">
+                      {" "}
+                      ({bytesToReadable(episode.speed)}/s)
+                    </span>
+                  )}
                   {episode.status === DownloadStatus.VERIFYING && (
                     <span>
                       {" " +
-                        data.liveSeries.episodes.downloadStatus[
-                          DownloadStatus.VERIFYING
-                        ]}
+                        data.liveSeries.episodes.downloadStatus[DownloadStatus.VERIFYING]}
                       ...
                     </span>
                   )}
@@ -130,10 +125,7 @@ export function DownloadsWidget({
               </div>
             );
             return (
-              <div
-                className="downloads-card-container flex overflow-hidden"
-                key={key}
-              >
+              <div className="downloads-card-container flex overflow-hidden" key={key}>
                 {episode.status === DownloadStatus.COMPLETE ? (
                   <>
                     <Link

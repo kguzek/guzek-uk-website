@@ -1,7 +1,4 @@
-import {
-  DynamicPageLoader,
-  getPageBySlug,
-} from "@/components/pages/dynamic-page";
+import { DynamicPageLoader, getPageBySlug } from "@/components/pages/dynamic-page";
 import { getTitle } from "@/lib/util";
 
 export async function generateMetadata() {

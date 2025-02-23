@@ -45,9 +45,7 @@ export function InputBox<V extends string | number | boolean>({
   }
 
   if (isDropdown && !options) {
-    throw Error(
-      "'options' prop must be provided when using 'dropdown' InputBox type.",
-    );
+    throw Error("'options' prop must be provided when using 'dropdown' InputBox type.");
   }
 
   useEffect(() => {
@@ -61,9 +59,7 @@ export function InputBox<V extends string | number | boolean>({
       })}
     >
       <div className="flex gap-2">
-        {required && value === "" && (
-          <span className="required-asterisk">*</span>
-        )}
+        {required && value === "" && <span className="required-asterisk">*</span>}
         <span>{label}</span>
         {info}
       </div>

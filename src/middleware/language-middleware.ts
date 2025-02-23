@@ -12,11 +12,7 @@ export const languageMiddleware: MiddlewareFactory = (next) =>
         const path = request.nextUrl.pathname.replace(slug, "") || "/";
         const url = new URL(path, request.url);
         const response = NextResponse.redirect(url);
-        response.cookies.set(
-          "lang",
-          language.toUpperCase(),
-          getLanguageCookieOptions(),
-        );
+        response.cookies.set("lang", language.toUpperCase(), getLanguageCookieOptions());
         return response;
       }
     }

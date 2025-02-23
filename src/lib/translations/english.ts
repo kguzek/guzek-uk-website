@@ -9,6 +9,7 @@ import {
 export const ENGLISH: Translation = {
   footer: (year) => `${year} \u00a9 Konrad Guzek`,
   loading: "Loading",
+  redirecting: "Redirecting",
   language: "Language",
   loginShort: "Log in",
   dateFormat: new Intl.DateTimeFormat("en-GB", LONG_DATE_FORMAT),
@@ -26,6 +27,10 @@ export const ENGLISH: Translation = {
     "A network error occurred while performing this action. Please try again later.",
   unknownError: "An unknown error occured. Please contact konrad@guzek.uk",
   loggedOut: "You have been logged out.",
+  placeholder: {
+    email: "john@doe.co.uk",
+    username: "johndoe",
+  },
   profile: {
     title: "Profile",
     body: "Welcome to your profile!",
@@ -33,8 +38,7 @@ export const ENGLISH: Translation = {
     invalidCredentials: "Invalid credentials.",
     passwordMismatch: "Passwords do not match.",
     passwordLength: "Password must be at least 8 characters long.",
-    serverUrlUpdated: (url) =>
-      `LiveSeries Server URL successfully updated to ${url}`,
+    serverUrlUpdated: (url) => `LiveSeries Server URL successfully updated to ${url}`,
     formDetails: {
       username: "Username",
       email: "Email",
@@ -51,6 +55,25 @@ export const ENGLISH: Translation = {
       haveAccountAlready: "have an account already?",
       logout: "Log out",
       serverUrl: "LiveSeries Server URL",
+      verifyEmail: {
+        header: "Email Verification",
+        info: (email) =>
+          `An email has been sent to ${email || "your address"} with a verification link.`,
+        cta: "Please check your inbox.",
+        success: "Email verified successfully",
+      },
+      forgotPassword: {
+        header: "Forgot password",
+        info: (email) =>
+          `If there is an account registered to ${email || "that address"}, it will be sent an email with a password reset link.`,
+        success: "An email with a password reset link has been sent.",
+      },
+      resetPassword: {
+        header: "Password Reset",
+        field: "New password",
+        submit: "Reset password",
+        success: "Password reset successfully",
+      },
     },
   },
   error: {
@@ -149,8 +172,7 @@ export const ENGLISH: Translation = {
       searching: "Searching",
       cancel: "Cancel",
       results: "Results for",
-      noResults:
-        "Your query returned no results. Try searching for something else.",
+      noResults: "Your query returned no results. Try searching for something else.",
     },
     home: {
       title: "Home",
@@ -187,16 +209,14 @@ Once you find a show you like, click the heart icon to add it to your liked show
           .padStart(2, "0")}`,
     },
     watch: {
-      playbackError:
-        "There was a problem playing that video. Please try again later.",
+      playbackError: "There was a problem playing that video. Please try again later.",
       previous: "Previous",
       next: "Next",
     },
     websockets: {
       connectionFailed:
         "Could not establish a connection with the websocket. Ensure the LiveSeries server URL is configured correctly and try again later.",
-      error:
-        "An unknown error occured during websocket communication. Try again later.",
+      error: "An unknown error occured during websocket communication. Try again later.",
       askReconnect:
         "The websocket connection with the LiveSeries server was forcefully closed. Reconnect?",
     },

@@ -28,7 +28,7 @@ export function SearchForm({ userLanguage }: { userLanguage: Language }) {
 
   function getSearchPath() {
     const { search } = form.getValues();
-    return `/liveseries/search/${search}/1`;
+    return `/liveseries/search/${encodeURIComponent(search)}/1`;
   }
 
   const label = (
@@ -61,10 +61,7 @@ export function SearchForm({ userLanguage }: { userLanguage: Language }) {
                   <FormItem className="w-full">
                     <FormLabel>{data.liveSeries.search.label}</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder={data.liveSeries.search.prompt}
-                        {...field}
-                      />
+                      <Input placeholder={data.liveSeries.search.prompt} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 
 import type { LegacyLogEntry, LogEntry, LogResponse } from "@/lib/types";
-import { ErrorComponent } from "@/components/error-component";
+import { ErrorComponent } from "@/components/error/component";
 import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
 import { getTranslations } from "@/lib/providers/translation-provider";
@@ -21,11 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 // Converts local date format to YYYY-MM-DD
 const getTodayString = () =>
-  TRANSLATIONS.EN.dateShortFormat
-    .format(new Date())
-    .split("/")
-    .reverse()
-    .join("-");
+  TRANSLATIONS.EN.dateShortFormat.format(new Date()).split("/").reverse().join("-");
 
 const isLegacyLog = (log: LegacyLogEntry | LogEntry): log is LegacyLogEntry =>
   (log as LegacyLogEntry).label != null;
@@ -38,9 +34,7 @@ const convertLegacyLogs = (data: LogResponse) =>
       console.warn("Log has no filename label:", log);
     }
     const message =
-      typeof log.message === "string"
-        ? log.message
-        : "[See log body for error details]";
+      typeof log.message === "string" ? log.message : "[See log body for error details]";
     return {
       message,
       level: log.level,

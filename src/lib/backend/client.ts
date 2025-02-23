@@ -1,12 +1,7 @@
 import type { ClientFetchOptions } from ".";
 import type { Language } from "../enums";
 import type { User } from "../types";
-import {
-  commonTriggerRevalidation,
-  fetchFromApi,
-  getUrlBase,
-  prepareRequest,
-} from ".";
+import { commonTriggerRevalidation, fetchFromApi, getUrlBase, prepareRequest } from ".";
 import { getSearchParams } from "../backend";
 import { TRANSLATIONS } from "../translations";
 import { getErrorMessage } from "../util";
@@ -19,10 +14,7 @@ type FetchOptionsExtension = { user?: User | null } & (
   | { userLanguage?: never; setModalError?: never }
 );
 
-const requestNeedsCredentials = (
-  path: string,
-  method: ClientFetchOptions["method"],
-) =>
+const requestNeedsCredentials = (path: string, method: ClientFetchOptions["method"]) =>
   (method === "POST" || method === "DELETE") &&
   ["auth/tokens", "auth/refresh", "auth/users"].includes(path);
 

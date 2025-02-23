@@ -5,8 +5,6 @@ export const logInSchema = z.object({
   password: z.string().min(8),
 });
 
-export type LogInSchema = z.infer<typeof logInSchema>;
-
 export const signUpSchema = z
   .object({
     username: z.string().min(3),
@@ -24,4 +22,16 @@ export const signUpSchema = z
     }
   });
 
+export const forgotPasswordSchema = z.object({
+  email: z.string().email(),
+});
+
+export const resetPasswordSchema = z.object({
+  password: z.string().min(8),
+  token: z.string().min(1),
+});
+
+export type LogInSchema = z.infer<typeof logInSchema>;
 export type SignUpSchema = z.infer<typeof signUpSchema>;
+export type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordSchema = z.infer<typeof resetPasswordSchema>;

@@ -18,8 +18,7 @@ export function UserWidget({
 }) {
   const pathname = usePathname();
   const data = TRANSLATIONS[userLanguage];
-  const isActive =
-    pathname != null && ["/profile", "/login"].includes(pathname);
+  const isActive = pathname != null && ["/profile", "/login"].includes(pathname);
   return (
     <Link
       href={user ? "/profile" : "/login"}

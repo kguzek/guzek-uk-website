@@ -234,9 +234,7 @@ export function FilteredLogs({
       <div className="flex gap-3">
         <div
           className="clickable flex items-center gap-3"
-          onClick={() =>
-            setFilter((old) => ({ ...old, ascending: !old.ascending }))
-          }
+          onClick={() => setFilter((old) => ({ ...old, ascending: !old.ascending }))}
         >
           <h4>Sort:</h4>
           <div>{filter.ascending ? <ArrowUpIcon /> : <ArrowDownIcon />}</div>
@@ -253,13 +251,7 @@ export function FilteredLogs({
   );
 }
 
-function Log({
-  log,
-  setFilter,
-}: {
-  log: LogEntry;
-  setFilter: StateSetter<Filter>;
-}) {
+function Log({ log, setFilter }: { log: LogEntry; setFilter: StateSetter<Filter> }) {
   const [collapsed, setCollapsed] = useState(true);
 
   const message = log.message;
@@ -272,9 +264,7 @@ function Log({
           <div className="flex gap-3">
             <div
               title={log.level}
-              onClick={() =>
-                setFilter((old) => ({ ...old, levels: [log.level] }))
-              }
+              onClick={() => setFilter((old) => ({ ...old, levels: [log.level] }))}
             >
               <LogLevelIcon level={log.level} />
             </div>
@@ -311,10 +301,7 @@ function Log({
         </div>
         <div className="flex flex-wrap items-stretch gap-2">
           {entry.hasBody && (
-            <div
-              className="clickable"
-              onClick={() => setCollapsed((old) => !old)}
-            >
+            <div className="clickable" onClick={() => setCollapsed((old) => !old)}>
               <StyledLogComponent
                 tag="div"
                 log={log}

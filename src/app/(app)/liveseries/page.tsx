@@ -9,7 +9,7 @@ import type {
   UserShows,
   WatchedEpisodes,
 } from "@/lib/types";
-import { ErrorComponent } from "@/components/error-component";
+import { ErrorComponent } from "@/components/error/component";
 import { EpisodesList } from "@/components/liveseries/episodes-list";
 import { LikedShowsCarousel } from "@/components/liveseries/liked-shows-carousel";
 import { Tile } from "@/components/tile";
@@ -40,13 +40,10 @@ export default async function Home() {
   if (user != null) {
     const [showsResult, watchedEpisodesResult] = await Promise.all([
       serverToApi<UserShows>("liveseries/shows/personal"),
-      serverToApi<ShowData<WatchedEpisodes>>(
-        "liveseries/watched-episodes/personal",
-      ),
+      serverToApi<ShowData<WatchedEpisodes>>("liveseries/watched-episodes/personal"),
     ] as const);
 
-    const likedShowsAvailable =
-      showsResult.ok && showsResult.data.likedShows != null;
+    const likedShowsAvailable = showsResult.ok && showsResult.data.likedShows != null;
 
     const likedShowsResults = likedShowsAvailable
       ? await Promise.all(
@@ -78,9 +75,7 @@ export default async function Home() {
         const unwatched = likedShows[showId].episodes.filter(
           (episode) =>
             hasEpisodeAired(episode) &&
-            !watchedEpisodes?.[showId]?.[episode.season]?.includes(
-              episode.episode,
-            ),
+            !watchedEpisodes?.[showId]?.[episode.season]?.includes(episode.episode),
         );
         unwatchedEpisodes[showId] = unwatched;
         totalUnwatchedEpisodes += unwatched.length;
@@ -101,22 +96,14 @@ export default async function Home() {
       </h3>
       {user == null || likedShowIds?.length === 0 ? (
         <Tile className="items-start">
-          <p className="mb-3 whitespace-pre-wrap">
-            {data.liveSeries.home.noLikes}
-          </p>
+          <p className="mb-3 whitespace-pre-wrap">{data.liveSeries.home.noLikes}</p>
           <p>
-            <Link
-              href="/liveseries/search"
-              className="hover-underline text-accent"
-            >
+            <Link href="/liveseries/search" className="hover-underline text-accent">
               {data.liveSeries.search.label}
             </Link>
           </p>
           <p>
-            <Link
-              href="/liveseries/most-popular"
-              className="hover-underline text-accent"
-            >
+            <Link href="/liveseries/most-popular" className="hover-underline text-accent">
               {data.liveSeries.home.explore} {data.liveSeries.mostPopular.title}{" "}
               {data.liveSeries.home.shows}
             </Link>
@@ -136,17 +123,16 @@ export default async function Home() {
           {totalUnwatchedEpisodes === 0 ? (
             <p>{data.liveSeries.home.noUnwatched}</p>
           ) : (
-            Object.entries(unwatchedEpisodes).map(
-              ([showId, unwatchedInShow], idx) =>
-                unwatchedInShow.length === 0 ? null : (
-                  <div key={`liked-show-${showId}-${idx}`}>
-                    <EpisodesList
-                      tvShow={likedShows[+showId]}
-                      heading={`${likedShows[+showId].name} (${unwatchedInShow.length})`}
-                      episodes={unwatchedInShow}
-                    />
-                  </div>
-                ),
+            Object.entries(unwatchedEpisodes).map(([showId, unwatchedInShow], idx) =>
+              unwatchedInShow.length === 0 ? null : (
+                <div key={`liked-show-${showId}-${idx}`}>
+                  <EpisodesList
+                    tvShow={likedShows[+showId]}
+                    heading={`${likedShows[+showId].name} (${unwatchedInShow.length})`}
+                    episodes={unwatchedInShow}
+                  />
+                </div>
+              ),
             )
           )}
         </>

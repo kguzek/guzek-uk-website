@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import type { TvShowList } from "@/lib/types";
-import { ErrorComponent } from "@/components/error-component";
+import { ErrorComponent } from "@/components/error/component";
 import { TvShowPreviewList } from "@/components/liveseries/tv-show-preview-list";
 import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
@@ -37,11 +37,7 @@ export default async function MostPopular({
   return (
     <>
       <h2 className="my-6 text-3xl font-bold">
-        {getTitle(
-          data.liveSeries.mostPopular.title,
-          data.liveSeries.title,
-          false,
-        )}
+        {getTitle(data.liveSeries.mostPopular.title, data.liveSeries.title, false)}
       </h2>
       <TvShowPreviewList
         userLanguage={userLanguage}

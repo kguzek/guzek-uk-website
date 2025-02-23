@@ -29,8 +29,7 @@ export function ImageGallery({
     return Math.round(carouselScroll / imageWidth) + 1;
   }
 
-  const scrollToImage = (imageNumber: number) =>
-    scrollToElement(`#image-${imageNumber}`);
+  const scrollToImage = (imageNumber: number) => scrollToElement(`#image-${imageNumber}`);
 
   function previousImage() {
     const selectedImage = getSelectedImage();
@@ -105,12 +104,9 @@ export function CarouselArrow({
       onClick={onClick}
     >
       <div
-        className={cn(
-          "text-background scale-[175%] transition-transform duration-300",
-          {
-            "lg:scale-[125%] lg:group-hover:scale-[175%]": visible,
-          },
-        )}
+        className={cn("text-background scale-[175%] transition-transform duration-300", {
+          "lg:scale-[125%] lg:group-hover:scale-[175%]": visible,
+        })}
       >
         {left ? <ArrowLeftIcon /> : right ? <ArrowRightIcon /> : null}
       </div>

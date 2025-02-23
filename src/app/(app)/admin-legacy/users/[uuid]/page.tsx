@@ -1,5 +1,5 @@
 import type { User } from "@/lib/types";
-import { ErrorComponent } from "@/components/error-component";
+import { ErrorComponent } from "@/components/error/component";
 import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
 import { getAuth } from "@/lib/providers/auth-provider";
@@ -12,9 +12,7 @@ interface Props {
   params: Promise<{ uuid: string }>;
 }
 
-export async function generateMetadata(
-  props: Props,
-): Promise<{ title: string }> {
+export async function generateMetadata(props: Props): Promise<{ title: string }> {
   const result = await fetchUserFromProps(props);
   if (!result?.data) return { title: getTitle("User ???") };
   return { title: getTitle(`@${result.data.username}`) };

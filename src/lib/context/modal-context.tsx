@@ -71,11 +71,7 @@ export function ModalProvider({
           setModalChoice("");
         }}
       />
-      <Modal
-        variant="error"
-        value={modalError}
-        onClick={() => setModalError("")}
-      />
+      <Modal variant="error" value={modalError} onClick={() => setModalError("")} />
       <Modal value={modalInfo} onClick={() => setModalInfo("")} />
       {children}
     </ModalContext.Provider>

@@ -59,15 +59,12 @@ export function ShowDetails({
     if (!dateString) {
       if (which === "end" && latestEpisode) {
         const latestEpisodeAirDate = getEpisodeAirDate(latestEpisode);
-        if (latestEpisodeAirDate > new Date())
-          return data.liveSeries.tvShow.present;
+        if (latestEpisodeAirDate > new Date()) return data.liveSeries.tvShow.present;
         return data.dateShortFormat.format(latestEpisodeAirDate);
       }
 
       return data.liveSeries.tvShow[
-        which === "end" && tvShowDetails?.status === "Running"
-          ? "present"
-          : "unknown"
+        which === "end" && tvShowDetails?.status === "Running" ? "present" : "unknown"
       ];
     }
     const date = new Date(dateString);
@@ -101,10 +98,7 @@ export function ShowDetails({
     if (!accessToken) {
       return promptLogin();
     }
-    if (
-      !isSubscribed &&
-      unwatchedEpisodesCount > UNWATCHED_EPISODES_THRESHOLD
-    ) {
+    if (!isSubscribed && unwatchedEpisodesCount > UNWATCHED_EPISODES_THRESHOLD) {
       const proceed = await setModalChoice(
         data.liveSeries.tvShow.confirmSubscribe(unwatchedEpisodesCount),
       );
@@ -126,10 +120,7 @@ export function ShowDetails({
     }
   }
 
-  async function updateWatchedEpisodes(
-    season: string,
-    episodes: EpisodeType[],
-  ) {
+  async function updateWatchedEpisodes(season: string, episodes: EpisodeType[]) {
     if (!accessToken) {
       return promptLogin();
     }
@@ -175,9 +166,7 @@ export function ShowDetails({
         >
           <HeartIcon fill={isLiked ? "currentColor" : "none"} />
         </button>
-        <h2 className="text-accent-soft text-2xl font-bold">
-          {tvShowDetails.name}
-        </h2>
+        <h2 className="text-accent-soft text-2xl font-bold">{tvShowDetails.name}</h2>
         <small className="text-xl">
           ({formatDate("start")}–{formatDate("end")})
         </small>
@@ -190,19 +179,13 @@ export function ShowDetails({
         </div>
         {tvShowDetails.rating ? (
           <div className="flex items-center gap-2">
-            <div
-              className="relative"
-              title={`${(+tvShowDetails.rating).toFixed(1)}/10`}
-            >
+            <div className="relative" title={`${(+tvShowDetails.rating).toFixed(1)}/10`}>
               <div className="group text-accent2 absolute w-full">
                 <div className="grid w-fit grid-cols-10 sm:gap-1">
                   {Array(Math.floor(+tvShowDetails.rating))
                     .fill(0)
                     .map((_, idx) => (
-                      <StarIcon
-                        key={`star-filled-${idx}`}
-                        fill="currentColor"
-                      ></StarIcon>
+                      <StarIcon key={`star-filled-${idx}`} fill="currentColor"></StarIcon>
                     ))}
                   <div
                     className="overflow-hidden"
@@ -222,9 +205,7 @@ export function ShowDetails({
                   ))}
               </div>
             </div>
-            <span className="text-xs sm:text-sm">
-              ({tvShowDetails.rating_count})
-            </span>
+            <span className="text-xs sm:text-sm">({tvShowDetails.rating_count})</span>
           </div>
         ) : null}
       </div>
@@ -265,9 +246,7 @@ export function ShowDetails({
       )}
       {tvShowDetails.pictures.length > 0 && (
         <>
-          <h3 className="my-5 text-2xl font-bold">
-            {data.liveSeries.tvShow.images}
-          </h3>
+          <h3 className="my-5 text-2xl font-bold">{data.liveSeries.tvShow.images}</h3>
           {/* <ImageGallery
             className="gallery"
             images={tvShowDetails.pictures}
@@ -295,9 +274,7 @@ export function ShowDetails({
           </div>
         </>
       )}
-      <h3 className="my-5 text-2xl font-bold">
-        {data.liveSeries.tvShow.episodes}
-      </h3>
+      <h3 className="my-5 text-2xl font-bold">{data.liveSeries.tvShow.episodes}</h3>
       {user?.serverUrl != null && user.serverUrl.length > 0 && (
         <div className="w-fit">
           <InputBox
@@ -311,9 +288,7 @@ export function ShowDetails({
       {tvShowDetails.episodes.length === 0 ? (
         <p>{data.liveSeries.tvShow.noEpisodes}</p>
       ) : null}
-      <TvShowContext.Provider
-        value={{ updateWatchedEpisodes, isSeasonWatched }}
-      >
+      <TvShowContext.Provider value={{ updateWatchedEpisodes, isSeasonWatched }}>
         {children}
       </TvShowContext.Provider>
     </div>

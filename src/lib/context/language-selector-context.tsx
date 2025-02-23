@@ -22,11 +22,7 @@ export function useLanguageSelector() {
   return context;
 }
 
-export function LanguageSelectorProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export function LanguageSelectorProvider({ children }: { children: ReactNode }) {
   const [markerStyle, setMarkerStyle] = useState<CSSProperties>({});
   const selectedButtonRef = useRef<HTMLAnchorElement>(null);
 

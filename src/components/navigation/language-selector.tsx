@@ -30,8 +30,7 @@ export function LanguageSelector({ userLanguage }: { userLanguage: Language }) {
   const [isClicked, setIsClicked] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
-  const { selectedButtonRef, markerStyle, updateMarkerStyle } =
-    useLanguageSelector();
+  const { selectedButtonRef, markerStyle, updateMarkerStyle } = useLanguageSelector();
   const data = TRANSLATIONS[language];
 
   useEffect(() => {
@@ -43,7 +42,7 @@ export function LanguageSelector({ userLanguage }: { userLanguage: Language }) {
     <div className="my-4 flex flex-col items-center lg:my-0 lg:mr-4">
       <div className="flex gap-1">
         <div
-          className={cn("absolute -z-10 rounded-md bg-accent", {
+          className={cn("bg-accent absolute -z-10 rounded-md", {
             "transition-all duration-300": isClicked,
           })}
           style={markerStyle}
@@ -68,7 +67,7 @@ export function LanguageSelector({ userLanguage }: { userLanguage: Language }) {
             // Since the server side doesn't have a window object, it can't calculate the offset values, so it won't render the marker
             // The same is true for clients without JavaScript enabled, so the marker is applied via CSS instead
             className={cn("w-8 py-2 text-center text-xs font-semibold", {
-              "rounded-md bg-accent":
+              "bg-accent rounded-md":
                 userLanguage === lang && selectedButtonRef.current == null,
               clickable: userLanguage !== lang,
             })}

@@ -4,12 +4,8 @@ import type { MiddlewareFactory } from "@/lib/types";
 import { PAGINATED_REGEX_INVALID } from "@/lib/constants";
 import { getAuth } from "@/lib/providers/auth-provider";
 
-const ROUTES_REQUIRING_AUTH = [
-  "/profile",
-  "/admin-legacy",
-  "/liveseries/watch",
-];
-const ROUTES_REQUIRING_NOAUTH = ["/login", "/signup"];
+const ROUTES_REQUIRING_AUTH = ["/profile", "/admin-legacy", "/liveseries/watch"];
+const ROUTES_REQUIRING_NOAUTH = ["/login", "/signup", "/verify-email", "/reset-password"];
 const ROUTES_REQUIRING_ADMIN = ["/admin-legacy"];
 
 export const authMiddleware: MiddlewareFactory = (next) =>
@@ -37,7 +33,7 @@ export const authMiddleware: MiddlewareFactory = (next) =>
         return redirect(redirectTo);
       }
     }
-    if (!user?.admin) {
+    if (user?.role !== "admin") {
       for (const route of ROUTES_REQUIRING_ADMIN) {
         if (request.nextUrl.pathname.startsWith(route)) {
           return redirect("/error/403");

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import type { TvShowList } from "@/lib/types";
-import { ErrorComponent } from "@/components/error-component";
+import { ErrorComponent } from "@/components/error/component";
 import { TvShowPreviewList } from "@/components/liveseries/tv-show-preview-list";
 import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
@@ -47,13 +47,7 @@ export default async function Search({
   );
 }
 
-async function SearchResults({
-  query,
-  page,
-}: {
-  query: string;
-  page: `${number}`;
-}) {
+async function SearchResults({ query, page }: { query: string; page: `${number}` }) {
   const { data, userLanguage } = await getTranslations();
 
   const decodedQuery = decodeURIComponent(query);
@@ -69,10 +63,7 @@ async function SearchResults({
   return (
     <>
       <h3>{`${data.liveSeries.search.results} "${decodedQuery}"`}</h3>
-      <TvShowPreviewList
-        tvShows={result.data ?? undefined}
-        userLanguage={userLanguage}
-      />
+      <TvShowPreviewList tvShows={result.data ?? undefined} userLanguage={userLanguage} />
     </>
   );
 }

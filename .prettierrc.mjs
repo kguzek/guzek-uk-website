@@ -3,10 +3,7 @@
  * @type {import("prettier").Config}
  */
 const config = {
-  plugins: [
-    "@ianvs/prettier-plugin-sort-imports",
-    "prettier-plugin-tailwindcss",
-  ],
+  plugins: ["@ianvs/prettier-plugin-sort-imports", "prettier-plugin-tailwindcss"],
   importOrder: [
     "<TYPES>",
     "^(react|next|payload)(/.+)?$",
@@ -23,6 +20,7 @@ const config = {
   semi: true,
   tabWidth: 2,
   singleQuote: false,
+  printWidth: 90,
 };
 
 export default config;

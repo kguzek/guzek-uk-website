@@ -15,8 +15,7 @@ export function Toaster({ ...props }: ToasterProps) {
         classNames: {
           toast:
             "group toast group-[.toaster]:bg-background-strong! group-[.toaster]:text-primary! group-[.toaster]:border-background-soft! group-[.toaster]:shadow-lg ",
-          description:
-            "group-[.toast]:text-primary dark:group-[.toast]:text-primary",
+          description: "group-[.toast]:text-primary dark:group-[.toast]:text-primary",
           actionButton:
             "group-[.toast]:bg-neutral-900 group-[.toast]:text-neutral-50 font-medium dark:group-[.toast]:bg-neutral-50 dark:group-[.toast]:text-neutral-900",
           cancelButton:

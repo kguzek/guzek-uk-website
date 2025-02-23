@@ -1,20 +1,16 @@
 import type { ReactNode } from "react";
 
-import { ErrorComponent } from "@/components/error-component";
+import { ErrorComponent } from "@/components/error/component";
 import { MiniNavBar } from "@/components/navigation/navigation-bar";
 import { ErrorCode } from "@/lib/enums";
 import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
 
-export default async function AdminLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default async function AdminLayout({ children }: { children: ReactNode }) {
   const { data } = await getTranslations();
   const { user } = await getAuth();
 
-  if (!user?.admin) {
+  if (user?.role !== "admin") {
     return <ErrorComponent errorCode={ErrorCode.Forbidden} />;
   }
 

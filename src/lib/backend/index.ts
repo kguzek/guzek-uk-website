@@ -1,17 +1,13 @@
-import type { User } from "../types";
+import type { ErrorResponseBodyCustom, User } from "../types";
 
 const USE_LOCAL_API_URL = false;
 // const USE_LOCAL_API_URL = true;
 
 const useLocalUrl = process.env.NODE_ENV === "development" && USE_LOCAL_API_URL;
 
-export const API_BASE = useLocalUrl
-  ? "http://localhost:5017/"
-  : "https://api.guzek.uk/";
+export const API_BASE = useLocalUrl ? "http://localhost:5017/" : "https://api.guzek.uk/";
 
-const API_BASE_AUTH = useLocalUrl
-  ? "http://localhost:5019/"
-  : "https://auth.guzek.uk/";
+const API_BASE_AUTH = useLocalUrl ? "http://localhost:5019/" : "https://auth.guzek.uk/";
 
 const API_BASE_LIVESERIES_LOCAL = "http://localhost:5021/";
 
@@ -21,8 +17,6 @@ const DECENTRALISED_ROUTES = [
   "liveseries/video",
   "torrents",
 ];
-
-export type ErrorResponseBody = { [code: string]: string };
 
 const SANDWICHED_JSON_PATTERN = /.*?(\{.*\}).*?/;
 
@@ -62,9 +56,7 @@ export function parseResponseBody(body: string) {
  * @param params The key-value dictionary to format. Can be a `URLSearchParams` object, or an object (empty or not).
  * @returns The formatted search query string starting with '?, or an empty string if no parameters are provided.
  */
-export function getSearchParams(
-  params: Record<string, string> | URLSearchParams = {},
-) {
+export function getSearchParams(params: Record<string, string> | URLSearchParams = {}) {
   const searchParams =
     params instanceof URLSearchParams ? params : new URLSearchParams(params);
   if ([...searchParams.keys()].length === 0) return "";
@@ -230,7 +222,7 @@ export async function fetchFromApi<T>(url: string, options: RequestInit) {
     hasBody: true,
     ok: false,
     data: null,
-    error: data as ErrorResponseBody,
+    error: data as ErrorResponseBodyCustom,
   } as const;
 }
 
@@ -262,11 +254,7 @@ export async function commonTriggerRevalidation(
     api: "next",
   });
   if (!result.ok) {
-    console.warn(
-      "Failed to trigger revalidation for tag",
-      tag,
-      result.error ?? "",
-    );
+    console.warn("Failed to trigger revalidation for tag", tag, result.error ?? "");
   }
   return result;
 }

@@ -5,11 +5,7 @@ import { LiveSeriesProvider } from "@/lib/context/liveseries-context";
 import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
 
-export default async function LiveSeriesLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default async function LiveSeriesLayout({ children }: { children: ReactNode }) {
   const { userLanguage } = await getTranslations();
   const { user, accessToken } = await getAuth();
   return (

@@ -1,10 +1,6 @@
 import Link from "next/link";
 import * as React from "react";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  MoreHorizontalIcon,
-} from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon } from "lucide-react";
 
 import type { ButtonProps } from "@/ui/button";
 import { cn } from "@/lib/utils";
@@ -22,10 +18,7 @@ function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
   );
 }
 
-function PaginationContent({
-  className,
-  ...props
-}: React.ComponentProps<"ul">) {
+function PaginationContent({ className, ...props }: React.ComponentProps<"ul">) {
   return (
     <ul
       data-slot="pagination-content"
@@ -60,11 +53,7 @@ function PaginationLink({
       data-active={isActive}
       className={cn(
         buttonVariants({
-          variant: disabled
-            ? "disabled"
-            : isActive
-              ? "default"
-              : (variant ?? "outline"),
+          variant: disabled ? "disabled" : isActive ? "default" : (variant ?? "outline"),
           size: size,
         }),
         className,
@@ -88,9 +77,7 @@ function PaginationPrevious({
       {...props}
     >
       <ChevronLeftIcon />
-      {props.children == null ? null : (
-        <span className="mr-2.5">{props.children}</span>
-      )}
+      {props.children == null ? null : <span className="mr-2.5">{props.children}</span>}
     </PaginationLink>
   );
 }
@@ -107,26 +94,18 @@ function PaginationNext({
       variant="ghost"
       {...props}
     >
-      {props.children == null ? null : (
-        <span className="ml-2.5">{props.children}</span>
-      )}
+      {props.children == null ? null : <span className="ml-2.5">{props.children}</span>}
       <ChevronRightIcon />
     </PaginationLink>
   );
 }
 
-function PaginationEllipsis({
-  className,
-  ...props
-}: React.ComponentProps<"span">) {
+function PaginationEllipsis({ className, ...props }: React.ComponentProps<"span">) {
   return (
     <span
       aria-hidden
       data-slot="pagination-ellipsis"
-      className={cn(
-        "flex h-9 w-6 items-center justify-center sm:size-9",
-        className,
-      )}
+      className={cn("flex h-9 w-6 items-center justify-center sm:size-9", className)}
       {...props}
     >
       <MoreHorizontalIcon className="size-3 sm:size-4" />

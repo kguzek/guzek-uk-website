@@ -59,10 +59,7 @@ function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
       role="link"
       aria-disabled="true"
       aria-current="page"
-      className={cn(
-        "font-normal text-neutral-950 dark:text-neutral-50",
-        className,
-      )}
+      className={cn("font-normal text-neutral-950 dark:text-neutral-50", className)}
       {...props}
     />
   );
@@ -86,10 +83,7 @@ function BreadcrumbSeparator({
   );
 }
 
-function BreadcrumbEllipsis({
-  className,
-  ...props
-}: React.ComponentProps<"span">) {
+function BreadcrumbEllipsis({ className, ...props }: React.ComponentProps<"span">) {
   return (
     <span
       data-slot="breadcrumb-ellipsis"

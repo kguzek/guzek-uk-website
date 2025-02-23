@@ -13,9 +13,7 @@ export const isAdminFieldLevel: FieldAccess = ({ req: { user } }) =>
 export const isAdmin: Access = isAdminFieldLevel;
 
 export const isAdminOrSelf: Access = ({ req }) =>
-  req.user == null
-    ? false
-    : isAdmin({ req }) || { id: { equals: req.user.id } };
+  req.user == null ? false : isAdmin({ req }) || { id: { equals: req.user.id } };
 
 /** Ensures the value is falsey or a valid URL with either HTTP or HTTPS. */
 export function validateUrl(value?: string | null): string | true {
@@ -35,9 +33,7 @@ export function validateUrl(value?: string | null): string | true {
 
 /** Ensures every item in the array appears at most once. */
 export const isEmptyOrUniqueArray: NumberFieldManyValidation = (array) =>
-  !array ||
-  new Set(array).size === array.length ||
-  "Every array item must be unique.";
+  !array || new Set(array).size === array.length || "Every array item must be unique.";
 
 export const isEmptyOrPositiveIntegerArray = (
   array: null | undefined | any[], // eslint-disable-line @typescript-eslint/no-explicit-any

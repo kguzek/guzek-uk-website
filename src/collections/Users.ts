@@ -1,8 +1,8 @@
-import type { CollectionConfig, NumberField } from "payload";
+import type { CollectionConfig, NumberField, PayloadRequest } from "payload";
+import { v4 as uuid } from "uuid";
 
 import {
   ALPHANUMERIC_PATTERN,
-  isAdmin,
   isAdminFieldLevel,
   isAdminOrSelf,
   isEmptyOrPositiveIntegerArray,
@@ -10,11 +10,29 @@ import {
   stackValidators,
   validateUrl,
 } from "@/lib/payload";
+import { resetPassword } from "@/templates/reset-password";
+import { verifyEmail } from "@/templates/verify-email";
 
 const showIdValidator = stackValidators<NumberField, number[]>(
   isEmptyOrUniqueArray,
   isEmptyOrPositiveIntegerArray,
 );
+
+type TemplateName = "reset-password" | "verify-email";
+
+function fillHtmlTemplate(
+  templateName: TemplateName,
+  args?: { req?: PayloadRequest; token?: string; user?: { username?: string } },
+) {
+  const { req, token, user } = args ?? {};
+  const protocol = req?.protocol ?? "https:";
+  const host = req?.host ?? "www.guzek.uk";
+  const url = `${protocol}//${host}/${templateName}?token=${token}`;
+  const template = templateName === "reset-password" ? resetPassword : verifyEmail;
+  return template
+    .replaceAll("{RESET_PASSWORD_URL}", url)
+    .replaceAll("{USERNAME}", user?.username ? ` @${user.username}` : "");
+}
 
 export const Users: CollectionConfig = {
   slug: "users",
@@ -22,7 +40,13 @@ export const Users: CollectionConfig = {
     useAsTitle: "username",
   },
   auth: {
-    verify: true,
+    verify: {
+      generateEmailHTML: ({ req, token, user }) =>
+        fillHtmlTemplate("verify-email", { req, token, user }),
+    },
+    forgotPassword: {
+      generateEmailHTML: (args) => fillHtmlTemplate("reset-password", args),
+    },
     loginWithUsername: {
       allowEmailLogin: true,
       requireEmail: true,
@@ -33,16 +57,25 @@ export const Users: CollectionConfig = {
     lockTime: 300,
   },
   access: {
-    create: isAdmin,
+    create: () => true,
     read: isAdminOrSelf,
     update: isAdminOrSelf,
-    delete: isAdmin,
+    delete: isAdminOrSelf,
   },
   fields: [
     // Email, hash and salt are added by default
     {
+      name: "id",
+      type: "text",
+      required: true,
+      unique: true,
+      defaultValue: () => uuid(),
+      admin: { hidden: true },
+    },
+    {
       name: "username",
       type: "text",
+      saveToJWT: true,
       required: true,
       unique: true,
       minLength: 4,
@@ -122,8 +155,7 @@ export const Users: CollectionConfig = {
         }
         if (Array.isArray(parsed)) return "Must be an object, not an array.";
         const parsedType = typeof parsed;
-        if (parsedType !== "object")
-          return `Must be an object, not ${parsedType}.`;
+        if (parsedType !== "object") return `Must be an object, not ${parsedType}.`;
         for (const key in parsed) {
           if (!Array.isArray(parsed[key])) {
             return `Value at key "${key}" must be an array.`;

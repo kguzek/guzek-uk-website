@@ -32,7 +32,7 @@ export function UserCard({
   }
 
   async function deleteUser(user: User) {
-    const res = await clientToApi(`auth/users/${user.uuid}`, accessToken, {
+    const res = await clientToApi(`auth/users/${user.id}`, accessToken, {
       method: "DELETE",
       userLanguage,
       setModalError,
@@ -47,10 +47,10 @@ export function UserCard({
   return (
     <div className="bg-primary flex w-full overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:opacity-100 lg:opacity-70">
       <Link
-        href={`/admin-legacy/users/${user.uuid}`}
+        href={`/admin-legacy/users/${user.id}`}
         className="group text-background flex w-full items-center gap-5 px-2 py-3 sm:px-3"
       >
-        <UserIcon className={cn({ "text-accent": user.admin })}></UserIcon>
+        <UserIcon className={cn({ "text-accent": user.role === "admin" })}></UserIcon>
         <div>
           <i>{user.username}</i>
           <div className="font-normal">{user.email}</div>

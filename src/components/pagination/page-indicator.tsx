@@ -31,19 +31,13 @@ export function PageIndicator({
   if (null == page) {
     if (!direction) return <div className="page-indicator disabled">...</div>;
     [displayValue, page] =
-      direction === "PREVIOUS"
-        ? ["<", currentPage - 1]
-        : [">", currentPage + 1];
+      direction === "PREVIOUS" ? ["<", currentPage - 1] : [">", currentPage + 1];
   } else {
     displayValue = data.numberFormat.format(page);
   }
   return (
     <Link
-      href={
-        disabled
-          ? "#"
-          : getSearchParams({ ...searchParams, page: page.toString() })
-      }
+      href={disabled ? "#" : getSearchParams({ ...searchParams, page: page.toString() })}
       className={cn("page-indicator font-serif", {
         disabled,
         "current-page": page === currentPage && !disabled,

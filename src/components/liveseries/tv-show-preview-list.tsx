@@ -36,15 +36,10 @@ export async function TvShowPreviewList({
     return <p>{data.liveSeries.search.noResults}</p>;
   }
   const { accessToken } = await getAuth();
-  const userShowsResult = await serverToApi<UserShows>(
-    "liveseries/shows/personal",
-  );
-  const likedShowIds =
-    (userShowsResult.ok && userShowsResult.data.likedShows) || [];
+  const userShowsResult = await serverToApi<UserShows>("liveseries/shows/personal");
+  const likedShowIds = (userShowsResult.ok && userShowsResult.data.likedShows) || [];
 
-  const paginator = (
-    <Paginator currentPage={tvShows.page} totalPages={tvShows.pages} />
-  );
+  const paginator = <Paginator currentPage={tvShows.page} totalPages={tvShows.pages} />;
 
   return (
     <div className="flex flex-col items-center">

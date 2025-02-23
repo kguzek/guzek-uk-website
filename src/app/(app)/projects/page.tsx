@@ -8,16 +8,9 @@ import { ArrowUpRight } from "lucide-react";
 
 import { DynamicPageLoader } from "@/components/pages/dynamic-page";
 import { getTranslations } from "@/lib/providers/translation-provider";
+import { isImage } from "@/lib/util";
 import { cn } from "@/lib/utils";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/ui/card";
-
-import { isImage } from "./[slug]/page";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card";
 
 // const titleToSlug = (title: string) =>
 //   title.trim().toLowerCase().replace(/\s/g, "-");
@@ -52,19 +45,13 @@ export default async function ProjectsPage() {
               <CardHeader className="flex w-full flex-row justify-between gap-x-4 gap-y-1 sm:h-32 sm:items-center">
                 <div>
                   <CardTitle className="text-primary-strong">
-                    <Link
-                      className="hover-underline"
-                      href={`/projects/${project.slug}`}
-                    >
+                    <Link className="hover-underline" href={`/projects/${project.slug}`}>
                       {project.title}
                     </Link>
                   </CardTitle>
                   {project.url && (
                     <CardDescription className="mt-2 text-xs sm:text-sm">
-                      <Link
-                        className="hover-underline text-accent"
-                        href={project.url}
-                      >
+                      <Link className="hover-underline text-accent" href={project.url}>
                         {project.url}
                       </Link>
                     </CardDescription>

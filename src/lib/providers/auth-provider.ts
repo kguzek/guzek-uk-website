@@ -15,8 +15,7 @@ const USER_REQUIRED_PROPERTIES = [
   "modified_at",
 ];
 
-let refreshPromise: ReturnType<typeof _refreshAccessToken> | undefined =
-  undefined;
+let refreshPromise: ReturnType<typeof _refreshAccessToken> | undefined = undefined;
 
 type AccessTokenPayload = User & { iat: number; exp: number };
 
@@ -85,7 +84,7 @@ async function refreshAccessToken(
   request?: NextRequest,
   response?: NextResponse,
 ) {
-  if (!request || !response) {
+  if (request == null || response == null) {
     return null;
   }
   if (refreshPromise) return refreshPromise;
@@ -134,9 +133,7 @@ function tokenWillExpireSoon(exp: number, thresholdMinutes = 5) {
 export async function getAuth(
   request?: NextRequest,
   response?: NextResponse,
-): Promise<
-  { user: User; accessToken: string } | { user: null; accessToken: null }
-> {
+): Promise<{ user: User; accessToken: string } | { user: null; accessToken: null }> {
   let accessToken = await getAccessToken(request);
   let refreshed = false;
   if (!accessToken) {
@@ -147,22 +144,12 @@ export async function getAuth(
   let payload = decodeAccessToken(accessToken);
   if (!payload) return { user: null, accessToken: null };
   if (tokenWillExpireSoon(payload.exp)) {
-    const newAccessToken = await refreshAccessToken(
-      "soon to expire",
-      request,
-      response,
-    );
+    const newAccessToken = await refreshAccessToken("soon to expire", request, response);
     if (newAccessToken != null) {
       const newPayload = decodeAccessToken(newAccessToken);
-      if (!newPayload)
-        throw new Error("Newly refreshed token cannot be decoded");
+      if (!newPayload) throw new Error("Newly refreshed token cannot be decoded");
       if (tokenWillExpireSoon(newPayload.exp)) {
-        console.error(
-          "Refreshed token still expires soon",
-          payload,
-          "->",
-          newPayload,
-        );
+        console.error("Refreshed token still expires soon", payload, "->", newPayload);
       } else {
         accessToken = newAccessToken;
         payload = newPayload;

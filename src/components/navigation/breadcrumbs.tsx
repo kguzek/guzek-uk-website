@@ -48,8 +48,7 @@ export function Breadcrumbs({ parallels }: { parallels: Parallels }) {
     <Breadcrumb className="text mt-6 mb-4">
       <BreadcrumbList className="text-lg">
         {parts.map((part, idx) => {
-          const omitting =
-            parts.length > 3 && idx !== 0 && idx !== parts.length - 1;
+          const omitting = parts.length > 3 && idx !== 0 && idx !== parts.length - 1;
           const showSeparator = idx !== 0 || omitting;
           if (omitting) {
             if (ellipsisShown) return null;
@@ -98,10 +97,7 @@ export function Breadcrumbs({ parallels }: { parallels: Parallels }) {
   );
 }
 
-function getPartLabel(
-  partEncoded: string,
-  currentParallels: Parallel[] | null,
-) {
+function getPartLabel(partEncoded: string, currentParallels: Parallel[] | null) {
   if (!partEncoded) return "Home";
   const part = decodeURIComponent(partEncoded);
 
@@ -154,11 +150,7 @@ function BreadcrumbSegment({
             {currentParallels
               .filter((item) => item.slug !== part || part !== "tv-show")
               .map((item, parallelIdx) => (
-                <DropdownMenuItem
-                  asChild
-                  key={parallelIdx}
-                  className="cursor-pointer"
-                >
+                <DropdownMenuItem asChild key={parallelIdx} className="cursor-pointer">
                   <Link href={`${parts.slice(0, idx).join("/")}/${item.slug}`}>
                     {item.label}
                   </Link>

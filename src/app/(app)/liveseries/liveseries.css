@@ -8,9 +8,7 @@
 
 .preview-header {
   padding: 0 var(--preview-padding);
-  --preview-width-inner: calc(
-    var(--preview-width) - 2 * var(--preview-padding)
-  );
+  --preview-width-inner: calc(var(--preview-width) - 2 * var(--preview-padding));
   width: var(--preview-width-inner);
 }
 

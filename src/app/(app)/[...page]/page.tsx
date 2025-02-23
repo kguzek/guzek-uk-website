@@ -1,7 +1,4 @@
-import {
-  DynamicPageLoader,
-  getPageBySlug,
-} from "@/components/pages/dynamic-page";
+import { DynamicPageLoader, getPageBySlug } from "@/components/pages/dynamic-page";
 import { ErrorCode } from "@/lib/enums";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { getTitle } from "@/lib/util";
@@ -10,8 +7,7 @@ type Props = {
   params: Promise<{ page: string[] }>;
 };
 
-const slugFromParams = async ({ params }: Props) =>
-  `/${(await params).page.join("/")}`;
+const slugFromParams = async ({ params }: Props) => `/${(await params).page.join("/")}`;
 
 export async function generateMetadata(props: Props) {
   const { data } = await getTranslations();
