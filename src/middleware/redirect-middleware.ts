@@ -2,14 +2,13 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 import type { MiddlewareFactory } from "@/lib/types";
+import { PRODUCTION_URL } from "@/lib/constants";
 
 export const redirectMiddleware: MiddlewareFactory = (next) =>
   async function (request) {
     const redirect = () =>
       NextResponse.redirect(
-        new URL(
-          "https://www.guzek.uk" + request.nextUrl.pathname + request.nextUrl.search,
-        ),
+        new URL(`${PRODUCTION_URL}${request.nextUrl.pathname}${request.nextUrl.search}`),
       );
 
     const requestHeaders = await headers();

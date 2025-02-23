@@ -4,6 +4,7 @@ import { RichText } from "@payloadcms/richtext-lexical/react";
 
 import type { Page } from "@/payload-types";
 import { ErrorComponent } from "@/components/error/component";
+import { PRODUCTION_URL } from "@/lib/constants";
 import { ErrorCode } from "@/lib/enums";
 import { getTranslations } from "@/lib/providers/translation-provider";
 
@@ -41,7 +42,7 @@ const SCHEMA_LD_DEFINITIONS: {
       addressLocality: "Wrocław",
       addressCountry: "Poland",
     },
-    url: "https://www.guzek.uk",
+    url: PRODUCTION_URL,
     sameAs: ["https://www.linkedin.com/in/konrad-guzek/"],
     jobTitle: "Software Developer",
     worksFor: {

@@ -1,6 +1,7 @@
 import type { CollectionConfig, NumberField, PayloadRequest } from "payload";
 import { v4 as uuid } from "uuid";
 
+import { PRODUCTION_URL } from "@/lib/constants";
 import {
   ALPHANUMERIC_PATTERN,
   isAdminFieldLevel,
@@ -25,13 +26,16 @@ function fillHtmlTemplate(
   args?: { req?: PayloadRequest; token?: string; user?: { username?: string } },
 ) {
   const { req, token, user } = args ?? {};
-  const protocol = req?.protocol ?? "https:";
-  const host = req?.host ?? "www.guzek.uk";
-  const url = `${protocol}//${host}/${templateName}?token=${token}`;
+  const base =
+    process.env.NODE_ENV === "development" && req?.protocol != null && req?.host != null
+      ? `${req.protocol}//${req.host}`
+      : PRODUCTION_URL;
+  const url = `${base}/${templateName}?token=${token}`;
   const template = templateName === "reset-password" ? resetPassword : verifyEmail;
   return template
     .replaceAll("{RESET_PASSWORD_URL}", url)
-    .replaceAll("{USERNAME}", user?.username ? ` @${user.username}` : "");
+    .replaceAll("{USERNAME}", user?.username ? ` @${user.username}` : "")
+    .replaceAll("{WEBSITE_URL}", PRODUCTION_URL);
 }
 
 export const Users: CollectionConfig = {

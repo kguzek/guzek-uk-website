@@ -4,9 +4,10 @@ import { getTranslations } from "@/lib/providers/translation-provider";
 import type { ServerFetchOptions } from ".";
 import { fetchFromApi, getUrlBase, prepareRequest } from ".";
 import { commonTriggerRevalidation, getSearchParams } from "../backend";
+import { PRODUCTION_URL } from "../constants";
 
 const EPISODATE_URL = "https://www.episodate.com/api/";
-const NEXT_URL = "https://www.guzek.uk/api/";
+const NEXT_URL = `${PRODUCTION_URL}/api/`;
 
 function isUserSpecificPath(path: string) {
   const parts = path.split("/");
