@@ -45,10 +45,10 @@ export function ResetPasswordForm({
     mutationFn: resetPassword,
   });
 
-  async function resetPassword(values: ResetPasswordSchema) {
+  async function resetPassword({ password, token }: ResetPasswordSchema) {
     const result = await clientToApi("users/reset-password", {
       method: "POST",
-      body: values,
+      body: { password, token },
     });
     console.info("Reset password:", result);
     router.push("/profile");
@@ -77,6 +77,19 @@ export function ResetPasswordForm({
               <FormLabel>{data.profile.formDetails.resetPassword.field}</FormLabel>
               <FormControl>
                 <Input autoFocus type="password" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        ></FormField>
+        <FormField
+          control={form.control}
+          name="password2"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{data.profile.formDetails.passwordRepeat}</FormLabel>
+              <FormControl>
+                <Input type="password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
