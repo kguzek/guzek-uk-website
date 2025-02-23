@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 
 import "./globals.css";
 
+import { PRODUCTION_URL } from "@/lib/constants";
 import { QueryProvider } from "@/lib/providers/query-provider";
 import { Toaster } from "@/ui/sonner";
 import { TooltipProvider } from "@/ui/tooltip";
@@ -64,7 +65,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/logo192.png" />
         <link rel="manifest" href="/manifest.json" />
-        <link rel="canonical" href="https://www.guzek.uk" />
+        <link rel="canonical" href={PRODUCTION_URL} />
       </head>
       <body className="text-primary bg-gradient-main">
         <QueryProvider>
