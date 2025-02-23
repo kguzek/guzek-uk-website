@@ -9,6 +9,7 @@ import {
 export const POLISH: Translation = {
   footer: (year) => `${year} \u00a9 Konrad Guzek`,
   loading: "Trwa ładowanie strony",
+  redirecting: "Trwa przekierowywanie",
   language: "Język",
   loginShort: "Zaloguj",
   dateFormat: new Intl.DateTimeFormat("pl-PL", LONG_DATE_FORMAT),
@@ -24,9 +25,12 @@ export const POLISH: Translation = {
   numberFormat: new Intl.NumberFormat("pl-PL"),
   networkError:
     "Nastąpił błąd sieciowy podczas wykonywania tej czynności. Spróbuj wkrótce ponownie.",
-  unknownError:
-    "Nastąpił nieoczekiwany bład. Proszę skontaktować się z konrad@guzek.uk",
+  unknownError: "Nastąpił nieoczekiwany bład. Proszę skontaktować się z konrad@guzek.uk",
   loggedOut: "Wylogowano z konta.",
+  placeholder: {
+    email: "jan@kowalski.pl",
+    username: "jankow",
+  },
   profile: {
     title: "Profil",
     body: "Witamy na Twoim profilu!",
@@ -52,6 +56,25 @@ export const POLISH: Translation = {
       haveAccountAlready: "masz już konto?",
       logout: "Wyloguj się",
       serverUrl: "URL serwera LiveSeries",
+      verifyEmail: {
+        header: "Weryfikacja Email",
+        info: (email) =>
+          `Email z linkiem weryfikacyjnym został wysłany na adres ${email || "podany w formularzu"}.`,
+        cta: "Sprawdź swoją skrzynkę odbiorczą.",
+        success: "Email został pomyślnie zweryfikowany",
+      },
+      forgotPassword: {
+        header: "Nie znasz hasła",
+        info: (email) =>
+          `Jeśli na adres ${email || "podany w formularzu"} jest zarejestrowane konto, otrzyma ono email z linkiem do zmiany hasła.`,
+        success: "Email z linkiem do zresetowania hasła został wysłany.",
+      },
+      resetPassword: {
+        header: "Reset Hasła",
+        field: "Nowe hasło",
+        submit: "Zresetuj hasło",
+        success: "Hasło zostało pomyślnie zresetowane",
+      },
     },
   },
   error: {
@@ -138,8 +161,7 @@ export const POLISH: Translation = {
         `Uwaga: Czy na pewno chcesz automatycznie pobierać wszystkie nieobejrzane odcinki dla tego serialu? Ilość nieobejrzanych odcinków: ${unwatched}.`,
       showDetails: "Dane Serialu",
       markWatched: (un) => `Zaznacz odcinek jako ${un}obejrzany`,
-      markAllWatched: (un) =>
-        `Zaznacz wszystkie odcinki w sezonie jako ${un}obejrzane`,
+      markAllWatched: (un) => `Zaznacz wszystkie odcinki w sezonie jako ${un}obejrzane`,
       un: "nie",
       unwatched: "Nieobejrzane",
     },
@@ -179,8 +201,7 @@ Gdy znajdziesz serial, który Ci się podoba, kliknij ikonę serca, aby dodać g
       },
       downloadComplete: (episode) => `Pomyśłnie pobrano ${episode}.`,
       downloadError: (episode) => `Pobieranie ${episode} nie powiodło się.`,
-      confirmDelete: (episode) =>
-        `Na pewno chcesz usunąć ${episode} z serwera?`,
+      confirmDelete: (episode) => `Na pewno chcesz usunąć ${episode} z serwera?`,
       deleted: (episode) => `Pomyślnie usunięto odcinek ${episode}.`,
       serialise: (episode) => `S${episode.season}:O${episode.episode}`,
     },

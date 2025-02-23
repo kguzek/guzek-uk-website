@@ -58,11 +58,8 @@ export function TvShowPreview({
 
   if (!showDetails) return <TvShowPreviewSkeleton idx={idx} />;
 
-  const useIdNotPermalink =
-    `${showDetails?.permalink}` === `${+showDetails?.permalink}`;
-  const link = `/liveseries/tv-show/${
-    useIdNotPermalink ? showDetails.id : showDetails?.permalink
-  }`;
+  const useIdNotPermalink = `${showDetails?.permalink}` === `${+showDetails?.permalink}`;
+  const link = `/liveseries/tv-show/${useIdNotPermalink ? showDetails.id : showDetails?.permalink}`;
 
   return (
     <div className="bg-background-strong shadow-background-strong outline-background hover:outline-background-soft w-[240px] rounded-md pb-10 outline transition-all duration-300 hover:z-1 hover:-translate-y-2 hover:drop-shadow-2xl">
@@ -75,10 +72,9 @@ export function TvShowPreview({
 
         <button
           onClick={handleHeart}
-          className={cn(
-            "text-primary hover:text-error transition-colors duration-300",
-            { "text-error": isLiked },
-          )}
+          className={cn("text-primary hover:text-error transition-colors duration-300", {
+            "text-error": isLiked,
+          })}
           title={data.liveSeries.tvShow[isLiked ? "unlike" : "like"]}
         >
           <HeartIcon fill={isLiked ? "currentColor" : "none"} />

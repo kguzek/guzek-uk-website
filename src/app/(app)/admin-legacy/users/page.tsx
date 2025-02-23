@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import type { User } from "@/lib/types";
-import { ErrorComponent } from "@/components/error-component";
+import { ErrorComponent } from "@/components/error/component";
 import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
 import { getAuth } from "@/lib/providers/auth-provider";
@@ -37,7 +37,7 @@ export default async function Users() {
         <div className="flex-column w-full gap-4 text-xs sm:w-[90%] sm:text-base md:w-4/5">
           {usersResult.data.map((user, key) => (
             <UserCard
-              key={`user-${user.uuid || key}`}
+              key={`user-${user.id || key}`}
               user={user}
               userLanguage={userLanguage}
               accessToken={accessToken}

@@ -23,14 +23,16 @@ export function UserEditor({
   const [user, setUser] = useState(originalUser);
   const [username, setUsername] = useState(user.username);
   const [email, setEmail] = useState(user.email);
-  const [admin, setAdmin] = useState(user.admin);
+  const [admin, setAdmin] = useState(user.role === "admin");
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState("");
   const { setModalError, setModalInfo } = useModals();
   const data = TRANSLATIONS[userLanguage];
 
   const haveDetailsChanged = () =>
-    username !== user.username || email !== user.email || admin !== user.admin;
+    username !== user.username ||
+    email !== user.email ||
+    admin !== (user.role === "admin");
 
   function handleSubmit(evt: FormEvent) {
     evt.preventDefault();
@@ -51,16 +53,12 @@ export function UserEditor({
     onSuccess: () => void,
   ) {
     setLoading(true);
-    const result = await clientToApi(
-      `auth/users/${user.uuid}/${section}`,
-      accessToken,
-      {
-        method: "PUT",
-        body,
-        userLanguage,
-        setModalError,
-      },
-    );
+    const result = await clientToApi(`auth/users/${user.id}/${section}`, accessToken, {
+      method: "PUT",
+      body,
+      userLanguage,
+      setModalError,
+    });
     if (result.ok) {
       setModalInfo(`Successfully updated user '${username}' ${section}.`);
       onSuccess();
@@ -70,7 +68,7 @@ export function UserEditor({
 
   return (
     <form
-      action={`https://auth.guzek.uk/auth/users/${user.uuid}/details`}
+      action={`https://auth.guzek.uk/auth/users/${user.id}/details`}
       method="POST"
       className="flex w-[50%] flex-col"
       onSubmit={handleSubmit}

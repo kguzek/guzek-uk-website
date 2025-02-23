@@ -3,7 +3,7 @@ import config from "@payload-config";
 import { RichText } from "@payloadcms/richtext-lexical/react";
 
 import type { Page } from "@/payload-types";
-import { ErrorComponent } from "@/components/error-component";
+import { ErrorComponent } from "@/components/error/component";
 import { ErrorCode } from "@/lib/enums";
 import { getTranslations } from "@/lib/providers/translation-provider";
 
@@ -24,10 +24,7 @@ export async function getPageBySlug(slug: string) {
 
 type SchemaValue = string | Record<string, string>;
 type NestedSchemaValue = SchemaValue | Record<string, SchemaValue>;
-type SchemaOrgDefinition = Record<
-  string,
-  NestedSchemaValue | NestedSchemaValue[]
->;
+type SchemaOrgDefinition = Record<string, NestedSchemaValue | NestedSchemaValue[]>;
 
 const SCHEMA_LD_DEFINITIONS: {
   [pageUrl: string]: SchemaOrgDefinition | undefined;
@@ -103,18 +100,7 @@ function JsonLdScript({ page }: { page: Page }) {
 
 export async function DynamicPageLoader({ slug }: { slug: string }) {
   const page = await getPageBySlug(slug);
-  const { data } = await getTranslations();
-  if (!page)
-    return (
-      <ErrorComponent
-        errorCode={ErrorCode.NotFound}
-        errorMessage={
-          <p>
-            {data.error[404].body}: <code className="genre">{slug}</code>
-          </p>
-        }
-      />
-    );
+  if (!page) return <ErrorComponent errorCode={ErrorCode.NotFound} path={slug} />;
   return (
     <div className="text flex justify-center">
       <JsonLdScript page={page} />

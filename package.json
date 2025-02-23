@@ -14,7 +14,8 @@
     "dev": "next dev",
     "dev-ssl": "next dev --experimental-https --experimental-https-cert certificates/fullchain1.pem --experimental-https-key certificates/privkey1.pem",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.0",
@@ -71,8 +72,12 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@swc/core",
       "esbuild",
       "sharp"
+    ],
+    "ignoredBuiltDependencies": [
+      "@swc/core"
     ]
   }
 }

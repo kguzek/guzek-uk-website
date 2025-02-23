@@ -28,9 +28,7 @@ export function WatchedIndicator({
       title={data.liveSeries.tvShow.markAllWatched(
         seasonWatched ? data.liveSeries.tvShow.un : "",
       )}
-      onClick={() =>
-        updateWatchedEpisodes(season, seasonWatched ? [] : episodes)
-      }
+      onClick={() => updateWatchedEpisodes(season, seasonWatched ? [] : episodes)}
       className="clickable"
     >
       {isSeasonWatched(season, episodes) ? (

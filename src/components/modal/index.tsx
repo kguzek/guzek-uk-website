@@ -23,7 +23,7 @@ function ModalButton({
     <button
       type="button"
       className={cn(
-        "min-w-[100px] rounded-md border-none bg-background-soft px-3 py-1 uppercase text-primary-strong transition-opacity duration-200 hover:opacity-100 sm:rounded-lg sm:opacity-75",
+        "bg-background-soft text-primary-strong min-w-[100px] rounded-md border-none px-3 py-1 uppercase transition-opacity duration-200 hover:opacity-100 sm:rounded-lg sm:opacity-75",
         classValue,
       )}
       onClick={onClick}
@@ -65,7 +65,7 @@ export function Modal({
     >
       <div
         className={cn(
-          "fixed left-0 right-0 top-0 z-40 mx-auto mt-20 w-[95%] rounded-lg bg-accent-soft px-2 py-1 font-serif font-normal text-background transition-[transform,margin] duration-300 sm:w-[90%] sm:rounded-xl sm:px-5 sm:py-2 md:box-border lg:w-3/4 xl:w-1/2",
+          "bg-accent-soft text-background fixed top-0 right-0 left-0 z-40 mx-auto mt-20 w-[95%] rounded-lg px-2 py-1 font-serif font-normal transition-[transform,margin] duration-300 sm:w-[90%] sm:rounded-xl sm:px-5 sm:py-2 md:box-border lg:w-3/4 xl:w-1/2",
           {
             "bg-error text-primary-strong": variant === "error",
             "mt-0 -translate-y-[100%]": !value,

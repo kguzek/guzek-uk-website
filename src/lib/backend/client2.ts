@@ -1,4 +1,5 @@
-import type { ClientFetchOptions, ErrorResponseBody } from ".";
+import type { ClientFetchOptions } from ".";
+import type { ErrorResponseBodyPayloadCms } from "../types";
 import { getSearchParams, parseResponseBody, prepareRequest } from ".";
 import { TRANSLATIONS } from "../translations";
 import { getErrorMessage } from "../util";
@@ -22,9 +23,9 @@ export class NetworkError extends RequestError {
 
 export class HttpError extends RequestError {
   response: Response;
-  error: ErrorResponseBody;
+  error: ErrorResponseBodyPayloadCms;
 
-  constructor(response: Response, error: ErrorResponseBody) {
+  constructor(response: Response, error: ErrorResponseBodyPayloadCms) {
     // TODO: PL translation support
     super(getErrorMessage(response, error, TRANSLATIONS.EN), "http");
     this.error = error;
@@ -94,25 +95,20 @@ export async function fetchFromApi<T>(url: string, options: RequestInit) {
 
   // console.debug("...", res.status, res.statusText);
   if (!res.ok) {
-    throw new HttpError(res, data as ErrorResponseBody);
+    throw new HttpError(res, data as ErrorResponseBodyPayloadCms);
   }
   return { res, data };
 }
 
-export async function clientToApi(
+export async function clientToApi<T>(
   path: string,
   {
     useCredentials = false,
     ...fetchOptions
   }: ClientFetchOptions & { useCredentials?: boolean },
 ) {
-  const options = await prepareRequest(
-    path,
-    fetchOptions,
-    null,
-    useCredentials,
-  );
+  const options = await prepareRequest(path, fetchOptions, null, useCredentials);
   const prefix = "/api/";
   const url = `${prefix}${path}${getSearchParams(fetchOptions.params)}`;
-  return fetchFromApi(url, options);
+  return fetchFromApi<T>(url, options);
 }

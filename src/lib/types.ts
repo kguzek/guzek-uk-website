@@ -4,9 +4,7 @@ import type { Dispatch, SetStateAction } from "react";
 import type { DownloadStatus, LOG_LEVELS } from "./enums";
 import type { getTranslations } from "./providers/translation-provider";
 
-export type UserLocale = Awaited<
-  ReturnType<typeof getTranslations>
->["userLocale"];
+export type UserLocale = Awaited<ReturnType<typeof getTranslations>>["userLocale"];
 
 export interface PageContent {
   content: string;
@@ -23,13 +21,13 @@ export interface MenuItem {
 }
 
 export interface User {
-  uuid?: string;
+  id: string;
   username: string;
   email: string;
-  admin: boolean;
+  role: "user" | "admin";
+  serverUrl?: string;
   created_at?: string;
   modified_at?: string;
-  serverUrl?: string;
 }
 
 /** Admin logs */
@@ -59,6 +57,11 @@ export interface ErrorPageContent {
   title: string;
   body: string;
 }
+
+export type ErrorResponseBodyCustom = { [code: string]: string };
+export type ErrorResponseBodyPayloadCms = { errors: { message: string }[] };
+
+export type ErrorResponseBody = ErrorResponseBodyCustom | ErrorResponseBodyPayloadCms;
 
 export interface UserShows {
   likedShows?: number[];
@@ -116,8 +119,7 @@ export interface ShowData<T> {
   [showId: number]: T;
 }
 
-export type DownloadStatusType =
-  (typeof DownloadStatus)[keyof typeof DownloadStatus];
+export type DownloadStatusType = (typeof DownloadStatus)[keyof typeof DownloadStatus];
 
 export interface DownloadedEpisode {
   status: DownloadStatusType;
@@ -137,12 +139,8 @@ export const DEFAULT_PAGE_DATA: PageContent = {
   content: "Oops! This page hasn't been implemented yet.",
 };
 
-export type CustomMiddleware = (
-  req: NextRequest,
-) => NextResponse | Promise<NextResponse>;
+export type CustomMiddleware = (req: NextRequest) => NextResponse | Promise<NextResponse>;
 
-export type MiddlewareFactory = (
-  middleware: CustomMiddleware,
-) => CustomMiddleware;
+export type MiddlewareFactory = (middleware: CustomMiddleware) => CustomMiddleware;
 
 export type ModalHandler = (primary: boolean) => void;

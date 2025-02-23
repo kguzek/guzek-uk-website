@@ -8,9 +8,7 @@ export const redirectMiddleware: MiddlewareFactory = (next) =>
     const redirect = () =>
       NextResponse.redirect(
         new URL(
-          "https://www.guzek.uk" +
-            request.nextUrl.pathname +
-            request.nextUrl.search,
+          "https://www.guzek.uk" + request.nextUrl.pathname + request.nextUrl.search,
         ),
       );
 

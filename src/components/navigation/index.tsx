@@ -47,18 +47,11 @@ export async function Navigation() {
   ] satisfies Parallels;
 
   const menuItemsResult = await serverToApi<MenuItem[]>("pages");
-  const menuItems =
-    menuItemsResult.ok && menuItemsResult.hasBody ? menuItemsResult.data : [];
-  const filteredMenuItems = menuItems.filter(
-    (item) => user?.admin || !item.adminOnly,
-  );
+  const menuItems = menuItemsResult.ok && menuItemsResult.hasBody ? menuItemsResult.data : [];
+  const filteredMenuItems = menuItems.filter((item) => user?.role === "admin" || !item.adminOnly);
   return (
     <>
-      <NavigationBar
-        user={user}
-        menuItems={filteredMenuItems}
-        userLanguage={userLanguage}
-      />
+      <NavigationBar user={user} menuItems={filteredMenuItems} userLanguage={userLanguage} />
       <Breadcrumbs parallels={parallels} />
     </>
   );

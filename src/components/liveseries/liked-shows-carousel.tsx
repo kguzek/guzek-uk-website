@@ -51,9 +51,8 @@ export function LikedShowsCarousel({
     const firstCard = Math.ceil(carouselScroll / cardWidth - 0.1) + 1;
     // or 5.99999... to be floored to 5.0
     const lastCard =
-      Math.floor(
-        (carouselScroll + carouselVisibleWidth - cardWidth) / cardWidth + 0.1,
-      ) + 1;
+      Math.floor((carouselScroll + carouselVisibleWidth - cardWidth) / cardWidth + 0.1) +
+      1;
     // Not using Math.round because then on small layouts the app will assume
     // we can see the full card when we can only see half of it
     const info = {
@@ -82,19 +81,14 @@ export function LikedShowsCarousel({
 
   function isScrollerVisible(direction: "left" | "right") {
     const { firstCard, lastCard, totalCards } = getDisplayedCards();
-    const visible =
-      direction === "left" ? firstCard > 1 : lastCard < totalCards;
+    const visible = direction === "left" ? firstCard > 1 : lastCard < totalCards;
     return visible;
   }
 
   const toMap = likedShowIds ?? Array<number>(SKELETON_CARDS_COUNT).fill(0);
   return (
     <div className="relative flex flex-wrap items-center justify-center gap-2">
-      <CarouselArrow
-        left
-        onClick={previousImage}
-        isVisible={isScrollerVisible}
-      />
+      <CarouselArrow left onClick={previousImage} isVisible={isScrollerVisible} />
       <ul
         ref={carouselRef}
         id="previews"

@@ -1,7 +1,10 @@
 import Cookies from "js-cookie";
 
+import type { ErrorResponseBody } from "@/lib/types";
+import type { Media } from "@/payload-types";
+
 import type { Translation } from "./translations";
-import type { DownloadedEpisode, Episode } from "./types";
+import type { DownloadedEpisode, Episode, ErrorResponseBodyPayloadCms } from "./types";
 import { Language } from "./enums";
 
 const PRODUCTION_MODE = process.env.NODE_ENV !== "development";
@@ -18,8 +21,7 @@ export function getTitle(
   return addPageName ? `${withSuffix} | ${PAGE_NAME}` : withSuffix;
 }
 
-export const setTitle = (title: string) =>
-  void (document.title = getTitle(title));
+export const setTitle = (title: string) => void (document.title = getTitle(title));
 
 const divmod = (dividend: number, divisor: number) => [
   Math.floor(dividend / divisor),
@@ -88,21 +90,29 @@ const STATUS_CODES: { [code in number]?: string } = {
   503: "Service Unavailable",
 };
 
+const isPayloadCmsError = (
+  json: ErrorResponseBody,
+): json is ErrorResponseBodyPayloadCms =>
+  "errors" in json &&
+  Array.isArray(json.errors) &&
+  json.errors.every((error) => "message" in error);
+
 /** Formats the response's JSON body into a user-readable error message, with a fallback to simply displaying the JSON,
  * with another fallback to displaying a generic error message in the user's language. */
 export const getErrorMessage = (
   res: Response,
-  json: any, //eslint-disable-line @typescript-eslint/no-explicit-any
+  json: ErrorResponseBody,
   data: Translation,
 ): string =>
-  (json != null &&
-    (json[`${res.status} ${STATUS_CODES[res.status] ?? res.statusText}`] ??
-      JSON.stringify(json))) ||
-  data.unknownError;
+  (json == null
+    ? data.unknownError
+    : isPayloadCmsError(json)
+      ? json.errors.map(({ message }) => message).join("\n")
+      : (json[`${res.status} ${STATUS_CODES[res.status] ?? res.statusText}`] ??
+        JSON.stringify(json))) || data.unknownError;
 
-export const getUTCDateString = (
-  ...dateInit: ConstructorParameters<typeof Date>
-) => new Date(...dateInit).toISOString().split("T")[0];
+export const getUTCDateString = (...dateInit: ConstructorParameters<typeof Date>) =>
+  new Date(...dateInit).toISOString().split("T")[0];
 
 const UNIT_PREFIXES = ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi"];
 
@@ -159,3 +169,12 @@ export function sanitiseUrl(url: string) {
   if (isScriptUrl(url)) return "";
   return url;
 }
+
+type MediaImage = Pick<Media, "id" | "createdAt" | "updatedAt" | "alt"> & {
+  url: string;
+  width: number;
+  height: number;
+};
+
+export const isImage = (image: Media | number): image is MediaImage =>
+  typeof image !== "number" && !!image.url && !!image.width && !!image.height;

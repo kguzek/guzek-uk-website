@@ -40,12 +40,7 @@ export async function serverToApi<T>(
     fetchOptions.params = { ...fetchOptions.params, lang: userLanguage };
   }
 
-  const options = await prepareRequest(
-    path,
-    fetchOptions,
-    accessToken,
-    useCredentials,
-  );
+  const options = await prepareRequest(path, fetchOptions, accessToken, useCredentials);
   options.next.revalidate =
     fetchOptions.api === "episodate"
       ? 3600

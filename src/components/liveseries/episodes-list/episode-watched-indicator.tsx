@@ -22,9 +22,7 @@ export function EpisodeWatchedIndicator({
   watchedInSeason: number[];
   accessToken: string | null;
 }) {
-  const [isWatched, setIsWatched] = useState(
-    watchedInSeason.includes(episode.episode),
-  );
+  const [isWatched, setIsWatched] = useState(watchedInSeason.includes(episode.episode));
   const { setModalError } = useModals();
   const data = TRANSLATIONS[userLanguage];
 
@@ -59,8 +57,7 @@ export function EpisodeWatchedIndicator({
       onClick={() =>
         updateWatchedEpisodes(
           isWatched
-            ? (watchedInSeason?.filter((value) => value !== episode.episode) ??
-                [])
+            ? (watchedInSeason?.filter((value) => value !== episode.episode) ?? [])
             : [...(watchedInSeason ?? []), episode.episode],
         )
       }

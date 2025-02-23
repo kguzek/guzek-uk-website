@@ -34,7 +34,7 @@ export default async function Profile() {
           <span className="clickable genre">
             {
               data.profile.formDetails[
-                user.admin ? "administrator" : "regularUser"
+                user.role === "admin" ? "administrator" : "regularUser"
               ]
             }
           </span>
@@ -47,17 +47,13 @@ export default async function Profile() {
           {data.profile.formDetails.email}:{" "}
           <span className="clickable genre">{user.email}</span>
         </p>
-        <ProfileForm
-          user={user}
-          userLanguage={userLanguage}
-          accessToken={accessToken}
-        />
+        <ProfileForm user={user} userLanguage={userLanguage} accessToken={accessToken} />
         <div>
           {/* TODO: make uuid and created_at always available */}
-          {user.uuid && (
+          {user.id && (
             <p>
               <small>
-                UUID: <code className="clickable field">{user.uuid}</code>
+                UUID: <code className="clickable field">{user.id}</code>
               </small>
             </p>
           )}

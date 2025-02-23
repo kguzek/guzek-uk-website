@@ -5,7 +5,7 @@ import type {
   UserShows,
   WatchedEpisodes,
 } from "@/lib/types";
-import { ErrorComponent } from "@/components/error-component";
+import { ErrorComponent } from "@/components/error/component";
 import { EpisodesList } from "@/components/liveseries/episodes-list";
 import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
@@ -25,8 +25,7 @@ export async function generateMetadata({ params }: Props) {
   const result = await getShowDetails(params);
   return {
     title: getTitle(
-      (result.ok && result.data.tvShow.name) ||
-        data.liveSeries.tvShow.showDetails,
+      (result.ok && result.data.tvShow.name) || data.liveSeries.tvShow.showDetails,
       data.liveSeries.title,
     ),
   };
@@ -62,13 +61,10 @@ export default async function TvShow({ params }: Props) {
   const { permalink } = await params;
   const { data, userLanguage } = await getTranslations();
   const { user, accessToken } = await getAuth();
-  const showResult = await serverToApi<{ tvShow: TvShowDetails }>(
-    "show-details",
-    {
-      params: { q: permalink },
-      api: "episodate",
-    },
-  );
+  const showResult = await serverToApi<{ tvShow: TvShowDetails }>("show-details", {
+    params: { q: permalink },
+    api: "episodate",
+  });
   if (!showResult.ok) {
     return <ErrorComponent errorCode={ErrorCode.NotFound} />;
   }
@@ -76,23 +72,17 @@ export default async function TvShow({ params }: Props) {
   let subscribed = false;
   let watchedEpisodes: WatchedEpisodes = {};
   if (user != null) {
-    const showsResult = await serverToApi<UserShows>(
-      "liveseries/shows/personal",
-    );
+    const showsResult = await serverToApi<UserShows>("liveseries/shows/personal");
     if (showsResult.ok) {
-      liked =
-        showsResult.data.likedShows?.includes(showResult.data.tvShow.id) ??
-        false;
+      liked = showsResult.data.likedShows?.includes(showResult.data.tvShow.id) ?? false;
       subscribed =
-        showsResult.data.subscribedShows?.includes(showResult.data.tvShow.id) ??
-        false;
+        showsResult.data.subscribedShows?.includes(showResult.data.tvShow.id) ?? false;
     }
     const watchedEpisodesResult = await serverToApi<ShowData<WatchedEpisodes>>(
       "liveseries/watched-episodes/personal",
     );
     if (watchedEpisodesResult.ok) {
-      watchedEpisodes =
-        watchedEpisodesResult.data[showResult.data.tvShow.id] ?? {};
+      watchedEpisodes = watchedEpisodesResult.data[showResult.data.tvShow.id] ?? {};
     }
   }
 
@@ -106,22 +96,20 @@ export default async function TvShow({ params }: Props) {
       watchedEpisodes={watchedEpisodes}
       accessToken={accessToken}
     >
-      {sortEpisodes(showResult.data.tvShow.episodes).map(
-        ([season, episodes]) => (
-          <EpisodesList
-            key={`season-${season}`}
-            tvShow={showResult.data.tvShow}
-            heading={`${data.liveSeries.tvShow.season} ${season}`}
+      {sortEpisodes(showResult.data.tvShow.episodes).map(([season, episodes]) => (
+        <EpisodesList
+          key={`season-${season}`}
+          tvShow={showResult.data.tvShow}
+          heading={`${data.liveSeries.tvShow.season} ${season}`}
+          episodes={episodes}
+        >
+          <WatchedIndicator
+            season={season}
             episodes={episodes}
-          >
-            <WatchedIndicator
-              season={season}
-              episodes={episodes}
-              userLanguage={userLanguage}
-            />
-          </EpisodesList>
-        ),
-      )}
+            userLanguage={userLanguage}
+          />
+        </EpisodesList>
+      ))}
     </ShowDetails>
   );
 }

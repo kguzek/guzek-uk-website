@@ -4,10 +4,7 @@ import { buildConfig } from "payload";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { nodemailerAdapter } from "@payloadcms/email-nodemailer";
 import { payloadCloudPlugin } from "@payloadcms/payload-cloud";
-import {
-  FixedToolbarFeature,
-  lexicalEditor,
-} from "@payloadcms/richtext-lexical";
+import { FixedToolbarFeature, lexicalEditor } from "@payloadcms/richtext-lexical";
 import sharp from "sharp";
 
 import { Media } from "./collections/Media";

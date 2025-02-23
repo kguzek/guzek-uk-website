@@ -7,6 +7,7 @@ import { POLISH } from "./polish";
 export type Translation = Readonly<{
   footer: (year: string) => string;
   loading: string;
+  redirecting: string;
   language: string;
   loginShort: string;
   dateFormat: Intl.DateTimeFormat;
@@ -17,6 +18,10 @@ export type Translation = Readonly<{
   networkError: string;
   unknownError: string;
   loggedOut: string;
+  placeholder: {
+    email: string;
+    username: string;
+  };
   profile: {
     title: string;
     body: string;
@@ -41,6 +46,23 @@ export type Translation = Readonly<{
       haveAccountAlready: string;
       logout: string;
       serverUrl: string;
+      verifyEmail: {
+        header: string;
+        info: (email?: string) => string;
+        cta: string;
+        success: string;
+      };
+      forgotPassword: {
+        header: string;
+        info: (email?: string) => string;
+        success: string;
+      };
+      resetPassword: {
+        header: string;
+        field: string;
+        submit: string;
+        success: string;
+      };
     };
   };
   admin: {

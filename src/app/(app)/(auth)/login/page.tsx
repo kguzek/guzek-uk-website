@@ -30,9 +30,10 @@ export default async function LogIn() {
   }
   return (
     <div className="mt-10 flex justify-center">
-      <Tile>
+      <Tile className="min-w-xs">
+        <h1 className="text-xl font-bold">{data.profile.formDetails.login}</h1>
         <LogInForm userLanguage={userLanguage} />
-        <p className="mt-3">{data.profile.formDetails.or}</p>
+        <p className="text-sm">{data.profile.formDetails.or}</p>
         <Button variant="ghost" asChild>
           <Link href="/signup">{data.profile.formDetails.signup}</Link>
         </Button>

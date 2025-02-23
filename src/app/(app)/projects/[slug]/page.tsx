@@ -6,24 +6,15 @@ import { RichText } from "@payloadcms/richtext-lexical/react";
 import { ArrowUpRight } from "lucide-react";
 
 import type { UserLocale } from "@/lib/types";
-import type { Media } from "@/payload-types";
 import { CarouselArrows } from "@/components/carousel/carousel-arrows";
-import { ErrorComponent } from "@/components/error-component";
+import { ErrorComponent } from "@/components/error/component";
 import { Tile } from "@/components/tile";
 import { ErrorCode } from "@/lib/enums";
 import { getTranslations } from "@/lib/providers/translation-provider";
+import { isImage } from "@/lib/util";
 import { Carousel, CarouselContent, CarouselItem } from "@/ui/carousel";
 
 type Props = { params: Promise<{ slug: string }> };
-
-type MediaImage = Pick<Media, "id" | "createdAt" | "updatedAt" | "alt"> & {
-  url: string;
-  width: number;
-  height: number;
-};
-
-export const isImage = (image: Media | number): image is MediaImage =>
-  typeof image !== "number" && !!image.url && !!image.width && !!image.height;
 
 const propsToSlug = async ({ params }: Props) => (await params).slug;
 
@@ -81,10 +72,7 @@ export default async function ProjectPage(props: Props) {
       <div className="prose mt-6">
         <h2 className="mb-2">{project.title}</h2>
         {project.url && (
-          <Link
-            className="group flex items-center gap-2 bg-none"
-            href={project.url}
-          >
+          <Link className="group flex items-center gap-2 bg-none" href={project.url}>
             <div className="hover-underline group-hover:underlined text-accent">
               {project.url}
             </div>

@@ -53,20 +53,12 @@ const robotoSlab = Roboto_Slab({
   variable: "--font-roboto-slab",
 });
 
-export default async function RootLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
   const { userLanguage } = await getTranslations();
   return (
     <html
       lang={userLanguage.toLowerCase()}
-      className={cn(
-        "dark bg-background-strong",
-        raleway.variable,
-        robotoSlab.variable,
-      )}
+      className={cn("dark bg-background-strong", raleway.variable, robotoSlab.variable)}
     >
       <head>
         <link rel="icon" href="/favicon.ico" />

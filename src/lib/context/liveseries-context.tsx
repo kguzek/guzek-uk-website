@@ -42,9 +42,7 @@ export function LiveSeriesProvider({
   accessToken: string | null;
 }) {
   const [existingSocket, setExistingSocket] = useState<null | WebSocket>(null);
-  const [downloadedEpisodes, setDownloadedEpisodes] = useState<
-    DownloadedEpisode[]
-  >([]);
+  const [downloadedEpisodes, setDownloadedEpisodes] = useState<DownloadedEpisode[]>([]);
   const { setModalInfo, setModalError, setModalChoice } = useModals();
   const pathname = usePathname();
   const data = TRANSLATIONS[userLanguage];
@@ -89,8 +87,7 @@ export function LiveSeriesProvider({
         socketFailed === undefined ? "Connection error" : "Unknown error:",
         message,
       );
-      if (socketFailed !== undefined)
-        setModalError(data.liveSeries.websockets.error);
+      if (socketFailed !== undefined) setModalError(data.liveSeries.websockets.error);
       socketFailed = true;
     };
     const poll = (data: DownloadedEpisode[]) =>
@@ -117,9 +114,7 @@ export function LiveSeriesProvider({
         return;
       }
       if (socketFailed) return;
-      const reconnect = await setModalChoice(
-        data.liveSeries.websockets.askReconnect,
-      );
+      const reconnect = await setModalChoice(data.liveSeries.websockets.askReconnect);
       if (reconnect) await connectToWebsocket();
     };
     socket.onmessage = (message) => {
@@ -136,9 +131,7 @@ export function LiveSeriesProvider({
             found.status !== DownloadStatus.COMPLETE &&
             val.status === DownloadStatus.COMPLETE
           )
-            completedDownloadName = `${
-              val.showName
-            } ${data.liveSeries.episodes.serialise(val)}`;
+            completedDownloadName = `${val.showName} ${data.liveSeries.episodes.serialise(val)}`;
           return val;
         });
         //for (const info of torrentInfo) {
@@ -149,16 +142,16 @@ export function LiveSeriesProvider({
           serialiseEpisodeForSorting(a).localeCompare(
             serialiseEpisodeForSorting(b),
             "en",
-            { numeric: true },
+            {
+              numeric: true,
+            },
           ),
         );
         poll(sorted);
         return sorted;
       });
       if (completedDownloadName)
-        setModalInfo(
-          data.liveSeries.episodes.downloadComplete(completedDownloadName),
-        );
+        setModalInfo(data.liveSeries.episodes.downloadComplete(completedDownloadName));
     };
   }
 

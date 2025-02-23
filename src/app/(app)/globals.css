@@ -43,10 +43,7 @@
 }
 
 @utility cards-grid {
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(var(--card-width), max-content)
-  );
+  grid-template-columns: repeat(auto-fit, minmax(var(--card-width), max-content));
 }
 
 @utility text {
@@ -154,8 +151,7 @@
 
 @utility delete {
   @apply text-error hover:text-primary-strong flex cursor-pointer items-center self-stretch p-1 hover:[background-size:_100%_100%] sm:p-3;
-  background: linear-gradient(var(--color-error), var(--color-error)) no-repeat
-    right;
+  background: linear-gradient(var(--color-error), var(--color-error)) no-repeat right;
   background-size: 0 100%;
   transition: all 200ms ease;
 }

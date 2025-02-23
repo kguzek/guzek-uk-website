@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { ErrorComponent } from "@/components/error-component";
+import { ErrorComponent } from "@/components/error/component";
 import { TextWithUrl } from "@/components/text-with-url";
 import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
@@ -19,11 +19,7 @@ interface Props {
 
 export default async function Watch({ params }: Props) {
   const { data, userLanguage } = await getTranslations();
-  const {
-    showName,
-    season: seasonString,
-    episode: episodeString,
-  } = await params;
+  const { showName, season: seasonString, episode: episodeString } = await params;
   if (
     Array.isArray(showName) ||
     !(showName && isNumber(seasonString) && isNumber(episodeString))
@@ -49,7 +45,9 @@ export default async function Watch({ params }: Props) {
 
   const statResult = await serverToApi(
     `liveseries/video/${showName}/${season}/${episode}`,
-    { headers: { Range: "bytes=0-1" } },
+    {
+      headers: { Range: "bytes=0-1" },
+    },
   );
 
   const episodeObject = { episode, season };
@@ -57,8 +55,7 @@ export default async function Watch({ params }: Props) {
   return (
     <div>
       <h2 className="my-6 text-3xl font-bold">
-        {decodeURIComponent(showName)}{" "}
-        {data.liveSeries.episodes.serialise(episodeObject)}
+        {decodeURIComponent(showName)} {data.liveSeries.episodes.serialise(episodeObject)}
       </h2>
       <div className="mb-2 flex flex-col items-center text-sm sm:text-xl md:flex-row md:items-start">
         <div className="flex gap-3">
@@ -78,11 +75,8 @@ export default async function Watch({ params }: Props) {
         <div className="flex gap-3">
           {episode > 1 && (
             <>
-              <Link
-                href={`/liveseries/watch/${showName}/${season}/${episode - 1}`}
-              >
-                {data.liveSeries.watch.previous}{" "}
-                {data.liveSeries.tvShow.episode}
+              <Link href={`/liveseries/watch/${showName}/${season}/${episode - 1}`}>
+                {data.liveSeries.watch.previous} {data.liveSeries.tvShow.episode}
               </Link>
               |
             </>

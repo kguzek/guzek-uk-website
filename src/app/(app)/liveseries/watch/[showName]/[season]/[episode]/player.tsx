@@ -26,9 +26,7 @@ export function Player({
   userLanguage: Language;
 }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [loadingFailed, setLoadingFailed] = useState<boolean | undefined>(
-    false,
-  );
+  const [loadingFailed, setLoadingFailed] = useState<boolean | undefined>(false);
   const router = useRouter();
   const { setModalError } = useModals();
   const data = TRANSLATIONS[userLanguage];
@@ -100,9 +98,7 @@ export function Player({
 
   return (
     <div onKeyDown={onKeyPress}>
-      {loadingFailed && (
-        <p className="centred">{data.liveSeries.watch.playbackError}</p>
-      )}
+      {loadingFailed && <p className="centred">{data.liveSeries.watch.playbackError}</p>}
       <video
         ref={videoRef}
         controls

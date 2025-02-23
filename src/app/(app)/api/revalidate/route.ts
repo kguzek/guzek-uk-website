@@ -8,18 +8,12 @@ export async function POST(req: NextRequest) {
     body = await req.json();
   } catch (error) {
     console.error("Invalid JSON payload", error);
-    return NextResponse.json(
-      { error: "Invalid JSON payload" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
   }
   const tag = body.tag;
 
   if (!tag || typeof tag !== "string") {
-    return NextResponse.json(
-      { error: "Cache tag is required" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "Cache tag is required" }, { status: 400 });
   }
 
   revalidateTag(tag);
