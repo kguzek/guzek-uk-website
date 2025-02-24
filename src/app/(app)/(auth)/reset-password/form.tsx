@@ -81,7 +81,7 @@ export function ResetPasswordForm({
             <FormItem>
               <FormLabel>{data.profile.formDetails.resetPassword.field}</FormLabel>
               <FormControl>
-                <Input autoFocus type="password" {...field} />
+                <Input type="password" autoComplete="new-password" autoFocus {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -94,7 +94,7 @@ export function ResetPasswordForm({
             <FormItem>
               <FormLabel>{data.profile.formDetails.passwordRepeat}</FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <Input type="password" autoComplete="off" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

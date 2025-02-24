@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -38,7 +39,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { clientToApi } from "@/lib/backend/client2";
+import { successToast } from "@/components/ui/sonner";
+import { clientToApi, refreshAccessToken } from "@/lib/backend/client2";
 import { updateUserDetailsSchema } from "@/lib/backend/schemas";
 import { LIVESERIES_SERVER_HOMEPAGE } from "@/lib/constants";
 import { TRANSLATIONS } from "@/lib/translations";
@@ -51,6 +53,7 @@ export function ProfileForm({
   userLanguage: Language;
 }) {
   const data = TRANSLATIONS[userLanguage];
+  const router = useRouter();
 
   const { mutateAsync, isPending } = useMutation({ mutationFn: updateUser });
 
@@ -65,24 +68,29 @@ export function ProfileForm({
 
   async function updateUser(values: UpdateUserDetailsSchema) {
     if (!user) return;
-    const result = await clientToApi("users/me", {
-      method: "PUT",
+    const result = await clientToApi(`users/${user.id}`, {
+      method: "PATCH",
       body: values,
     });
     console.info("Updated user details:", result);
+    await refreshAccessToken();
+    router.refresh();
   }
 
   return (
     <Form {...form}>
       <form
-        action="/api/users/me"
+        action={`/api/users/${user.id}`}
         method="POST"
         className="grid w-full gap-4"
         onSubmit={form.handleSubmit((values) =>
-          toast.promise(mutateAsync(values), { error: fetchErrorToast(data) }),
+          toast.promise(mutateAsync(values), {
+            error: fetchErrorToast(data),
+            success: successToast(data.profile.formDetails.success),
+          }),
         )}
       >
-        <input className="hidden" type="hidden" name="_method" value="PUT" />
+        <input className="hidden" type="hidden" name="_method" value="PATCH" />
         <FormField
           control={form.control}
           name="username"
@@ -90,7 +98,7 @@ export function ProfileForm({
             <FormItem>
               <FormLabel>{data.profile.formDetails.username}</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input autoComplete="username" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -103,7 +111,7 @@ export function ProfileForm({
             <FormItem>
               <FormLabel>{data.profile.formDetails.email}</FormLabel>
               <FormControl>
-                <Input type="email" {...field} />
+                <Input type="email" autoComplete="email" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -174,18 +182,12 @@ export function ProfileForm({
                 </AlertDialog>
               </FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input type="url" autoComplete="url" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <FormItem>
-          <FormLabel>UUID</FormLabel>
-          <FormControl>
-            <Input value={user.id} disabled />
-          </FormControl>
-        </FormItem>
         <Button type="submit" loading={isPending}>
           {data.admin.contentManager.formDetails.update}
         </Button>

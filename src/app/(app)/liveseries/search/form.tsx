@@ -64,7 +64,11 @@ export function SearchForm({ userLanguage }: { userLanguage: Language }) {
                   <FormItem className="w-full">
                     <FormLabel>{data.liveSeries.search.label}</FormLabel>
                     <FormControl>
-                      <Input placeholder={data.liveSeries.search.prompt} {...field} />
+                      <Input
+                        autoFocus
+                        placeholder={data.liveSeries.search.prompt}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

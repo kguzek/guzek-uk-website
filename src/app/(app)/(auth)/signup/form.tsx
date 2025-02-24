@@ -25,9 +25,9 @@ import {
 import { Input } from "@/ui/input";
 
 export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
+  const data = TRANSLATIONS[userLanguage];
   const router = useRouter();
 
-  const data = TRANSLATIONS[userLanguage];
   const form = useForm<SignUpSchema>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -57,7 +57,7 @@ export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
           <h1 className="text-xl font-bold">
             {data.profile.formDetails.verifyEmail.header}
           </h1>
-          <div className="text-sm">
+          <div className="grid gap-2 text-sm">
             <p>{data.profile.formDetails.verifyEmail.info(form.getValues("email"))}</p>
             <p>{data.profile.formDetails.verifyEmail.cta}</p>
           </div>
@@ -83,7 +83,12 @@ export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
                 <FormItem>
                   <FormLabel>{data.profile.formDetails.username}</FormLabel>
                   <FormControl>
-                    <Input placeholder={data.placeholder.username} {...field} />
+                    <Input
+                      autoComplete="username"
+                      autoFocus
+                      placeholder={data.placeholder.username}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -96,7 +101,12 @@ export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
                 <FormItem>
                   <FormLabel>{data.profile.formDetails.email}</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder={data.placeholder.email} {...field} />
+                    <Input
+                      type="email"
+                      autoComplete="email"
+                      placeholder={data.placeholder.email}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -109,7 +119,7 @@ export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
                 <FormItem>
                   <FormLabel>{data.profile.formDetails.password}</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} />
+                    <Input type="password" autoComplete="new-password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -122,7 +132,7 @@ export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
                 <FormItem>
                   <FormLabel>{data.profile.formDetails.passwordRepeat}</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} />
+                    <Input type="password" autoComplete="off" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

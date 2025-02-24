@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -10,6 +11,7 @@ import { toast } from "sonner";
 import type { LogInSchema } from "@/lib/backend/schemas";
 import type { Language } from "@/lib/enums";
 import { fetchErrorToast } from "@/components/error/toast";
+import { showSuccessToast } from "@/components/ui/sonner";
 import { clientToApi } from "@/lib/backend/client2";
 import { logInSchema } from "@/lib/backend/schemas";
 import { TRANSLATIONS } from "@/lib/translations";
@@ -26,7 +28,13 @@ import { Input } from "@/ui/input";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export function LogInForm({ userLanguage }: { userLanguage: Language }) {
+export function LogInForm({
+  userLanguage,
+  from,
+}: {
+  userLanguage: Language;
+  from?: string;
+}) {
   const router = useRouter();
   const form = useForm<LogInSchema>({
     resolver: zodResolver(logInSchema),
@@ -50,6 +58,12 @@ export function LogInForm({ userLanguage }: { userLanguage: Language }) {
     router.refresh();
   }
 
+  useEffect(() => {
+    if (from === "verify-email") {
+      showSuccessToast(data.profile.formDetails.verifyEmail.success);
+    }
+  }, [from]);
+
   return (
     <Form {...form}>
       <form
@@ -70,7 +84,12 @@ export function LogInForm({ userLanguage }: { userLanguage: Language }) {
             <FormItem>
               <FormLabel>{data.profile.formDetails.loginPrompt}</FormLabel>
               <FormControl>
-                <Input placeholder={data.placeholder.email} {...field} />
+                <Input
+                  autoComplete="username"
+                  autoFocus
+                  placeholder={data.placeholder.email}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -83,7 +102,7 @@ export function LogInForm({ userLanguage }: { userLanguage: Language }) {
             <FormItem>
               <FormLabel>{data.profile.formDetails.password}</FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <Input type="password" autoComplete="current-password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

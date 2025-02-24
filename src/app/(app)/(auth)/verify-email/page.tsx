@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { toast } from "sonner";
 
 import { ErrorComponent } from "@/components/error/component";
 import { ErrorCode } from "@/lib/enums";
@@ -28,6 +27,5 @@ export default async function VerifyEmail({ searchParams }: PropsWithToken) {
       <ErrorComponent errorCode={ErrorCode.BadRequest} errorMessage="Invalid token" />
     );
   }
-  toast.success("Email verified");
-  redirect("/login");
+  redirect("/login?from=verify-email");
 }

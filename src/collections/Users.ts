@@ -21,6 +21,11 @@ const showIdValidator = stackValidators<NumberField, number[]>(
 
 type TemplateName = "reset-password" | "verify-email";
 
+const TEMPLATE_URL_FIELDS: { [key in TemplateName]: string } = {
+  "reset-password": "{RESET_PASSWORD_URL}",
+  "verify-email": "{VERIFICATION_URL}",
+};
+
 function fillHtmlTemplate(
   templateName: TemplateName,
   args?: { req?: PayloadRequest; token?: string; user?: { username?: string } },
@@ -33,7 +38,7 @@ function fillHtmlTemplate(
   const url = `${base}/${templateName}?token=${token}`;
   const template = templateName === "reset-password" ? resetPassword : verifyEmail;
   return template
-    .replaceAll("{RESET_PASSWORD_URL}", url)
+    .replaceAll(TEMPLATE_URL_FIELDS[templateName], url)
     .replaceAll("{USERNAME}", user?.username ? ` @${user.username}` : "")
     .replaceAll("{WEBSITE_URL}", PRODUCTION_URL);
 }
@@ -67,7 +72,6 @@ export const Users: CollectionConfig = {
     delete: isAdminOrSelf,
   },
   fields: [
-    // Email, hash and salt are added by default
     {
       name: "id",
       type: "text",
@@ -87,6 +91,13 @@ export const Users: CollectionConfig = {
       validate: (value?: string | null) =>
         ALPHANUMERIC_PATTERN.test(value ?? "") ||
         "Invalid username. Allowed characters: a-z, A-Z, 0-9, _, -",
+    },
+    {
+      name: "email",
+      type: "email",
+      saveToJWT: true,
+      required: true,
+      unique: true,
     },
     {
       name: "role",

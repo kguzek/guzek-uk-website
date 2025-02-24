@@ -1,5 +1,5 @@
 import type { ClientFetchOptions } from ".";
-import type { ErrorResponseBodyPayloadCms } from "../types";
+import type { ApiMessage, ErrorResponseBodyPayloadCms, User } from "../types";
 import { getSearchParams, parseResponseBody, prepareRequest } from ".";
 import { TRANSLATIONS } from "../translations";
 import { getErrorMessage } from "../util";
@@ -108,4 +108,11 @@ export async function clientToApi<T>(
   const prefix = "/api/";
   const url = `${prefix}${path}${getSearchParams(fetchOptions.params)}`;
   return fetchFromApi<T>(url, options);
+}
+
+export async function refreshAccessToken() {
+  const result = await clientToApi<
+    ApiMessage & { refreshedToken: string; exp: number; user: User }
+  >("users/refresh-token", { method: "POST" });
+  return result;
 }
