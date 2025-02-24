@@ -1,10 +1,11 @@
 import { PageSkeleton } from "@/components/pages/skeleton";
+import { Tile } from "@/components/tile";
 import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { getTitle } from "@/lib/util";
 
+import { ProfileForm } from "./form";
 import { LogoutButton } from "./logout-button";
-import { ProfileForm } from "./profile-form";
 
 export async function generateMetadata() {
   const { data } = await getTranslations();
@@ -25,50 +26,15 @@ export default async function Profile() {
     );
 
   return (
-    <div className="text">
-      <h2 className="my-6 text-3xl font-bold">{data.profile.title}</h2>
-      <h3 className="my-5 text-2xl font-bold">{data.profile.body}</h3>
-      <div className="space-y-3">
-        <p>
-          {data.profile.formDetails.type}:{" "}
-          <span className="clickable genre">
-            {
-              data.profile.formDetails[
-                user.role === "admin" ? "administrator" : "regularUser"
-              ]
-            }
-          </span>
-        </p>
-        <p>
-          {data.profile.formDetails.username}:{" "}
-          <span className="clickable genre">{user.username}</span>
-        </p>
-        <p>
-          {data.profile.formDetails.email}:{" "}
-          <span className="clickable genre">{user.email}</span>
-        </p>
-        <ProfileForm user={user} userLanguage={userLanguage} accessToken={accessToken} />
-        <div>
-          {/* TODO: make uuid and created_at always available */}
-          {user.id && (
-            <p>
-              <small>
-                UUID: <code className="clickable field">{user.id}</code>
-              </small>
-            </p>
-          )}
-          {user.created_at ? (
-            <p>
-              <small>
-                {data.profile.formDetails.creationDate}:{" "}
-                <code className="clickable field">
-                  {data.dateTimeFormat.format(new Date(user.created_at))}
-                </code>
-              </small>
-            </p>
-          ) : null}
-        </div>
-        <LogoutButton userLanguage={userLanguage} accessToken={accessToken} />
+    <div className="text flex justify-center">
+      <div className="max-w-[640px]">
+        <h2 className="my-6 text-3xl font-bold">{data.profile.title}</h2>
+        <h3 className="my-5 text-2xl font-bold">{data.profile.body}</h3>
+        <Tile className="min-w-xs">
+          <ProfileForm user={user} userLanguage={userLanguage} />
+          <p className="text-sm">{data.profile.formDetails.or}</p>
+          <LogoutButton userLanguage={userLanguage} />
+        </Tile>
       </div>
     </div>
   );

@@ -33,7 +33,7 @@ export function PageIndicator({
     [displayValue, page] =
       direction === "PREVIOUS" ? ["<", currentPage - 1] : [">", currentPage + 1];
   } else {
-    displayValue = data.numberFormat.format(page);
+    displayValue = data.format.number.format(page);
   }
   return (
     <Link

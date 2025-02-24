@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 
 import type { Language } from "@/lib/enums";
 import { Tile } from "@/components/tile";
@@ -26,10 +26,13 @@ export function SearchForm({ userLanguage }: { userLanguage: Language }) {
 
   const form = useForm({ defaultValues: { search: "" } });
 
-  function getSearchPath() {
-    const { search } = form.getValues();
-    return `/liveseries/search/${encodeURIComponent(search)}/1`;
-  }
+  const search = useWatch({
+    control: form.control,
+    name: "search",
+  });
+
+  const getSearchPath = () =>
+    search === "" ? "" : `/liveseries/search/${encodeURIComponent(search)}/1`;
 
   const label = (
     <>

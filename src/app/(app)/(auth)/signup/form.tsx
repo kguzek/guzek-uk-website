@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 import type { SignUpSchema } from "@/lib/backend/schemas";
 import type { Language } from "@/lib/enums";
-import { toastError } from "@/components/error/toast";
+import { fetchErrorToast } from "@/components/error/toast";
 import { clientToApi } from "@/lib/backend/client2";
 import { signUpSchema } from "@/lib/backend/schemas";
 import { TRANSLATIONS } from "@/lib/translations";
@@ -44,11 +44,10 @@ export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
     const result = await clientToApi("users", {
       method: "POST",
       body: values,
-      useCredentials: true,
-      // userLanguage,
     });
     console.info("Created new user:", result);
     router.push("/profile");
+    router.refresh();
     router.prefetch("/liveseries");
   }
 
@@ -74,7 +73,7 @@ export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
             onSubmit={form.handleSubmit((values) => {
               toast.promise(mutateAsync(values), {
                 loading: `${data.profile.loading}...`,
-                error: toastError(data),
+                error: fetchErrorToast(data),
               });
             })}
           >

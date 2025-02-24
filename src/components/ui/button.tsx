@@ -19,7 +19,7 @@ export const buttonVariants = cva(
         secondary:
           "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
         ghost: "border border-background-soft hover:border-primary-strong",
-        link: "text-primary underline-offset-4 hover-underline",
+        link: "text-primary-strong",
         disabled: "pointer-events-none text-primary/50",
       },
       size: {
@@ -60,7 +60,13 @@ export function Button({
       disabled={loading || props.disabled}
       {...props}
     >
-      {loading ? <Loader /> : props.children}
+      {loading ? (
+        <Loader className="animate-spin" />
+      ) : variant === "link" ? (
+        <span className="hover-underline">{props.children}</span>
+      ) : (
+        props.children
+      )}
     </Comp>
   );
 }

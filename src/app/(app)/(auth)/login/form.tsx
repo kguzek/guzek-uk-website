@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 import type { LogInSchema } from "@/lib/backend/schemas";
 import type { Language } from "@/lib/enums";
-import { toastError } from "@/components/error/toast";
+import { fetchErrorToast } from "@/components/error/toast";
 import { clientToApi } from "@/lib/backend/client2";
 import { logInSchema } from "@/lib/backend/schemas";
 import { TRANSLATIONS } from "@/lib/translations";
@@ -44,10 +44,10 @@ export function LogInForm({ userLanguage }: { userLanguage: Language }) {
     const result = await clientToApi("users/login", {
       method: "POST",
       body: { ...data, password },
-      useCredentials: true,
     });
     console.info("Logged in:", result);
     router.push("/profile");
+    router.refresh();
     router.prefetch("/liveseries");
   }
 
@@ -60,7 +60,7 @@ export function LogInForm({ userLanguage }: { userLanguage: Language }) {
         onSubmit={form.handleSubmit((values) => {
           toast.promise(mutateAsync(values), {
             loading: `${data.profile.loading}...`,
-            error: toastError(data, data.profile.invalidCredentials),
+            error: fetchErrorToast(data, data.profile.invalidCredentials),
           });
         })}
       >

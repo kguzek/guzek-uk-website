@@ -102,12 +102,9 @@ export async function fetchFromApi<T>(url: string, options: RequestInit) {
 
 export async function clientToApi<T>(
   path: string,
-  {
-    useCredentials = false,
-    ...fetchOptions
-  }: ClientFetchOptions & { useCredentials?: boolean },
+  { ...fetchOptions }: ClientFetchOptions,
 ) {
-  const options = await prepareRequest(path, fetchOptions, null, useCredentials);
+  const options = await prepareRequest(path, fetchOptions, null, true);
   const prefix = "/api/";
   const url = `${prefix}${path}${getSearchParams(fetchOptions.params)}`;
   return fetchFromApi<T>(url, options);

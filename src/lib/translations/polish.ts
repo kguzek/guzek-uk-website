@@ -1,10 +1,6 @@
+import { LONG_DATE_FORMAT, SHORT_DATE_FORMAT, SHORT_TIME_FORMAT } from "@/lib/constants";
+
 import type { Translation } from ".";
-import {
-  LIVESERIES_SERVER_HOMEPAGE,
-  LONG_DATE_FORMAT,
-  SHORT_DATE_FORMAT,
-  SHORT_TIME_FORMAT,
-} from "./common";
 
 export const POLISH: Translation = {
   footer: (year) => `${year} \u00a9 Konrad Guzek`,
@@ -12,17 +8,20 @@ export const POLISH: Translation = {
   redirecting: "Trwa przekierowywanie",
   language: "Język",
   loginShort: "Zaloguj",
-  dateFormat: new Intl.DateTimeFormat("pl-PL", LONG_DATE_FORMAT),
-  dateShortFormat: new Intl.DateTimeFormat("pl-PL", SHORT_DATE_FORMAT),
-  dateTimeFormat: new Intl.DateTimeFormat("pl-PL", {
-    ...LONG_DATE_FORMAT,
-    ...SHORT_TIME_FORMAT,
-  }),
-  dateTimeShortFormat: new Intl.DateTimeFormat("pl-PL", {
-    ...SHORT_DATE_FORMAT,
-    ...SHORT_TIME_FORMAT,
-  }),
-  numberFormat: new Intl.NumberFormat("pl-PL"),
+  format: {
+    date: new Intl.DateTimeFormat("pl-PL", LONG_DATE_FORMAT),
+    dateShort: new Intl.DateTimeFormat("pl-PL", SHORT_DATE_FORMAT),
+    dateTime: new Intl.DateTimeFormat("pl-PL", {
+      ...LONG_DATE_FORMAT,
+      ...SHORT_TIME_FORMAT,
+    }),
+    dateTimeShort: new Intl.DateTimeFormat("pl-PL", {
+      ...SHORT_DATE_FORMAT,
+      ...SHORT_TIME_FORMAT,
+    }),
+    number: new Intl.NumberFormat("pl-PL"),
+    quote: (text) => `„${text}”`,
+  },
   networkError:
     "Nastąpił błąd sieciowy podczas wykonywania tej czynności. Spróbuj wkrótce ponownie.",
   unknownError: "Nastąpił nieoczekiwany bład. Proszę skontaktować się z konrad@guzek.uk",
@@ -134,7 +133,9 @@ export const POLISH: Translation = {
   liveSeries: {
     title: "LiveSeries",
     whatsThis: "Co to?",
-    explanation: `Aby móc wyszukiwać i pobierać torrenty seriali, musisz skonfigurować serwer LiveSeries. Serwer ten będzie używany do pobierania torrentów i przesyłania do przeglądarki filmów. Dowiedz się więcej na ${LIVESERIES_SERVER_HOMEPAGE}`,
+    explanation:
+      "Aby móc wyszukiwać i pobierać torrenty seriali, musisz skonfigurować serwer LiveSeries. Serwer ten będzie używany do pobierania torrentów i przesyłania do przeglądarki filmów.",
+    cta: "Dowiedz się więcej na ",
     tvShowList: {
       showing: "Wynik",
       of: "z",

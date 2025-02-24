@@ -1,10 +1,6 @@
+import { LONG_DATE_FORMAT, SHORT_DATE_FORMAT, SHORT_TIME_FORMAT } from "@/lib/constants";
+
 import type { Translation } from ".";
-import {
-  LIVESERIES_SERVER_HOMEPAGE,
-  LONG_DATE_FORMAT,
-  SHORT_DATE_FORMAT,
-  SHORT_TIME_FORMAT,
-} from "./common";
 
 export const ENGLISH: Translation = {
   footer: (year) => `${year} \u00a9 Konrad Guzek`,
@@ -12,17 +8,20 @@ export const ENGLISH: Translation = {
   redirecting: "Redirecting",
   language: "Language",
   loginShort: "Log in",
-  dateFormat: new Intl.DateTimeFormat("en-GB", LONG_DATE_FORMAT),
-  dateShortFormat: new Intl.DateTimeFormat("en-GB", SHORT_DATE_FORMAT),
-  dateTimeFormat: new Intl.DateTimeFormat("en-GB", {
-    ...LONG_DATE_FORMAT,
-    ...SHORT_TIME_FORMAT,
-  }),
-  dateTimeShortFormat: new Intl.DateTimeFormat("en-GB", {
-    ...SHORT_DATE_FORMAT,
-    ...SHORT_TIME_FORMAT,
-  }),
-  numberFormat: new Intl.NumberFormat("en-GB"),
+  format: {
+    date: new Intl.DateTimeFormat("en-GB", LONG_DATE_FORMAT),
+    dateShort: new Intl.DateTimeFormat("en-GB", SHORT_DATE_FORMAT),
+    dateTime: new Intl.DateTimeFormat("en-GB", {
+      ...LONG_DATE_FORMAT,
+      ...SHORT_TIME_FORMAT,
+    }),
+    dateTimeShort: new Intl.DateTimeFormat("en-GB", {
+      ...SHORT_DATE_FORMAT,
+      ...SHORT_TIME_FORMAT,
+    }),
+    number: new Intl.NumberFormat("en-GB"),
+    quote: (text) => `“${text}”`,
+  },
   networkError:
     "A network error occurred while performing this action. Please try again later.",
   unknownError: "An unknown error occured. Please contact konrad@guzek.uk",
@@ -133,7 +132,9 @@ export const ENGLISH: Translation = {
   liveSeries: {
     title: "LiveSeries",
     whatsThis: "What's this?",
-    explanation: `In order to search for and download TV show torrents, you must set up a LiveSeries server. This server will be used to fetch torrent files and stream video content. Find out more at ${LIVESERIES_SERVER_HOMEPAGE}`,
+    explanation:
+      "In order to search for and download TV show torrents, you must set up a LiveSeries server. This server will be used to fetch torrent files and stream video content.",
+    cta: "Find out more at ",
     tvShowList: {
       showing: "Showing",
       of: "of",

@@ -238,11 +238,6 @@
     font-size: 1.2rem;
   }
 
-  [disabled] {
-    filter: contrast(60%);
-    cursor: not-allowed;
-  }
-
   ::selection {
     color: var(--color-background);
     background: var(--color-accent2);

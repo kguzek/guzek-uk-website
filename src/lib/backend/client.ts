@@ -1,3 +1,5 @@
+import { showErrorToast } from "@/components/error/toast";
+
 import type { ClientFetchOptions } from ".";
 import type { Language } from "../enums";
 import type { User } from "../types";
@@ -41,7 +43,6 @@ export async function clientToApi<T>(
   {
     user = null,
     userLanguage,
-    setModalError,
     ...fetchOptions
   }: ClientFetchOptions & FetchOptionsExtension = {},
 ) {
@@ -57,7 +58,7 @@ export async function clientToApi<T>(
     await triggerRevalidation(path);
   } else if (userLanguage) {
     const data = TRANSLATIONS[userLanguage];
-    setModalError(
+    showErrorToast(
       result.hasBody
         ? getErrorMessage(result.res, result.error, data)
         : data.networkError,
