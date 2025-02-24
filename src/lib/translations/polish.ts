@@ -55,6 +55,7 @@ export const POLISH: Translation = {
       haveAccountAlready: "masz już konto?",
       logout: "Wyloguj się",
       serverUrl: "URL serwera LiveSeries",
+      success: "Profil został zaktualizowany pomyślnie",
       verifyEmail: {
         header: "Weryfikacja Email",
         info: (email) =>

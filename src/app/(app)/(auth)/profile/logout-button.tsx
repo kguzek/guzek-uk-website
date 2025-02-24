@@ -12,7 +12,7 @@ import { clientToApi } from "@/lib/backend/client2";
 import { TRANSLATIONS } from "@/lib/translations";
 
 export function LogoutButton({ userLanguage }: { userLanguage: Language }) {
-  const { mutateAsync, isPending } = useMutation({ mutationFn: logOut });
+  const { mutateAsync, isPending, isSuccess } = useMutation({ mutationFn: logOut });
   const router = useRouter();
 
   const data = TRANSLATIONS[userLanguage];
@@ -36,7 +36,7 @@ export function LogoutButton({ userLanguage }: { userLanguage: Language }) {
       }}
       className="flex justify-center"
     >
-      <Button type="submit" role="submit" loading={isPending}>
+      <Button type="submit" role="submit" loading={isPending} disabled={isSuccess}>
         {data.profile.formDetails.logout}
       </Button>
     </form>

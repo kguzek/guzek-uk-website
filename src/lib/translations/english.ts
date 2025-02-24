@@ -54,6 +54,7 @@ export const ENGLISH: Translation = {
       haveAccountAlready: "have an account already?",
       logout: "Log out",
       serverUrl: "LiveSeries Server URL",
+      success: "Profile updated successfully",
       verifyEmail: {
         header: "Email Verification",
         info: (email) =>

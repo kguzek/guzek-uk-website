@@ -49,7 +49,7 @@ export function ForgotPasswordForm({ userLanguage }: { userLanguage: Language })
   return (
     <Form {...form}>
       {isSuccess ? (
-        <div className="grid max-w-xs gap-4 text-sm">
+        <div className="grid max-w-xs gap-2 text-sm">
           <p>{data.profile.formDetails.forgotPassword.info(form.getValues("email"))}</p>
           <p>{data.profile.formDetails.verifyEmail.cta}</p>
         </div>
@@ -77,6 +77,7 @@ export function ForgotPasswordForm({ userLanguage }: { userLanguage: Language })
                     <Input
                       type="email"
                       autoFocus
+                      autoComplete="email"
                       placeholder={data.placeholder.email}
                       {...field}
                     />

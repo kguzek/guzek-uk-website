@@ -17,7 +17,11 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function LogIn() {
+export default async function LogIn({
+  searchParams,
+}: {
+  searchParams: Promise<{ from?: string }>;
+}) {
   const { data, userLanguage } = await getTranslations();
   const { user } = await getAuth();
   if (user) {
@@ -28,11 +32,12 @@ export default async function LogIn() {
       </div>
     );
   }
+  const { from } = await searchParams;
   return (
     <div className="mt-10 flex justify-center">
       <Tile className="min-w-xs">
         <h1 className="text-xl font-bold">{data.profile.formDetails.login}</h1>
-        <LogInForm userLanguage={userLanguage} />
+        <LogInForm userLanguage={userLanguage} from={from} />
         <p className="text-sm">{data.profile.formDetails.or}</p>
         <Button variant="ghost" asChild>
           <Link href="/signup">{data.profile.formDetails.signup}</Link>

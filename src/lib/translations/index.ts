@@ -49,6 +49,7 @@ export type Translation = Readonly<{
       haveAccountAlready: string;
       logout: string;
       serverUrl: string;
+      success: string;
       verifyEmail: {
         header: string;
         info: (email?: string) => string;

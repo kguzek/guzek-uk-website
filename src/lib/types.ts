@@ -61,8 +61,12 @@ export interface ErrorPageContent {
 export type ApiMessage = { message?: string };
 
 export type ErrorResponseBodyCustom = { [code: string]: string };
-export type ErrorResponseMultiple = { errors: ApiMessage[] };
-export type ErrorResponseBodyPayloadCms = ApiMessage | ErrorResponseMultiple;
+export type ErrorResponseSingle = ApiMessage & {
+  type?: string;
+  data?: { id?: string } & (ErrorResponseMultiple | undefined);
+};
+export type ErrorResponseMultiple = { errors: ErrorResponseSingle[] };
+export type ErrorResponseBodyPayloadCms = ErrorResponseSingle | ErrorResponseMultiple;
 
 export type ErrorResponseBody = ErrorResponseBodyCustom | ErrorResponseBodyPayloadCms;
 

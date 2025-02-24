@@ -1,5 +1,6 @@
 import { PageSkeleton } from "@/components/pages/skeleton";
 import { Tile } from "@/components/tile";
+import { Badge } from "@/components/ui/badge";
 import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { getTitle } from "@/lib/util";
@@ -26,7 +27,7 @@ export default async function Profile() {
     );
 
   return (
-    <div className="text flex justify-center">
+    <div className="text grid place-items-center gap-2">
       <div className="max-w-[640px]">
         <h2 className="my-6 text-3xl font-bold">{data.profile.title}</h2>
         <h3 className="my-5 text-2xl font-bold">{data.profile.body}</h3>
@@ -36,6 +37,7 @@ export default async function Profile() {
           <LogoutButton userLanguage={userLanguage} />
         </Tile>
       </div>
+      <Badge>{user.id}</Badge>
     </div>
   );
 }

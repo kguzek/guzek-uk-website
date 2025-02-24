@@ -7,7 +7,7 @@ import { HttpError, NetworkError } from "@/lib/backend/client2";
 
 export const errorToast = (message: ReactNode) => ({
   icon: <CircleAlert className="text-error not-first:hidden" />,
-  message: <p className="ml-2">{message}</p>,
+  message: <p className="ml-2 whitespace-pre-wrap">{message}</p>,
 });
 
 export function showErrorToast(text: ReactNode) {
