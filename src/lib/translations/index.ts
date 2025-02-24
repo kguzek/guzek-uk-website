@@ -10,11 +10,14 @@ export type Translation = Readonly<{
   redirecting: string;
   language: string;
   loginShort: string;
-  dateFormat: Intl.DateTimeFormat;
-  dateShortFormat: Intl.DateTimeFormat;
-  dateTimeFormat: Intl.DateTimeFormat;
-  dateTimeShortFormat: Intl.DateTimeFormat;
-  numberFormat: Intl.NumberFormat;
+  format: {
+    date: Intl.DateTimeFormat;
+    dateShort: Intl.DateTimeFormat;
+    dateTime: Intl.DateTimeFormat;
+    dateTimeShort: Intl.DateTimeFormat;
+    number: Intl.NumberFormat;
+    quote: (text: string) => string;
+  };
   networkError: string;
   unknownError: string;
   loggedOut: string;
@@ -101,6 +104,7 @@ export type Translation = Readonly<{
     title: string;
     whatsThis: string;
     explanation: string;
+    cta: string;
     tvShowList: {
       showing: string;
       of: string;

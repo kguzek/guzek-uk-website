@@ -3,17 +3,8 @@ import { cookies } from "next/headers";
 
 import type { User } from "@/lib/types";
 import { serverToApi } from "@/lib/backend/server";
-import { isInvalidDate } from "@/lib/util";
 
-const USER_REQUIRED_PROPERTIES = [
-  "uuid",
-  "username",
-  "email",
-  "admin",
-  "serverUrl",
-  "created_at",
-  "modified_at",
-];
+const USER_REQUIRED_PROPERTIES = ["id", "username", "email", "role", "serverUrl"];
 
 let refreshPromise: ReturnType<typeof _refreshAccessToken> | undefined = undefined;
 
@@ -34,12 +25,12 @@ function validateUser(parsedUser: { [key: string]: unknown }) {
     console.warn("User", parsedUser, "is missing required property", property);
     return null;
   }
-  for (const dateString of [parsedUser.created_at, parsedUser.modified_at]) {
-    if (typeof dateString !== "string" || isInvalidDate(new Date(dateString))) {
-      console.warn("User", parsedUser, "has invalid date string", dateString);
-      return null;
-    }
-  }
+  // for (const dateString of [parsedUser.created_at, parsedUser.modified_at]) {
+  //   if (typeof dateString !== "string" || isInvalidDate(new Date(dateString))) {
+  //     console.warn("User", parsedUser, "has invalid date string", dateString);
+  //     return null;
+  //   }
+  // }
   return parsedUser as unknown as AccessTokenPayload;
 }
 
@@ -70,7 +61,7 @@ function decodeAccessToken(accessToken: string | null) {
 /** Gets the access token from cookies. */
 async function getAccessToken(request?: NextRequest): Promise<string | null> {
   const cookieStore = request?.cookies ?? (await cookies());
-  const token = cookieStore.get("access_token")?.value;
+  const token = cookieStore.get("payload-token")?.value;
   if (!token) return null;
   return token;
 }

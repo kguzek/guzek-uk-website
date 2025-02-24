@@ -1,10 +1,10 @@
 import Cookies from "js-cookie";
 
-import type { ErrorResponseBody } from "@/lib/types";
+import type { ApiMessage, ErrorResponseBody, ErrorResponseMultiple } from "@/lib/types";
 import type { Media } from "@/payload-types";
 
 import type { Translation } from "./translations";
-import type { DownloadedEpisode, Episode, ErrorResponseBodyPayloadCms } from "./types";
+import type { DownloadedEpisode, Episode } from "./types";
 import { Language } from "./enums";
 
 const PRODUCTION_MODE = process.env.NODE_ENV !== "development";
@@ -90,9 +90,10 @@ const STATUS_CODES: { [code in number]?: string } = {
   503: "Service Unavailable",
 };
 
-const isPayloadCmsError = (
-  json: ErrorResponseBody,
-): json is ErrorResponseBodyPayloadCms =>
+const isErrorSingle = (json: ErrorResponseBody): json is ApiMessage =>
+  "message" in json && json.message != null;
+
+const isErrorMultiple = (json: ErrorResponseBody): json is ErrorResponseMultiple =>
   "errors" in json &&
   Array.isArray(json.errors) &&
   json.errors.every((error) => "message" in error);
@@ -106,10 +107,12 @@ export const getErrorMessage = (
 ): string =>
   (json == null
     ? data.unknownError
-    : isPayloadCmsError(json)
-      ? json.errors.map(({ message }) => message).join("\n")
-      : (json[`${res.status} ${STATUS_CODES[res.status] ?? res.statusText}`] ??
-        JSON.stringify(json))) || data.unknownError;
+    : isErrorSingle(json)
+      ? json.message
+      : isErrorMultiple(json)
+        ? json.errors.map(({ message }) => message).join("\n")
+        : (json[`${res.status} ${STATUS_CODES[res.status] ?? res.statusText}`] ??
+          JSON.stringify(json))) || data.unknownError;
 
 export const getUTCDateString = (...dateInit: ConstructorParameters<typeof Date>) =>
   new Date(...dateInit).toISOString().split("T")[0];

@@ -60,7 +60,7 @@ export function ShowDetails({
       if (which === "end" && latestEpisode) {
         const latestEpisodeAirDate = getEpisodeAirDate(latestEpisode);
         if (latestEpisodeAirDate > new Date()) return data.liveSeries.tvShow.present;
-        return data.dateShortFormat.format(latestEpisodeAirDate);
+        return data.format.dateShort.format(latestEpisodeAirDate);
       }
 
       return data.liveSeries.tvShow[
@@ -69,7 +69,7 @@ export function ShowDetails({
     }
     const date = new Date(dateString);
     if (isInvalidDate(date)) return dateString;
-    return data.dateShortFormat.format(date);
+    return data.format.dateShort.format(date);
   }
 
   function promptLogin() {

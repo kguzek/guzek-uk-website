@@ -28,7 +28,7 @@ async function Episode({
   const { data, userLanguage } = await getTranslations();
   const { user, accessToken } = await getAuth();
 
-  const airDate = data.dateTimeFormat.format(getEpisodeAirDate(episode));
+  const airDate = data.format.dateTime.format(getEpisodeAirDate(episode));
 
   const watchedInSeason = watchedEpisodes?.[tvShow.id]?.[+episode.season];
 

@@ -62,7 +62,7 @@ export async function Paginator({
                 <PaginationEllipsis />
               ) : (
                 <PaginationLink href={getHref(page)} isActive={page === currentPage}>
-                  {data.numberFormat.format(page)}
+                  {data.format.number.format(page)}
                 </PaginationLink>
               )}
             </PaginationItem>

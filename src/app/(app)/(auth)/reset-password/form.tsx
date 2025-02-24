@@ -8,7 +8,8 @@ import { toast } from "sonner";
 
 import type { ResetPasswordSchema } from "@/lib/backend/schemas";
 import type { Language } from "@/lib/enums";
-import { toastError } from "@/components/error/toast";
+import type { ApiMessage } from "@/lib/types";
+import { fetchErrorToast } from "@/components/error/toast";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -38,20 +39,25 @@ export function ResetPasswordForm({
     defaultValues: {
       token,
       password: "",
+      password2: "",
     },
   });
 
-  const { mutateAsync, isPending } = useMutation({
+  const { mutateAsync, isPending, isSuccess } = useMutation({
     mutationFn: resetPassword,
   });
 
-  async function resetPassword({ password, token }: ResetPasswordSchema) {
-    const result = await clientToApi("users/reset-password", {
+  async function resetPassword({ token, password, password2 }: ResetPasswordSchema) {
+    const result = await clientToApi<ApiMessage>("users/reset-password", {
       method: "POST",
-      body: { password, token },
+      body: { token, password, "confirm-password": password2 },
     });
-    console.info("Reset password:", result);
+    console.info("Reset password :", result);
+    if (!result.data.message?.includes("successfully")) {
+      console.warn("Response didn't contain success message");
+    }
     router.push("/profile");
+    router.refresh();
     router.prefetch("/liveseries");
   }
 
@@ -64,7 +70,7 @@ export function ResetPasswordForm({
         onSubmit={form.handleSubmit((values) => {
           toast.promise(mutateAsync(values), {
             loading: `${data.profile.loading}...`,
-            error: toastError(data),
+            error: fetchErrorToast(data),
             success: data.profile.formDetails.resetPassword.success,
           });
         })}
@@ -100,7 +106,7 @@ export function ResetPasswordForm({
           name="token"
           render={() => <div className="hidden" />}
         ></FormField>
-        <Button type="submit" loading={isPending}>
+        <Button type="submit" loading={isPending} disabled={isSuccess}>
           {data.profile.formDetails.resetPassword.submit}
         </Button>
       </form>

@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 // Converts local date format to YYYY-MM-DD
 const getTodayString = () =>
-  TRANSLATIONS.EN.dateShortFormat.format(new Date()).split("/").reverse().join("-");
+  TRANSLATIONS.EN.format.dateShort.format(new Date()).split("/").reverse().join("-");
 
 const isLegacyLog = (log: LegacyLogEntry | LogEntry): log is LegacyLogEntry =>
   (log as LegacyLogEntry).label != null;

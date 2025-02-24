@@ -39,7 +39,14 @@ export const resetPasswordSchema = z
   })
   .superRefine(passwordsMatch);
 
+export const updateUserDetailsSchema = z.object({
+  username: z.string().min(3),
+  email: z.string().email(),
+  serverUrl: z.union([z.string().url().endsWith("/"), z.literal("")]),
+});
+
 export type LogInSchema = z.infer<typeof logInSchema>;
 export type SignUpSchema = z.infer<typeof signUpSchema>;
 export type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordSchema = z.infer<typeof resetPasswordSchema>;
+export type UpdateUserDetailsSchema = z.infer<typeof updateUserDetailsSchema>;

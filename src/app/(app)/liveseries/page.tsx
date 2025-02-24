@@ -110,14 +110,14 @@ export default async function Home() {
           </p>
         </Tile>
       ) : (
-        <>
+        <Tile className="items-start">
           <LikedShowsCarousel
             likedShowIds={likedShowIds}
             likedShows={likedShows}
             userLanguage={userLanguage}
             accessToken={accessToken}
           />
-          <h3 className="mt-10 mb-5 text-2xl font-bold">
+          <h3 className="mb-5 text-2xl font-bold">
             {data.liveSeries.tvShow.unwatched} {data.liveSeries.tvShow.episodes}
           </h3>
           {totalUnwatchedEpisodes === 0 ? (
@@ -135,7 +135,7 @@ export default async function Home() {
               ),
             )
           )}
-        </>
+        </Tile>
       )}
     </>
   );

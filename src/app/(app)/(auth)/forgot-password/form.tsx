@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import type { ForgotPasswordSchema } from "@/lib/backend/schemas";
 import type { Language } from "@/lib/enums";
 import type { User } from "@/lib/types";
-import { toastError } from "@/components/error/toast";
+import { fetchErrorToast } from "@/components/error/toast";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -62,7 +62,7 @@ export function ForgotPasswordForm({ userLanguage }: { userLanguage: Language })
             onSubmit={form.handleSubmit((values) => {
               toast.promise(mutateAsync(values), {
                 loading: `${data.profile.loading}...`,
-                error: toastError(data),
+                error: fetchErrorToast(data),
                 success: data.profile.formDetails.forgotPassword.success,
               });
             })}

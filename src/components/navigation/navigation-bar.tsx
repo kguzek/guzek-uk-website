@@ -73,11 +73,18 @@ export function NavigationBar({
           className="peer z-30 flex cursor-pointer flex-col justify-center p-4 lg:hidden"
         >
           <input
-            ref={hamburgerRef}
             type="checkbox"
-            aria-controls="menu"
             id="hamburger"
             className="peer hidden"
+            ref={hamburgerRef}
+            aria-controls="menu"
+            aria-expanded="false"
+            onChange={(event_) =>
+              event_.target.setAttribute(
+                "aria-expanded",
+                event_.target.checked.toString(),
+              )
+            }
           />
           <div className="bg-primary mb-1.5 w-6 transform rounded-full pt-0.5 transition-transform duration-300 peer-checked:translate-y-2 peer-checked:-rotate-45"></div>
           <div className="bg-primary mb-1.5 w-6 rounded-full pt-0.5 opacity-100 transition-opacity peer-checked:opacity-0"></div>
@@ -90,7 +97,12 @@ export function NavigationBar({
           className="bg-background-strong/25 pointer-events-none fixed top-0 left-0 z-10 h-screen w-screen opacity-0 backdrop-blur-sm transition-opacity duration-300 peer-has-checked:pointer-events-auto peer-has-checked:opacity-100 lg:hidden"
         ></label>
         {/* Menu */}
-        <ul className="border-background-soft bg-gradient-main/50 shadow-background-strong invisible absolute top-0 right-0 z-20 w-full origin-top translate-y-[-100%] items-center gap-6 rounded-b-lg border-0 border-b pb-4 opacity-0 shadow-lg backdrop-blur-2xl transition-all duration-300 select-none peer-has-checked:visible peer-has-checked:translate-y-0 peer-has-checked:scale-100 peer-has-checked:opacity-100 sm:top-3 sm:right-10 sm:w-[50%] sm:origin-top-right sm:translate-y-0 sm:scale-[25%] sm:rounded-lg sm:border sm:border-solid sm:pt-4 lg:visible lg:static lg:flex lg:w-full lg:scale-100 lg:transform-none lg:border-none lg:bg-transparent lg:pt-0 lg:pb-0 lg:opacity-100 lg:shadow-none lg:backdrop-blur-none">
+        <ul
+          id="menu"
+          role="menubar"
+          aria-label="navigation menu"
+          className="border-background-soft bg-gradient-main/50 shadow-background-strong invisible absolute top-0 right-0 z-20 w-full origin-top translate-y-[-100%] items-center gap-6 rounded-b-lg border-0 border-b pb-4 opacity-0 shadow-lg backdrop-blur-2xl transition-all duration-300 select-none peer-has-checked:visible peer-has-checked:translate-y-0 peer-has-checked:scale-100 peer-has-checked:opacity-100 sm:top-3 sm:right-10 sm:w-[50%] sm:origin-top-right sm:translate-y-0 sm:scale-[25%] sm:rounded-lg sm:border sm:border-solid sm:pt-4 lg:visible lg:static lg:flex lg:w-full lg:scale-100 lg:transform-none lg:border-none lg:bg-transparent lg:pt-0 lg:pb-0 lg:opacity-100 lg:shadow-none lg:backdrop-blur-none"
+        >
           <div className="mt-5 flex justify-center sm:hidden">
             <UserWidget user={user} userLanguage={userLanguage} />
           </div>
