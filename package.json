@@ -1,7 +1,7 @@
 {
   "name": "guzek-uk-website",
   "homepage": "https://www.guzek.uk/",
-  "version": "4.1.0",
+  "version": "4.1.7",
   "type": "module",
   "engines": {
     "node": "^22.3.0"
@@ -15,7 +15,8 @@
     "dev-ssl": "next dev --experimental-https --experimental-https-cert certificates/fullchain1.pem --experimental-https-key certificates/privkey1.pem",
     "build": "next build",
     "start": "next start",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "generate": "payload generate:types"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.0",
