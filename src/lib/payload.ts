@@ -35,11 +35,14 @@ export function validateUrl(value?: string | null): string | true {
 export const isEmptyOrUniqueArray: NumberFieldManyValidation = (array) =>
   !array || new Set(array).size === array.length || "Every array item must be unique.";
 
+export const isPositiveInteger = (value: string | number) =>
+  Number.isInteger(+value) && +value > 0;
+
 export const isEmptyOrPositiveIntegerArray = (
   array: null | undefined | any[], // eslint-disable-line @typescript-eslint/no-explicit-any
 ) =>
   !array ||
-  array.every((value) => Number.isInteger(value) && value > 0) ||
+  array.every(isPositiveInteger) ||
   "Every array item must be a positive integer.";
 
 type Validator<F extends object, T> = (

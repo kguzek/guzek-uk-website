@@ -8,6 +8,7 @@ import {
   isAdminOrSelf,
   isEmptyOrPositiveIntegerArray,
   isEmptyOrUniqueArray,
+  isPositiveInteger,
   stackValidators,
   validateUrl,
 } from "@/lib/payload";
@@ -63,7 +64,7 @@ export const Users: CollectionConfig = {
     },
     tokenExpiration: 3600,
     maxLoginAttempts: 5,
-    lockTime: 300,
+    lockTime: 300_000,
   },
   access: {
     create: () => true,
@@ -172,6 +173,9 @@ export const Users: CollectionConfig = {
         const parsedType = typeof parsed;
         if (parsedType !== "object") return `Must be an object, not ${parsedType}.`;
         for (const key in parsed) {
+          if (!isPositiveInteger(key)) {
+            return `Key "${key}" must be a positive integer.`;
+          }
           if (!Array.isArray(parsed[key])) {
             return `Value at key "${key}" must be an array.`;
           }
