@@ -58,7 +58,6 @@ export function ResetPasswordForm({
     }
     router.push("/profile");
     router.refresh();
-    router.prefetch("/liveseries");
   }
 
   return (

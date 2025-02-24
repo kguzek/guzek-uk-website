@@ -48,7 +48,6 @@ export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
     console.info("Created new user:", result);
     router.push("/profile");
     router.refresh();
-    router.prefetch("/liveseries");
   }
 
   return (

@@ -48,7 +48,6 @@ export function LogInForm({ userLanguage }: { userLanguage: Language }) {
     console.info("Logged in:", result);
     router.push("/profile");
     router.refresh();
-    router.prefetch("/liveseries");
   }
 
   return (

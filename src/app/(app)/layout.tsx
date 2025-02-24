@@ -6,7 +6,6 @@ import Script from "next/script";
 import { Footer } from "@/components/footer";
 import { LanguageCookie } from "@/components/language-cookie";
 import { Navigation } from "@/components/navigation";
-import { LanguageSelectorProvider } from "@/lib/context/language-selector-context";
 import { ModalProvider } from "@/lib/context/modal-context";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { cn } from "@/lib/utils";
@@ -72,12 +71,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           <TooltipProvider>
             <div className="flex min-h-screen flex-col pt-(--navbar-height) sm:pt-(--navbar-height-sm)">
               <ModalProvider userLanguage={userLanguage}>
-                <LanguageSelectorProvider>
-                  <LanguageCookie />
-                  <Navigation />
-                  <main className="grow">{children}</main>
-                  <Footer />
-                </LanguageSelectorProvider>
+                <LanguageCookie />
+                <Navigation />
+                <main className="grow">{children}</main>
+                <Footer />
               </ModalProvider>
             </div>
             <Toaster />
