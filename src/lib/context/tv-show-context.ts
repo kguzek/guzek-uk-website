@@ -1,12 +1,11 @@
 "use client";
 
+import type { Episode as TvMazeEpisode } from "tvmaze-wrapper-ts";
 import { createContext, useContext } from "react";
 
-import type { Episode } from "@/lib/types";
-
 interface TvShowContextType {
-  isSeasonWatched: (season: string, episodes: Episode[]) => boolean;
-  updateWatchedEpisodes: (season: string, episodes: Episode[]) => void;
+  isSeasonWatched: (season: string, episodes: TvMazeEpisode[]) => boolean;
+  updateWatchedEpisodes: (season: string, episodes: TvMazeEpisode[]) => void;
 }
 
 export const TvShowContext = createContext<TvShowContextType>({

@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { PageSkeleton } from "@/components/pages/skeleton";
 import { Tile } from "@/components/tile";
-import { getAuth } from "@/lib/providers/auth-provider";
+import { getAuth } from "@/lib/providers/auth-provider/rsc";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { getTitle } from "@/lib/util";
 import { Button } from "@/ui/button";

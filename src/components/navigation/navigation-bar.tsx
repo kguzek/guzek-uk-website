@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useRef } from "react";
 
 import type { Language } from "@/lib/enums";
-import type { MenuItem, User } from "@/lib/types";
+import type { BaseMenuItem, User } from "@/lib/types";
 import { useScroll } from "@/lib/hooks/scroll";
 import { PAGE_NAME } from "@/lib/util";
 import { cn } from "@/lib/utils";
@@ -18,7 +18,7 @@ import { UserWidget } from "./user-widget";
 function NavBarItem({
   item,
   ...props
-}: { item: MenuItem } & Omit<ComponentProps<typeof Link>, "href">) {
+}: { item: BaseMenuItem } & Omit<ComponentProps<typeof Link>, "href">) {
   const pathname = usePathname();
 
   // Handle edge case for index page ("/")
@@ -43,7 +43,7 @@ export function NavigationBar({
 }: {
   user: User | null;
   userLanguage: Language;
-  menuItems: MenuItem[];
+  menuItems: BaseMenuItem[];
 }) {
   const { scrollY } = useScroll();
   const hamburgerRef = useRef<HTMLInputElement>(null);

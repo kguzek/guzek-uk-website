@@ -206,7 +206,7 @@ Once you find a show you like, click the heart icon to add it to your liked show
         `Are you sure you want to delete ${episode} from the server?`,
       deleted: (episode) => `Episode ${episode} was successfully deleted.`,
       serialise: (episode) =>
-        `S${episode.season.toString().padStart(2, "0")}E${episode.episode
+        `S${episode.season.toString().padStart(2, "0")}E${episode.number
           .toString()
           .padStart(2, "0")}`,
     },

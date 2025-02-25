@@ -1,10 +1,11 @@
 import Link from "next/link";
 
+import type { FetchError } from "@/lib/backend/v2";
 import { ErrorComponent } from "@/components/error/component";
 import { TextWithUrl } from "@/components/text-with-url";
-import { serverToApi } from "@/lib/backend/server";
+import { fetchFromApi, HttpError, NetworkError } from "@/lib/backend/v2";
 import { ErrorCode } from "@/lib/enums";
-import { getAuth } from "@/lib/providers/auth-provider";
+import { getAuth } from "@/lib/providers/auth-provider/rsc";
 import { getTranslations } from "@/lib/providers/translation-provider";
 
 import { Player } from "./player";
@@ -43,14 +44,17 @@ export default async function Watch({ params }: Props) {
   const season = +seasonString;
   const episode = +episodeString;
 
-  const statResult = await serverToApi(
-    `liveseries/video/${showName}/${season}/${episode}`,
-    {
+  let statError = null;
+  try {
+    await fetchFromApi(`liveseries/video/${showName}/${season}/${episode}`, {
       headers: { Range: "bytes=0-1" },
-    },
-  );
+    });
+  } catch (error) {
+    console.error("Error fetching video stats:", error);
+    statError = error as FetchError;
+  }
 
-  const episodeObject = { episode, season };
+  const episodeObject = { number: episode, season };
 
   return (
     <div>
@@ -86,7 +90,7 @@ export default async function Watch({ params }: Props) {
           </Link>
         </div>
       </div>
-      {statResult.ok ? (
+      {statError == null ? (
         <Player
           showName={showName}
           season={season}
@@ -96,7 +100,14 @@ export default async function Watch({ params }: Props) {
           userLanguage={userLanguage}
         />
       ) : (
-        <ErrorComponent errorResult={statResult} />
+        <ErrorComponent
+          errorCode={
+            statError instanceof NetworkError ? ErrorCode.ServerError : ErrorCode.NotFound
+          }
+          errorMessage={
+            statError instanceof HttpError ? statError.message : data.networkError
+          }
+        />
       )}
     </div>
   );

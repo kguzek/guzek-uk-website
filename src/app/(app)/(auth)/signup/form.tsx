@@ -10,8 +10,8 @@ import { toast } from "sonner";
 import type { SignUpSchema } from "@/lib/backend/schemas";
 import type { Language } from "@/lib/enums";
 import { fetchErrorToast } from "@/components/error/toast";
-import { clientToApi } from "@/lib/backend/client2";
 import { signUpSchema } from "@/lib/backend/schemas";
+import { fetchFromApi } from "@/lib/backend/v2";
 import { TRANSLATIONS } from "@/lib/translations";
 import { Button } from "@/ui/button";
 import {
@@ -41,7 +41,7 @@ export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
   const { mutateAsync, isPending, isSuccess } = useMutation({ mutationFn: signUp });
 
   async function signUp(values: SignUpSchema) {
-    const result = await clientToApi("users", {
+    const result = await fetchFromApi("users", {
       method: "POST",
       body: values,
     });

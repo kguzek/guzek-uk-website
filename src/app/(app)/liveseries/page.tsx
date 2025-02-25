@@ -1,21 +1,14 @@
 import type { Metadata } from "next";
+import type { Episode as TvMazeEpisode, Show as TvMazeShow } from "tvmaze-wrapper-ts";
 import Link from "next/link";
+import { findShowById, getShowEpisodes } from "tvmaze-wrapper-ts";
 
-import type {
-  Episode,
-  LikedShows,
-  ShowData,
-  TvShowDetails,
-  UserShows,
-  WatchedEpisodes,
-} from "@/lib/types";
+import type { EpisodeArray } from "@/payload-types";
 import { ErrorComponent } from "@/components/error/component";
 import { EpisodesList } from "@/components/liveseries/episodes-list";
-import { LikedShowsCarousel } from "@/components/liveseries/liked-shows-carousel";
 import { Tile } from "@/components/tile";
-import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
-import { getAuth } from "@/lib/providers/auth-provider";
+import { getAuth } from "@/lib/providers/auth-provider/rsc";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { getTitle, hasEpisodeAired } from "@/lib/util";
 
@@ -26,60 +19,43 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+type ShowWithEpisodes = TvMazeShow & { episodes: TvMazeEpisode[] };
+
 export default async function Home() {
-  const { data, userLanguage } = await getTranslations();
-  const { user, accessToken } = await getAuth();
+  const { data } = await getTranslations();
+  const { user } = await getAuth();
 
-  let watchedEpisodes: ShowData<WatchedEpisodes> = {};
-  let likedShowIds: undefined | number[] = undefined;
-  const likedShows: LikedShows = {};
+  const watchedEpisodes = user?.watchedEpisodes ?? {};
+  const likedShowIds: EpisodeArray = user?.userShows?.liked ?? [];
+  const likedShows: { [showId: number]: ShowWithEpisodes } = {};
 
-  const unwatchedEpisodes: Record<number, Episode[]> = {};
+  const unwatchedEpisodes: Record<number, TvMazeEpisode[]> = {};
   let totalUnwatchedEpisodes = 0;
 
   if (user != null) {
-    const [showsResult, watchedEpisodesResult] = await Promise.all([
-      serverToApi<UserShows>("liveseries/shows/personal"),
-      serverToApi<ShowData<WatchedEpisodes>>("liveseries/watched-episodes/personal"),
-    ] as const);
-
-    const likedShowsAvailable = showsResult.ok && showsResult.data.likedShows != null;
-
-    const likedShowsResults = likedShowsAvailable
-      ? await Promise.all(
-          showsResult.data.likedShows!.map((showId: number) =>
-            serverToApi<{ tvShow: TvShowDetails }>("show-details", {
-              params: { q: `${showId}` },
-              api: "episodate",
-            }),
-          ),
-        )
-      : [];
-
-    if (watchedEpisodesResult.ok) {
-      watchedEpisodes = watchedEpisodesResult.data;
+    let likedShowResponses: ShowWithEpisodes[] = [];
+    try {
+      likedShowResponses = await Promise.all(
+        likedShowIds.map(async (id) => {
+          const show = await findShowById(id);
+          const episodes = await getShowEpisodes(id);
+          return { ...show, episodes };
+        }),
+      );
+    } catch (error) {
+      console.error("LiveSeries fetch failed:", error);
+      return <ErrorComponent errorCode={ErrorCode.ServerError} />;
     }
 
-    for (const result of likedShowsResults) {
-      if (!result.ok) {
-        console.error("LiveSeries fetch failed:", likedShowsResults);
-        return <ErrorComponent errorCode={ErrorCode.ServerError} />;
-      }
-      likedShows[result.data.tvShow.id] = result.data.tvShow;
-    }
-
-    if (likedShowsAvailable) {
-      likedShowIds = showsResult.data.likedShows;
-
-      for (const showId of likedShowIds!) {
-        const unwatched = likedShows[showId].episodes.filter(
-          (episode) =>
-            hasEpisodeAired(episode) &&
-            !watchedEpisodes?.[showId]?.[episode.season]?.includes(episode.episode),
-        );
-        unwatchedEpisodes[showId] = unwatched;
-        totalUnwatchedEpisodes += unwatched.length;
-      }
+    for (const tvShow of likedShowResponses) {
+      likedShows[tvShow.id] = tvShow;
+      const unwatched = tvShow.episodes.filter(
+        (episode) =>
+          hasEpisodeAired(episode) &&
+          !watchedEpisodes[tvShow.id]?.[episode.season]?.includes(episode.number),
+      );
+      unwatchedEpisodes[tvShow.id] = unwatched;
+      totalUnwatchedEpisodes += unwatched.length;
     }
   }
 
@@ -111,12 +87,12 @@ export default async function Home() {
         </Tile>
       ) : (
         <Tile className="items-start">
-          <LikedShowsCarousel
+          {/* <LikedShowsCarousel
             likedShowIds={likedShowIds}
             likedShows={likedShows}
             userLanguage={userLanguage}
             accessToken={accessToken}
-          />
+          /> */}
           <h3 className="mb-5 text-2xl font-bold">
             {data.liveSeries.tvShow.unwatched} {data.liveSeries.tvShow.episodes}
           </h3>

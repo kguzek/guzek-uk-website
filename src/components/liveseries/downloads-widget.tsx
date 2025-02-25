@@ -32,7 +32,10 @@ export function DownloadsWidget({
   );
   const { setModalError, setModalChoice, setModalInfo } = useModals();
   const data = TRANSLATIONS[userLanguage];
-  const serialise = data.liveSeries.episodes.serialise;
+  function serialise(episode: DownloadedEpisode) {
+    const episodeObject = { number: episode.episode, season: episode.season };
+    return data.liveSeries.episodes.serialise(episodeObject);
+  }
 
   async function handleDeleteEpisode(episode: DownloadedEpisode) {
     const episodeString = `${episode.showName} ${serialise(episode)}`;

@@ -1,10 +1,15 @@
-import type { ClientFetchOptions } from ".";
+import type { BaseFetchOptions } from ".";
 import type { ApiMessage, ErrorResponseBodyPayloadCms, User } from "../types";
-import { getSearchParams, parseResponseBody, prepareRequest } from ".";
+import { getSearchParams, parseResponseBody } from ".";
 import { TRANSLATIONS } from "../translations";
 import { getErrorMessage } from "../util";
 
 type ErrorType = "network" | "http" | "body" | "json";
+
+export type FetchOptionsV2 = BaseFetchOptions & {
+  accessToken?: string | null;
+  urlBase?: string;
+};
 
 class RequestError extends Error {
   type: ErrorType;
@@ -53,7 +58,13 @@ export class JsonParsingError extends RequestError {
   }
 }
 
-export async function fetchFromApi<T>(url: string, options: RequestInit) {
+export type FetchError =
+  | NetworkError
+  | HttpError
+  | BodyConsumptionError
+  | JsonParsingError;
+
+async function getResponse<T>(url: string, options: RequestInit) {
   const method = options.method ?? "GET";
   let res;
   try {
@@ -100,19 +111,39 @@ export async function fetchFromApi<T>(url: string, options: RequestInit) {
   return { res, data };
 }
 
-export async function clientToApi<T>(
+export async function fetchFromApi<T>(
   path: string,
-  { ...fetchOptions }: ClientFetchOptions,
+  { accessToken, ...fetchOptions }: FetchOptionsV2 = {},
 ) {
-  const options = await prepareRequest(path, fetchOptions, null, true);
-  const prefix = "/api/";
+  const requestInit: RequestInit = {
+    method: fetchOptions.method,
+    credentials: "include",
+  };
+  const headers: HeadersInit = {
+    Accept: "application/json",
+    ...fetchOptions.headers,
+  };
+  if (accessToken != null) {
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
+  if (fetchOptions.body) {
+    requestInit.body = JSON.stringify(fetchOptions.body);
+    headers["Content-Type"] = "application/json";
+  } else if (fetchOptions.method === "POST") {
+    // Apparently POST requests with no body should specify Content-Length: 0, to prevent problems when using proxies.
+    // https://stackoverflow.com/a/4198969
+    headers["Content-Length"] = "0";
+  }
+  requestInit.headers = headers;
+  const prefix = fetchOptions.urlBase ?? `${process.env.WEBSITE_URL ?? ""}/api/`;
   const url = `${prefix}${path}${getSearchParams(fetchOptions.params)}`;
-  return fetchFromApi<T>(url, options);
+  return getResponse<T>(url, requestInit);
 }
 
 export async function refreshAccessToken() {
-  const result = await clientToApi<
+  const result = await fetchFromApi<
     ApiMessage & { refreshedToken: string; exp: number; user: User }
   >("users/refresh-token", { method: "POST" });
+  console.info("Access token refreshed", result.data.exp);
   return result;
 }

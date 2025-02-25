@@ -19,8 +19,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { clientToApi } from "@/lib/backend/client2";
 import { forgotPasswordSchema } from "@/lib/backend/schemas";
+import { fetchFromApi } from "@/lib/backend/v2";
 import { TRANSLATIONS } from "@/lib/translations";
 
 export function ForgotPasswordForm({ userLanguage }: { userLanguage: Language }) {
@@ -36,7 +36,7 @@ export function ForgotPasswordForm({ userLanguage }: { userLanguage: Language })
   const { mutateAsync, isPending, isSuccess } = useMutation({ mutationFn: sendEmail });
 
   async function sendEmail(values: ForgotPasswordSchema) {
-    const result = await clientToApi<{ message: string; token: string; user: User }>(
+    const result = await fetchFromApi<{ message: string; token: string; user: User }>(
       "users/forgot-password",
       {
         method: "POST",

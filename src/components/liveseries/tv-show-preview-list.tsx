@@ -1,63 +1,67 @@
+import type { Show as TvMazeShow } from "tvmaze-wrapper-ts";
+
 import type { Language } from "@/lib/enums";
-import type { TvShowList, UserShows } from "@/lib/types";
 import { NumericValue } from "@/components/numeric-value";
 import { Paginator } from "@/components/pagination/paginator";
-import { serverToApi } from "@/lib/backend/server";
-import { getAuth } from "@/lib/providers/auth-provider";
+import { getAuth } from "@/lib/providers/auth-provider/rsc";
 import { TRANSLATIONS } from "@/lib/translations";
 
+import { Tile } from "../tile";
 import { TvShowPreview } from "./tv-show-preview";
 
-const RESULTS_PER_PAGE = 20;
-
-const DUMMY_TV_SHOWS = {
-  page: 1,
-  total: "200",
-  pages: 10,
-  tv_shows: Array(20).fill(0),
-};
+export const RESULTS_PER_PAGE = 25;
 
 export async function TvShowPreviewList({
-  tvShows: tvShowsRaw,
+  tvShows,
   userLanguage,
+  page,
+  total,
 }: {
-  tvShows?: TvShowList;
+  tvShows: TvMazeShow[];
   userLanguage: Language;
+  page: number;
+  total: number;
 }) {
   const data = TRANSLATIONS[userLanguage];
 
-  const tvShows = tvShowsRaw ?? DUMMY_TV_SHOWS;
+  const startIdx = 1 + (page - 1) * RESULTS_PER_PAGE;
+  const endIdx = Math.min(total, startIdx + RESULTS_PER_PAGE - 1);
 
-  const startIdx = 1 + (tvShows.page - 1) * RESULTS_PER_PAGE;
-  const endIdx = Math.min(+tvShows.total, startIdx + RESULTS_PER_PAGE - 1);
+  const { user, accessToken } = await getAuth();
+
+  const paginator = (
+    <Paginator currentPage={page} totalPages={Math.ceil(total / RESULTS_PER_PAGE)} />
+  );
 
   // The API used to return a string but now it returns a number. Using this to be safe.
-  if (tvShowsRaw?.total?.toString() === "0") {
-    return <p>{data.liveSeries.search.noResults}</p>;
+  if (tvShows.length === 0) {
+    return (
+      <div className="grid place-items-center gap-4">
+        {paginator}
+        <Tile>
+          <p>{data.liveSeries.search.noResults}</p>
+        </Tile>
+      </div>
+    );
   }
-  const { accessToken } = await getAuth();
-  const userShowsResult = await serverToApi<UserShows>("liveseries/shows/personal");
-  const likedShowIds = (userShowsResult.ok && userShowsResult.data.likedShows) || [];
-
-  const paginator = <Paginator currentPage={tvShows.page} totalPages={tvShows.pages} />;
 
   return (
     <div className="flex flex-col items-center">
       <small className="self-start">
         {data.liveSeries.tvShowList.showing} <NumericValue value={startIdx} />-
         <NumericValue value={endIdx} /> {data.liveSeries.tvShowList.of}{" "}
-        <NumericValue value={tvShows.total} />
+        <NumericValue value={total} />
       </small>
       {paginator}
       <div className="cards-grid my-3 grid w-full justify-center gap-4">
-        {tvShows.tv_shows.map((showDetails, idx) => (
+        {tvShows.map((tvShow, idx) => (
           <TvShowPreview
-            key={`tv-show-${showDetails.id}-${idx}`}
+            key={`tv-show-${tvShow.id}-${idx}`}
             idx={idx % 8}
-            showDetails={tvShowsRaw ? showDetails : undefined}
+            tvShow={tvShow}
             userLanguage={userLanguage}
             accessToken={accessToken}
-            isLiked={likedShowIds.includes(showDetails.id)}
+            isLiked={user?.userShows?.liked.includes(tvShow.id) ?? false}
           />
         ))}
       </div>

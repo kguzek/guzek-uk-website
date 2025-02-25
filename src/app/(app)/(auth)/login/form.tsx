@@ -12,8 +12,8 @@ import type { LogInSchema } from "@/lib/backend/schemas";
 import type { Language } from "@/lib/enums";
 import { fetchErrorToast } from "@/components/error/toast";
 import { showSuccessToast } from "@/components/ui/sonner";
-import { clientToApi } from "@/lib/backend/client2";
 import { logInSchema } from "@/lib/backend/schemas";
+import { fetchFromApi } from "@/lib/backend/v2";
 import { TRANSLATIONS } from "@/lib/translations";
 import { Button } from "@/ui/button";
 import {
@@ -49,7 +49,7 @@ export function LogInForm({
 
   async function login({ login, password }: LogInSchema) {
     const data = EMAIL_REGEX.test(login) ? { email: login } : { username: login };
-    const result = await clientToApi("users/login", {
+    const result = await fetchFromApi("users/login", {
       method: "POST",
       body: { ...data, password },
     });

@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import type { Language } from "@/lib/enums";
 import { fetchErrorToast } from "@/components/error/toast";
 import { Button } from "@/components/ui/button";
-import { clientToApi } from "@/lib/backend/client2";
+import { fetchFromApi } from "@/lib/backend/v2";
 import { TRANSLATIONS } from "@/lib/translations";
 
 export function LogoutButton({ userLanguage }: { userLanguage: Language }) {
@@ -19,7 +19,7 @@ export function LogoutButton({ userLanguage }: { userLanguage: Language }) {
 
   async function logOut(event_: FormEvent<HTMLFormElement>) {
     event_.preventDefault();
-    const result = await clientToApi("users/logout", {
+    const result = await fetchFromApi("users/logout", {
       method: "POST",
     });
     console.info("Log out result:", result);

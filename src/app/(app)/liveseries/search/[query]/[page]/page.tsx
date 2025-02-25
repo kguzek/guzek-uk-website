@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import type { Show as TvMazeShow } from "tvmaze-wrapper-ts";
+import { searchShows } from "tvmaze-wrapper-ts";
 
-import type { TvShowList } from "@/lib/types";
 import { ErrorComponent } from "@/components/error/component";
 import { TvShowPreviewList } from "@/components/liveseries/tv-show-preview-list";
-import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { getTitle, isNumber } from "@/lib/util";
@@ -33,20 +32,29 @@ async function SearchResults({ query, page }: { query: string; page: `${number}`
 
   const decodedQuery = decodeURIComponent(query);
 
-  const result = await serverToApi<TvShowList>("search", {
-    api: "episodate",
-    params: { q: decodedQuery, page },
-  });
-  if (result.ok && result.data.page !== +page) {
-    redirect(`./${result.data.page}`);
+  let tvShows: TvMazeShow[] = [];
+  try {
+    const results = await searchShows(decodedQuery);
+    tvShows = results.map((result) => result.show);
+  } catch (error) {
+    console.error("Error fetching search results:", error);
   }
+
+  // if (results?.page !== +page) {
+  //   redirect(`./${results.data.page}`);
+  // }
 
   return (
     <>
       <h3 className="my-5 text-2xl font-bold">
         {data.liveSeries.search.results} {data.format.quote(decodedQuery)}
       </h3>
-      <TvShowPreviewList tvShows={result.data ?? undefined} userLanguage={userLanguage} />
+      <TvShowPreviewList
+        tvShows={tvShows}
+        userLanguage={userLanguage}
+        page={+page}
+        total={1}
+      />
     </>
   );
 }

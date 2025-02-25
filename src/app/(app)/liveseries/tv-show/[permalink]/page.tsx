@@ -1,17 +1,12 @@
-import type {
-  Episode,
-  ShowData,
-  TvShowDetails,
-  UserShows,
-  WatchedEpisodes,
-} from "@/lib/types";
+import type { Episode as TvMazeEpisode } from "tvmaze-wrapper-ts";
+import { findShowById, getShowEpisodes } from "tvmaze-wrapper-ts";
+
 import { ErrorComponent } from "@/components/error/component";
 import { EpisodesList } from "@/components/liveseries/episodes-list";
-import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
-import { getAuth } from "@/lib/providers/auth-provider";
+import { getAuth } from "@/lib/providers/auth-provider/rsc";
 import { getTranslations } from "@/lib/providers/translation-provider";
-import { getTitle } from "@/lib/util";
+import { getTitle, isNumber } from "@/lib/util";
 
 import { ShowDetails } from "./show-details";
 import { WatchedIndicator } from "./watched-indicator";
@@ -22,17 +17,17 @@ interface Props {
 
 export async function generateMetadata({ params }: Props) {
   const { data } = await getTranslations();
-  const result = await getShowDetails(params);
+  const show = await getShowDetails(params);
   return {
     title: getTitle(
-      (result.ok && result.data.tvShow.name) || data.liveSeries.tvShow.showDetails,
+      show?.name || data.liveSeries.tvShow.showDetails,
       data.liveSeries.title,
     ),
   };
 }
 
-function sortEpisodes(episodes: Episode[]) {
-  const seasons: { [season: number]: Episode[] } = {};
+function sortEpisodes(episodes: TvMazeEpisode[]) {
+  const seasons: { [season: number]: TvMazeEpisode[] } = {};
   for (const episode of episodes) {
     const season = episode.season;
     if (seasons[season]) {
@@ -45,61 +40,47 @@ function sortEpisodes(episodes: Episode[]) {
 }
 
 async function getShowDetails(params: Props["params"]) {
-  const result = await serverToApi<{ tvShow: TvShowDetails }>("show-details", {
-    params: { q: (await params).permalink },
-    api: "episodate",
-  });
-  if (!result.ok) return result;
-  if (result.data?.tvShow?.name == null) {
-    console.warn("Invalid tv show details:", result.data);
-    return { ok: false } as const;
+  const { permalink } = await params;
+  if (!isNumber(permalink)) {
+    console.warn("Invalid tv show permalink:", permalink);
+    return null;
   }
-  return result;
+  const tvShow = await findShowById(permalink);
+  if (tvShow?.name == null) {
+    console.warn("Invalid tv show details:", tvShow);
+    return null;
+  }
+  return tvShow;
 }
 
 export default async function TvShow({ params }: Props) {
-  const { permalink } = await params;
   const { data, userLanguage } = await getTranslations();
   const { user, accessToken } = await getAuth();
-  const showResult = await serverToApi<{ tvShow: TvShowDetails }>("show-details", {
-    params: { q: permalink },
-    api: "episodate",
-  });
-  if (!showResult.ok) {
+  const tvShow = await getShowDetails(params);
+  if (tvShow == null) {
     return <ErrorComponent errorCode={ErrorCode.NotFound} />;
   }
-  let liked = false;
-  let subscribed = false;
-  let watchedEpisodes: WatchedEpisodes = {};
-  if (user != null) {
-    const showsResult = await serverToApi<UserShows>("liveseries/shows/personal");
-    if (showsResult.ok) {
-      liked = showsResult.data.likedShows?.includes(showResult.data.tvShow.id) ?? false;
-      subscribed =
-        showsResult.data.subscribedShows?.includes(showResult.data.tvShow.id) ?? false;
-    }
-    const watchedEpisodesResult = await serverToApi<ShowData<WatchedEpisodes>>(
-      "liveseries/watched-episodes/personal",
-    );
-    if (watchedEpisodesResult.ok) {
-      watchedEpisodes = watchedEpisodesResult.data[showResult.data.tvShow.id] ?? {};
-    }
-  }
+  const liked = user?.userShows?.liked?.includes(tvShow.id) ?? false;
+  const subscribed = user?.userShows?.subscribed?.includes(tvShow.id) ?? false;
+  const watchedEpisodes = user?.watchedEpisodes ?? {};
+
+  const episodes = await getShowEpisodes(tvShow.id);
 
   return (
     <ShowDetails
-      tvShowDetails={showResult.data.tvShow}
+      tvShow={tvShow}
+      episodes={episodes}
       liked={liked ?? false}
       subscribed={subscribed ?? false}
       user={user}
       userLanguage={userLanguage}
-      watchedEpisodes={watchedEpisodes}
+      watchedEpisodes={watchedEpisodes[tvShow.id] ?? {}}
       accessToken={accessToken}
     >
-      {sortEpisodes(showResult.data.tvShow.episodes).map(([season, episodes]) => (
+      {sortEpisodes(episodes).map(([season, episodes]) => (
         <EpisodesList
           key={`season-${season}`}
-          tvShow={showResult.data.tvShow}
+          tvShow={tvShow}
           heading={`${data.liveSeries.tvShow.season} ${season}`}
           episodes={episodes}
         >

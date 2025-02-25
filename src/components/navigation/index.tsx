@@ -1,14 +1,36 @@
 import { getPayload } from "payload";
 import config from "@payload-config";
 
-import type { MenuItem } from "@/lib/types";
-import { serverToApi } from "@/lib/backend/server";
-import { getAuth } from "@/lib/providers/auth-provider";
+import { getAuth } from "@/lib/providers/auth-provider/rsc";
 import { getTranslations } from "@/lib/providers/translation-provider";
 
 import type { Parallels } from "./breadcrumbs";
 import { Breadcrumbs } from "./breadcrumbs";
 import { NavigationBar } from "./navigation-bar";
+
+const MENU_ITEMS = [
+  {
+    id: 1,
+    url: "/",
+    title: {
+      en: "Homepage",
+      pl: "Strona główna",
+    },
+  },
+  {
+    id: 2,
+    url: "/projects",
+    title: {
+      en: "Projects",
+      pl: "Projekty",
+    },
+  },
+  {
+    id: 3,
+    url: "/liveseries",
+    title: "LiveSeries",
+  },
+];
 
 export async function Navigation() {
   const { data, userLanguage } = await getTranslations();
@@ -46,12 +68,16 @@ export async function Navigation() {
     },
   ] satisfies Parallels;
 
-  const menuItemsResult = await serverToApi<MenuItem[]>("pages");
-  const menuItems = menuItemsResult.ok && menuItemsResult.hasBody ? menuItemsResult.data : [];
-  const filteredMenuItems = menuItems.filter((item) => user?.role === "admin" || !item.adminOnly);
   return (
     <>
-      <NavigationBar user={user} menuItems={filteredMenuItems} userLanguage={userLanguage} />
+      <NavigationBar
+        user={user}
+        menuItems={MENU_ITEMS.map((item) => ({
+          ...item,
+          title: typeof item.title === "string" ? item.title : item.title[userLocale],
+        }))}
+        userLanguage={userLanguage}
+      />
       <Breadcrumbs parallels={parallels} />
     </>
   );

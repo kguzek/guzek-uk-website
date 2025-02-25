@@ -1,9 +1,9 @@
 "use client";
 
+import type { Episode as TvMazeEpisode } from "tvmaze-wrapper-ts";
 import { ClockIcon, EyeIcon, EyeOffIcon } from "lucide-react";
 
 import type { Language } from "@/lib/enums";
-import type { Episode } from "@/lib/types";
 import { useTvShowContext } from "@/lib/context/tv-show-context";
 import { TRANSLATIONS } from "@/lib/translations";
 import { hasEpisodeAired } from "@/lib/util";
@@ -14,7 +14,7 @@ export function WatchedIndicator({
   userLanguage,
 }: {
   season: string;
-  episodes: Episode[];
+  episodes: TvMazeEpisode[];
   userLanguage: Language;
 }) {
   const data = TRANSLATIONS[userLanguage];

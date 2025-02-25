@@ -1,10 +1,11 @@
+import type { Episode as TvMazeEpisode } from "tvmaze-wrapper-ts";
 import Cookies from "js-cookie";
 
 import type { ApiMessage, ErrorResponseBody, ErrorResponseMultiple } from "@/lib/types";
 import type { Media } from "@/payload-types";
 
 import type { Translation } from "./translations";
-import type { DownloadedEpisode, Episode } from "./types";
+import type { DownloadedEpisode } from "./types";
 import { Language } from "./enums";
 
 const PRODUCTION_MODE = process.env.NODE_ENV !== "development";
@@ -61,18 +62,9 @@ export const isInvalidDate = (date: Date) => date.toString() === "Invalid Date";
 export const isNumber = (value: string): value is `${number}` =>
   (+value).toString() === value;
 
-export const getEpisodeAirDate = (episode: Episode, addSpace = false): Date => {
-  // This is needed in order to interpret the `air_date` as a date given in UTC+0
-  const correctedDateString = episode.air_date + (addSpace ? " Z" : "Z");
-  const correctedDate = new Date(correctedDateString);
-  if (isInvalidDate(correctedDate)) {
-    if (addSpace) console.warn(episode.air_date);
-    else return getEpisodeAirDate(episode, true);
-  }
-  return correctedDate;
-};
+export const getEpisodeAirDate = (episode: TvMazeEpisode) => new Date(episode.airstamp);
 
-export const hasEpisodeAired = (episode: Episode) =>
+export const hasEpisodeAired = (episode: TvMazeEpisode) =>
   new Date() > getEpisodeAirDate(episode);
 
 const STATUS_CODES: { [code in number]?: string } = {

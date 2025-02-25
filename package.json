@@ -1,7 +1,7 @@
 {
   "name": "guzek-uk-website",
   "homepage": "https://www.guzek.uk/",
-  "version": "4.1.7",
+  "version": "4.2.0",
   "type": "module",
   "engines": {
     "node": "^22.3.0"
@@ -52,6 +52,7 @@
     "sonner": "^2.0.1",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
+    "tvmaze-wrapper-ts": "^2.1.1",
     "uuid": "^11.1.0",
     "zod": "^3.24.2"
   },

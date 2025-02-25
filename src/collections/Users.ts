@@ -8,7 +8,6 @@ import {
   isAdminOrSelf,
   isEmptyOrPositiveIntegerArray,
   isEmptyOrUniqueArray,
-  isPositiveInteger,
   stackValidators,
   validateUrl,
 } from "@/lib/payload";
@@ -104,6 +103,8 @@ export const Users: CollectionConfig = {
       name: "role",
       type: "select",
       saveToJWT: true,
+      required: true,
+      defaultValue: "user",
       options: [
         {
           label: { en: "User", pl: "Użytkownik" },
@@ -114,7 +115,6 @@ export const Users: CollectionConfig = {
           value: "admin",
         },
       ],
-      defaultValue: "user",
       access: {
         create: isAdminFieldLevel,
         update: isAdminFieldLevel,
@@ -142,6 +142,7 @@ export const Users: CollectionConfig = {
           type: "number",
           hasMany: true,
           defaultValue: [],
+          required: true,
           validate: showIdValidator,
         },
         {
@@ -149,6 +150,7 @@ export const Users: CollectionConfig = {
           type: "number",
           hasMany: true,
           defaultValue: [],
+          required: true,
           validate: showIdValidator,
         },
       ],
@@ -156,34 +158,62 @@ export const Users: CollectionConfig = {
     {
       name: "watchedEpisodes",
       type: "json",
-      defaultValue: {},
-      validate: (value) => {
-        if (!value) return true;
-        let parsed;
-        if (typeof value === "string") {
-          try {
-            parsed = JSON.parse(value);
-          } catch (error) {
-            return `Invalid JSON: ${(error as Error).message}`;
-          }
-        } else {
-          parsed = value;
-        }
-        if (Array.isArray(parsed)) return "Must be an object, not an array.";
-        const parsedType = typeof parsed;
-        if (parsedType !== "object") return `Must be an object, not ${parsedType}.`;
-        for (const key in parsed) {
-          if (!isPositiveInteger(key)) {
-            return `Key "${key}" must be a positive integer.`;
-          }
-          if (!Array.isArray(parsed[key])) {
-            return `Value at key "${key}" must be an array.`;
-          }
-          const arrayValidation = isEmptyOrPositiveIntegerArray(parsed[key]);
-          if (arrayValidation !== true) return arrayValidation;
-        }
-        return true;
+      defaultValue: {} as { [showId: string]: { [season: string]: number[] } },
+      required: true,
+      jsonSchema: {
+        fileMatch: ["^/src/collections/Users.ts$"],
+        uri: "https://json-schema.org/draft/2020-12/schema",
+        schema: {
+          title: "Watched Episodes",
+          type: "object",
+          patternProperties: {
+            "^[1-9][0-9]*$": {
+              title: "TV Show Map",
+              type: "object",
+              patternProperties: {
+                "^[1-9][0-9]*$": {
+                  title: "Episode Array",
+                  type: "array",
+                  items: {
+                    type: "integer",
+                    minimum: 0,
+                  },
+                  uniqueItems: true,
+                },
+              },
+              additionalProperties: false,
+            },
+          },
+          additionalProperties: false,
+        },
       },
+      // validate: (value) => {
+      //   if (!value) return true;
+      //   let parsed;
+      //   if (typeof value === "string") {
+      //     try {
+      //       parsed = JSON.parse(value);
+      //     } catch (error) {
+      //       return `Invalid JSON: ${(error as Error).message}`;
+      //     }
+      //   } else {
+      //     parsed = value;
+      //   }
+      //   if (Array.isArray(parsed)) return "Must be an object, not an array.";
+      //   const parsedType = typeof parsed;
+      //   if (parsedType !== "object") return `Must be an object, not ${parsedType}.`;
+      //   for (const key in parsed) {
+      //     if (!isPositiveInteger(key)) {
+      //       return `Key "${key}" must be a positive integer.`;
+      //     }
+      //     if (!Array.isArray(parsed[key])) {
+      //       return `Value at key "${key}" must be an array.`;
+      //     }
+      //     const arrayValidation = isEmptyOrPositiveIntegerArray(parsed[key]);
+      //     if (arrayValidation !== true) return arrayValidation;
+      //   }
+      //   return true;
+      // },
     },
   ],
 };

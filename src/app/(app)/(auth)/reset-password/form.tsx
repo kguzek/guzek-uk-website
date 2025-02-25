@@ -20,8 +20,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { clientToApi } from "@/lib/backend/client2";
 import { resetPasswordSchema } from "@/lib/backend/schemas";
+import { fetchFromApi } from "@/lib/backend/v2";
 import { TRANSLATIONS } from "@/lib/translations";
 
 export function ResetPasswordForm({
@@ -48,7 +48,7 @@ export function ResetPasswordForm({
   });
 
   async function resetPassword({ token, password, password2 }: ResetPasswordSchema) {
-    const result = await clientToApi<ApiMessage>("users/reset-password", {
+    const result = await fetchFromApi<ApiMessage>("users/reset-password", {
       method: "POST",
       body: { token, password, "confirm-password": password2 },
     });
