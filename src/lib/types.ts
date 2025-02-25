@@ -10,11 +10,14 @@ export interface PageContent {
   content: string;
 }
 
-export interface MenuItem {
+export interface BaseMenuItem {
   id: number;
-  label?: string;
   title: string;
   url: string;
+  label?: string;
+}
+
+export interface MenuItem extends BaseMenuItem {
   localUrl: boolean;
   adminOnly: boolean;
   shouldFetch: boolean;
@@ -25,7 +28,7 @@ export interface User {
   username: string;
   email: string;
   role: "user" | "admin";
-  serverUrl?: string;
+  serverUrl?: string | null;
   created_at?: string;
   modified_at?: string;
 }
@@ -69,62 +72,6 @@ export type ErrorResponseMultiple = { errors: ErrorResponseSingle[] };
 export type ErrorResponseBodyPayloadCms = ErrorResponseSingle | ErrorResponseMultiple;
 
 export type ErrorResponseBody = ErrorResponseBodyCustom | ErrorResponseBodyPayloadCms;
-
-export interface UserShows {
-  likedShows?: number[];
-  subscribedShows?: number[];
-}
-
-export interface TvShowList {
-  total: string;
-  page: number;
-  pages: number;
-  tv_shows: TvShowDetailsShort[];
-}
-
-export interface TvShowDetailsShort {
-  id: number;
-  name: string;
-  permalink: string;
-  start_date: string;
-  end_date: string | null;
-  country: string;
-  network: string;
-  status: string;
-  image_thumbnail_path: string;
-}
-
-export type LikedShows = Record<number, TvShowDetails>;
-
-export interface TvShowDetails extends TvShowDetailsShort {
-  url: string;
-  description: string;
-  description_source: string;
-  runtime: number;
-  youtube_link: null | string;
-  image_path: string;
-  rating: string;
-  rating_count: string;
-  countdown: null | string;
-  genres: string[];
-  pictures: string[];
-  episodes: Episode[];
-}
-
-export type Episode = {
-  season: number;
-  episode: number;
-  name: string;
-  air_date: string;
-};
-
-export interface WatchedEpisodes {
-  [season: number]: number[];
-}
-
-export interface ShowData<T> {
-  [showId: number]: T;
-}
 
 export type DownloadStatusType = (typeof DownloadStatus)[keyof typeof DownloadStatus];
 

@@ -1,9 +1,9 @@
 "use client";
 
+import type { Show as TvMazeShow } from "tvmaze-wrapper-ts";
 import { useEffect, useRef } from "react";
 
 import type { Language } from "@/lib/enums";
-import type { LikedShows } from "@/lib/types";
 import { CarouselArrow, CarouselIndicator } from "@/components/carousel";
 import { TvShowPreview } from "@/components/liveseries/tv-show-preview";
 import { useModals } from "@/lib/context/modal-context";
@@ -21,7 +21,7 @@ export function LikedShowsCarousel({
   accessToken,
 }: {
   likedShowIds?: number[];
-  likedShows: LikedShows;
+  likedShows: { [id: number]: TvMazeShow };
   userLanguage: Language;
   accessToken: string | null;
 }) {
@@ -98,7 +98,7 @@ export function LikedShowsCarousel({
           <li key={`home-preview ${showId} ${idx}`}>
             <TvShowPreview
               idx={idx}
-              showDetails={likedShowIds ? likedShows[showId] : undefined}
+              tvShow={likedShows[showId]}
               userLanguage={userLanguage}
               accessToken={accessToken}
               isLiked={likedShowIds?.includes(showId) ?? false}

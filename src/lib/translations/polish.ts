@@ -205,7 +205,7 @@ Gdy znajdziesz serial, który Ci się podoba, kliknij ikonę serca, aby dodać g
       downloadError: (episode) => `Pobieranie ${episode} nie powiodło się.`,
       confirmDelete: (episode) => `Na pewno chcesz usunąć ${episode} z serwera?`,
       deleted: (episode) => `Pomyślnie usunięto odcinek ${episode}.`,
-      serialise: (episode) => `S${episode.season}:O${episode.episode}`,
+      serialise: (episode) => `S${episode.season}:O${episode.number}`,
     },
     watch: {
       playbackError:

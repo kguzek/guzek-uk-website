@@ -40,8 +40,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { successToast } from "@/components/ui/sonner";
-import { clientToApi, refreshAccessToken } from "@/lib/backend/client2";
 import { updateUserDetailsSchema } from "@/lib/backend/schemas";
+import { fetchFromApi, refreshAccessToken } from "@/lib/backend/v2";
 import { LIVESERIES_SERVER_HOMEPAGE } from "@/lib/constants";
 import { TRANSLATIONS } from "@/lib/translations";
 
@@ -68,7 +68,7 @@ export function ProfileForm({
 
   async function updateUser(values: UpdateUserDetailsSchema) {
     if (!user) return;
-    const result = await clientToApi(`users/${user.id}`, {
+    const result = await fetchFromApi(`users/${user.id}`, {
       method: "PATCH",
       body: values,
     });
@@ -153,7 +153,7 @@ export function ProfileForm({
                       className="h-min cursor-help! py-0"
                       variant="link"
                     >
-                      {data.liveSeries.whatsThis}
+                      <span className="hover-underline">{data.liveSeries.whatsThis}</span>
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
@@ -162,8 +162,8 @@ export function ProfileForm({
                         {data.profile.formDetails.serverUrl}
                       </AlertDialogTitle>
                       <AlertDialogDescription className="space-y-3">
-                        <p>{data.liveSeries.explanation}</p>
-                        <p>
+                        <div>{data.liveSeries.explanation}</div>
+                        <div>
                           {data.liveSeries.cta}
                           <Link
                             className="hover-underline"
@@ -172,7 +172,7 @@ export function ProfileForm({
                             {LIVESERIES_SERVER_HOMEPAGE}
                           </Link>
                           .
-                        </p>
+                        </div>
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

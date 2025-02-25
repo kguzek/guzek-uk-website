@@ -1,10 +1,10 @@
 "use client";
 
+import type { Episode as TvMazeEpisode } from "tvmaze-wrapper-ts";
 import { useState } from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 import type { Language } from "@/lib/enums";
-import type { Episode } from "@/lib/types";
 import { clientToApi } from "@/lib/backend/client";
 import { useModals } from "@/lib/context/modal-context";
 import { TRANSLATIONS } from "@/lib/translations";
@@ -18,11 +18,11 @@ export function EpisodeWatchedIndicator({
 }: {
   userLanguage: Language;
   showId: number;
-  episode: Episode;
+  episode: TvMazeEpisode;
   watchedInSeason: number[];
   accessToken: string | null;
 }) {
-  const [isWatched, setIsWatched] = useState(watchedInSeason.includes(episode.episode));
+  const [isWatched, setIsWatched] = useState(watchedInSeason.includes(episode.number));
   const { setModalError } = useModals();
   const data = TRANSLATIONS[userLanguage];
 
@@ -57,8 +57,8 @@ export function EpisodeWatchedIndicator({
       onClick={() =>
         updateWatchedEpisodes(
           isWatched
-            ? (watchedInSeason?.filter((value) => value !== episode.episode) ?? [])
-            : [...(watchedInSeason ?? []), episode.episode],
+            ? (watchedInSeason?.filter((value) => value !== episode.number) ?? [])
+            : [...(watchedInSeason ?? []), episode.number],
         )
       }
     >

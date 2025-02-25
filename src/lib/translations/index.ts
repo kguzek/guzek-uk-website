@@ -1,5 +1,7 @@
+import type { Episode as TvMazeEpisode } from "tvmaze-wrapper-ts";
+
 import type { ErrorCode, Language } from "@/lib/enums";
-import type { DownloadedEpisode, Episode, ErrorPageContent } from "@/lib/types";
+import type { DownloadedEpisode, ErrorPageContent } from "@/lib/types";
 
 import { ENGLISH } from "./english";
 import { POLISH } from "./polish";
@@ -163,7 +165,7 @@ export type Translation = Readonly<{
       downloadError: (episode: string) => string;
       confirmDelete: (episode: string) => string;
       deleted: (episode: string) => string;
-      serialise: (episode: Pick<Episode, "episode" | "season">) => string;
+      serialise: (episode: Pick<TvMazeEpisode, "number" | "season">) => string;
     };
     watch: {
       playbackError: string;

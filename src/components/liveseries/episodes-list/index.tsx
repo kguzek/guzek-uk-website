@@ -1,15 +1,10 @@
 import type { ReactNode } from "react";
+import type { Episode as TvMazeEpisode, Show as TvMazeShow } from "tvmaze-wrapper-ts";
 import { ChevronRightIcon, ClockIcon } from "lucide-react";
 
-import type {
-  Episode as EpisodeType,
-  ShowData,
-  TvShowDetails,
-  WatchedEpisodes,
-} from "@/lib/types";
+import type { WatchedEpisodes } from "@/payload-types";
 import { Tile } from "@/components/tile";
-import { serverToApi } from "@/lib/backend/server";
-import { getAuth } from "@/lib/providers/auth-provider";
+import { getAuth } from "@/lib/providers/auth-provider/rsc";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { getEpisodeAirDate, hasEpisodeAired } from "@/lib/util";
 
@@ -21,9 +16,9 @@ async function Episode({
   tvShow,
   watchedEpisodes,
 }: {
-  episode: EpisodeType;
-  tvShow: TvShowDetails;
-  watchedEpisodes: ShowData<WatchedEpisodes> | null;
+  episode: TvMazeEpisode;
+  tvShow: TvMazeShow;
+  watchedEpisodes: WatchedEpisodes;
 }) {
   const { data, userLanguage } = await getTranslations();
   const { user, accessToken } = await getAuth();
@@ -73,21 +68,12 @@ export async function EpisodesList({
   episodes,
   children,
 }: {
-  tvShow: TvShowDetails;
+  tvShow: TvMazeShow;
   heading: string;
-  episodes: EpisodeType[];
+  episodes: TvMazeEpisode[];
   children?: ReactNode;
 }) {
   const { user } = await getAuth();
-  let watchedEpisodes: ShowData<WatchedEpisodes> = {};
-  if (user != null) {
-    const watchedEpisodesResult = await serverToApi<ShowData<WatchedEpisodes>>(
-      "liveseries/watched-episodes/personal",
-    );
-    if (watchedEpisodesResult.ok) {
-      watchedEpisodes = watchedEpisodesResult.data;
-    }
-  }
   return (
     <div className="group">
       <div className="peer flex items-center gap-4">
@@ -109,7 +95,7 @@ export async function EpisodesList({
                 key={`episode-unwatched-${idx}`}
                 episode={episode}
                 tvShow={tvShow}
-                watchedEpisodes={watchedEpisodes}
+                watchedEpisodes={user?.watchedEpisodes ?? {}}
               />
             ))}
           </Tile>

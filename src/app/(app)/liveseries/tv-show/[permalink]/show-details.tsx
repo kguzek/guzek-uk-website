@@ -1,19 +1,14 @@
 "use client";
 
 import type { ReactNode } from "react";
+import type { Episode as TvMazeEpisode, Show as TvMazeShow } from "tvmaze-wrapper-ts";
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 import { HeartIcon, StarIcon } from "lucide-react";
 
 import type { Language } from "@/lib/enums";
-import type {
-  Episode as EpisodeType,
-  TvShowDetails,
-  User,
-  WatchedEpisodes,
-} from "@/lib/types";
-import { CarouselArrows } from "@/components/carousel/carousel-arrows";
+import type { User } from "@/lib/types";
+import type { WatchedEpisodes } from "@/payload-types";
 import { InputBox } from "@/components/forms/input-box";
 import { TvShowSkeleton } from "@/components/liveseries/tv-show-skeleton";
 import { clientToApi } from "@/lib/backend/client";
@@ -23,13 +18,13 @@ import { TRANSLATIONS } from "@/lib/translations";
 import { getEpisodeAirDate, isInvalidDate } from "@/lib/util";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/ui/badge";
-import { Carousel, CarouselContent, CarouselItem } from "@/ui/carousel";
 
 /** Will issue a warning when trying to subscribe with more than 10 unwatched episodes. */
 const UNWATCHED_EPISODES_THRESHOLD = 10;
 
 export function ShowDetails({
-  tvShowDetails,
+  tvShow,
+  episodes,
   user,
   userLanguage,
   liked,
@@ -38,12 +33,13 @@ export function ShowDetails({
   accessToken,
   children,
 }: {
-  tvShowDetails: TvShowDetails;
+  tvShow: TvMazeShow;
+  episodes: TvMazeEpisode[];
   user: User | null;
   userLanguage: Language;
   liked: boolean;
   subscribed: boolean;
-  watchedEpisodes: WatchedEpisodes;
+  watchedEpisodes: WatchedEpisodes[number];
   accessToken: string | null;
   children: ReactNode;
 }) {
@@ -54,18 +50,20 @@ export function ShowDetails({
   const data = TRANSLATIONS[userLanguage];
 
   function formatDate(which: "start" | "end") {
-    const latestEpisode = tvShowDetails?.episodes?.at(-1);
-    const dateString = tvShowDetails?.[`${which}_date`];
-    if (!dateString) {
-      if (which === "end" && latestEpisode) {
-        const latestEpisodeAirDate = getEpisodeAirDate(latestEpisode);
-        if (latestEpisodeAirDate > new Date()) return data.liveSeries.tvShow.present;
-        return data.format.dateShort.format(latestEpisodeAirDate);
+    const latestEpisode = episodes?.at(-1);
+    if (which === "end") {
+      if (!latestEpisode) {
+        return data.liveSeries.tvShow[
+          tvShow?.status === "Running" ? "present" : "unknown"
+        ];
       }
-
-      return data.liveSeries.tvShow[
-        which === "end" && tvShowDetails?.status === "Running" ? "present" : "unknown"
-      ];
+      const latestEpisodeAirDate = getEpisodeAirDate(latestEpisode);
+      if (latestEpisodeAirDate > new Date()) return data.liveSeries.tvShow.present;
+      return data.format.dateShort.format(latestEpisodeAirDate);
+    }
+    const dateString = tvShow?.premiered;
+    if (!dateString) {
+      return data.liveSeries.tvShow.unknown;
     }
     const date = new Date(dateString);
     if (isInvalidDate(date)) return dateString;
@@ -83,7 +81,7 @@ export function ShowDetails({
     setIsLiked((old) => !old);
 
     const result = await clientToApi(
-      "liveseries/shows/personal/liked/" + tvShowDetails?.id,
+      "liveseries/shows/personal/liked/" + tvShow?.id,
       accessToken,
       {
         method: isLiked ? "DELETE" : "POST",
@@ -107,7 +105,7 @@ export function ShowDetails({
 
     setIsSubscribed((old) => !old);
     const result = await clientToApi(
-      "liveseries/shows/personal/subscribed/" + tvShowDetails?.id,
+      "liveseries/shows/personal/subscribed/" + tvShow?.id,
       accessToken,
       {
         method: isSubscribed ? "DELETE" : "POST",
@@ -120,17 +118,17 @@ export function ShowDetails({
     }
   }
 
-  async function updateWatchedEpisodes(season: string, episodes: EpisodeType[]) {
+  async function updateWatchedEpisodes(season: string, episodes: TvMazeEpisode[]) {
     if (!accessToken) {
       return promptLogin();
     }
-    const episodeNumbers = episodes.map((episode) => episode.episode);
+    const episodeNumbers = episodes.map((episode) => episode.number);
     setWatchedInShow((old) => ({
       ...old,
-      [season]: episodeNumbers,
+      [+season]: episodeNumbers,
     }));
     const result = await clientToApi(
-      `liveseries/watched-episodes/personal/${tvShowDetails.id}/${season}`,
+      `liveseries/watched-episodes/personal/${tvShow.id}/${season}`,
       accessToken,
       {
         method: "PUT",
@@ -144,17 +142,19 @@ export function ShowDetails({
     }
   }
 
-  if (!tvShowDetails) return <TvShowSkeleton />;
+  if (!tvShow) return <TvShowSkeleton />;
 
-  const isSeasonWatched = (season: string, episodes: EpisodeType[]) =>
+  const isSeasonWatched = (season: string, episodes: TvMazeEpisode[]) =>
     watchedInShow[+season]?.length === episodes.length;
 
-  const totalEpisodes = tvShowDetails?.episodes?.length ?? 0;
+  const totalEpisodes = episodes?.length ?? 0;
   const watchedEpisodesCount = Object.values(watchedInShow).reduce(
     (acc, episodes) => acc + episodes.length,
     0,
   );
   const unwatchedEpisodesCount = totalEpisodes - watchedEpisodesCount;
+
+  const runtime = tvShow?.runtime ?? tvShow?.averageRuntime;
 
   return (
     <div className="flex flex-col gap-1">
@@ -166,23 +166,23 @@ export function ShowDetails({
         >
           <HeartIcon fill={isLiked ? "currentColor" : "none"} />
         </button>
-        <h2 className="text-accent-soft text-2xl font-bold">{tvShowDetails.name}</h2>
+        <h2 className="text-accent-soft text-2xl font-bold">{tvShow.name}</h2>
         <small className="text-xl">
           ({formatDate("start")}–{formatDate("end")})
         </small>
       </div>
       <div className="my-1 flex flex-wrap gap-3">
         <div className="flex items-center gap-2">
-          {tvShowDetails.genres.map((genre, idx) => (
+          {tvShow.genres.map((genre, idx) => (
             <Badge key={`genre-${genre}-${idx}`}>{genre}</Badge>
           ))}
         </div>
-        {tvShowDetails.rating ? (
+        {tvShow.rating?.average ? (
           <div className="flex items-center gap-2">
-            <div className="relative" title={`${(+tvShowDetails.rating).toFixed(1)}/10`}>
+            <div className="relative" title={`${(+tvShow.rating.average).toFixed(1)}/10`}>
               <div className="group text-accent2 absolute w-full">
                 <div className="grid w-fit grid-cols-10 sm:gap-1">
-                  {Array(Math.floor(+tvShowDetails.rating))
+                  {Array(Math.floor(+tvShow.rating.average))
                     .fill(0)
                     .map((_, idx) => (
                       <StarIcon key={`star-filled-${idx}`} fill="currentColor"></StarIcon>
@@ -190,7 +190,7 @@ export function ShowDetails({
                   <div
                     className="overflow-hidden"
                     style={{
-                      width: `${(+tvShowDetails.rating % 1) * 100}%`,
+                      width: `${(+tvShow.rating.average % 1) * 100}%`,
                     }}
                   >
                     <StarIcon fill="currentColor" />
@@ -205,13 +205,14 @@ export function ShowDetails({
                   ))}
               </div>
             </div>
-            <span className="text-xs sm:text-sm">({tvShowDetails.rating_count})</span>
+            <span className="text-xs sm:text-sm">({tvShow.rating.average})</span>
           </div>
         ) : null}
       </div>
       <p className="mt-2 text-xl">
-        <i className="font-serif font-normal">{tvShowDetails.network}</i> (
-        {tvShowDetails.country}) | {tvShowDetails.runtime} min
+        <i className="font-serif font-normal">{tvShow.network?.name}</i>{" "}
+        {tvShow.network?.country ? `(${tvShow.network.country.code}) | ` : ""}
+        {runtime ? `${runtime} min` : ""}
       </p>
       <label className="border-background-soft mt-1 mb-2 rounded-sm border-l-[5px] pl-2.5 text-sm sm:text-base md:text-lg">
         <input type="checkbox" className="peer hidden" />
@@ -219,43 +220,40 @@ export function ShowDetails({
           className="line-clamp-6 cursor-s-resize peer-checked:line-clamp-none peer-checked:cursor-n-resize"
           dangerouslySetInnerHTML={{
             // Trim description end from line breaks
-            __html: tvShowDetails.description.replace(/(<br\s?>|\\n|\s)*$/, ""),
+            __html: tvShow.summary.replace(/(<br\s?>|\\n|\s)*$/, ""),
           }}
         />
       </label>
       <small className="text-xs md:text-sm">
-        {data.liveSeries.tvShow.source}:{" "}
-        {tvShowDetails.description_source ? (
-          <Link
-            href={tvShowDetails.description_source}
-            className="hover-underline text-accent"
-          >
-            {decodeURI(tvShowDetails.description_source)}
+        {data.liveSeries.tvShow.source}: {/* TODO: ?? */}
+        {/* {tvShow.description_source ? (
+          <Link href={tvShow.description_source} className="hover-underline text-accent">
+            {decodeURI(tvShow.description_source)}
           </Link>
-        ) : (
-          data.liveSeries.tvShow.unknown.toLowerCase()
-        )}
+        ) : ( */}
+        {data.liveSeries.tvShow.unknown.toLowerCase()}
+        {/* )} */}
       </small>
-      {tvShowDetails.youtube_link && (
+      {/* {tvShow.youtube_link && (
         <div className="mt-5 flex w-full justify-center">
           <iframe
             className="aspect-16/9 h-auto w-full md:w-3/4 lg:w-1/2"
-            src={`https://www.youtube.com/embed/${tvShowDetails.youtube_link}`}
+            src={`https://www.youtube.com/embed/${tvShow.youtube_link}`}
           ></iframe>
         </div>
-      )}
-      {tvShowDetails.pictures.length > 0 && (
-        <>
-          <h3 className="my-5 text-2xl font-bold">{data.liveSeries.tvShow.images}</h3>
-          {/* <ImageGallery
+      )} */}
+      {/* {tvShow.pictures.length > 0 && ( */}
+      <>
+        {/* <h3 className="my-5 text-2xl font-bold">{data.liveSeries.tvShow.images}</h3> */}
+        {/* <ImageGallery
             className="gallery"
             images={tvShowDetails.pictures}
             onLoadImage={() => {}}
           /> */}
-          <div className="flex justify-center">
+        {/* <div className="flex justify-center">
             <Carousel className="sm:min-h-[300px] sm:max-w-[400px]">
               <CarouselContent>
-                {tvShowDetails.pictures.map((url, idx) => (
+                {tvShow.pictures.map((url, idx) => (
                   <CarouselItem
                     key={`image-${idx}`}
                     className="flex max-w-fit items-center"
@@ -271,8 +269,17 @@ export function ShowDetails({
               </CarouselContent>
               <CarouselArrows data={data} />
             </Carousel>
-          </div>
-        </>
+          </div> */}
+      </>
+      {/* )} */}
+      {tvShow.image?.original && (
+        <Image
+          src={tvShow.image?.original}
+          alt={tvShow.name}
+          width={300}
+          height={600}
+          className="mx-auto"
+        />
       )}
       <h3 className="my-5 text-2xl font-bold">{data.liveSeries.tvShow.episodes}</h3>
       {user?.serverUrl != null && user.serverUrl.length > 0 && (
@@ -285,9 +292,7 @@ export function ShowDetails({
           ></InputBox>
         </div>
       )}
-      {tvShowDetails.episodes.length === 0 ? (
-        <p>{data.liveSeries.tvShow.noEpisodes}</p>
-      ) : null}
+      {totalEpisodes === 0 ? <p>{data.liveSeries.tvShow.noEpisodes}</p> : null}
       <TvShowContext.Provider value={{ updateWatchedEpisodes, isSeasonWatched }}>
         {children}
       </TvShowContext.Provider>

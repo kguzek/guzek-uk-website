@@ -4,7 +4,7 @@ import type { User } from "@/lib/types";
 import { ErrorComponent } from "@/components/error/component";
 import { serverToApi } from "@/lib/backend/server";
 import { ErrorCode } from "@/lib/enums";
-import { getAuth } from "@/lib/providers/auth-provider";
+import { getAuth } from "@/lib/providers/auth-provider/rsc";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { getTitle } from "@/lib/util";
 

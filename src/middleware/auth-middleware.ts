@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import type { MiddlewareFactory } from "@/lib/types";
 import { PAGINATED_REGEX_INVALID } from "@/lib/constants";
-import { getAuth } from "@/lib/providers/auth-provider";
+import { getAuth } from "@/lib/providers/auth-provider/server";
 
 const ROUTES_REQUIRING_AUTH = ["/profile", "/admin-legacy", "/liveseries/watch"];
 const ROUTES_REQUIRING_NOAUTH = ["/login", "/signup", "/verify-email", "/reset-password"];
@@ -23,7 +23,7 @@ export const authMiddleware: MiddlewareFactory = (next) =>
     }
 
     const response = await next(request);
-    const { user } = await getAuth(request, response);
+    const { user } = await getAuth(request);
     const [redirectFrom, redirectTo] =
       user == null
         ? [ROUTES_REQUIRING_AUTH, "/login"]

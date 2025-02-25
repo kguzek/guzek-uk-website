@@ -60,13 +60,7 @@ export function Button({
       disabled={loading || props.disabled}
       {...props}
     >
-      {loading ? (
-        <Loader className="animate-spin" />
-      ) : variant === "link" ? (
-        <span className="hover-underline">{props.children}</span>
-      ) : (
-        props.children
-      )}
+      {loading ? <Loader className="animate-spin" /> : props.children}
     </Comp>
   );
 }

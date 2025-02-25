@@ -15,6 +15,10 @@ const nextConfig = {
         // Episodate API TV Show thumbnails
         hostname: "static.episodate.com",
       },
+      {
+        // TVmaze API TV Show thumbnails
+        hostname: "static.tvmaze.com",
+      },
     ],
   },
 };

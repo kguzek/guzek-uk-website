@@ -1,4 +1,4 @@
-import { getAuth } from "@/lib/providers/auth-provider";
+import { getAuth } from "@/lib/providers/auth-provider/rsc";
 import { getTranslations } from "@/lib/providers/translation-provider";
 
 import type { ServerFetchOptions } from ".";

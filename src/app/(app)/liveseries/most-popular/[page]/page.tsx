@@ -1,12 +1,16 @@
-import { redirect } from "next/navigation";
+import type { Show as TvMazeShow } from "tvmaze-wrapper-ts";
+import { getAllShows } from "tvmaze-wrapper-ts";
 
-import type { TvShowList } from "@/lib/types";
 import { ErrorComponent } from "@/components/error/component";
-import { TvShowPreviewList } from "@/components/liveseries/tv-show-preview-list";
-import { serverToApi } from "@/lib/backend/server";
+import {
+  RESULTS_PER_PAGE,
+  TvShowPreviewList,
+} from "@/components/liveseries/tv-show-preview-list";
 import { ErrorCode } from "@/lib/enums";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { getTitle, isNumber } from "@/lib/util";
+
+const RESULTS_PER_PAGE_FROM_API = 250;
 
 export async function generateMetadata() {
   const { data } = await getTranslations();
@@ -21,18 +25,27 @@ export default async function MostPopular({
   params: Promise<{ page: string }>;
 }) {
   const { data, userLanguage } = await getTranslations();
-  const { page } = await params;
-  if (!isNumber(page)) {
+  const { page: pageString } = await params;
+  if (!isNumber(pageString)) {
     return <ErrorComponent errorCode={ErrorCode.NotFound} />;
   }
 
-  const result = await serverToApi<TvShowList>("most-popular", {
-    api: "episodate",
-    params: { page },
-  });
-  if (result.ok && result.data.page !== +page) {
-    redirect(`./${result.data.page}`);
+  const pageFrontend = +pageString;
+  // Pages in TVmaze API are 0-indexed
+  const pageBackend =
+    Math.ceil((pageFrontend * RESULTS_PER_PAGE) / RESULTS_PER_PAGE_FROM_API) - 1;
+
+  const startIdx = ((pageFrontend - 1) * RESULTS_PER_PAGE) % RESULTS_PER_PAGE_FROM_API;
+  let results: TvMazeShow[] = [];
+  try {
+    const allResults = await getAllShows(pageBackend);
+    results = allResults.slice(startIdx, startIdx + RESULTS_PER_PAGE);
+  } catch (error) {
+    console.error("Error fetching search results:", error);
   }
+  // if (result.ok && result.data.page !== +page) {
+  //   redirect(`./${result.data.page}`);
+  // }
 
   return (
     <>
@@ -41,7 +54,10 @@ export default async function MostPopular({
       </h2>
       <TvShowPreviewList
         userLanguage={userLanguage}
-        tvShows={result.ok ? result.data : undefined}
+        tvShows={results}
+        page={pageFrontend}
+        // TODO: obtain this value from the API
+        total={82827}
       />
     </>
   );

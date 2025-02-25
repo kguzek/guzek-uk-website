@@ -3,7 +3,7 @@ import { CircleAlert } from "lucide-react";
 import { toast } from "sonner";
 
 import type { Translation } from "@/lib/translations";
-import { HttpError, NetworkError } from "@/lib/backend/client2";
+import { HttpError, NetworkError } from "@/lib/backend/v2";
 
 export const errorToast = (message: ReactNode) => ({
   icon: <CircleAlert className="text-error not-first:hidden" />,

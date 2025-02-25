@@ -1,12 +1,13 @@
 "use client";
 
+import type { Episode as TvMazeEpisode, Show as TvMazeShow } from "tvmaze-wrapper-ts";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { DownloadIcon, TriangleIcon } from "lucide-react";
 
 import type { Language } from "@/lib/enums";
-import type { DownloadedEpisode, Episode, TvShowDetails, User } from "@/lib/types";
-import { clientToApi } from "@/lib/backend/client";
+import type { DownloadedEpisode, User } from "@/lib/types";
+import { fetchFromApi } from "@/lib/backend/v2";
 import { useLiveSeriesContext } from "@/lib/context/liveseries-context";
 import { useModals } from "@/lib/context/modal-context";
 import { DownloadStatus } from "@/lib/enums";
@@ -22,8 +23,8 @@ export function EpisodeDownloadIndicator({
   accessToken,
 }: {
   userLanguage: Language;
-  episode: Episode;
-  tvShow: TvShowDetails;
+  episode: TvMazeEpisode;
+  tvShow: TvMazeShow;
   user: User | null;
   accessToken: string | null;
 }) {
@@ -33,7 +34,7 @@ export function EpisodeDownloadIndicator({
   const episodeObject = {
     showName: tvShow.name.replace(/:/g, ""), // Torrent filenames omit colons
     season: episode.season,
-    episode: episode.episode,
+    episode: episode.number,
   };
 
   const [metadata, setMetadata] = useState<undefined | DownloadedEpisode>(undefined);
@@ -57,21 +58,20 @@ export function EpisodeDownloadIndicator({
       setModalInfo(data.liveSeries.explanation);
       return;
     }
-    const result = await clientToApi("liveseries/downloaded-episodes", accessToken, {
-      method: "POST",
-      body: {
-        showId: tvShow.id,
-        showName: tvShow.name,
-        episode: episode.episode,
-        season: episode.season,
-      },
-      user,
-      userLanguage,
-      setModalError,
-    });
-    if (result.ok) {
+    try {
+      await fetchFromApi("liveseries/downloaded-episodes", {
+        method: "POST",
+        body: {
+          showId: tvShow.id,
+          showName: tvShow.name,
+          episode: episode.number,
+          season: episode.season,
+        },
+        urlBase: user.serverUrl,
+      });
       setMetadata((old) => old && { ...old, status: DownloadStatus.PENDING });
-    } else {
+    } catch (error) {
+      console.error(error);
       setModalError(data.liveSeries.episodes.downloadError(episodeString));
       setMetadata((old) => old && { ...old, status: DownloadStatus.FAILED });
     }
@@ -120,7 +120,7 @@ export function EpisodeDownloadIndicator({
       )}
       {!showProgress && user != null && (
         <Link
-          href={`/liveseries/watch/${tvShow.name}/${episode.season}/${episode.episode}`}
+          href={`/liveseries/watch/${tvShow.name}/${episode.season}/${episode.number}`}
           title={data.liveSeries.episodes.downloadStatus[DownloadStatus.COMPLETE]}
         >
           <TriangleIcon

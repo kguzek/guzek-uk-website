@@ -130,8 +130,10 @@ export function LiveSeriesProvider({
           if (
             found.status !== DownloadStatus.COMPLETE &&
             val.status === DownloadStatus.COMPLETE
-          )
-            completedDownloadName = `${val.showName} ${data.liveSeries.episodes.serialise(val)}`;
+          ) {
+            const episodeObject = { number: val.episode, season: val.season };
+            completedDownloadName = `${val.showName} ${data.liveSeries.episodes.serialise(episodeObject)}`;
+          }
           return val;
         });
         //for (const info of torrentInfo) {
