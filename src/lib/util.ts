@@ -1,7 +1,14 @@
-import { Language } from "./enums";
-import type { Episode, DownloadedEpisode } from "./types";
-import { Translation } from "./translations";
+import type { Episode as TvMazeEpisode } from "tvmaze-wrapper-ts";
 import Cookies from "js-cookie";
+
+import type { ApiMessage, ErrorResponseBody, ErrorResponseMultiple } from "@/lib/types";
+import type { Media } from "@/payload-types";
+
+import type { Translation } from "./translations";
+import type { DownloadedEpisode } from "./types";
+import { Language } from "./enums";
+
+const PRODUCTION_MODE = process.env.NODE_ENV !== "development";
 
 export const PAGE_NAME = "Guzek UK";
 
@@ -15,8 +22,7 @@ export function getTitle(
   return addPageName ? `${withSuffix} | ${PAGE_NAME}` : withSuffix;
 }
 
-export const setTitle = (title: string) =>
-  void (document.title = getTitle(title));
+export const setTitle = (title: string) => void (document.title = getTitle(title));
 
 const divmod = (dividend: number, divisor: number) => [
   Math.floor(dividend / divisor),
@@ -25,11 +31,12 @@ const divmod = (dividend: number, divisor: number) => [
 
 /** Converts a duration in milliseconds to duration object. */
 export function getDuration(milliseconds: number) {
-  let seconds, minutes, hours, days;
+  let seconds, minutes, hours;
   [seconds, milliseconds] = divmod(milliseconds, 1000);
   [minutes, seconds] = divmod(seconds, 60);
   [hours, minutes] = divmod(minutes, 60);
-  [days, hours] = divmod(hours, 24);
+  const [days, hoursRemainder] = divmod(hours, 24);
+  hours = hoursRemainder;
   let formatted = "";
   if (days) formatted += ` ${days}d`;
   if (hours) formatted += ` ${hours}h`;
@@ -52,21 +59,15 @@ export function scrollToElement(
 
 export const isInvalidDate = (date: Date) => date.toString() === "Invalid Date";
 
-export const getEpisodeAirDate = (episode: Episode, addSpace = false): Date => {
-  // This is needed in order to interpret the `air_date` as a date given in UTC+0
-  const correctedDateString = episode.air_date + (addSpace ? " Z" : "Z");
-  const correctedDate = new Date(correctedDateString);
-  if (isInvalidDate(correctedDate)) {
-    if (addSpace) console.warn(episode.air_date);
-    else return getEpisodeAirDate(episode, true);
-  }
-  return correctedDate;
-};
+export const isNumber = (value: string): value is `${number}` =>
+  (+value).toString() === value;
 
-export const hasEpisodeAired = (episode: Episode) =>
+export const getEpisodeAirDate = (episode: TvMazeEpisode) => new Date(episode.airstamp);
+
+export const hasEpisodeAired = (episode: TvMazeEpisode) =>
   new Date() > getEpisodeAirDate(episode);
 
-const STATUS_CODES: Record<number, string> = {
+const STATUS_CODES: { [code in number]?: string } = {
   200: "OK",
   201: "Created",
   204: "No Content",
@@ -81,19 +82,39 @@ const STATUS_CODES: Record<number, string> = {
   503: "Service Unavailable",
 };
 
+const isErrorSingle = (json: ErrorResponseBody): json is ApiMessage =>
+  "message" in json && json.message != null;
+
+const isErrorMultiple = (json: ErrorResponseBody): json is ErrorResponseMultiple =>
+  "errors" in json &&
+  Array.isArray(json.errors) &&
+  json.errors.every((error) => "message" in error);
+
+const mapErrorMultiple = (json?: ErrorResponseMultiple): string[] =>
+  json == null
+    ? []
+    : json.errors.flatMap(({ message, data }) =>
+        [message == null ? [] : [message], mapErrorMultiple(data)].flat(),
+      );
+
 /** Formats the response's JSON body into a user-readable error message, with a fallback to simply displaying the JSON,
  * with another fallback to displaying a generic error message in the user's language. */
 export const getErrorMessage = (
   res: Response,
-  json: any,
+  json: ErrorResponseBody,
   data: Translation,
 ): string =>
-  (json[`${res.status} ${STATUS_CODES[res.status] || res.statusText}`] ??
-    JSON.stringify(json)) ||
-  data.unknownError;
+  (json == null
+    ? data.unknownError
+    : isErrorSingle(json)
+      ? json.message
+      : isErrorMultiple(json)
+        ? mapErrorMultiple(json).join("\n")
+        : (json[`${res.status} ${STATUS_CODES[res.status] ?? res.statusText}`] ??
+          JSON.stringify(json))) || data.unknownError;
 
-export const getUTCDateString = (dateInit: any) =>
-  new Date(dateInit).toISOString().split("T")[0];
+export const getUTCDateString = (...dateInit: ConstructorParameters<typeof Date>) =>
+  new Date(...dateInit).toISOString().split("T")[0];
 
 const UNIT_PREFIXES = ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi"];
 
@@ -122,8 +143,8 @@ export const getLanguageCookieOptions = () =>
     expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
     path: "/",
     sameSite: "lax",
-    domain: ".guzek.uk",
-    secure: process.env.NODE_ENV !== "development",
+    domain: PRODUCTION_MODE ? ".guzek.uk" : undefined,
+    secure: PRODUCTION_MODE,
   }) as const;
 
 export function setLanguageCookie(langString: string) {
@@ -150,3 +171,12 @@ export function sanitiseUrl(url: string) {
   if (isScriptUrl(url)) return "";
   return url;
 }
+
+type MediaImage = Pick<Media, "id" | "createdAt" | "updatedAt" | "alt"> & {
+  url: string;
+  width: number;
+  height: number;
+};
+
+export const isImage = (image: Media | number): image is MediaImage =>
+  typeof image !== "number" && !!image.url && !!image.width && !!image.height;

@@ -1,11 +1,13 @@
 import type { Config } from "tailwindcss";
 import typography from "@tailwindcss/typography";
+import tailwindAnimate from "tailwindcss-animate";
 
 const config: Config = {
+  darkMode: "class",
   content: ["./src/**/*.tsx"],
   theme: {
     extend: {
-      typography: (theme: (theme: string) => any) => ({
+      typography: ({ theme }) => ({
         DEFAULT: {
           css: {
             color: "inherit",
@@ -26,24 +28,36 @@ const config: Config = {
         },
       }),
       colors: {
-        primary: "#bbb",
-        "primary-strong": "#fff",
-        background: "#262322",
-        "background-strong": "#0b0a09",
-        "background-soft": "#5e5954",
-        accent: "#2596be",
-        "accent-soft": "#c9dae0",
-        accent2: "#c9b86e",
-        success: "#3dc983",
-        error: "#b64949",
+        primary: "var(--color-primary)",
+        "primary-strong": "var(--color-primary-strong)",
+        background: "var(--color-background)",
+        "background-strong": "var(--color-background-strong)",
+        "background-soft": "var(--color-background-soft)",
+        accent: "var(--color-accent)",
+        "accent-soft": "var(--color-accent-soft)",
+        accent2: "var(--color-accent2)",
+        success: "var(--color-success)",
+        error: "var(--color-error)",
       },
       fontFamily: {
         sans: ["var(--font-raleway)"],
         serif: ["var(--font-roboto-slab)"],
       },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+      animation: {
+        jump: "jump 1s infinite",
+      },
+      backgroundImage: {
+        "gradient-main":
+          "radial-gradient(circle at bottom, hsl(195 2 13) 0%, hsl(195 2 9) 20%, transparent 100%)",
+      },
     },
   },
-  plugins: [typography],
+  plugins: [typography, tailwindAnimate],
 };
 
 export default config;

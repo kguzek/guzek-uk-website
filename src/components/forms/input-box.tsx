@@ -1,9 +1,11 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { ChangeEvent, createRef, ReactNode, useEffect } from "react";
+import type { ChangeEvent, ReactNode } from "react";
+import { createRef, useEffect } from "react";
 
-export function InputBox({
+import { cn } from "@/lib/utils";
+
+export function InputBox<V extends string | number | boolean>({
   label,
   value,
   setValue,
@@ -17,8 +19,8 @@ export function InputBox({
   disabled = false,
 }: {
   label: string;
-  value: string | number | boolean;
-  setValue: Function;
+  value: V;
+  setValue: (value: V) => void;
   type?: string;
   required?: boolean;
   options?: Map<number | string, string>;
@@ -32,20 +34,18 @@ export function InputBox({
   const isDropdown = type === "dropdown";
   const isCheckbox = type === "checkbox";
 
-  function handleChange(
+  function handleChange<T>(
     evt: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-    predicate: Function,
+    predicate: (val: string) => T,
   ) {
     const val = isCheckbox
       ? (evt.target as HTMLInputElement).checked
       : predicate(evt.target.value);
-    setValue(val);
+    setValue(val as V);
   }
 
   if (isDropdown && !options) {
-    throw Error(
-      "'options' prop must be provided when using 'dropdown' InputBox type.",
-    );
+    throw Error("'options' prop must be provided when using 'dropdown' InputBox type.");
   }
 
   useEffect(() => {
@@ -59,9 +59,7 @@ export function InputBox({
       })}
     >
       <div className="flex gap-2">
-        {required && value === "" && (
-          <span className="required-asterisk">*</span>
-        )}
+        {required && value === "" && <span className="required-asterisk">*</span>}
         <span>{label}</span>
         {info}
       </div>
@@ -69,7 +67,7 @@ export function InputBox({
         <select
           className="h-7 cursor-pointer rounded-xl px-3"
           value={value as string | number}
-          onChange={(evt) => handleChange(evt, parseInt)}
+          onChange={(evt) => handleChange<number>(evt, parseInt)}
           disabled={disabled || undefined}
         >
           {[...(options?.entries() ?? [])].map(([key, value], idx) => (

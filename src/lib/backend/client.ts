@@ -1,15 +1,12 @@
-import {
-  ClientFetchOptions,
-  commonTriggerRevalidation,
-  fetchFromApi,
-  getUrlBase,
-  prepareRequest,
-} from ".";
-import { getSearchParams } from "../backend";
-import { getErrorMessage } from "../util";
+import { showErrorToast } from "@/components/error/toast";
+
+import type { ClientFetchOptions } from ".";
 import type { Language } from "../enums";
 import type { User } from "../types";
+import { commonTriggerRevalidation, fetchFromApi, getUrlBase, prepareRequest } from ".";
+import { getSearchParams } from "../backend";
 import { TRANSLATIONS } from "../translations";
+import { getErrorMessage } from "../util";
 
 type FetchOptionsExtension = { user?: User | null } & (
   | {
@@ -19,10 +16,7 @@ type FetchOptionsExtension = { user?: User | null } & (
   | { userLanguage?: never; setModalError?: never }
 );
 
-const requestNeedsCredentials = (
-  path: string,
-  method: ClientFetchOptions["method"],
-) =>
+const requestNeedsCredentials = (path: string, method: ClientFetchOptions["method"]) =>
   (method === "POST" || method === "DELETE") &&
   ["auth/tokens", "auth/refresh", "auth/users"].includes(path);
 
@@ -49,7 +43,6 @@ export async function clientToApi<T>(
   {
     user = null,
     userLanguage,
-    setModalError,
     ...fetchOptions
   }: ClientFetchOptions & FetchOptionsExtension = {},
 ) {
@@ -65,7 +58,7 @@ export async function clientToApi<T>(
     await triggerRevalidation(path);
   } else if (userLanguage) {
     const data = TRANSLATIONS[userLanguage];
-    setModalError(
+    showErrorToast(
       result.hasBody
         ? getErrorMessage(result.res, result.error, data)
         : data.networkError,

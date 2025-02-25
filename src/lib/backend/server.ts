@@ -1,11 +1,13 @@
-import { commonTriggerRevalidation, getSearchParams } from "../backend";
-import { useAuth } from "@/providers/auth-provider";
-import { useTranslations } from "@/providers/translation-provider";
-import { fetchFromApi, getUrlBase, prepareRequest } from ".";
+import { getAuth } from "@/lib/providers/auth-provider/rsc";
+import { getTranslations } from "@/lib/providers/translation-provider";
+
 import type { ServerFetchOptions } from ".";
+import { fetchFromApi, getUrlBase, prepareRequest } from ".";
+import { commonTriggerRevalidation, getSearchParams } from "../backend";
+import { PRODUCTION_URL } from "../constants";
 
 const EPISODATE_URL = "https://www.episodate.com/api/";
-const NEXT_URL = "https://www.guzek.uk/api/";
+const NEXT_URL = `${PRODUCTION_URL}/api/`;
 
 function isUserSpecificPath(path: string) {
   const parts = path.split("/");
@@ -32,19 +34,14 @@ export async function serverToApi<T>(
   fetchOptions: ServerFetchOptions = {},
   useCredentials: boolean = true,
 ) {
-  const { accessToken, user } = await useAuth();
+  const { accessToken, user } = await getAuth();
 
   if (!fetchOptions.params?.lang) {
-    const { userLanguage } = await useTranslations();
+    const { userLanguage } = await getTranslations();
     fetchOptions.params = { ...fetchOptions.params, lang: userLanguage };
   }
 
-  const options = await prepareRequest(
-    path,
-    fetchOptions,
-    accessToken,
-    useCredentials,
-  );
+  const options = await prepareRequest(path, fetchOptions, accessToken, useCredentials);
   options.next.revalidate =
     fetchOptions.api === "episodate"
       ? 3600

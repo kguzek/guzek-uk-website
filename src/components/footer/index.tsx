@@ -1,13 +1,14 @@
 import Link from "next/link";
-import { Logo } from "@/media/logo";
-import { useTranslations } from "@/providers/translation-provider";
+
+import { Logo } from "@/components/logo";
+import { getTranslations } from "@/lib/providers/translation-provider";
 
 export async function Footer() {
-  const { data } = await useTranslations();
+  const { data } = await getTranslations();
   const version = process.env.npm_package_version;
   return (
-    <footer className="mt-10">
-      <hr />
+    <footer className="py-4">
+      <hr className="border-background" />
       <div className="mt-4 flex items-center justify-center gap-3">
         <Logo size={20} />
         <small className="text-xs">
@@ -20,7 +21,7 @@ export async function Footer() {
           </Link>
         </small>
         <small className="text-xs">
-          Next.js (main{version ? ` v${version}` : ""})
+          Next.js (payload{version ? ` v${version}` : ""})
         </small>
       </div>
     </footer>

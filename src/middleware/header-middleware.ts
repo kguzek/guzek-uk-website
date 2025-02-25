@@ -1,4 +1,4 @@
-import { MiddlewareFactory } from "@/lib/types";
+import type { MiddlewareFactory } from "@/lib/types";
 
 export const headerMiddleware: MiddlewareFactory = (next) =>
   async function (request) {

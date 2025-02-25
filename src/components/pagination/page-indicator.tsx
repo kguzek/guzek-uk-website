@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
+
+import type { Language } from "@/lib/enums";
 import { getSearchParams } from "@/lib/backend";
 import { TRANSLATIONS } from "@/lib/translations";
-import type { Language } from "@/lib/enums";
 import { cn } from "@/lib/utils";
+
+/** UNUSED as of 2025-02-21 */
 
 export function PageIndicator({
   page,
@@ -21,33 +24,27 @@ export function PageIndicator({
   disabled?: boolean;
   userLanguage: Language;
 }) {
-  let loading = [];
+  const loading = [];
   let displayValue;
   const data = TRANSLATIONS[userLanguage];
 
   if (null == page) {
     if (!direction) return <div className="page-indicator disabled">...</div>;
     [displayValue, page] =
-      direction === "PREVIOUS"
-        ? ["<", currentPage - 1]
-        : [">", currentPage + 1];
+      direction === "PREVIOUS" ? ["<", currentPage - 1] : [">", currentPage + 1];
   } else {
-    displayValue = data.numberFormat.format(page);
+    displayValue = data.format.number.format(page);
   }
   return (
     <Link
-      href={
-        disabled
-          ? "#"
-          : getSearchParams({ ...searchParams, page: page.toString() })
-      }
+      href={disabled ? "#" : getSearchParams({ ...searchParams, page: page.toString() })}
       className={cn("page-indicator font-serif", {
         disabled,
         "current-page": page === currentPage && !disabled,
         auxiliary: !!direction,
       })}
       onClick={(evt) => {
-        (loading.length > 0 || disabled) && evt.preventDefault();
+        if (loading.length > 0 || disabled) evt.preventDefault();
       }}
     >
       {displayValue}

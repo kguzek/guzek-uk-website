@@ -1,4 +1,4 @@
-import { Language } from "@/lib/enums";
+import type { Language } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 
 export function NumericValue({
@@ -9,5 +9,5 @@ export function NumericValue({
   userLanguage: Language;
 }) {
   const data = TRANSLATIONS[userLanguage];
-  return <span className="font-serif">{data.numberFormat.format(+value)}</span>;
+  return <span className="font-serif">{data.format.number.format(+value)}</span>;
 }

@@ -1,31 +1,35 @@
-import { Translation } from ".";
-import {
-  LIVESERIES_SERVER_HOMEPAGE,
-  LONG_DATE_FORMAT,
-  SHORT_DATE_FORMAT,
-  SHORT_TIME_FORMAT,
-} from "./common";
+import { LONG_DATE_FORMAT, SHORT_DATE_FORMAT, SHORT_TIME_FORMAT } from "@/lib/constants";
+
+import type { Translation } from ".";
 
 export const ENGLISH: Translation = {
   footer: (year) => `${year} \u00a9 Konrad Guzek`,
   loading: "Loading",
+  redirecting: "Redirecting",
   language: "Language",
   loginShort: "Log in",
-  dateFormat: new Intl.DateTimeFormat("en-GB", LONG_DATE_FORMAT),
-  dateShortFormat: new Intl.DateTimeFormat("en-GB", SHORT_DATE_FORMAT),
-  dateTimeFormat: new Intl.DateTimeFormat("en-GB", {
-    ...LONG_DATE_FORMAT,
-    ...SHORT_TIME_FORMAT,
-  }),
-  dateTimeShortFormat: new Intl.DateTimeFormat("en-GB", {
-    ...SHORT_DATE_FORMAT,
-    ...SHORT_TIME_FORMAT,
-  }),
-  numberFormat: new Intl.NumberFormat("en-GB"),
+  format: {
+    date: new Intl.DateTimeFormat("en-GB", LONG_DATE_FORMAT),
+    dateShort: new Intl.DateTimeFormat("en-GB", SHORT_DATE_FORMAT),
+    dateTime: new Intl.DateTimeFormat("en-GB", {
+      ...LONG_DATE_FORMAT,
+      ...SHORT_TIME_FORMAT,
+    }),
+    dateTimeShort: new Intl.DateTimeFormat("en-GB", {
+      ...SHORT_DATE_FORMAT,
+      ...SHORT_TIME_FORMAT,
+    }),
+    number: new Intl.NumberFormat("en-GB"),
+    quote: (text) => `“${text}”`,
+  },
   networkError:
     "A network error occurred while performing this action. Please try again later.",
   unknownError: "An unknown error occured. Please contact konrad@guzek.uk",
   loggedOut: "You have been logged out.",
+  placeholder: {
+    email: "john@doe.co.uk",
+    username: "johndoe",
+  },
   profile: {
     title: "Profile",
     body: "Welcome to your profile!",
@@ -33,8 +37,7 @@ export const ENGLISH: Translation = {
     invalidCredentials: "Invalid credentials.",
     passwordMismatch: "Passwords do not match.",
     passwordLength: "Password must be at least 8 characters long.",
-    serverUrlUpdated: (url) =>
-      `LiveSeries Server URL successfully updated to ${url}`,
+    serverUrlUpdated: (url) => `LiveSeries Server URL successfully updated to ${url}`,
     formDetails: {
       username: "Username",
       email: "Email",
@@ -51,28 +54,48 @@ export const ENGLISH: Translation = {
       haveAccountAlready: "have an account already?",
       logout: "Log out",
       serverUrl: "LiveSeries Server URL",
+      success: "Profile updated successfully",
+      verifyEmail: {
+        header: "Email Verification",
+        info: (email) =>
+          `An email has been sent to ${email || "your address"} with a verification link.`,
+        cta: "Please check your inbox.",
+        success: "Email verified successfully",
+      },
+      forgotPassword: {
+        header: "Forgot password",
+        info: (email) =>
+          `If there is an account registered to ${email || "that address"}, it will be sent an email with a password reset link.`,
+        success: "An email with a password reset link has been sent.",
+      },
+      resetPassword: {
+        header: "Password Reset",
+        field: "New password",
+        submit: "Reset password",
+        success: "Password reset successfully",
+      },
     },
   },
   error: {
     400: {
       title: "Bad Request",
-      body: "The request was invalid.",
+      body: "The request was invalid",
     },
     401: {
       title: "Unauthorized",
-      body: "This page is only available to logged in users.",
+      body: "This page is only available to logged in users",
     },
     403: {
       title: "Forbidden",
-      body: "You do not have permission to view this resource.",
+      body: "You do not have permission to view this resource",
     },
     404: {
       title: "Not Found",
-      body: "The requested resource was not found.",
+      body: "The requested resource was not found",
     },
     500: {
       title: "Server Error",
-      body: "An error occurred while processing your request.",
+      body: "An error occurred while processing your request",
     },
   },
   admin: {
@@ -104,14 +127,21 @@ export const ENGLISH: Translation = {
     yes: "Yes",
     no: "No",
   },
+  projects: {
+    title: "Projects",
+  },
   liveSeries: {
     title: "LiveSeries",
     whatsThis: "What's this?",
-    explanation: `In order to search for and download TV show torrents, you must set up a LiveSeries server. This server will be used to fetch torrent files and stream video content. Find out more at ${LIVESERIES_SERVER_HOMEPAGE}`,
+    explanation:
+      "In order to search for and download TV show torrents, you must set up a LiveSeries server. This server will be used to fetch torrent files and stream video content.",
+    cta: "Find out more at ",
     tvShowList: {
       showing: "Showing",
       of: "of",
       page: "Page",
+      previous: "Previous",
+      next: "Next",
     },
     tvShow: {
       title: "Show Details",
@@ -119,6 +149,8 @@ export const ENGLISH: Translation = {
       present: "Present",
       source: "Source",
       images: "Gallery",
+      previousImage: "Previous image",
+      nextImage: "Next image",
       episodes: "Episodes",
       noEpisodes: "No episodes to list.",
       episode: "Episode",
@@ -142,8 +174,7 @@ export const ENGLISH: Translation = {
       searching: "Searching",
       cancel: "Cancel",
       results: "Results for",
-      noResults:
-        "Your query returned no results. Try searching for something else.",
+      noResults: "Your query returned no results. Try searching for something else.",
     },
     home: {
       title: "Home",
@@ -175,21 +206,19 @@ Once you find a show you like, click the heart icon to add it to your liked show
         `Are you sure you want to delete ${episode} from the server?`,
       deleted: (episode) => `Episode ${episode} was successfully deleted.`,
       serialise: (episode) =>
-        `S${episode.season.toString().padStart(2, "0")}E${episode.episode
+        `S${episode.season.toString().padStart(2, "0")}E${episode.number
           .toString()
           .padStart(2, "0")}`,
     },
     watch: {
-      playbackError:
-        "There was a problem playing that video. Please try again later.",
+      playbackError: "There was a problem playing that video. Please try again later.",
       previous: "Previous",
       next: "Next",
     },
     websockets: {
       connectionFailed:
         "Could not establish a connection with the websocket. Ensure the LiveSeries server URL is configured correctly and try again later.",
-      error:
-        "An unknown error occured during websocket communication. Try again later.",
+      error: "An unknown error occured during websocket communication. Try again later.",
       askReconnect:
         "The websocket connection with the LiveSeries server was forcefully closed. Reconnect?",
     },
