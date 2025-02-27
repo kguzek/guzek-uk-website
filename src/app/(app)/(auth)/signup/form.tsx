@@ -10,8 +10,8 @@ import { toast } from "sonner";
 import type { SignUpSchema } from "@/lib/backend/schemas";
 import type { Language } from "@/lib/enums";
 import { fetchErrorToast } from "@/components/error/toast";
+import { fetchFromApi } from "@/lib/backend";
 import { signUpSchema } from "@/lib/backend/schemas";
-import { fetchFromApi } from "@/lib/backend/v2";
 import { TRANSLATIONS } from "@/lib/translations";
 import { Button } from "@/ui/button";
 import {

@@ -6,10 +6,12 @@ import { useEffect, useState } from "react";
 import { DownloadIcon, TriangleIcon } from "lucide-react";
 
 import type { Language } from "@/lib/enums";
-import type { DownloadedEpisode, User } from "@/lib/types";
-import { fetchFromApi } from "@/lib/backend/v2";
+import type { DownloadedEpisode } from "@/lib/types";
+import type { User } from "@/payload-types";
+import { showErrorToast } from "@/components/error/toast";
+import { showInfoToast } from "@/components/ui/sonner";
+import { fetchFromApi } from "@/lib/backend";
 import { useLiveSeriesContext } from "@/lib/context/liveseries-context";
-import { useModals } from "@/lib/context/modal-context";
 import { DownloadStatus } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import { bytesToReadable, compareEpisodes } from "@/lib/util";
@@ -28,7 +30,6 @@ export function EpisodeDownloadIndicator({
   user: User | null;
   accessToken: string | null;
 }) {
-  const { setModalError, setModalInfo } = useModals();
   const { downloadedEpisodes } = useLiveSeriesContext();
 
   const episodeObject = {
@@ -51,11 +52,11 @@ export function EpisodeDownloadIndicator({
 
   async function startDownload() {
     if (user == null || accessToken == null) {
-      setModalError(data.liveSeries.home.login);
+      showErrorToast(data.liveSeries.home.login);
       return;
     }
-    if (!user.serverUrl) {
-      setModalInfo(data.liveSeries.explanation);
+    if (user.serverUrl == null || user.serverUrl === "") {
+      showInfoToast(data.liveSeries.explanation);
       return;
     }
     try {
@@ -72,7 +73,7 @@ export function EpisodeDownloadIndicator({
       setMetadata((old) => old && { ...old, status: DownloadStatus.PENDING });
     } catch (error) {
       console.error(error);
-      setModalError(data.liveSeries.episodes.downloadError(episodeString));
+      showErrorToast(data.liveSeries.episodes.downloadError(episodeString));
       setMetadata((old) => old && { ...old, status: DownloadStatus.FAILED });
     }
   }

@@ -8,7 +8,7 @@ import { ErrorComponent } from "@/components/error/component";
 import { EpisodesList } from "@/components/liveseries/episodes-list";
 import { Tile } from "@/components/tile";
 import { ErrorCode } from "@/lib/enums";
-import { getAuth } from "@/lib/providers/auth-provider/rsc";
+import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { getTitle, hasEpisodeAired } from "@/lib/util";
 
@@ -88,10 +88,9 @@ export default async function Home() {
       ) : (
         <Tile className="items-start">
           {/* <LikedShowsCarousel
-            likedShowIds={likedShowIds}
             likedShows={likedShows}
             userLanguage={userLanguage}
-            accessToken={accessToken}
+            user={user}
           /> */}
           <h3 className="mb-5 text-2xl font-bold">
             {data.liveSeries.tvShow.unwatched} {data.liveSeries.tvShow.episodes}

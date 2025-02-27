@@ -1,7 +1,7 @@
 "use client";
 
 import type { ToasterProps } from "sonner";
-import { Check } from "lucide-react";
+import { Check, Info } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Toaster as Sonner, toast } from "sonner";
 
@@ -33,10 +33,22 @@ export const successToast = (message: string) => ({
   message,
 });
 
+export const infoToast = (message: string) => ({
+  icon: <Info className="text-accent" />,
+  message,
+});
+
 export function showSuccessToast(text: string) {
   const { message, ...options } = successToast(text);
   // Timeout needed in case this is called on page load
   setTimeout(() => {
     toast.success(message, options);
+  }, 0);
+}
+
+export function showInfoToast(text: string) {
+  const { message, ...options } = infoToast(text);
+  setTimeout(() => {
+    toast.info(message, options);
   }, 0);
 }

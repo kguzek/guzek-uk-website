@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
 
 import type { Language } from "@/lib/enums";
-import { useModals } from "@/lib/context/modal-context";
+import { showErrorToast } from "@/components/error/toast";
 import { TRANSLATIONS } from "@/lib/translations";
 
 const VIDEO_FRAME_RATE = 25; // frames per second
@@ -28,7 +28,6 @@ export function Player({
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [loadingFailed, setLoadingFailed] = useState<boolean | undefined>(false);
   const router = useRouter();
-  const { setModalError } = useModals();
   const data = TRANSLATIONS[userLanguage];
 
   function onLoadStart() {
@@ -39,7 +38,7 @@ export function Player({
     // Only update if it's `undefined`, not `false`
     if (loadingFailed === false) return;
     console.error(evt.nativeEvent);
-    setModalError(data.liveSeries.watch.playbackError);
+    showErrorToast(data.liveSeries.watch.playbackError);
     setLoadingFailed(true);
   }
 

@@ -137,6 +137,7 @@ export const POLISH: Translation = {
     explanation:
       "Aby móc wyszukiwać i pobierać torrenty seriali, musisz skonfigurować serwer LiveSeries. Serwer ten będzie używany do pobierania torrentów i przesyłania do przeglądarki filmów.",
     cta: "Dowiedz się więcej na ",
+    setup: "Odwiedz swój profil aby ustawić adres serwera LiveSeries.",
     tvShowList: {
       showing: "Wynik",
       of: "z",
@@ -159,6 +160,7 @@ export const POLISH: Translation = {
       like: "Polub",
       unlike: "Odlub",
       subscribe: "Włącz automatyczne pobieranie odcinków",
+      unsubscribe: "Wyłącz automatyczne pobieranie odcinków",
       confirmSubscribe: (unwatched) =>
         `Uwaga: Czy na pewno chcesz automatycznie pobierać wszystkie nieobejrzane odcinki dla tego serialu? Ilość nieobejrzanych odcinków: ${unwatched}.`,
       showDetails: "Dane Serialu",

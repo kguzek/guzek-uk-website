@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import type { Language } from "@/lib/enums";
 import { fetchErrorToast } from "@/components/error/toast";
 import { Button } from "@/components/ui/button";
-import { fetchFromApi } from "@/lib/backend/v2";
+import { fetchFromApi } from "@/lib/backend";
 import { TRANSLATIONS } from "@/lib/translations";
 
 export function LogoutButton({ userLanguage }: { userLanguage: Language }) {
@@ -34,9 +34,8 @@ export function LogoutButton({ userLanguage }: { userLanguage: Language }) {
       onSubmit={(event_) => {
         toast.promise(mutateAsync(event_), { error: fetchErrorToast(data) });
       }}
-      className="flex justify-center"
     >
-      <Button type="submit" role="submit" loading={isPending} disabled={isSuccess}>
+      <Button type="submit" loading={isPending} disabled={isSuccess} className="min-w-28">
         {data.profile.formDetails.logout}
       </Button>
     </form>

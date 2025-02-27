@@ -13,7 +13,7 @@ export function WatchedIndicator({
   episodes,
   userLanguage,
 }: {
-  season: string;
+  season: number | `${number}`;
   episodes: TvMazeEpisode[];
   userLanguage: Language;
 }) {

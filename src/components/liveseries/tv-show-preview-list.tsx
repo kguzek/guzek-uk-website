@@ -3,7 +3,7 @@ import type { Show as TvMazeShow } from "tvmaze-wrapper-ts";
 import type { Language } from "@/lib/enums";
 import { NumericValue } from "@/components/numeric-value";
 import { Paginator } from "@/components/pagination/paginator";
-import { getAuth } from "@/lib/providers/auth-provider/rsc";
+import { getAuth } from "@/lib/providers/auth-provider";
 import { TRANSLATIONS } from "@/lib/translations";
 
 import { Tile } from "../tile";
@@ -27,7 +27,7 @@ export async function TvShowPreviewList({
   const startIdx = 1 + (page - 1) * RESULTS_PER_PAGE;
   const endIdx = Math.min(total, startIdx + RESULTS_PER_PAGE - 1);
 
-  const { user, accessToken } = await getAuth();
+  const { user } = await getAuth();
 
   const paginator = (
     <Paginator currentPage={page} totalPages={Math.ceil(total / RESULTS_PER_PAGE)} />
@@ -60,8 +60,7 @@ export async function TvShowPreviewList({
             idx={idx % 8}
             tvShow={tvShow}
             userLanguage={userLanguage}
-            accessToken={accessToken}
-            isLiked={user?.userShows?.liked.includes(tvShow.id) ?? false}
+            user={user}
           />
         ))}
       </div>

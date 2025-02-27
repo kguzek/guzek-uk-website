@@ -1,11 +1,11 @@
 import Link from "next/link";
 
-import type { FetchError } from "@/lib/backend/v2";
 import { ErrorComponent } from "@/components/error/component";
 import { TextWithUrl } from "@/components/text-with-url";
-import { fetchFromApi, HttpError, NetworkError } from "@/lib/backend/v2";
+import { fetchFromApi } from "@/lib/backend";
+import { HttpError, NetworkError } from "@/lib/backend/error-handling";
 import { ErrorCode } from "@/lib/enums";
-import { getAuth } from "@/lib/providers/auth-provider/rsc";
+import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
 
 import { Player } from "./player";
@@ -31,7 +31,7 @@ export default async function Watch({ params }: Props) {
   if (!accessToken) {
     return <ErrorComponent errorCode={ErrorCode.Unauthorized} />;
   }
-  if (!user.serverUrl) {
+  if (user.serverUrl == null || user.serverUrl === "") {
     // console.warn("User without server URL accessed /liveseries/watch");
     return (
       <ErrorComponent
@@ -51,7 +51,7 @@ export default async function Watch({ params }: Props) {
     });
   } catch (error) {
     console.error("Error fetching video stats:", error);
-    statError = error as FetchError;
+    statError = error;
   }
 
   const episodeObject = { number: episode, season };

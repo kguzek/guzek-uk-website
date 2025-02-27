@@ -1,7 +1,7 @@
 import { getPayload } from "payload";
 import config from "@payload-config";
 
-import { getAuth } from "@/lib/providers/auth-provider/rsc";
+import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
 
 import type { Parallels } from "./breadcrumbs";

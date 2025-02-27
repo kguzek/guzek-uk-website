@@ -1,33 +1,28 @@
 "use client";
 
 import type { Show as TvMazeShow } from "tvmaze-wrapper-ts";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
 import type { Language } from "@/lib/enums";
+import type { User } from "@/payload-types";
 import { CarouselArrow, CarouselIndicator } from "@/components/carousel";
 import { TvShowPreview } from "@/components/liveseries/tv-show-preview";
-import { useModals } from "@/lib/context/modal-context";
 import { useElementScroll } from "@/lib/hooks/element-scroll";
-import { TRANSLATIONS } from "@/lib/translations";
 import { scrollToElement } from "@/lib/util";
 
 // Number of skeleton cards to display when loading liked show ids
 const SKELETON_CARDS_COUNT = 4;
 
 export function LikedShowsCarousel({
-  likedShowIds,
   likedShows,
   userLanguage,
-  accessToken,
+  user,
 }: {
-  likedShowIds?: number[];
   likedShows: { [id: number]: TvMazeShow };
   userLanguage: Language;
-  accessToken: string | null;
+  user: User | null;
 }) {
-  const { setModalError } = useModals();
   const carouselRef = useRef<HTMLUListElement>(null);
-  const data = TRANSLATIONS[userLanguage];
 
   const {
     scroll: carouselScroll,
@@ -35,15 +30,8 @@ export function LikedShowsCarousel({
     visibleWidth: carouselVisibleWidth,
   } = useElementScroll(carouselRef);
 
-  useEffect(() => {
-    if (!likedShowIds) {
-      // TODO: more specific error message
-      setModalError(data.networkError);
-    }
-  }, [likedShowIds]);
-
   function getDisplayedCards() {
-    const totalCards = likedShowIds?.length ?? SKELETON_CARDS_COUNT;
+    const totalCards = user?.userShows?.liked?.length ?? SKELETON_CARDS_COUNT;
     const cardWidth = carouselTotalWidth / totalCards;
     // Predetermined card width doesn't take into account padding/spacing, so using this
     const cardsPerPage = Math.floor(carouselVisibleWidth / cardWidth);
@@ -85,7 +73,7 @@ export function LikedShowsCarousel({
     return visible;
   }
 
-  const toMap = likedShowIds ?? Array<number>(SKELETON_CARDS_COUNT).fill(0);
+  const toMap = user?.userShows?.liked ?? Array<number>(SKELETON_CARDS_COUNT).fill(0);
   return (
     <div className="relative flex flex-wrap items-center justify-center gap-2">
       <CarouselArrow left onClick={previousImage} isVisible={isScrollerVisible} />
@@ -100,8 +88,7 @@ export function LikedShowsCarousel({
               idx={idx}
               tvShow={likedShows[showId]}
               userLanguage={userLanguage}
-              accessToken={accessToken}
-              isLiked={likedShowIds?.includes(showId) ?? false}
+              user={user}
             />
           </li>
         ))}

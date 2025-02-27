@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -9,7 +10,7 @@ import { toast } from "sonner";
 
 import type { UpdateUserDetailsSchema } from "@/lib/backend/schemas";
 import type { Language } from "@/lib/enums";
-import type { User } from "@/lib/types";
+import type { User } from "@/payload-types";
 import { fetchErrorToast } from "@/components/error/toast";
 import {
   AlertDialog,
@@ -40,8 +41,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { successToast } from "@/components/ui/sonner";
+import { fetchFromApi, refreshAccessToken } from "@/lib/backend";
 import { updateUserDetailsSchema } from "@/lib/backend/schemas";
-import { fetchFromApi, refreshAccessToken } from "@/lib/backend/v2";
 import { LIVESERIES_SERVER_HOMEPAGE } from "@/lib/constants";
 import { TRANSLATIONS } from "@/lib/translations";
 
@@ -54,6 +55,9 @@ export function ProfileForm({
 }) {
   const data = TRANSLATIONS[userLanguage];
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const focusServerUrl = searchParams.get("focus") === "serverUrl";
+  const serverUrlInputRef = useRef<HTMLInputElement>(null);
 
   const { mutateAsync, isPending } = useMutation({ mutationFn: updateUser });
 
@@ -145,7 +149,7 @@ export function ProfileForm({
             <FormItem>
               <FormLabel>
                 {data.profile.formDetails.serverUrl}
-                <AlertDialog>
+                <AlertDialog defaultOpen={focusServerUrl}>
                   <AlertDialogTrigger asChild>
                     <Button
                       type="button"
@@ -156,22 +160,31 @@ export function ProfileForm({
                       <span className="hover-underline">{data.liveSeries.whatsThis}</span>
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent>
+                  <AlertDialogContent
+                    onCloseAutoFocus={(event_) => {
+                      event_.preventDefault();
+                      if (serverUrlInputRef.current) {
+                        serverUrlInputRef.current.focus();
+                      }
+                    }}
+                  >
                     <AlertDialogHeader>
                       <AlertDialogTitle>
                         {data.profile.formDetails.serverUrl}
                       </AlertDialogTitle>
-                      <AlertDialogDescription className="space-y-3">
-                        <div>{data.liveSeries.explanation}</div>
+                      <AlertDialogDescription asChild className="space-y-3">
                         <div>
-                          {data.liveSeries.cta}
-                          <Link
-                            className="hover-underline"
-                            href={LIVESERIES_SERVER_HOMEPAGE}
-                          >
-                            {LIVESERIES_SERVER_HOMEPAGE}
-                          </Link>
-                          .
+                          <p>{data.liveSeries.explanation}</p>
+                          <p>
+                            {data.liveSeries.cta}
+                            <Link
+                              className="hover-underline"
+                              href={LIVESERIES_SERVER_HOMEPAGE}
+                            >
+                              {LIVESERIES_SERVER_HOMEPAGE}
+                            </Link>
+                            .
+                          </p>
                         </div>
                       </AlertDialogDescription>
                     </AlertDialogHeader>
@@ -182,7 +195,15 @@ export function ProfileForm({
                 </AlertDialog>
               </FormLabel>
               <FormControl>
-                <Input type="url" autoComplete="url" {...field} />
+                <Input
+                  type="url"
+                  autoComplete="url"
+                  {...field}
+                  ref={(element) => {
+                    field.ref(element);
+                    serverUrlInputRef.current = element;
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
