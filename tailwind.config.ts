@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindGlow from "@codaworks/react-glow/tailwind";
 import typography from "@tailwindcss/typography";
 import tailwindAnimate from "tailwindcss-animate";
 
@@ -57,7 +58,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [typography, tailwindAnimate],
+  plugins: [typography, tailwindAnimate, tailwindGlow],
 };
 
 export default config;

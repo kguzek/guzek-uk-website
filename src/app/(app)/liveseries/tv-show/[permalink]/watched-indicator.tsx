@@ -18,7 +18,7 @@ export function WatchedIndicator({
   userLanguage: Language;
 }) {
   const data = TRANSLATIONS[userLanguage];
-  const { updateWatchedEpisodes, isSeasonWatched } = useTvShowContext();
+  const { updateWatchedEpisodes, isSeasonWatched, isUpdating } = useTvShowContext();
 
   const allEpisodesAired = episodes.every(hasEpisodeAired);
   const seasonWatched = isSeasonWatched(season, episodes);
@@ -29,6 +29,7 @@ export function WatchedIndicator({
         seasonWatched ? data.liveSeries.tvShow.un : "",
       )}
       onClick={() => updateWatchedEpisodes(season, seasonWatched ? [] : episodes)}
+      disabled={isUpdating}
       className="clickable"
     >
       {isSeasonWatched(season, episodes) ? (

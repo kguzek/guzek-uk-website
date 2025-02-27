@@ -1,17 +1,15 @@
-import type { User } from "@/payload-types";
+import type { EpisodeArray, User } from "@/payload-types";
 import { showFetchErrorToast } from "@/components/error/toast";
 
 import type { Language } from "../enums";
 import { fetchFromApi } from ".";
 import { TRANSLATIONS } from "../translations";
+import { addOrRemove, ensureUnique } from "../util";
 
-async function tryPatchUser(
-  user: User,
-  userLanguage: Language,
-  body: Record<string, unknown>,
-) {
+async function tryPatchUser(user: User, userLanguage: Language, body: Partial<User>) {
+  let res;
   try {
-    await fetchFromApi(`users/${user.id}`, {
+    res = await fetchFromApi(`users/${user.id}`, {
       method: "PATCH",
       body,
     });
@@ -19,6 +17,7 @@ async function tryPatchUser(
     showFetchErrorToast(TRANSLATIONS[userLanguage], error);
     return false;
   }
+  console.debug("Updated user details:", res.data);
   return true;
 }
 
@@ -34,7 +33,7 @@ export const updateUserWatchedEpisodes = async (
       ...user.watchedEpisodes,
       [showId]: {
         ...user.watchedEpisodes[showId],
-        [season]: newWatchedEpisodes,
+        [season]: ensureUnique(newWatchedEpisodes),
       },
     },
   });
@@ -48,9 +47,7 @@ export const updateUserShowLike = (
   tryPatchUser(user, userLanguage, {
     userShows: {
       ...user.userShows,
-      liked: isLiked
-        ? [...user.userShows.liked, showId]
-        : user.userShows.liked.filter((id) => id !== showId),
+      liked: addOrRemove(user.userShows?.liked, showId, isLiked),
     },
   });
 
@@ -63,8 +60,9 @@ export const updateUserShowSubscription = (
   tryPatchUser(user, userLanguage, {
     userShows: {
       ...user.userShows,
-      subscribed: isSubscribed
-        ? [...user.userShows.subscribed, showId]
-        : user.userShows.subscribed.filter((id) => id !== showId),
+      subscribed: addOrRemove(user.userShows?.subscribed, showId, isSubscribed),
     },
   });
+
+export const getUserLikedShows = (user: User | null): EpisodeArray =>
+  user?.userShows?.liked?.filter((id) => id > 0) ?? [];

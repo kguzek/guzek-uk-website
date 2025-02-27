@@ -23,7 +23,7 @@ export function UserWidget({
     <div className="group text-primary grid h-full max-w-[90%] place-items-center font-light sm:max-w-full">
       {user == null ? (
         <div className="flex flex-col gap-2 sm:flex-row">
-          <Button asChild variant="ghost" className="min-w-28">
+          <Button asChild variant="glow" className="min-w-28">
             <Link href="/signup">{data.profile.formDetails.signup}</Link>
           </Button>
           <Button asChild className="min-w-28">

@@ -25,24 +25,23 @@ export function validateUrl(value?: string | null): string | true {
     return `Invalid URL: ${(error as Error).message}`;
   }
   return (
-    url.protocol === "http:" ||
-    url.protocol === "https:" ||
+    ["http:", "https:"].includes(url.protocol) ||
     "URL must start with http:// or https://"
   );
 }
 
 /** Ensures every item in the array appears at most once. */
 export const isEmptyOrUniqueArray: NumberFieldManyValidation = (array) =>
-  !array || new Set(array).size === array.length || "Every array item must be unique.";
+  (array != null && new Set(array).size === array.length) ||
+  "Every array item must be unique.";
 
-export const isPositiveInteger = (value: string | number) =>
-  Number.isInteger(+value) && +value > 0;
+export const isNonNegativeInteger = (value: string | number) =>
+  Number.isInteger(+value) && +value >= 0;
 
-export const isEmptyOrPositiveIntegerArray = (
-  array: null | undefined | any[], // eslint-disable-line @typescript-eslint/no-explicit-any
+export const isEmptyOrNonNegativeIntegerArray = (
+  array: null | undefined | (string | number)[],
 ) =>
-  !array ||
-  array.every(isPositiveInteger) ||
+  (array != null && array.every(isNonNegativeInteger)) ||
   "Every array item must be a positive integer.";
 
 type Validator<F extends object, T> = (

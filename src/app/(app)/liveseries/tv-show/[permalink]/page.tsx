@@ -15,6 +15,9 @@ interface Props {
   params: Promise<Record<string, string>>;
 }
 
+const isTvShow = (tvShow: unknown) =>
+  typeof tvShow === "object" && tvShow != null && "id" in tvShow && "summary" in tvShow;
+
 export async function generateMetadata({ params }: Props) {
   const { data } = await getTranslations();
   const show = await getShowDetails(params);
@@ -46,7 +49,7 @@ async function getShowDetails(params: Props["params"]) {
     return null;
   }
   const tvShow = await findShowById(permalink);
-  if (tvShow?.name == null) {
+  if (!isTvShow(tvShow)) {
     console.warn("Invalid tv show details:", tvShow);
     return null;
   }
@@ -61,7 +64,11 @@ export default async function TvShow({ params }: Props) {
     return <ErrorComponent errorCode={ErrorCode.NotFound} />;
   }
 
-  const episodes = await getShowEpisodes(tvShow.id);
+  const result = await getShowEpisodes(tvShow.id);
+  const episodes = Array.isArray(result) ? result : [];
+  if (episodes.length === 0) {
+    console.warn("No episodes found for tv show:", tvShow.name, result);
+  }
 
   return (
     <ShowDetails

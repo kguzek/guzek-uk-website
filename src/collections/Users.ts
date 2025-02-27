@@ -6,7 +6,7 @@ import {
   ALPHANUMERIC_PATTERN,
   isAdminFieldLevel,
   isAdminOrSelf,
-  isEmptyOrPositiveIntegerArray,
+  isEmptyOrNonNegativeIntegerArray,
   isEmptyOrUniqueArray,
   stackValidators,
   validateUrl,
@@ -16,7 +16,7 @@ import { verifyEmail } from "@/templates/verify-email";
 
 const showIdValidator = stackValidators<NumberField, number[]>(
   isEmptyOrUniqueArray,
-  isEmptyOrPositiveIntegerArray,
+  isEmptyOrNonNegativeIntegerArray,
 );
 
 type TemplateName = "reset-password" | "verify-email";
@@ -141,7 +141,7 @@ export const Users: CollectionConfig = {
           name: "liked",
           type: "number",
           hasMany: true,
-          defaultValue: [],
+          defaultValue: [0],
           required: true,
           validate: showIdValidator,
         },
@@ -149,7 +149,7 @@ export const Users: CollectionConfig = {
           name: "subscribed",
           type: "number",
           hasMany: true,
-          defaultValue: [],
+          defaultValue: [0],
           required: true,
           validate: showIdValidator,
         },

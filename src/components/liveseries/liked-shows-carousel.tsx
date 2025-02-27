@@ -7,11 +7,12 @@ import type { Language } from "@/lib/enums";
 import type { User } from "@/payload-types";
 import { CarouselArrow, CarouselIndicator } from "@/components/carousel";
 import { TvShowPreview } from "@/components/liveseries/tv-show-preview";
+import { getUserLikedShows } from "@/lib/backend/liveseries";
 import { useElementScroll } from "@/lib/hooks/element-scroll";
 import { scrollToElement } from "@/lib/util";
 
 // Number of skeleton cards to display when loading liked show ids
-const SKELETON_CARDS_COUNT = 4;
+// const SKELETON_CARDS_COUNT = 4;
 
 export function LikedShowsCarousel({
   likedShows,
@@ -31,7 +32,7 @@ export function LikedShowsCarousel({
   } = useElementScroll(carouselRef);
 
   function getDisplayedCards() {
-    const totalCards = user?.userShows?.liked?.length ?? SKELETON_CARDS_COUNT;
+    const totalCards = getUserLikedShows(user).length;
     const cardWidth = carouselTotalWidth / totalCards;
     // Predetermined card width doesn't take into account padding/spacing, so using this
     const cardsPerPage = Math.floor(carouselVisibleWidth / cardWidth);
@@ -73,7 +74,6 @@ export function LikedShowsCarousel({
     return visible;
   }
 
-  const toMap = user?.userShows?.liked ?? Array<number>(SKELETON_CARDS_COUNT).fill(0);
   return (
     <div className="relative flex flex-wrap items-center justify-center gap-2">
       <CarouselArrow left onClick={previousImage} isVisible={isScrollerVisible} />
@@ -82,7 +82,7 @@ export function LikedShowsCarousel({
         id="previews"
         className="no-scrollbar flex w-full gap-4 overflow-x-scroll"
       >
-        {toMap.map((showId, idx) => (
+        {getUserLikedShows(user).map((showId, idx) => (
           <li key={`home-preview ${showId} ${idx}`}>
             <TvShowPreview
               idx={idx}

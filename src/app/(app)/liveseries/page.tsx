@@ -7,6 +7,7 @@ import type { EpisodeArray } from "@/payload-types";
 import { ErrorComponent } from "@/components/error/component";
 import { EpisodesList } from "@/components/liveseries/episodes-list";
 import { Tile } from "@/components/tile";
+import { getUserLikedShows } from "@/lib/backend/liveseries";
 import { ErrorCode } from "@/lib/enums";
 import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
@@ -26,7 +27,7 @@ export default async function Home() {
   const { user } = await getAuth();
 
   const watchedEpisodes = user?.watchedEpisodes ?? {};
-  const likedShowIds: EpisodeArray = user?.userShows?.liked ?? [];
+  const likedShowIds: EpisodeArray = getUserLikedShows(user);
   const likedShows: { [showId: number]: ShowWithEpisodes } = {};
 
   const unwatchedEpisodes: Record<number, TvMazeEpisode[]> = {};
@@ -86,31 +87,34 @@ export default async function Home() {
           </p>
         </Tile>
       ) : (
-        <Tile className="items-start">
-          {/* <LikedShowsCarousel
+        <>
+          <Tile className="items-start">
+            {/* <LikedShowsCarousel
             likedShows={likedShows}
             userLanguage={userLanguage}
             user={user}
           /> */}
-          <h3 className="mb-5 text-2xl font-bold">
-            {data.liveSeries.tvShow.unwatched} {data.liveSeries.tvShow.episodes}
-          </h3>
-          {totalUnwatchedEpisodes === 0 ? (
-            <p>{data.liveSeries.home.noUnwatched}</p>
-          ) : (
-            Object.entries(unwatchedEpisodes).map(([showId, unwatchedInShow], idx) =>
-              unwatchedInShow.length === 0 ? null : (
-                <div key={`liked-show-${showId}-${idx}`}>
-                  <EpisodesList
-                    tvShow={likedShows[+showId]}
-                    heading={`${likedShows[+showId].name} (${unwatchedInShow.length})`}
-                    episodes={unwatchedInShow}
-                  />
-                </div>
-              ),
-            )
-          )}
-        </Tile>
+            <h3 className="text-2xl font-bold">
+              {data.liveSeries.tvShow.unwatched} {data.liveSeries.tvShow.episodes}
+            </h3>
+            {totalUnwatchedEpisodes === 0 ? (
+              <p className="mt-5">{data.liveSeries.home.noUnwatched}</p>
+            ) : null}
+          </Tile>
+          {totalUnwatchedEpisodes === 0
+            ? null
+            : Object.entries(unwatchedEpisodes).map(([showId, unwatchedInShow], idx) =>
+                unwatchedInShow.length === 0 ? null : (
+                  <div key={`liked-show-${showId}-${idx}`}>
+                    <EpisodesList
+                      tvShow={likedShows[+showId]}
+                      heading={`${likedShows[+showId].name} (${unwatchedInShow.length})`}
+                      episodes={unwatchedInShow}
+                    />
+                  </div>
+                ),
+              )}
+        </>
       )}
     </>
   );
