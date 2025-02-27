@@ -1,4 +1,5 @@
 // @ts-check
+import { withPayload } from "@payloadcms/next/withPayload";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -7,11 +8,19 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        hostname:
-          "avatar-management--avatars.us-west-2.prod.public.atl-paas.net",
+        // GitHub project shields
+        hostname: "img.shields.io",
+      },
+      {
+        // Episodate API TV Show thumbnails
+        hostname: "static.episodate.com",
+      },
+      {
+        // TVmaze API TV Show thumbnails
+        hostname: "static.tvmaze.com",
       },
     ],
   },
 };
 
-export default nextConfig;
+export default withPayload(nextConfig);

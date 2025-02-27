@@ -1,7 +1,8 @@
-import { Language } from "@/lib/enums";
-import { MiddlewareFactory } from "@/lib/types";
-import { getLanguageCookieOptions } from "@/lib/util";
 import { NextResponse } from "next/server";
+
+import type { MiddlewareFactory } from "@/lib/types";
+import { Language } from "@/lib/enums";
+import { getLanguageCookieOptions } from "@/lib/util";
 
 export const languageMiddleware: MiddlewareFactory = (next) =>
   async function (request) {
@@ -11,11 +12,7 @@ export const languageMiddleware: MiddlewareFactory = (next) =>
         const path = request.nextUrl.pathname.replace(slug, "") || "/";
         const url = new URL(path, request.url);
         const response = NextResponse.redirect(url);
-        response.cookies.set(
-          "lang",
-          language.toUpperCase(),
-          getLanguageCookieOptions(),
-        );
+        response.cookies.set("lang", language.toUpperCase(), getLanguageCookieOptions());
         return response;
       }
     }

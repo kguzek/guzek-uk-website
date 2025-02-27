@@ -1,32 +1,35 @@
-import { Translation } from ".";
-import {
-  LIVESERIES_SERVER_HOMEPAGE,
-  LONG_DATE_FORMAT,
-  SHORT_DATE_FORMAT,
-  SHORT_TIME_FORMAT,
-} from "./common";
+import { LONG_DATE_FORMAT, SHORT_DATE_FORMAT, SHORT_TIME_FORMAT } from "@/lib/constants";
+
+import type { Translation } from ".";
 
 export const POLISH: Translation = {
   footer: (year) => `${year} \u00a9 Konrad Guzek`,
   loading: "Trwa ładowanie strony",
+  redirecting: "Trwa przekierowywanie",
   language: "Język",
   loginShort: "Zaloguj",
-  dateFormat: new Intl.DateTimeFormat("pl-PL", LONG_DATE_FORMAT),
-  dateShortFormat: new Intl.DateTimeFormat("pl-PL", SHORT_DATE_FORMAT),
-  dateTimeFormat: new Intl.DateTimeFormat("pl-PL", {
-    ...LONG_DATE_FORMAT,
-    ...SHORT_TIME_FORMAT,
-  }),
-  dateTimeShortFormat: new Intl.DateTimeFormat("pl-PL", {
-    ...SHORT_DATE_FORMAT,
-    ...SHORT_TIME_FORMAT,
-  }),
-  numberFormat: new Intl.NumberFormat("pl-PL"),
+  format: {
+    date: new Intl.DateTimeFormat("pl-PL", LONG_DATE_FORMAT),
+    dateShort: new Intl.DateTimeFormat("pl-PL", SHORT_DATE_FORMAT),
+    dateTime: new Intl.DateTimeFormat("pl-PL", {
+      ...LONG_DATE_FORMAT,
+      ...SHORT_TIME_FORMAT,
+    }),
+    dateTimeShort: new Intl.DateTimeFormat("pl-PL", {
+      ...SHORT_DATE_FORMAT,
+      ...SHORT_TIME_FORMAT,
+    }),
+    number: new Intl.NumberFormat("pl-PL"),
+    quote: (text) => `„${text}”`,
+  },
   networkError:
     "Nastąpił błąd sieciowy podczas wykonywania tej czynności. Spróbuj wkrótce ponownie.",
-  unknownError:
-    "Nastąpił nieoczekiwany bład. Proszę skontaktować się z konrad@guzek.uk",
+  unknownError: "Nastąpił nieoczekiwany bład. Proszę skontaktować się z konrad@guzek.uk",
   loggedOut: "Wylogowano z konta.",
+  placeholder: {
+    email: "jan@kowalski.pl",
+    username: "jankow",
+  },
   profile: {
     title: "Profil",
     body: "Witamy na Twoim profilu!",
@@ -52,28 +55,48 @@ export const POLISH: Translation = {
       haveAccountAlready: "masz już konto?",
       logout: "Wyloguj się",
       serverUrl: "URL serwera LiveSeries",
+      success: "Profil został zaktualizowany pomyślnie",
+      verifyEmail: {
+        header: "Weryfikacja Email",
+        info: (email) =>
+          `Email z linkiem weryfikacyjnym został wysłany na adres ${email || "podany w formularzu"}.`,
+        cta: "Sprawdź swoją skrzynkę odbiorczą.",
+        success: "Email został pomyślnie zweryfikowany",
+      },
+      forgotPassword: {
+        header: "Nie znasz hasła",
+        info: (email) =>
+          `Jeśli na adres ${email || "podany w formularzu"} jest zarejestrowane konto, otrzyma ono email z linkiem do zmiany hasła.`,
+        success: "Email z linkiem do zresetowania hasła został wysłany.",
+      },
+      resetPassword: {
+        header: "Reset Hasła",
+        field: "Nowe hasło",
+        submit: "Zresetuj hasło",
+        success: "Hasło zostało pomyślnie zresetowane",
+      },
     },
   },
   error: {
     400: {
       title: "Błąd Zapytania",
-      body: "Zapytanie nie zostało zrozumiane. Spróbuj ponownie.",
+      body: "Zapytanie nie zostało zrozumiane. Spróbuj ponownie",
     },
     401: {
       title: "Nieautoryzowano",
-      body: "Ta strona jest dostępna tylko dla zalogowanych użytkowników.",
+      body: "Ta strona jest dostępna tylko dla zalogowanych użytkowników",
     },
     403: {
       title: "Zabroniono",
-      body: "Nie masz uprawnień do wyświetlania tego zasobu.",
+      body: "Nie masz uprawnień do wyświetlania tego zasobu",
     },
     404: {
       title: "Nie Znaleziono",
-      body: "Nie znaleziono zasobu, którego szukasz.",
+      body: "Nie znaleziono zasobu, którego szukasz",
     },
     500: {
       title: "Błąd Serwera",
-      body: "Nastąpił błąd serwera. Spróbuj ponownie później.",
+      body: "Nastąpił błąd serwera. Spróbuj ponownie później",
     },
   },
   admin: {
@@ -105,14 +128,22 @@ export const POLISH: Translation = {
     yes: "Tak",
     no: "Nie",
   },
+  projects: {
+    title: "Projekty",
+  },
   liveSeries: {
     title: "LiveSeries",
     whatsThis: "Co to?",
-    explanation: `Aby móc wyszukiwać i pobierać torrenty seriali, musisz skonfigurować serwer LiveSeries. Serwer ten będzie używany do pobierania torrentów i przesyłania do przeglądarki filmów. Dowiedz się więcej na ${LIVESERIES_SERVER_HOMEPAGE}`,
+    explanation:
+      "Aby móc wyszukiwać i pobierać torrenty seriali, musisz skonfigurować serwer LiveSeries. Serwer ten będzie używany do pobierania torrentów i przesyłania do przeglądarki filmów.",
+    cta: "Dowiedz się więcej na ",
+    setup: "Odwiedz swój profil aby ustawić adres serwera LiveSeries.",
     tvShowList: {
       showing: "Wynik",
       of: "z",
       page: "Strona",
+      previous: "Poprzednia",
+      next: "Następna",
     },
     tvShow: {
       title: "Dane Serialu",
@@ -120,6 +151,8 @@ export const POLISH: Translation = {
       present: "Obecnie",
       source: "Źródło",
       images: "Galeria",
+      previousImage: "Poprzednie zdjęcie",
+      nextImage: "Następne zdjęcie",
       episodes: "Odcinki",
       noEpisodes: "Brak odcinków do wyświetlenia.",
       episode: "Odcinek",
@@ -127,12 +160,12 @@ export const POLISH: Translation = {
       like: "Polub",
       unlike: "Odlub",
       subscribe: "Włącz automatyczne pobieranie odcinków",
+      unsubscribe: "Wyłącz automatyczne pobieranie odcinków",
       confirmSubscribe: (unwatched) =>
         `Uwaga: Czy na pewno chcesz automatycznie pobierać wszystkie nieobejrzane odcinki dla tego serialu? Ilość nieobejrzanych odcinków: ${unwatched}.`,
       showDetails: "Dane Serialu",
       markWatched: (un) => `Zaznacz odcinek jako ${un}obejrzany`,
-      markAllWatched: (un) =>
-        `Zaznacz wszystkie odcinki w sezonie jako ${un}obejrzane`,
+      markAllWatched: (un) => `Zaznacz wszystkie odcinki w sezonie jako ${un}obejrzane`,
       un: "nie",
       unwatched: "Nieobejrzane",
     },
@@ -172,10 +205,9 @@ Gdy znajdziesz serial, który Ci się podoba, kliknij ikonę serca, aby dodać g
       },
       downloadComplete: (episode) => `Pomyśłnie pobrano ${episode}.`,
       downloadError: (episode) => `Pobieranie ${episode} nie powiodło się.`,
-      confirmDelete: (episode) =>
-        `Na pewno chcesz usunąć ${episode} z serwera?`,
+      confirmDelete: (episode) => `Na pewno chcesz usunąć ${episode} z serwera?`,
       deleted: (episode) => `Pomyślnie usunięto odcinek ${episode}.`,
-      serialise: (episode) => `S${episode.season}:O${episode.episode}`,
+      serialise: (episode) => `S${episode.season}:O${episode.number}`,
     },
     watch: {
       playbackError:

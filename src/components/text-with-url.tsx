@@ -20,11 +20,7 @@ export function TextWithUrl({ children }: { children: string | string[] }) {
     <p>
       {before}
       {url && (
-        <Link
-          href={url}
-          target="_blank"
-          className="hover-underline text-accent"
-        >
+        <Link href={url} target="_blank" className="hover-underline text-accent">
           {url}
         </Link>
       )}

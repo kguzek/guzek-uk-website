@@ -1,10 +1,14 @@
-import { CAROUSEL_INDICATOR_FULL_WIDTH } from "@/lib/types";
-import { scrollToElement } from "@/lib/util";
-import "./carousel.css";
-import { useScroll } from "@/hooks/scroll";
 import { useRef } from "react";
-import { cn } from "@/lib/utils";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
+
+import { CAROUSEL_INDICATOR_FULL_WIDTH } from "@/lib/constants";
+import { useElementScroll } from "@/lib/hooks/element-scroll";
+import { scrollToElement } from "@/lib/util";
+import { cn } from "@/lib/utils";
+
+import "./carousel.css";
+
+import Image from "next/image";
 
 export function ImageGallery({
   className = "",
@@ -18,15 +22,14 @@ export function ImageGallery({
   const carouselRef = useRef<HTMLDivElement>(null);
 
   const { scroll: carouselScroll, totalWidth: carouselTotalWidth } =
-    useScroll(carouselRef);
+    useElementScroll(carouselRef);
 
   function getSelectedImage() {
     const imageWidth = carouselTotalWidth / images.length;
     return Math.round(carouselScroll / imageWidth) + 1;
   }
 
-  const scrollToImage = (imageNumber: number) =>
-    scrollToElement(`#image-${imageNumber}`);
+  const scrollToImage = (imageNumber: number) => scrollToElement(`#image-${imageNumber}`);
 
   function previousImage() {
     const selectedImage = getSelectedImage();
@@ -49,15 +52,20 @@ export function ImageGallery({
   return (
     <div className="relative flex flex-wrap items-center justify-center gap-2">
       <CarouselArrow left onClick={previousImage} />
-      <div ref={carouselRef} className={cn("carousel scroll-x", className)}>
+      <div
+        ref={carouselRef}
+        className={cn("carousel no-scrollbar overflow-x-scroll", className)}
+      >
         {images.map((url, idx) => (
-          <img
+          <Image
             key={idx}
             id={`image-${idx + 1}`}
             alt={`gallery image ${idx + 1}`}
             src={url}
             onLoad={onLoadImage}
             onError={onLoadImage}
+            width={1000}
+            height={600}
           />
         ))}
       </div>
@@ -84,7 +92,7 @@ export function CarouselArrow({
   return (
     <button
       className={cn(
-        "group flex h-16 w-16 items-center justify-center rounded-full bg-background-soft p-4 transition-all duration-300 lg:absolute",
+        "group bg-background-soft flex h-16 w-16 items-center justify-center rounded-full p-4 transition-all duration-300 lg:absolute",
         {
           "order-3 lg:left-0 lg:order-1 lg:translate-x-[-50%]": left,
           "order-5 lg:right-0 lg:order-3 lg:translate-x-[50%]": right,
@@ -96,12 +104,9 @@ export function CarouselArrow({
       onClick={onClick}
     >
       <div
-        className={cn(
-          "scale-[175%] text-background transition-transform duration-300",
-          {
-            "lg:scale-[125%] lg:group-hover:scale-[175%]": visible,
-          },
-        )}
+        className={cn("text-background scale-[175%] transition-transform duration-300", {
+          "lg:scale-[125%] lg:group-hover:scale-[175%]": visible,
+        })}
       >
         {left ? <ArrowLeftIcon /> : right ? <ArrowRightIcon /> : null}
       </div>
@@ -124,13 +129,13 @@ export function CarouselIndicator({
 
   return (
     <div
-      className="order-4 h-3 overflow-hidden rounded-full bg-primary"
+      className="bg-primary order-4 h-3 overflow-hidden rounded-full"
       style={{
         width: CAROUSEL_INDICATOR_FULL_WIDTH,
       }}
     >
       <div
-        className="h-3 bg-accent"
+        className="bg-accent h-3"
         style={{
           width,
           transform: `translateX(${

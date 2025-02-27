@@ -1,42 +1,37 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
+import type { Episode as TvMazeEpisode, Show as TvMazeShow } from "tvmaze-wrapper-ts";
 import { ChevronRightIcon, ClockIcon } from "lucide-react";
-import type {
-  Episode as EpisodeType,
-  TvShowDetails,
-  WatchedEpisodes,
-  ShowData,
-} from "@/lib/types";
+
+import { Tile } from "@/components/tile";
+import { getAuth } from "@/lib/providers/auth-provider";
+import { getTranslations } from "@/lib/providers/translation-provider";
 import { getEpisodeAirDate, hasEpisodeAired } from "@/lib/util";
-import { useTranslations } from "@/providers/translation-provider";
-import { EpisodeWatchedIndicator } from "./episode-watched-indicator";
-import { serverToApi } from "@/lib/backend/server";
+
 import { EpisodeDownloadIndicator } from "./episode-download-indicator";
-import { useAuth } from "@/providers/auth-provider";
+import { EpisodeWatchedIndicator } from "./episode-watched-indicator";
 
 async function Episode({
   episode,
   tvShow,
-  watchedEpisodes,
 }: {
-  episode: EpisodeType;
-  tvShow: TvShowDetails;
-  watchedEpisodes: ShowData<WatchedEpisodes> | null;
+  episode: TvMazeEpisode;
+  tvShow: TvMazeShow;
 }) {
-  const { data, userLanguage } = await useTranslations();
-  const { user, accessToken } = await useAuth();
+  const { data, userLanguage } = await getTranslations();
+  const { user, accessToken } = await getAuth();
 
-  const airDate = data.dateTimeFormat.format(getEpisodeAirDate(episode));
+  const airDate = data.format.dateTime.format(getEpisodeAirDate(episode));
 
-  const watchedInSeason = watchedEpisodes?.[tvShow.id]?.[+episode.season];
+  const watchedInSeason = user?.watchedEpisodes?.[tvShow.id]?.[+episode.season];
 
   return (
-    <div className="box-border flex w-full flex-col items-center gap-2 rounded-lg bg-background-soft p-2 px-4 sm:flex-row sm:justify-between">
+    <div className="bg-background box-border flex w-full flex-col items-center gap-2 rounded-lg p-2 px-4 sm:flex-row sm:justify-between">
       <div className="w-full self-start overflow-hidden">
         <div className="grid grid-cols-[auto_1fr] gap-2" title={episode.name}>
-          <i>{data.liveSeries.episodes.serialise(episode)}</i>
-          <div className="cutoff w-full text-accent-soft">{episode.name}</div>
+          <p>{data.liveSeries.episodes.serialise(episode)}</p>
+          <div className="cutoff text-accent-soft w-full">{episode.name}</div>
         </div>
-        <small>{airDate}</small>
+        <small className="text-background-soft">{airDate}</small>
       </div>
       <div className="flex items-center gap-4">
         {hasEpisodeAired(episode) ? (
@@ -53,7 +48,7 @@ async function Episode({
               showId={tvShow.id}
               episode={episode}
               watchedInSeason={watchedInSeason ?? []}
-              accessToken={accessToken}
+              user={user}
             />
           </>
         ) : (
@@ -70,41 +65,35 @@ export async function EpisodesList({
   episodes,
   children,
 }: {
-  tvShow: TvShowDetails;
+  tvShow: TvMazeShow;
   heading: string;
-  episodes: EpisodeType[];
+  episodes: TvMazeEpisode[];
   children?: ReactNode;
 }) {
-  const { user } = await useAuth();
-  let watchedEpisodes: ShowData<WatchedEpisodes> = {};
-  if (user != null) {
-    const watchedEpisodesResult = await serverToApi<ShowData<WatchedEpisodes>>(
-      "liveseries/watched-episodes/personal",
-    );
-    if (watchedEpisodesResult.ok) {
-      watchedEpisodes = watchedEpisodesResult.data;
-    }
-  }
   return (
     <div>
       <div className="peer flex items-center gap-4">
         <label className="clickable flex items-center gap-4">
           <input type="checkbox" className="peer hidden" />
-          <ChevronRightIcon className="transition-transform peer-checked:rotate-90"></ChevronRightIcon>
+          <ChevronRightIcon className="transition-transform duration-300 peer-checked:rotate-90"></ChevronRightIcon>
           <h4 className="my-4 text-lg font-bold">{heading}</h4>
         </label>
         {children}
       </div>
-      <div className="collapsible collapsed peer-has-[:checked]:expanded">
-        <div className="episodes grid gap-3 overflow-hidden md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-          {episodes.map((episode, idx) => (
-            <Episode
-              key={`episode-unwatched-${idx}`}
-              episode={episode}
-              tvShow={tvShow}
-              watchedEpisodes={watchedEpisodes}
-            />
-          ))}
+      <div className="collapsible collapsed peer-has-checked:expanded focus-within:expanded">
+        <div className="overflow-hidden">
+          <Tile
+            containerClassName="w-full"
+            className="grid w-full gap-3 xl:grid-cols-2 xl:gap-x-6 xl:gap-y-4"
+          >
+            {episodes.map((episode, idx) => (
+              <Episode
+                key={`episode-unwatched-${idx}`}
+                episode={episode}
+                tvShow={tvShow}
+              />
+            ))}
+          </Tile>
         </div>
       </div>
     </div>

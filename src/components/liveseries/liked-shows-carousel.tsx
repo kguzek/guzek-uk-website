@@ -1,48 +1,38 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { scrollToElement } from "@/lib/util";
+import type { Show as TvMazeShow } from "tvmaze-wrapper-ts";
+import { useRef } from "react";
+
+import type { Language } from "@/lib/enums";
+import type { User } from "@/payload-types";
 import { CarouselArrow, CarouselIndicator } from "@/components/carousel";
 import { TvShowPreview } from "@/components/liveseries/tv-show-preview";
-import { useScroll } from "@/hooks/scroll";
-import type { LikedShows } from "@/lib/types";
-import type { Language } from "@/lib/enums";
-import { TRANSLATIONS } from "@/lib/translations";
-import { useModals } from "@/context/modal-context";
+import { getUserLikedShows } from "@/lib/backend/liveseries";
+import { useElementScroll } from "@/lib/hooks/element-scroll";
+import { scrollToElement } from "@/lib/util";
 
 // Number of skeleton cards to display when loading liked show ids
-const SKELETON_CARDS_COUNT = 4;
+// const SKELETON_CARDS_COUNT = 4;
 
 export function LikedShowsCarousel({
-  likedShowIds,
   likedShows,
   userLanguage,
-  accessToken,
+  user,
 }: {
-  likedShowIds?: number[];
-  likedShows: LikedShows;
+  likedShows: { [id: number]: TvMazeShow };
   userLanguage: Language;
-  accessToken: string | null;
+  user: User | null;
 }) {
-  const { setModalError } = useModals();
   const carouselRef = useRef<HTMLUListElement>(null);
-  const data = TRANSLATIONS[userLanguage];
 
   const {
     scroll: carouselScroll,
     totalWidth: carouselTotalWidth,
     visibleWidth: carouselVisibleWidth,
-  } = useScroll(carouselRef);
-
-  useEffect(() => {
-    if (!likedShowIds) {
-      // TODO: more specific error message
-      setModalError(data.networkError);
-    }
-  }, [likedShowIds]);
+  } = useElementScroll(carouselRef);
 
   function getDisplayedCards() {
-    const totalCards = likedShowIds?.length ?? SKELETON_CARDS_COUNT;
+    const totalCards = getUserLikedShows(user).length;
     const cardWidth = carouselTotalWidth / totalCards;
     // Predetermined card width doesn't take into account padding/spacing, so using this
     const cardsPerPage = Math.floor(carouselVisibleWidth / cardWidth);
@@ -50,9 +40,8 @@ export function LikedShowsCarousel({
     const firstCard = Math.ceil(carouselScroll / cardWidth - 0.1) + 1;
     // or 5.99999... to be floored to 5.0
     const lastCard =
-      Math.floor(
-        (carouselScroll + carouselVisibleWidth - cardWidth) / cardWidth + 0.1,
-      ) + 1;
+      Math.floor((carouselScroll + carouselVisibleWidth - cardWidth) / cardWidth + 0.1) +
+      1;
     // Not using Math.round because then on small layouts the app will assume
     // we can see the full card when we can only see half of it
     const info = {
@@ -81,32 +70,25 @@ export function LikedShowsCarousel({
 
   function isScrollerVisible(direction: "left" | "right") {
     const { firstCard, lastCard, totalCards } = getDisplayedCards();
-    const visible =
-      direction === "left" ? firstCard > 1 : lastCard < totalCards;
+    const visible = direction === "left" ? firstCard > 1 : lastCard < totalCards;
     return visible;
   }
 
-  const toMap = likedShowIds ?? Array<number>(SKELETON_CARDS_COUNT).fill(0);
   return (
     <div className="relative flex flex-wrap items-center justify-center gap-2">
-      <CarouselArrow
-        left
-        onClick={previousImage}
-        isVisible={isScrollerVisible}
-      />
+      <CarouselArrow left onClick={previousImage} isVisible={isScrollerVisible} />
       <ul
         ref={carouselRef}
         id="previews"
-        className="scroll-x flex w-full gap-4"
+        className="no-scrollbar flex w-full gap-4 overflow-x-scroll"
       >
-        {toMap.map((showId, idx) => (
+        {getUserLikedShows(user).map((showId, idx) => (
           <li key={`home-preview ${showId} ${idx}`}>
             <TvShowPreview
               idx={idx}
-              showDetails={likedShowIds ? likedShows[showId] : undefined}
+              tvShow={likedShows[showId]}
               userLanguage={userLanguage}
-              accessToken={accessToken}
-              isLiked={likedShowIds?.includes(showId) ?? false}
+              user={user}
             />
           </li>
         ))}

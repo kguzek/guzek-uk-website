@@ -1,21 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import type { Episode as TvMazeEpisode, Show as TvMazeShow } from "tvmaze-wrapper-ts";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { DownloadIcon, TriangleIcon } from "lucide-react";
-import { clientToApi } from "@/lib/backend/client";
-import { DownloadStatus } from "@/lib/enums";
+
 import type { Language } from "@/lib/enums";
-import type {
-  DownloadedEpisode,
-  Episode,
-  TvShowDetails,
-  User,
-} from "@/lib/types";
+import type { DownloadedEpisode } from "@/lib/types";
+import type { User } from "@/payload-types";
+import { showErrorToast } from "@/components/error/toast";
+import { showInfoToast } from "@/components/ui/sonner";
+import { fetchFromApi } from "@/lib/backend";
+import { useLiveSeriesContext } from "@/lib/context/liveseries-context";
+import { DownloadStatus } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
-import { useModals } from "@/context/modal-context";
 import { bytesToReadable, compareEpisodes } from "@/lib/util";
-import { useLiveSeriesContext } from "@/context/liveseries-context";
 import { cn } from "@/lib/utils";
 
 export function EpisodeDownloadIndicator({
@@ -26,28 +25,23 @@ export function EpisodeDownloadIndicator({
   accessToken,
 }: {
   userLanguage: Language;
-  episode: Episode;
-  tvShow: TvShowDetails;
+  episode: TvMazeEpisode;
+  tvShow: TvMazeShow;
   user: User | null;
   accessToken: string | null;
 }) {
-  const { setModalError, setModalInfo } = useModals();
   const { downloadedEpisodes } = useLiveSeriesContext();
 
   const episodeObject = {
     showName: tvShow.name.replace(/:/g, ""), // Torrent filenames omit colons
     season: episode.season,
-    episode: episode.episode,
+    episode: episode.number,
   };
 
-  const [metadata, setMetadata] = useState<undefined | DownloadedEpisode>(
-    undefined,
-  );
+  const [metadata, setMetadata] = useState<undefined | DownloadedEpisode>(undefined);
   const data = TRANSLATIONS[userLanguage];
 
-  const episodeString = `${tvShow.name} ${data.liveSeries.episodes.serialise(
-    episode,
-  )}`;
+  const episodeString = `${tvShow.name} ${data.liveSeries.episodes.serialise(episode)}`;
 
   useEffect(() => {
     const meta = downloadedEpisodes.find((check) =>
@@ -58,33 +52,28 @@ export function EpisodeDownloadIndicator({
 
   async function startDownload() {
     if (user == null || accessToken == null) {
-      setModalError(data.liveSeries.home.login);
+      showErrorToast(data.liveSeries.home.login);
       return;
     }
-    if (!user.serverUrl) {
-      setModalInfo(data.liveSeries.explanation);
+    if (user.serverUrl == null || user.serverUrl === "") {
+      showInfoToast(data.liveSeries.explanation);
       return;
     }
-    const result = await clientToApi(
-      "liveseries/downloaded-episodes",
-      accessToken,
-      {
+    try {
+      await fetchFromApi("liveseries/downloaded-episodes", {
         method: "POST",
         body: {
           showId: tvShow.id,
           showName: tvShow.name,
-          episode: episode.episode,
+          episode: episode.number,
           season: episode.season,
         },
-        user,
-        userLanguage,
-        setModalError,
-      },
-    );
-    if (result.ok) {
+        urlBase: user.serverUrl,
+      });
       setMetadata((old) => old && { ...old, status: DownloadStatus.PENDING });
-    } else {
-      setModalError(data.liveSeries.episodes.downloadError(episodeString));
+    } catch (error) {
+      console.error(error);
+      showErrorToast(data.liveSeries.episodes.downloadError(episodeString));
       setMetadata((old) => old && { ...old, status: DownloadStatus.FAILED });
     }
   }
@@ -101,22 +90,16 @@ export function EpisodeDownloadIndicator({
   return (
     <>
       {downloadStatus !== DownloadStatus.COMPLETE && (
-        <div
+        <button
           className={cn("relative", {
             "clickable text-primary": downloadStatus === DownloadStatus.STOPPED,
-            "cursor-wait text-primary": showProgress,
-            "cursor-not-allowed text-error":
-              downloadStatus === DownloadStatus.FAILED,
-            "cursor-help text-accent2":
-              downloadStatus === DownloadStatus.UNKNOWN,
+            "text-primary cursor-wait": showProgress,
+            "text-error cursor-not-allowed": downloadStatus === DownloadStatus.FAILED,
+            "text-accent2 cursor-help": downloadStatus === DownloadStatus.UNKNOWN,
           })}
           title={downloadTooltip}
           style={{ minWidth: 20 }}
-          onClick={
-            downloadStatus === DownloadStatus.STOPPED
-              ? startDownload
-              : undefined
-          }
+          onClick={downloadStatus === DownloadStatus.STOPPED ? startDownload : undefined}
         >
           {showProgress && (
             <div
@@ -134,24 +117,18 @@ export function EpisodeDownloadIndicator({
             </div>
           )}
           <DownloadIcon />
-        </div>
+        </button>
       )}
       {!showProgress && user != null && (
         <Link
-          href={`/liveseries/watch/${tvShow.name}/${episode.season}/${episode.episode}`}
-          title={
-            data.liveSeries.episodes.downloadStatus[DownloadStatus.COMPLETE]
-          }
+          href={`/liveseries/watch/${tvShow.name}/${episode.season}/${episode.number}`}
+          title={data.liveSeries.episodes.downloadStatus[DownloadStatus.COMPLETE]}
         >
           <TriangleIcon
             className={cn("clickable rotate-90", {
               "text-primary": downloadStatus !== DownloadStatus.COMPLETE,
             })}
-            fill={
-              downloadStatus === DownloadStatus.COMPLETE
-                ? "currentColor"
-                : "none"
-            }
+            fill={downloadStatus === DownloadStatus.COMPLETE ? "currentColor" : "none"}
           />
         </Link>
       )}

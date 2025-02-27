@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { User } from "@/lib/types";
+
 import type { Language } from "@/lib/enums";
+import type { User } from "@/payload-types";
 import { TRANSLATIONS } from "@/lib/translations";
-import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { Button } from "@/ui/button";
 
 export function UserWidget({
   user,
@@ -17,31 +18,34 @@ export function UserWidget({
 }) {
   const pathname = usePathname();
   const data = TRANSLATIONS[userLanguage];
-  // TODO: add user.url
-  const imgUrl =
-    (user && Object.hasOwn(user, "url") && (user as any).url) ||
-    "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/default-avatar.png";
-  const isActive =
-    pathname != null && ["/profile", "/login"].includes(pathname);
+  const isActive = pathname != null && ["/profile", "/login"].includes(pathname);
   return (
-    <Link
-      href={user ? "/profile" : "/login"}
-      className="group max-w-[90%] font-light text-primary sm:max-w-full"
-    >
-      <div className="flex flex-col items-center gap-1">
-        <Image alt="User avatar" width={40} height={40} src={imgUrl} />
-        <p
-          className={cn(
-            "hover-underline group-hover:underlined max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-[1.2rem] sm:max-w-80 lg:max-w-40",
-            {
-              "hover-underlined text-primary-strong": isActive,
-            },
-          )}
-          title={user?.username}
-        >
-          {user?.username || data.loginShort}
-        </p>
-      </div>
-    </Link>
+    <div className="group text-primary grid h-full max-w-[90%] place-items-center font-light sm:max-w-full">
+      {user == null ? (
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Button asChild variant="glow" className="min-w-28">
+            <Link href="/signup">{data.profile.formDetails.signup}</Link>
+          </Button>
+          <Button asChild className="min-w-28">
+            <Link href="/login">{data.loginShort}</Link>
+          </Button>
+        </div>
+      ) : (
+        <Link href="/profile" className="flex min-w-20 justify-center">
+          @
+          <span
+            className={cn(
+              "hover-underline group-hover:underlined max-w-full overflow-hidden text-[1.2rem] text-ellipsis whitespace-nowrap sm:max-w-80 lg:max-w-40",
+              {
+                "underlined text-primary-strong": isActive,
+              },
+            )}
+            title={user.username}
+          >
+            {user.username}
+          </span>
+        </Link>
+      )}
+    </div>
   );
 }

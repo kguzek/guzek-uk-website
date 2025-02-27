@@ -1,21 +1,32 @@
-import type { Language, ErrorCode } from "@/lib/enums";
-import type { Episode, ErrorPageContent, DownloadedEpisode } from "@/lib/types";
+import type { Episode as TvMazeEpisode } from "tvmaze-wrapper-ts";
+
+import type { ErrorCode, Language } from "@/lib/enums";
+import type { DownloadedEpisode } from "@/lib/types";
+
 import { ENGLISH } from "./english";
 import { POLISH } from "./polish";
 
 export type Translation = Readonly<{
   footer: (year: string) => string;
   loading: string;
+  redirecting: string;
   language: string;
   loginShort: string;
-  dateFormat: Intl.DateTimeFormat;
-  dateShortFormat: Intl.DateTimeFormat;
-  dateTimeFormat: Intl.DateTimeFormat;
-  dateTimeShortFormat: Intl.DateTimeFormat;
-  numberFormat: Intl.NumberFormat;
+  format: {
+    date: Intl.DateTimeFormat;
+    dateShort: Intl.DateTimeFormat;
+    dateTime: Intl.DateTimeFormat;
+    dateTimeShort: Intl.DateTimeFormat;
+    number: Intl.NumberFormat;
+    quote: (text: string) => string;
+  };
   networkError: string;
   unknownError: string;
   loggedOut: string;
+  placeholder: {
+    email: string;
+    username: string;
+  };
   profile: {
     title: string;
     body: string;
@@ -40,6 +51,24 @@ export type Translation = Readonly<{
       haveAccountAlready: string;
       logout: string;
       serverUrl: string;
+      success: string;
+      verifyEmail: {
+        header: string;
+        info: (email?: string) => string;
+        cta: string;
+        success: string;
+      };
+      forgotPassword: {
+        header: string;
+        info: (email?: string) => string;
+        success: string;
+      };
+      resetPassword: {
+        header: string;
+        field: string;
+        submit: string;
+        success: string;
+      };
     };
   };
   admin: {
@@ -71,14 +100,21 @@ export type Translation = Readonly<{
     yes: string;
     no: string;
   };
+  projects: {
+    title: string;
+  };
   liveSeries: {
     title: string;
     whatsThis: string;
     explanation: string;
+    cta: string;
+    setup: string;
     tvShowList: {
       showing: string;
       of: string;
       page: string;
+      next: string;
+      previous: string;
     };
     tvShow: {
       title: string;
@@ -86,6 +122,8 @@ export type Translation = Readonly<{
       present: string;
       source: string;
       images: string;
+      previousImage: string;
+      nextImage: string;
       episodes: string;
       noEpisodes: string;
       episode: string;
@@ -93,6 +131,7 @@ export type Translation = Readonly<{
       like: string;
       unlike: string;
       subscribe: string;
+      unsubscribe: string;
       confirmSubscribe: (unwatched: number) => string;
       showDetails: string;
       markWatched: (un: string) => string;
@@ -128,7 +167,7 @@ export type Translation = Readonly<{
       downloadError: (episode: string) => string;
       confirmDelete: (episode: string) => string;
       deleted: (episode: string) => string;
-      serialise: (episode: Pick<Episode, "episode" | "season">) => string;
+      serialise: (episode: Pick<TvMazeEpisode, "number" | "season">) => string;
     };
     watch: {
       playbackError: string;
@@ -141,7 +180,12 @@ export type Translation = Readonly<{
       askReconnect: string;
     };
   };
-  error: { [code in ErrorCode]: ErrorPageContent };
+  error: {
+    [code in ErrorCode]: {
+      title: string;
+      body: string;
+    };
+  };
 }>;
 
 export const TRANSLATIONS: { [lang in Language]: Translation } = {
