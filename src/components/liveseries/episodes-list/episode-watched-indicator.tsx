@@ -9,6 +9,7 @@ import type { User } from "@/payload-types";
 import { showErrorToast } from "@/components/error/toast";
 import { updateUserWatchedEpisodes } from "@/lib/backend/liveseries";
 import { TRANSLATIONS } from "@/lib/translations";
+import { addOrRemove } from "@/lib/util";
 
 export function EpisodeWatchedIndicator({
   userLanguage,
@@ -24,6 +25,7 @@ export function EpisodeWatchedIndicator({
   user: User | null;
 }) {
   const [isPending, startTransition] = useTransition();
+  // TODO: make watched episodes a global context state
   const [watchedInSeason, setWatchedInSeason] = useState(initialWatchedInSeason);
   const [watchedInSeasonOptimistic, setWatchedInSeasonOptimistic] =
     useOptimistic(watchedInSeason);
@@ -35,20 +37,14 @@ export function EpisodeWatchedIndicator({
       showErrorToast(data.liveSeries.home.login);
       return;
     }
-    const newWatchedEpisodes = isWatched
-      ? (watchedInSeason?.filter((value) => value !== episode.number) ?? [])
-      : [...(watchedInSeason ?? []), episode.number];
+    const newWatchedEpisodes = addOrRemove(watchedInSeason, episode.number, !isWatched);
 
     startTransition(async () => {
       setWatchedInSeasonOptimistic(newWatchedEpisodes);
       if (
-        await updateUserWatchedEpisodes(
-          user,
-          userLanguage,
-          showId,
-          episode.season,
-          newWatchedEpisodes,
-        )
+        await updateUserWatchedEpisodes(user, userLanguage, showId, episode.season, {
+          watchedInSeason: newWatchedEpisodes,
+        })
       ) {
         setWatchedInSeason(newWatchedEpisodes);
       }

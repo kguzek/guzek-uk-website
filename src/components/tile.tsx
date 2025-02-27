@@ -10,22 +10,23 @@ export function Tile({
   className,
   header,
   containerClassName,
+  noGlow = false,
   ...props
 }: ComponentProps<typeof CardContent> & {
   containerClassName?: ClassValue;
   header?: ReactNode;
+  noGlow?: boolean;
 }) {
-  return (
-    <Glow>
-      <Card className={cn("glow:border-accent w-fit items-center", containerClassName)}>
-        {header}
-        <CardContent
-          className={cn("flex flex-col items-center gap-3", className)}
-          {...props}
-        >
-          {children}
-        </CardContent>
-      </Card>
-    </Glow>
+  const component = (
+    <Card className={cn("glow:border-accent w-fit items-center", containerClassName)}>
+      {header}
+      <CardContent
+        className={cn("flex flex-col items-center gap-3", className)}
+        {...props}
+      >
+        {children}
+      </CardContent>
+    </Card>
   );
+  return noGlow ? component : <Glow>{component}</Glow>;
 }

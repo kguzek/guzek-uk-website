@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -24,6 +25,7 @@ import { forgotPasswordSchema } from "@/lib/backend/schemas";
 import { TRANSLATIONS } from "@/lib/translations";
 
 export function ForgotPasswordForm({ userLanguage }: { userLanguage: Language }) {
+  const [isFirstRender, setIsFirstRender] = useState(true);
   const data = TRANSLATIONS[userLanguage];
 
   const form = useForm({
@@ -45,6 +47,10 @@ export function ForgotPasswordForm({ userLanguage }: { userLanguage: Language })
     );
     console.info("Reset password:", result.data.message);
   }
+
+  useEffect(() => {
+    setIsFirstRender(false);
+  });
 
   return (
     <Form {...form}>
@@ -76,7 +82,7 @@ export function ForgotPasswordForm({ userLanguage }: { userLanguage: Language })
                   <FormControl>
                     <Input
                       type="email"
-                      autoFocus
+                      autoFocus={isFirstRender}
                       autoComplete="email"
                       placeholder={data.placeholder.email}
                       {...field}
