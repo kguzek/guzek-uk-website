@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -35,6 +35,7 @@ export function LogInForm({
   userLanguage: Language;
   from?: string;
 }) {
+  const [isFirstRender, setIsFirstRender] = useState(true);
   const router = useRouter();
   const form = useForm<LogInSchema>({
     resolver: zodResolver(logInSchema),
@@ -59,6 +60,7 @@ export function LogInForm({
   }
 
   useEffect(() => {
+    setIsFirstRender(false);
     if (from === "verify-email") {
       showSuccessToast(data.profile.formDetails.verifyEmail.success);
     }
@@ -86,7 +88,7 @@ export function LogInForm({
               <FormControl>
                 <Input
                   autoComplete="username"
-                  autoFocus
+                  autoFocus={isFirstRender}
                   placeholder={data.placeholder.email}
                   {...field}
                 />

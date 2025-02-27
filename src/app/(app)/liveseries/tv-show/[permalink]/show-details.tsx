@@ -136,20 +136,16 @@ export function ShowDetails({
     const watchedEpisodes = episodes.map((episode) => episode.number);
 
     const newWatchedInShow = {
-      ...watchedInShow,
+      ...watchedInShowOptimistic,
       [+season]: watchedEpisodes,
     };
 
     startTransition(async () => {
       setWatchedInShowOptimistic(newWatchedInShow);
       if (
-        await updateUserWatchedEpisodes(
-          user,
-          userLanguage,
-          tvShow.id,
-          season,
-          watchedEpisodes,
-        )
+        await updateUserWatchedEpisodes(user, userLanguage, tvShow.id, season, {
+          watchedEpisodes: { ...user.watchedEpisodes, [tvShow.id]: newWatchedInShow },
+        })
       ) {
         setWatchedInShow(newWatchedInShow);
       }

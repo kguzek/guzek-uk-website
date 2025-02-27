@@ -181,12 +181,20 @@ type MediaImage = Pick<Media, "id" | "createdAt" | "updatedAt" | "alt"> & {
 export const isImage = (image: Media | number): image is MediaImage =>
   typeof image !== "number" && !!image.url && !!image.width && !!image.height;
 
-export function addOrRemove<T>(items: T[] | null | undefined, item: T, add: boolean) {
+export function addOrRemove<T>(
+  items: T[] | null | undefined,
+  item: T,
+  add: boolean,
+  addZero = false,
+) {
   const nonNullItems = items ?? [];
   const filtered = add
     ? [...nonNullItems, item]
     : nonNullItems.filter((id) => id !== item);
-  return ensureUnique([0, ...filtered]);
+  return ensureUnique(addZero ? [0, ...filtered] : filtered);
 }
 
-export const ensureUnique = <T>(items: T[]) => [...new Set(items)];
+export const ensureUnique = <T>(items: T[]) =>
+  [...new Set(items)].sort((a, b) =>
+    typeof a === "number" && typeof b === "number" ? a - b : 0,
+  );

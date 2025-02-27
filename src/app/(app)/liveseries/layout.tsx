@@ -26,7 +26,7 @@ export default async function LiveSeriesLayout({ children }: { children: ReactNo
           />
         )}
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 sm:flex-nowrap sm:justify-start">
-          <Button variant="link" className="px-0">
+          <Button variant="link" className="px-0" asChild>
             <Link href="/liveseries" className="group flex items-center gap-2">
               <LayoutDashboard />{" "}
               <span className="group-hover:underlined hover-underline text-xs sm:text-sm md:text-base">
@@ -35,7 +35,7 @@ export default async function LiveSeriesLayout({ children }: { children: ReactNo
             </Link>
           </Button>
           <Dot className="hidden sm:block" />
-          <Button variant="link" className="px-0">
+          <Button variant="link" className="px-0" asChild>
             <Link
               href="/liveseries/most-popular"
               className="group flex items-center gap-2"

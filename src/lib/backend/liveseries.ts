@@ -1,4 +1,4 @@
-import type { EpisodeArray, User } from "@/payload-types";
+import type { EpisodeArray, User, WatchedEpisodes } from "@/payload-types";
 import { showFetchErrorToast } from "@/components/error/toast";
 
 import type { Language } from "../enums";
@@ -26,14 +26,25 @@ export const updateUserWatchedEpisodes = async (
   userLanguage: Language,
   showId: number,
   season: number | `${number}`,
-  newWatchedEpisodes: number[],
+  {
+    watchedEpisodes: newWatchedEpisodes,
+    watchedInSeason: newWatchedEpisodesInSeason,
+  }:
+    | {
+        watchedInSeason: number[];
+        watchedEpisodes?: never;
+      }
+    | {
+        watchedInSeason?: never;
+        watchedEpisodes: WatchedEpisodes;
+      },
 ) =>
   tryPatchUser(user, userLanguage, {
-    watchedEpisodes: {
+    watchedEpisodes: newWatchedEpisodes ?? {
       ...user.watchedEpisodes,
       [showId]: {
         ...user.watchedEpisodes[showId],
-        [season]: ensureUnique(newWatchedEpisodes),
+        [season]: ensureUnique(newWatchedEpisodesInSeason),
       },
     },
   });
@@ -47,7 +58,7 @@ export const updateUserShowLike = (
   tryPatchUser(user, userLanguage, {
     userShows: {
       ...user.userShows,
-      liked: addOrRemove(user.userShows?.liked, showId, isLiked),
+      liked: addOrRemove(user.userShows?.liked, showId, isLiked, true),
     },
   });
 
@@ -60,7 +71,7 @@ export const updateUserShowSubscription = (
   tryPatchUser(user, userLanguage, {
     userShows: {
       ...user.userShows,
-      subscribed: addOrRemove(user.userShows?.subscribed, showId, isSubscribed),
+      subscribed: addOrRemove(user.userShows?.subscribed, showId, isSubscribed, true),
     },
   });
 
