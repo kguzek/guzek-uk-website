@@ -4,56 +4,62 @@ import type { MouseEvent } from "react";
 import type { Show as TvMazeShow } from "tvmaze-wrapper-ts";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useOptimistic, useState, useTransition } from "react";
 import { HeartIcon } from "lucide-react";
 
 import type { Language } from "@/lib/enums";
-import { clientToApi } from "@/lib/backend/client";
-import { useModals } from "@/lib/context/modal-context";
+import type { User } from "@/payload-types";
+import { fetchFromApi } from "@/lib/backend";
 import { TRANSLATIONS } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 
+import { showFetchErrorToast } from "../error/toast";
 import { TvShowPreviewSkeleton } from "./tv-show-preview-skeleton";
 
 export function TvShowPreview({
   idx,
   tvShow,
   userLanguage,
-  isLiked: isLikedInitial,
-  accessToken,
+  user,
 }: {
   idx: number;
   tvShow: TvMazeShow;
   userLanguage: Language;
-  isLiked: boolean;
-  accessToken: string | null;
+  user: User | null;
 }) {
-  const [isLiked, setIsLiked] = useState(isLikedInitial);
-  const { setModalError } = useModals();
+  const [isPending, startTransition] = useTransition();
+  const [likedShowIds, setLikedShowIds] = useState(user?.userShows?.liked ?? []);
+  const [likedShowIdsOptimistic, setLikedShowIdsOptimistic] = useOptimistic(likedShowIds);
+  const isLikedOptimistic = likedShowIdsOptimistic.includes(tvShow.id);
   const data = TRANSLATIONS[userLanguage];
 
-  async function handleHeart(clickEvent: MouseEvent) {
-    if (!tvShow) return;
-    if (!accessToken) {
-      setModalError(data.liveSeries.home.login);
-      return;
-    }
-    clickEvent.stopPropagation();
+  function handleHeart(event_: MouseEvent) {
+    if (tvShow == null || user == null) return;
+    event_.stopPropagation();
 
-    setIsLiked((old) => !old);
+    const newLikedShowIds = isLikedOptimistic
+      ? user.userShows.liked.filter((id) => id !== tvShow.id)
+      : [...user.userShows.liked, tvShow.id];
 
-    const result = await clientToApi(
-      "liveseries/shows/personal/liked/" + tvShow.id,
-      accessToken,
-      {
-        method: isLiked ? "DELETE" : "POST",
-        userLanguage,
-        setModalError,
-      },
-    );
-    if (!result.ok) {
-      setIsLiked(isLiked);
-    }
+    startTransition(async () => {
+      setLikedShowIdsOptimistic(newLikedShowIds);
+
+      try {
+        await fetchFromApi(`users/${user.id}`, {
+          method: "PATCH",
+          body: {
+            userShows: {
+              ...user.userShows,
+              liked: newLikedShowIds,
+            },
+          },
+        });
+      } catch (error) {
+        showFetchErrorToast(data, error);
+        return;
+      }
+      setLikedShowIds(newLikedShowIds);
+    });
   }
 
   if (!tvShow) return <TvShowPreviewSkeleton idx={idx} />;
@@ -74,11 +80,12 @@ export function TvShowPreview({
         <button
           onClick={handleHeart}
           className={cn("text-primary hover:text-error transition-colors duration-300", {
-            "text-error": isLiked,
+            "text-error": isLikedOptimistic,
           })}
-          title={data.liveSeries.tvShow[isLiked ? "unlike" : "like"]}
+          disabled={isPending}
+          title={data.liveSeries.tvShow[isLikedOptimistic ? "unlike" : "like"]}
         >
-          <HeartIcon fill={isLiked ? "currentColor" : "none"} />
+          <HeartIcon fill={isLikedOptimistic ? "currentColor" : "none"} />
         </button>
       </div>
       <Link href={link} title={tvShow?.name}>

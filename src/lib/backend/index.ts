@@ -1,22 +1,7 @@
-import type { ErrorResponseBodyCustom, User } from "../types";
+import type { User } from "@/payload-types";
 
-const USE_LOCAL_API_URL = false;
-// const USE_LOCAL_API_URL = true;
-
-const useLocalUrl = process.env.NODE_ENV === "development" && USE_LOCAL_API_URL;
-
-export const API_BASE = useLocalUrl ? "http://localhost:5017/" : "https://api.guzek.uk/";
-
-const API_BASE_AUTH = useLocalUrl ? "http://localhost:5019/" : "https://auth.guzek.uk/";
-
-const API_BASE_LIVESERIES_LOCAL = "http://localhost:5021/";
-
-const DECENTRALISED_ROUTES = [
-  "liveseries/downloaded-episodes",
-  "liveseries/subtitles",
-  "liveseries/video",
-  "torrents",
-];
+import type { ApiMessage } from "../types";
+import { getResponse } from "./error-handling";
 
 const SANDWICHED_JSON_PATTERN = /.*?(\{.*\}).*?/;
 
@@ -56,175 +41,29 @@ export function parseResponseBody(body: string) {
  * @param params The key-value dictionary to format. Can be a `URLSearchParams` object, or an object (empty or not).
  * @returns The formatted search query string starting with '?, or an empty string if no parameters are provided.
  */
-export function getSearchParams(params: Record<string, string> | URLSearchParams = {}) {
+function getSearchParams(params: Record<string, string> | URLSearchParams = {}) {
   const searchParams =
     params instanceof URLSearchParams ? params : new URLSearchParams(params);
   if ([...searchParams.keys()].length === 0) return "";
   return `?${searchParams}`;
 }
 
-export function getUrlBase(path: string, user: User | null) {
-  if (DECENTRALISED_ROUTES.some((route) => path.startsWith(route))) {
-    if (!user?.serverUrl) {
-      console.error("No server URL available for decentralised route:", path);
-      return API_BASE_LIVESERIES_LOCAL;
-    }
-    return user.serverUrl;
-  }
-  if (path.startsWith("auth/")) {
-    return API_BASE_AUTH;
-  }
-  return API_BASE;
-}
-
 type BodyFetchOptions = {
   method: "POST" | "PUT" | "PATCH";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  body: Record<string, any>;
+  body: { [key: string]: any } | any[];
 };
 
 type BodilessFetchOptions = {
   method?: "GET" | "DELETE" | "POST";
   body?: never;
 };
-export type BaseFetchOptions = (BodyFetchOptions | BodilessFetchOptions) & {
+export type FetchOptions = (BodyFetchOptions | BodilessFetchOptions) & {
   params?: Record<string, string>;
   headers?: Record<string, string>;
+  accessToken?: string | null;
+  urlBase?: string;
 };
-
-export type ClientFetchOptions = BaseFetchOptions;
-
-export type ServerFetchOptions = BaseFetchOptions & {
-  api?: "episodate" | "next";
-};
-
-type FetchOptions = ClientFetchOptions | ServerFetchOptions;
-
-export async function prepareRequest(
-  path: string,
-  fetchOptions: FetchOptions,
-  accessToken: string | null,
-  useCredentials?: boolean,
-): Promise<RequestInit & { next: NextFetchRequestConfig }> {
-  useCredentials ??= accessToken != null;
-  const requestInit: RequestInit = {
-    method: fetchOptions.method,
-  };
-  const headers: HeadersInit = {
-    Accept: "application/json",
-    ...fetchOptions.headers,
-  };
-  if (useCredentials && accessToken) {
-    headers.Authorization = `Bearer ${accessToken}`;
-  }
-  if (fetchOptions.body) {
-    requestInit.body = JSON.stringify(fetchOptions.body);
-    headers["Content-Type"] = "application/json";
-  } else if (fetchOptions.method === "POST") {
-    // Apparently POST requests with no body should specify Content-Length: 0, to prevent problems when using proxies.
-    // https://stackoverflow.com/a/4198969
-    headers["Content-Length"] = "0";
-  }
-  return {
-    ...requestInit,
-    headers,
-    next: {
-      tags:
-        fetchOptions.method == null || fetchOptions.method === "GET"
-          ? [pathToTag(path)]
-          : [],
-    },
-  };
-}
-
-export async function fetchFromApi<T>(url: string, options: RequestInit) {
-  const method = options.method ?? "GET";
-  let res;
-  try {
-    res = await fetch(url, options);
-  } catch (error) {
-    console.error(method, url, "FAILED:", error);
-    return {
-      failed: true,
-      res: null,
-      hasBody: false,
-      ok: false,
-      data: null,
-      error: null,
-    } as const;
-  }
-  let body: string;
-  try {
-    body = await res.text();
-  } catch {
-    console.error(
-      "FAILED to read response body from",
-      method,
-      url,
-      "with status:",
-      res.status,
-      res.statusText,
-    );
-    return {
-      failed: false,
-      res,
-      hasBody: false,
-      ok: false,
-      data: null,
-      error: null,
-    } as const;
-  }
-  let data: T;
-  if (res.headers.get("Content-Type")?.includes("application/json")) {
-    try {
-      // Use this method because sometimes res.json() fails with weird errors
-      data = parseResponseBody(body.trim());
-    } catch (error) {
-      console.error(
-        "FAILED to parse JSON from",
-        method,
-        url,
-        "with status:",
-        res.status,
-        res.statusText,
-        error,
-        "and response body:",
-        body,
-      );
-      return {
-        failed: false,
-        res,
-        hasBody: false,
-        ok: false,
-        data: null,
-        error: null,
-      } as const;
-    }
-  } else {
-    console.warn("Non-JSON response received, proceeding");
-    data = body as T;
-  }
-
-  // console.debug("...", res.status, res.statusText);
-  if (res.ok) {
-    return {
-      failed: false,
-      res,
-      hasBody: true,
-      ok: true,
-      data,
-      error: null,
-    } as const;
-  }
-  return {
-    failed: false,
-    res,
-    hasBody: true,
-    ok: false,
-    data: null,
-    error: data as ErrorResponseBodyCustom,
-  } as const;
-}
 
 /** This ensures the path is no longer than two subdirectories.
  *
@@ -240,21 +79,53 @@ export function pathToTag(path: string) {
   return parts.slice(0, 2).join("/");
 }
 
-export async function commonTriggerRevalidation(
+export async function fetchFromApi<T>(
   path: string,
-  resultGenerator: (
-    path: string,
-    fetchOptions: FetchOptions,
-  ) => ReturnType<typeof fetchFromApi>,
+  { accessToken, ...fetchOptions }: FetchOptions = {},
 ) {
-  const tag = pathToTag(path);
-  const result = await resultGenerator("revalidate", {
-    method: "POST",
-    body: { tag },
-    api: "next",
-  });
-  if (!result.ok) {
-    console.warn("Failed to trigger revalidation for tag", tag, result.error ?? "");
+  const requestInit: RequestInit = {
+    method: fetchOptions.method,
+    credentials: "include",
+    next: {
+      tags:
+        fetchOptions.method == null || fetchOptions.method === "GET"
+          ? [pathToTag(path)]
+          : [],
+    },
+  };
+  const headers: HeadersInit = {
+    Accept: "application/json",
+    ...fetchOptions.headers,
+  };
+  if (accessToken != null) {
+    headers.Authorization = `Bearer ${accessToken}`;
   }
+  if (fetchOptions.body != null) {
+    requestInit.body = JSON.stringify(fetchOptions.body);
+    headers["Content-Type"] = "application/json";
+  } else if (fetchOptions.method === "POST") {
+    // Apparently POST requests with no body should specify Content-Length: 0, to prevent problems when using proxies.
+    // https://stackoverflow.com/a/4198969
+    headers["Content-Length"] = "0";
+  }
+  requestInit.headers = headers;
+  const prefix = fetchOptions.urlBase ?? `${process.env.WEBSITE_URL ?? ""}/api/`;
+  const url = `${prefix}${path}${getSearchParams(fetchOptions.params)}`;
+  return getResponse<T>(url, requestInit);
+}
+
+export async function refreshAccessToken(accessToken?: string) {
+  const result = await fetchFromApi<
+    ApiMessage & { refreshedToken: string; exp: number; user: User }
+  >("users/refresh-token", {
+    method: "POST",
+    headers:
+      accessToken == null
+        ? undefined
+        : {
+            Authorization: `Bearer ${accessToken}`,
+          },
+  });
+  console.info("Access token refreshed", result.data.exp);
   return result;
 }

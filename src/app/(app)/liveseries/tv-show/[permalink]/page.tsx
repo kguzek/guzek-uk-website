@@ -4,7 +4,7 @@ import { findShowById, getShowEpisodes } from "tvmaze-wrapper-ts";
 import { ErrorComponent } from "@/components/error/component";
 import { EpisodesList } from "@/components/liveseries/episodes-list";
 import { ErrorCode } from "@/lib/enums";
-import { getAuth } from "@/lib/providers/auth-provider/rsc";
+import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { getTitle, isNumber } from "@/lib/util";
 
@@ -36,7 +36,7 @@ function sortEpisodes(episodes: TvMazeEpisode[]) {
       seasons[season] = [episode];
     }
   }
-  return Object.entries(seasons);
+  return Object.entries(seasons) as [`${number}`, TvMazeEpisode[]][];
 }
 
 async function getShowDetails(params: Props["params"]) {
@@ -55,14 +55,11 @@ async function getShowDetails(params: Props["params"]) {
 
 export default async function TvShow({ params }: Props) {
   const { data, userLanguage } = await getTranslations();
-  const { user, accessToken } = await getAuth();
+  const { user } = await getAuth();
   const tvShow = await getShowDetails(params);
   if (tvShow == null) {
     return <ErrorComponent errorCode={ErrorCode.NotFound} />;
   }
-  const liked = user?.userShows?.liked?.includes(tvShow.id) ?? false;
-  const subscribed = user?.userShows?.subscribed?.includes(tvShow.id) ?? false;
-  const watchedEpisodes = user?.watchedEpisodes ?? {};
 
   const episodes = await getShowEpisodes(tvShow.id);
 
@@ -70,12 +67,8 @@ export default async function TvShow({ params }: Props) {
     <ShowDetails
       tvShow={tvShow}
       episodes={episodes}
-      liked={liked ?? false}
-      subscribed={subscribed ?? false}
       user={user}
       userLanguage={userLanguage}
-      watchedEpisodes={watchedEpisodes[tvShow.id] ?? {}}
-      accessToken={accessToken}
     >
       {sortEpisodes(episodes).map(([season, episodes]) => (
         <EpisodesList

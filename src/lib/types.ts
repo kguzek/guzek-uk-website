@@ -6,36 +6,16 @@ import type { getTranslations } from "./providers/translation-provider";
 
 export type UserLocale = Awaited<ReturnType<typeof getTranslations>>["userLocale"];
 
-export interface PageContent {
-  content: string;
-}
-
-export interface BaseMenuItem {
+export interface MenuItem {
   id: number;
   title: string;
   url: string;
   label?: string;
 }
 
-export interface MenuItem extends BaseMenuItem {
-  localUrl: boolean;
-  adminOnly: boolean;
-  shouldFetch: boolean;
-}
-
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  role: "user" | "admin";
-  serverUrl?: string | null;
-  created_at?: string;
-  modified_at?: string;
-}
-
 /** Admin logs */
 
-export type LogLevel = (typeof LOG_LEVELS)[number];
+type LogLevel = (typeof LOG_LEVELS)[number];
 
 export interface LegacyLogEntry {
   level: LogLevel;
@@ -55,11 +35,6 @@ export interface LogEntry {
 }
 
 export type LogResponse = { date: string; logs: (LegacyLogEntry | LogEntry)[] };
-
-export interface ErrorPageContent {
-  title: string;
-  body: string;
-}
 
 export type ApiMessage = { message?: string };
 
@@ -86,12 +61,6 @@ export interface DownloadedEpisode {
 }
 
 export type StateSetter<T> = Dispatch<SetStateAction<T>>;
-
-export const CAROUSEL_INDICATOR_FULL_WIDTH = 140;
-
-export const DEFAULT_PAGE_DATA: PageContent = {
-  content: "Oops! This page hasn't been implemented yet.",
-};
 
 export type CustomMiddleware = (req: NextRequest) => NextResponse | Promise<NextResponse>;
 

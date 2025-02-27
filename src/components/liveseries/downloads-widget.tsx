@@ -5,8 +5,7 @@ import { useState } from "react";
 import { ChevronUpIcon, Trash2Icon } from "lucide-react";
 
 import type { Language } from "@/lib/enums";
-import type { DownloadedEpisode, User } from "@/lib/types";
-import { clientToApi } from "@/lib/backend/client";
+import type { DownloadedEpisode } from "@/lib/types";
 import { useLiveSeriesContext } from "@/lib/context/liveseries-context";
 import { useModals } from "@/lib/context/modal-context";
 import { DownloadStatus } from "@/lib/enums";
@@ -15,6 +14,12 @@ import { bytesToReadable, getDuration } from "@/lib/util";
 import { cn } from "@/lib/utils";
 
 import "./downloads-widget.css";
+
+import type { User } from "@/payload-types";
+import { fetchFromApi } from "@/lib/backend";
+
+import { showErrorToast, showFetchErrorToast } from "../error/toast";
+import { showInfoToast, showSuccessToast } from "../ui/sonner";
 
 export function DownloadsWidget({
   user,
@@ -30,7 +35,7 @@ export function DownloadsWidget({
     downloadedEpisodes.find((episode) => episode.status === DownloadStatus.PENDING) ==
       null,
   );
-  const { setModalError, setModalChoice, setModalInfo } = useModals();
+  const { setModalChoice } = useModals();
   const data = TRANSLATIONS[userLanguage];
   function serialise(episode: DownloadedEpisode) {
     const episodeObject = { number: episode.episode, season: episode.season };
@@ -38,18 +43,28 @@ export function DownloadsWidget({
   }
 
   async function handleDeleteEpisode(episode: DownloadedEpisode) {
+    if (user == null || accessToken == null) {
+      showErrorToast(data.liveSeries.home.login);
+      return;
+    }
+    if (user.serverUrl == null || user.serverUrl === "") {
+      showInfoToast(data.liveSeries.setup);
+      return;
+    }
     const episodeString = `${episode.showName} ${serialise(episode)}`;
     const question = data.liveSeries.episodes.confirmDelete(episodeString);
     const answer = await setModalChoice(question);
     if (!answer) return;
-    const result = await clientToApi(
-      `liveseries/downloaded-episodes/${episode.showName}/${episode.season}/${episode.episode}`,
-      accessToken,
-      { method: "DELETE", user, userLanguage, setModalError },
-    );
-    if (result.ok) {
-      setModalInfo(data.liveSeries.episodes.deleted(episodeString));
+    try {
+      await fetchFromApi(
+        `liveseries/downloaded-episodes/${episode.showName}/${episode.season}/${episode.episode}`,
+        { method: "DELETE", accessToken, urlBase: user.serverUrl },
+      );
+    } catch (error) {
+      showFetchErrorToast(data, error);
+      return;
     }
+    showSuccessToast(data.liveSeries.episodes.deleted(episodeString));
   }
 
   if (downloadedEpisodes.length === 0) return null;

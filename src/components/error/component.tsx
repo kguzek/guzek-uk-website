@@ -7,9 +7,9 @@ import { getTranslations } from "@/lib/providers/translation-provider";
 import { TRANSLATIONS } from "@/lib/translations";
 import { PAGE_NAME } from "@/lib/util";
 import { Badge } from "@/ui/badge";
+import { Button } from "@/ui/button";
 
 import { Tile } from "../tile";
-import { Button } from "../ui/button";
 
 const serialiseError = (error: ErrorCode, data: Translation = TRANSLATIONS.EN) =>
   `${error} ${data.error[error].title}`;

@@ -3,16 +3,31 @@
 import type { ReactNode } from "react";
 import type { Episode as TvMazeEpisode, Show as TvMazeShow } from "tvmaze-wrapper-ts";
 import Image from "next/image";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useOptimistic, useState, useTransition } from "react";
 import { HeartIcon, StarIcon } from "lucide-react";
 
 import type { Language } from "@/lib/enums";
-import type { User } from "@/lib/types";
-import type { WatchedEpisodes } from "@/payload-types";
-import { InputBox } from "@/components/forms/input-box";
+import type { User } from "@/payload-types";
+import { showErrorToast } from "@/components/error/toast";
 import { TvShowSkeleton } from "@/components/liveseries/tv-show-skeleton";
-import { clientToApi } from "@/lib/backend/client";
-import { useModals } from "@/lib/context/modal-context";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  updateUserShowLike,
+  updateUserShowSubscription,
+  updateUserWatchedEpisodes,
+} from "@/lib/backend/liveseries";
 import { TvShowContext } from "@/lib/context/tv-show-context";
 import { TRANSLATIONS } from "@/lib/translations";
 import { getEpisodeAirDate, isInvalidDate } from "@/lib/util";
@@ -27,27 +42,31 @@ export function ShowDetails({
   episodes,
   user,
   userLanguage,
-  liked,
-  subscribed,
-  watchedEpisodes,
-  accessToken,
   children,
 }: {
   tvShow: TvMazeShow;
   episodes: TvMazeEpisode[];
   user: User | null;
   userLanguage: Language;
-  liked: boolean;
-  subscribed: boolean;
-  watchedEpisodes: WatchedEpisodes[number];
-  accessToken: string | null;
   children: ReactNode;
 }) {
-  const [isLiked, setIsLiked] = useState(liked);
-  const [isSubscribed, setIsSubscribed] = useState(subscribed);
-  const [watchedInShow, setWatchedInShow] = useState(watchedEpisodes);
-  const { setModalChoice, setModalError } = useModals();
+  const startTransition = useTransition()[1];
+  const [isLiked, setIsLiked] = useState(
+    user != null && user.userShows.liked.includes(tvShow.id),
+  );
+  const [isLikedOptimistic, setIsLikedOptimistic] = useOptimistic(isLiked);
+  const [isSubscribed, setIsSubscribed] = useState(
+    user != null && user.userShows.subscribed.includes(tvShow.id),
+  );
+  const [isSubscribedOptimistic, setIsSubscribedOptimistic] = useOptimistic(isSubscribed);
+  const [watchedInShow, setWatchedInShow] = useState(
+    user?.watchedEpisodes?.[tvShow.id] ?? {},
+  );
+  const [watchedInShowOptimistic, setWatchedInShowOptimistic] =
+    useOptimistic(watchedInShow);
+  const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState(false);
   const data = TRANSLATIONS[userLanguage];
+  const router = useRouter();
 
   function formatDate(which: "start" | "end") {
     const latestEpisode = episodes?.at(-1);
@@ -71,84 +90,84 @@ export function ShowDetails({
   }
 
   function promptLogin() {
-    setModalError(data.liveSeries.home.login);
+    showErrorToast(data.liveSeries.home.login);
   }
 
-  async function handleLike() {
-    if (!accessToken) {
-      return promptLogin();
+  function handleLike() {
+    if (user == null) {
+      promptLogin();
+      return;
     }
-    setIsLiked((old) => !old);
 
-    const result = await clientToApi(
-      "liveseries/shows/personal/liked/" + tvShow?.id,
-      accessToken,
-      {
-        method: isLiked ? "DELETE" : "POST",
-        userLanguage,
-        setModalError,
-      },
-    );
-    if (!result.ok) setIsLiked((old) => !old);
+    startTransition(async () => {
+      setIsLikedOptimistic(!isLikedOptimistic);
+      if (await updateUserShowLike(user, userLanguage, tvShow.id, isLikedOptimistic)) {
+        setIsLiked(!isLikedOptimistic);
+      }
+    });
   }
 
   async function handleSubscribe() {
-    if (!accessToken) {
-      return promptLogin();
+    setIsSubscribeModalOpen(false);
+    // This code should only be reachable if the user is logged in
+    if (user == null) {
+      showErrorToast(data.unknownError);
+      console.error("User is null in ShowDetails handleSubscribe");
+      return;
     }
-    if (!isSubscribed && unwatchedEpisodesCount > UNWATCHED_EPISODES_THRESHOLD) {
-      const proceed = await setModalChoice(
-        data.liveSeries.tvShow.confirmSubscribe(unwatchedEpisodesCount),
-      );
-      if (!proceed) return;
-    }
-
-    setIsSubscribed((old) => !old);
-    const result = await clientToApi(
-      "liveseries/shows/personal/subscribed/" + tvShow?.id,
-      accessToken,
-      {
-        method: isSubscribed ? "DELETE" : "POST",
-        userLanguage,
-        setModalError,
-      },
-    );
-    if (!result.ok) {
-      setIsSubscribed(subscribed);
-    }
+    startTransition(async () => {
+      setIsSubscribedOptimistic(!isSubscribedOptimistic);
+      if (
+        await updateUserShowSubscription(
+          user,
+          userLanguage,
+          tvShow.id,
+          isSubscribedOptimistic,
+        )
+      ) {
+        setIsSubscribed(!isSubscribedOptimistic);
+      }
+    });
   }
 
-  async function updateWatchedEpisodes(season: string, episodes: TvMazeEpisode[]) {
-    if (!accessToken) {
-      return promptLogin();
+  async function updateWatchedEpisodes(
+    season: number | `${number}`,
+    episodes: TvMazeEpisode[],
+  ) {
+    if (user == null) {
+      promptLogin();
+      return;
     }
-    const episodeNumbers = episodes.map((episode) => episode.number);
-    setWatchedInShow((old) => ({
-      ...old,
-      [+season]: episodeNumbers,
-    }));
-    const result = await clientToApi(
-      `liveseries/watched-episodes/personal/${tvShow.id}/${season}`,
-      accessToken,
-      {
-        method: "PUT",
-        body: episodeNumbers,
-        userLanguage,
-        setModalError,
-      },
-    );
-    if (!result.ok) {
-      setWatchedInShow(watchedEpisodes);
-    }
+    const watchedEpisodes = episodes.map((episode) => episode.number);
+
+    const newWatchedInShow = {
+      ...watchedInShow,
+      [+season]: watchedEpisodes,
+    };
+
+    startTransition(async () => {
+      setWatchedInShowOptimistic(newWatchedInShow);
+      if (
+        await updateUserWatchedEpisodes(
+          user,
+          userLanguage,
+          tvShow.id,
+          season,
+          watchedEpisodes,
+        )
+      ) {
+        setWatchedInShow(newWatchedInShow);
+      }
+    });
   }
 
   if (!tvShow) return <TvShowSkeleton />;
 
-  const isSeasonWatched = (season: string, episodes: TvMazeEpisode[]) =>
-    watchedInShow[+season]?.length === episodes.length;
+  const isSeasonWatched = (season: number | `${number}`, episodes: TvMazeEpisode[]) =>
+    watchedInShowOptimistic[+season]?.length === episodes.length;
 
   const totalEpisodes = episodes?.length ?? 0;
-  const watchedEpisodesCount = Object.values(watchedInShow).reduce(
+  const watchedEpisodesCount = Object.values(watchedInShowOptimistic).reduce(
     (acc, episodes) => acc + episodes.length,
     0,
   );
@@ -160,11 +179,11 @@ export function ShowDetails({
     <div className="flex flex-col gap-1">
       <div className="flex flex-wrap items-center gap-3">
         <button
-          className={cn("clickable text-3xl", { "text-error": isLiked })}
-          title={data.liveSeries.tvShow[isLiked ? "unlike" : "like"]}
+          className={cn("clickable text-3xl", { "text-error": isLikedOptimistic })}
+          title={data.liveSeries.tvShow[isLikedOptimistic ? "unlike" : "like"]}
           onClick={handleLike}
         >
-          <HeartIcon fill={isLiked ? "currentColor" : "none"} />
+          <HeartIcon fill={isLikedOptimistic ? "currentColor" : "none"} />
         </button>
         <h2 className="text-accent-soft text-2xl font-bold">{tvShow.name}</h2>
         <small className="text-xl">
@@ -282,16 +301,58 @@ export function ShowDetails({
         />
       )}
       <h3 className="my-5 text-2xl font-bold">{data.liveSeries.tvShow.episodes}</h3>
-      {user?.serverUrl != null && user.serverUrl.length > 0 && (
-        <div className="w-fit">
-          <InputBox
-            type="checkbox"
-            label={data.liveSeries.tvShow.subscribe}
-            value={isSubscribed}
-            setValue={handleSubscribe}
-          ></InputBox>
-        </div>
-      )}
+      <AlertDialog open={isSubscribeModalOpen}>
+        <AlertDialogTrigger asChild className="self-start">
+          <Button
+            variant={isSubscribed ? "outline" : "default"}
+            onClick={() => {
+              if (user == null) {
+                promptLogin();
+                return;
+              }
+              if (user.serverUrl == null || user.serverUrl.length === 0) {
+                showErrorToast(data.liveSeries.setup, {
+                  action: {
+                    label: data.profile.title,
+                    onClick: () => {
+                      router.push("/profile?focus=serverUrl");
+                    },
+                  },
+                });
+                return;
+              }
+              if (
+                isSubscribedOptimistic ||
+                unwatchedEpisodesCount <= UNWATCHED_EPISODES_THRESHOLD
+              ) {
+                handleSubscribe();
+                return;
+              }
+              setIsSubscribeModalOpen(true);
+            }}
+          >
+            {isSubscribed
+              ? data.liveSeries.tvShow.unsubscribe
+              : data.liveSeries.tvShow.subscribe}
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle></AlertDialogTitle>
+            <AlertDialogDescription>
+              {data.liveSeries.tvShow.confirmSubscribe(unwatchedEpisodesCount)}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setIsSubscribeModalOpen(false)}>
+              {data.modal.no}
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleSubscribe}>
+              {data.modal.yes}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       {totalEpisodes === 0 ? <p>{data.liveSeries.tvShow.noEpisodes}</p> : null}
       <TvShowContext.Provider value={{ updateWatchedEpisodes, isSeasonWatched }}>
         {children}

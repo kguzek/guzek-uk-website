@@ -20,8 +20,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { fetchFromApi } from "@/lib/backend";
 import { resetPasswordSchema } from "@/lib/backend/schemas";
-import { fetchFromApi } from "@/lib/backend/v2";
 import { TRANSLATIONS } from "@/lib/translations";
 
 export function ResetPasswordForm({

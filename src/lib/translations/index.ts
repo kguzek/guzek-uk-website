@@ -1,7 +1,7 @@
 import type { Episode as TvMazeEpisode } from "tvmaze-wrapper-ts";
 
 import type { ErrorCode, Language } from "@/lib/enums";
-import type { DownloadedEpisode, ErrorPageContent } from "@/lib/types";
+import type { DownloadedEpisode } from "@/lib/types";
 
 import { ENGLISH } from "./english";
 import { POLISH } from "./polish";
@@ -108,6 +108,7 @@ export type Translation = Readonly<{
     whatsThis: string;
     explanation: string;
     cta: string;
+    setup: string;
     tvShowList: {
       showing: string;
       of: string;
@@ -130,6 +131,7 @@ export type Translation = Readonly<{
       like: string;
       unlike: string;
       subscribe: string;
+      unsubscribe: string;
       confirmSubscribe: (unwatched: number) => string;
       showDetails: string;
       markWatched: (un: string) => string;
@@ -178,7 +180,12 @@ export type Translation = Readonly<{
       askReconnect: string;
     };
   };
-  error: { [code in ErrorCode]: ErrorPageContent };
+  error: {
+    [code in ErrorCode]: {
+      title: string;
+      body: string;
+    };
+  };
 }>;
 
 export const TRANSLATIONS: { [lang in Language]: Translation } = {

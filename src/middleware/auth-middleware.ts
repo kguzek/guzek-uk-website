@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 
 import type { MiddlewareFactory } from "@/lib/types";
 import { PAGINATED_REGEX_INVALID } from "@/lib/constants";
-import { getAuth } from "@/lib/providers/auth-provider/server";
+import { getAuthFromCookies } from "@/lib/providers/auth-provider/cookies";
 
-const ROUTES_REQUIRING_AUTH = ["/profile", "/admin-legacy", "/liveseries/watch"];
+const ROUTES_REQUIRING_AUTH = ["/profile", "/admin-logs", "/liveseries/watch"];
 const ROUTES_REQUIRING_NOAUTH = ["/login", "/signup", "/verify-email", "/reset-password"];
-const ROUTES_REQUIRING_ADMIN = ["/admin-legacy"];
+const ROUTES_REQUIRING_ADMIN = ["/admin-logs"];
 
 export const authMiddleware: MiddlewareFactory = (next) =>
   async function (request) {
@@ -23,7 +23,7 @@ export const authMiddleware: MiddlewareFactory = (next) =>
     }
 
     const response = await next(request);
-    const { user } = await getAuth(request);
+    const { user } = await getAuthFromCookies(request.cookies);
     const [redirectFrom, redirectTo] =
       user == null
         ? [ROUTES_REQUIRING_AUTH, "/login"]

@@ -12,8 +12,8 @@ import type { LogInSchema } from "@/lib/backend/schemas";
 import type { Language } from "@/lib/enums";
 import { fetchErrorToast } from "@/components/error/toast";
 import { showSuccessToast } from "@/components/ui/sonner";
+import { fetchFromApi } from "@/lib/backend";
 import { logInSchema } from "@/lib/backend/schemas";
-import { fetchFromApi } from "@/lib/backend/v2";
 import { TRANSLATIONS } from "@/lib/translations";
 import { Button } from "@/ui/button";
 import {

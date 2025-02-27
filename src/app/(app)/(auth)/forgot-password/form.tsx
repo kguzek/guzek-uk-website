@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 import type { ForgotPasswordSchema } from "@/lib/backend/schemas";
 import type { Language } from "@/lib/enums";
-import type { User } from "@/lib/types";
+import type { User } from "@/payload-types";
 import { fetchErrorToast } from "@/components/error/toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,8 +19,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { fetchFromApi } from "@/lib/backend";
 import { forgotPasswordSchema } from "@/lib/backend/schemas";
-import { fetchFromApi } from "@/lib/backend/v2";
 import { TRANSLATIONS } from "@/lib/translations";
 
 export function ForgotPasswordForm({ userLanguage }: { userLanguage: Language }) {

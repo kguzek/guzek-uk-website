@@ -136,6 +136,7 @@ export const ENGLISH: Translation = {
     explanation:
       "In order to search for and download TV show torrents, you must set up a LiveSeries server. This server will be used to fetch torrent files and stream video content.",
     cta: "Find out more at ",
+    setup: "Visit your profile to set up your LiveSeries server URL.",
     tvShowList: {
       showing: "Showing",
       of: "of",
@@ -158,6 +159,7 @@ export const ENGLISH: Translation = {
       like: "Like",
       unlike: "Unlike",
       subscribe: "Subscribe to automatic downloads",
+      unsubscribe: "Unsubscribe from automatic downloads",
       confirmSubscribe: (unwatched) =>
         `Warning: Are you sure you want to automatically download unwatched episodes for this show? You have ${unwatched} unwatched episodes.`,
       showDetails: "Show Details",

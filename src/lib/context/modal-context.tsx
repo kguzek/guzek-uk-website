@@ -9,20 +9,8 @@ import { Modal } from "@/components/modal";
 import { TRANSLATIONS } from "@/lib/translations";
 
 export const ModalContext = createContext<{
-  modalChoice: string | undefined;
   setModalChoice: (message?: string) => Promise<boolean>;
-  modalError: string | undefined;
-  setModalError: (message?: string) => void;
-  modalInfo: string | undefined;
-  setModalInfo: (message?: string) => void;
-}>({
-  modalChoice: undefined,
-  setModalChoice: async () => false,
-  modalError: undefined,
-  setModalError: () => {},
-  modalInfo: undefined,
-  setModalInfo: () => {},
-});
+} | null>(null);
 
 export function useModals() {
   const context = useContext(ModalContext);
@@ -43,23 +31,16 @@ export function ModalProvider({
   const [onClickModalChoice, setOnClickModalChoice] = useState<
     ModalHandler | undefined
   >();
-  const [modalError, setModalError] = useState<string | undefined>();
-  const [modalInfo, setModalInfo] = useState<string | undefined>();
   const data = TRANSLATIONS[userLanguage];
 
   return (
     <ModalContext.Provider
       value={{
-        modalChoice,
         setModalChoice: (message) =>
           new Promise((resolve) => {
             setModalChoice(message);
             setOnClickModalChoice(() => resolve);
           }),
-        modalError,
-        setModalError,
-        modalInfo,
-        setModalInfo,
       }}
     >
       <Modal
@@ -71,8 +52,6 @@ export function ModalProvider({
           setModalChoice("");
         }}
       />
-      <Modal variant="error" value={modalError} onClick={() => setModalError("")} />
-      <Modal value={modalInfo} onClick={() => setModalInfo("")} />
       {children}
     </ModalContext.Provider>
   );

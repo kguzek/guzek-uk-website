@@ -5,7 +5,10 @@ import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 
 import type { Language } from "@/lib/enums";
-import type { DownloadedEpisode, User } from "@/lib/types";
+import type { DownloadedEpisode } from "@/lib/types";
+import type { User } from "@/payload-types";
+import { showErrorToast } from "@/components/error/toast";
+import { showSuccessToast } from "@/components/ui/sonner";
 import { DownloadStatus } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import { compareEpisodes } from "@/lib/util";
@@ -43,7 +46,7 @@ export function LiveSeriesProvider({
 }) {
   const [existingSocket, setExistingSocket] = useState<null | WebSocket>(null);
   const [downloadedEpisodes, setDownloadedEpisodes] = useState<DownloadedEpisode[]>([]);
-  const { setModalInfo, setModalError, setModalChoice } = useModals();
+  const { setModalChoice } = useModals();
   const pathname = usePathname();
   const data = TRANSLATIONS[userLanguage];
 
@@ -76,7 +79,7 @@ export function LiveSeriesProvider({
       );
     } catch (error) {
       console.error("Websocket instantiation error:", error);
-      setModalError(data.liveSeries.websockets.connectionFailed);
+      showErrorToast(data.liveSeries.websockets.connectionFailed);
       return;
     }
     setExistingSocket(socket);
@@ -87,7 +90,9 @@ export function LiveSeriesProvider({
         socketFailed === undefined ? "Connection error" : "Unknown error:",
         message,
       );
-      if (socketFailed !== undefined) setModalError(data.liveSeries.websockets.error);
+      if (socketFailed !== undefined) {
+        showErrorToast(data.liveSeries.websockets.error);
+      }
       socketFailed = true;
     };
     const poll = (data: DownloadedEpisode[]) =>
@@ -110,7 +115,7 @@ export function LiveSeriesProvider({
       }
       if (evt.wasClean) {
         // The server URL is probably misconfigured
-        setModalError(data.liveSeries.websockets.connectionFailed);
+        showErrorToast(data.liveSeries.websockets.connectionFailed);
         return;
       }
       if (socketFailed) return;
@@ -153,7 +158,9 @@ export function LiveSeriesProvider({
         return sorted;
       });
       if (completedDownloadName)
-        setModalInfo(data.liveSeries.episodes.downloadComplete(completedDownloadName));
+        showSuccessToast(
+          data.liveSeries.episodes.downloadComplete(completedDownloadName),
+        );
     };
   }
 
