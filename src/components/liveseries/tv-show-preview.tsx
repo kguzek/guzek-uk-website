@@ -10,10 +10,13 @@ import { HeartIcon } from "lucide-react";
 import type { Language } from "@/lib/enums";
 import type { User } from "@/payload-types";
 import { fetchFromApi } from "@/lib/backend";
+import { getUserLikedShows } from "@/lib/backend/liveseries";
 import { TRANSLATIONS } from "@/lib/translations";
+import { addOrRemove } from "@/lib/util";
 import { cn } from "@/lib/utils";
 
-import { showFetchErrorToast } from "../error/toast";
+import { showErrorToast, showFetchErrorToast } from "../error/toast";
+import { Tile } from "../tile";
 import { TvShowPreviewSkeleton } from "./tv-show-preview-skeleton";
 
 export function TvShowPreview({
@@ -28,18 +31,19 @@ export function TvShowPreview({
   user: User | null;
 }) {
   const [isPending, startTransition] = useTransition();
-  const [likedShowIds, setLikedShowIds] = useState(user?.userShows?.liked ?? []);
+  const [likedShowIds, setLikedShowIds] = useState(getUserLikedShows(user));
   const [likedShowIdsOptimistic, setLikedShowIdsOptimistic] = useOptimistic(likedShowIds);
   const isLikedOptimistic = likedShowIdsOptimistic.includes(tvShow.id);
   const data = TRANSLATIONS[userLanguage];
 
   function handleHeart(event_: MouseEvent) {
-    if (tvShow == null || user == null) return;
+    if (tvShow == null || user == null) {
+      showErrorToast(data.liveSeries.home.login);
+      return;
+    }
     event_.stopPropagation();
 
-    const newLikedShowIds = isLikedOptimistic
-      ? user.userShows.liked.filter((id) => id !== tvShow.id)
-      : [...user.userShows.liked, tvShow.id];
+    const newLikedShowIds = addOrRemove(likedShowIds, tvShow.id, !isLikedOptimistic);
 
     startTransition(async () => {
       setLikedShowIdsOptimistic(newLikedShowIds);
@@ -69,26 +73,29 @@ export function TvShowPreview({
   const link = `/liveseries/tv-show/${tvShow.id}`;
 
   return (
-    <div className="bg-background-strong shadow-background-strong outline-background hover:outline-background-soft w-[240px] rounded-md pb-10 outline transition-all duration-300 hover:z-1 hover:-translate-y-2 hover:drop-shadow-2xl">
+    <Tile containerClassName="w-[240px] pb-10 pt-3 h-full" className="w-full p-0">
       <div className="flex w-full justify-between gap-1 px-4 py-2">
         <Link href={link} title={tvShow?.name} className="overflow-hidden">
           <p className="cutoff text-primary">
-            {tvShow?.name} ({tvShow.network?.country.code})
+            {tvShow?.name} {tvShow.network?.country && `(${tvShow.network.country.code})`}
           </p>
         </Link>
 
         <button
           onClick={handleHeart}
-          className={cn("text-primary hover:text-error transition-colors duration-300", {
-            "text-error": isLikedOptimistic,
-          })}
+          className={cn(
+            "text-primary hover:text-error glow:text-error transition-colors duration-300",
+            {
+              "text-error": isLikedOptimistic,
+            },
+          )}
           disabled={isPending}
           title={data.liveSeries.tvShow[isLikedOptimistic ? "unlike" : "like"]}
         >
           <HeartIcon fill={isLikedOptimistic ? "currentColor" : "none"} />
         </button>
       </div>
-      <Link href={link} title={tvShow?.name}>
+      <Link href={link} title={tvShow?.name} className="w-full">
         {tvShow.image?.medium ? (
           <Image
             className="text-primary block h-[300px] w-full bg-cover bg-center object-cover italic"
@@ -101,6 +108,6 @@ export function TvShowPreview({
           tvShow.name
         )}
       </Link>
-    </div>
+    </Tile>
   );
 }

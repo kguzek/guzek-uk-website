@@ -12,6 +12,8 @@ import { cn } from "@/lib/utils";
 
 import "./globals.css";
 
+import { GlowCapture } from "@codaworks/react-glow";
+
 import { PRODUCTION_URL } from "@/lib/constants";
 import { QueryProvider } from "@/lib/providers/query-provider";
 import { Toaster } from "@/ui/sonner";
@@ -69,14 +71,14 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <body className="text-primary bg-gradient-main">
         <QueryProvider>
           <TooltipProvider>
-            <div className="flex min-h-screen flex-col pt-(--navbar-height) sm:pt-(--navbar-height-sm)">
+            <GlowCapture className="flex min-h-screen flex-col pt-(--navbar-height) sm:pt-(--navbar-height-sm)">
               <ModalProvider userLanguage={userLanguage}>
                 <LanguageCookie />
                 <Navigation />
                 <main className="grow">{children}</main>
                 <Footer />
               </ModalProvider>
-            </div>
+            </GlowCapture>
             <Toaster />
           </TooltipProvider>
         </QueryProvider>

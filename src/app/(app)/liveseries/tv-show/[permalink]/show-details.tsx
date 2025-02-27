@@ -5,12 +5,12 @@ import type { Episode as TvMazeEpisode, Show as TvMazeShow } from "tvmaze-wrappe
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useOptimistic, useState, useTransition } from "react";
+import { Glow } from "@codaworks/react-glow";
 import { HeartIcon, StarIcon } from "lucide-react";
 
 import type { Language } from "@/lib/enums";
 import type { User } from "@/payload-types";
 import { showErrorToast } from "@/components/error/toast";
-import { TvShowSkeleton } from "@/components/liveseries/tv-show-skeleton";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
+  getUserLikedShows,
   updateUserShowLike,
   updateUserShowSubscription,
   updateUserWatchedEpisodes,
@@ -50,13 +51,13 @@ export function ShowDetails({
   userLanguage: Language;
   children: ReactNode;
 }) {
-  const startTransition = useTransition()[1];
+  const [isUpdating, startTransition] = useTransition();
   const [isLiked, setIsLiked] = useState(
-    user != null && user.userShows.liked.includes(tvShow.id),
+    (user != null && getUserLikedShows(user).includes(tvShow.id)) ?? false,
   );
   const [isLikedOptimistic, setIsLikedOptimistic] = useOptimistic(isLiked);
   const [isSubscribed, setIsSubscribed] = useState(
-    user != null && user.userShows.subscribed.includes(tvShow.id),
+    (user != null && user.userShows?.subscribed?.includes(tvShow.id)) ?? false,
   );
   const [isSubscribedOptimistic, setIsSubscribedOptimistic] = useOptimistic(isSubscribed);
   const [watchedInShow, setWatchedInShow] = useState(
@@ -98,11 +99,11 @@ export function ShowDetails({
       promptLogin();
       return;
     }
-
+    const newValue = !isLikedOptimistic;
     startTransition(async () => {
-      setIsLikedOptimistic(!isLikedOptimistic);
-      if (await updateUserShowLike(user, userLanguage, tvShow.id, isLikedOptimistic)) {
-        setIsLiked(!isLikedOptimistic);
+      setIsLikedOptimistic(newValue);
+      if (await updateUserShowLike(user, userLanguage, tvShow.id, newValue)) {
+        setIsLiked(newValue);
       }
     });
   }
@@ -115,17 +116,11 @@ export function ShowDetails({
       console.error("User is null in ShowDetails handleSubscribe");
       return;
     }
+    const newValue = !isSubscribedOptimistic;
     startTransition(async () => {
-      setIsSubscribedOptimistic(!isSubscribedOptimistic);
-      if (
-        await updateUserShowSubscription(
-          user,
-          userLanguage,
-          tvShow.id,
-          isSubscribedOptimistic,
-        )
-      ) {
-        setIsSubscribed(!isSubscribedOptimistic);
+      setIsSubscribedOptimistic(newValue);
+      if (await updateUserShowSubscription(user, userLanguage, tvShow.id, newValue)) {
+        setIsSubscribed(newValue);
       }
     });
   }
@@ -161,8 +156,6 @@ export function ShowDetails({
     });
   }
 
-  if (!tvShow) return <TvShowSkeleton />;
-
   const isSeasonWatched = (season: number | `${number}`, episodes: TvMazeEpisode[]) =>
     watchedInShowOptimistic[+season]?.length === episodes.length;
 
@@ -173,18 +166,23 @@ export function ShowDetails({
   );
   const unwatchedEpisodesCount = totalEpisodes - watchedEpisodesCount;
 
-  const runtime = tvShow?.runtime ?? tvShow?.averageRuntime;
+  const runtime = tvShow.runtime ?? tvShow.averageRuntime;
 
   return (
     <div className="flex flex-col gap-1">
       <div className="flex flex-wrap items-center gap-3">
-        <button
-          className={cn("clickable text-3xl", { "text-error": isLikedOptimistic })}
-          title={data.liveSeries.tvShow[isLikedOptimistic ? "unlike" : "like"]}
-          onClick={handleLike}
-        >
-          <HeartIcon fill={isLikedOptimistic ? "currentColor" : "none"} />
-        </button>
+        <Glow className="grid place-items-center">
+          <button
+            className={cn("glow:text-error text-3xl", {
+              "text-error": isLikedOptimistic,
+            })}
+            title={data.liveSeries.tvShow[isLikedOptimistic ? "unlike" : "like"]}
+            disabled={isUpdating}
+            onClick={handleLike}
+          >
+            <HeartIcon fill={isLikedOptimistic ? "currentColor" : "none"} />
+          </button>
+        </Glow>
         <h2 className="text-accent-soft text-2xl font-bold">{tvShow.name}</h2>
         <small className="text-xl">
           ({formatDate("start")}–{formatDate("end")})
@@ -304,7 +302,9 @@ export function ShowDetails({
       <AlertDialog open={isSubscribeModalOpen}>
         <AlertDialogTrigger asChild className="self-start">
           <Button
-            variant={isSubscribed ? "outline" : "default"}
+            variant={isSubscribed ? "default" : "glow"}
+            loading={isUpdating}
+            className="min-w-xs"
             onClick={() => {
               if (user == null) {
                 promptLogin();
@@ -354,7 +354,9 @@ export function ShowDetails({
         </AlertDialogContent>
       </AlertDialog>
       {totalEpisodes === 0 ? <p>{data.liveSeries.tvShow.noEpisodes}</p> : null}
-      <TvShowContext.Provider value={{ updateWatchedEpisodes, isSeasonWatched }}>
+      <TvShowContext.Provider
+        value={{ updateWatchedEpisodes, isSeasonWatched, isUpdating }}
+      >
         {children}
       </TvShowContext.Provider>
     </div>

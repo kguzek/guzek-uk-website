@@ -71,16 +71,16 @@ export async function EpisodesList({
   children?: ReactNode;
 }) {
   return (
-    <div className="group">
+    <div>
       <div className="peer flex items-center gap-4">
         <label className="clickable flex items-center gap-4">
           <input type="checkbox" className="peer hidden" />
-          <ChevronRightIcon className="transition-transform duration-300 group-focus-within:rotate-90 peer-checked:rotate-90"></ChevronRightIcon>
+          <ChevronRightIcon className="transition-transform duration-300 peer-checked:rotate-90"></ChevronRightIcon>
           <h4 className="my-4 text-lg font-bold">{heading}</h4>
         </label>
         {children}
       </div>
-      <div className="collapsible collapsed peer-has-checked:expanded group-focus-within:expanded">
+      <div className="collapsible collapsed peer-has-checked:expanded focus-within:expanded">
         <div className="overflow-hidden">
           <Tile
             containerClassName="w-full"

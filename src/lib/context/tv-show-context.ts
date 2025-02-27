@@ -9,12 +9,10 @@ interface TvShowContextType {
     season: number | `${number}`,
     episodes: TvMazeEpisode[],
   ) => void;
+  isUpdating: boolean;
 }
 
-export const TvShowContext = createContext<TvShowContextType>({
-  isSeasonWatched: () => false,
-  updateWatchedEpisodes: () => {},
-});
+export const TvShowContext = createContext<TvShowContextType | null>(null);
 
 export function useTvShowContext() {
   const context = useContext(TvShowContext);
