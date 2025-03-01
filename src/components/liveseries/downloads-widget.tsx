@@ -9,15 +9,24 @@ import type { DownloadedEpisode } from "@/lib/types";
 import type { User } from "@/payload-types";
 import { fetchFromApi } from "@/lib/backend";
 import { useLiveSeriesContext } from "@/lib/context/liveseries-context";
-import { useModals } from "@/lib/context/modal-context";
 import { DownloadStatus } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import { bytesToReadable, getDuration } from "@/lib/util";
 import { cn } from "@/lib/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/ui/alert-dialog";
+import { showInfoToast, showSuccessToast } from "@/ui/sonner";
 
 import { showErrorToast, showFetchErrorToast } from "../error/toast";
 import { Tile } from "../tile";
-import { showInfoToast, showSuccessToast } from "../ui/sonner";
 
 export function DownloadsWidget({
   user,
@@ -34,26 +43,39 @@ export function DownloadsWidget({
       null,
   );
   const [collapsedAnimated, setCollapsedAnimated] = useState(collapsed);
-  const { setModalChoice } = useModals();
+  const [isDeleteEpisodeDialogOpen, setIsDeleteEpisodeDialogOpen] = useState(false);
+  const [episodeToDelete, setEpisodeToDelete] = useState<DownloadedEpisode | null>(null);
   const data = TRANSLATIONS[userLanguage];
+
   function serialise(episode: DownloadedEpisode) {
     const episodeObject = { number: episode.episode, season: episode.season };
-    return data.liveSeries.episodes.serialise(episodeObject);
+    const episodeSerialised = data.liveSeries.episodes.serialise(episodeObject);
+    return `${episode.showName} ${episodeSerialised}`;
   }
 
-  async function handleDeleteEpisode(episode: DownloadedEpisode) {
+  function isUserServerUrlValid(user: User): user is User & { serverUrl: string } {
     if (user == null || accessToken == null) {
       showErrorToast(data.liveSeries.home.login);
-      return;
+      return false;
     }
     if (user.serverUrl == null || user.serverUrl === "") {
       showInfoToast(data.liveSeries.setup);
+      return false;
+    }
+    return true;
+  }
+
+  function askDeleteEpisode(episode: DownloadedEpisode) {
+    if (isUserServerUrlValid(user)) {
+      setIsDeleteEpisodeDialogOpen(true);
+      setEpisodeToDelete(episode);
+    }
+  }
+
+  async function deleteEpisode(episode: DownloadedEpisode) {
+    if (!isUserServerUrlValid(user)) {
       return;
     }
-    const episodeString = `${episode.showName} ${serialise(episode)}`;
-    const question = data.liveSeries.episodes.confirmDelete(episodeString);
-    const answer = await setModalChoice(question);
-    if (!answer) return;
     try {
       await fetchFromApi(
         `liveseries/downloaded-episodes/${episode.showName}/${episode.season}/${episode.episode}`,
@@ -63,7 +85,7 @@ export function DownloadsWidget({
       showFetchErrorToast(data, error);
       return;
     }
-    showSuccessToast(data.liveSeries.episodes.deleted(episodeString));
+    showSuccessToast(data.liveSeries.episodes.deleted(serialise(episode)));
   }
 
   useEffect(() => {
@@ -74,6 +96,15 @@ export function DownloadsWidget({
       collapsed ? 0 : 300,
     );
   }, [collapsed]);
+
+  function closeDeleteEpisodeDialog() {
+    setIsDeleteEpisodeDialogOpen(false);
+  }
+
+  function getDeleteEpisodeConfirmationMessage(episode: DownloadedEpisode) {
+    const formattedEpisode = data.format.quote(serialise(episode));
+    return data.liveSeries.episodes.confirmDelete(formattedEpisode);
+  }
 
   if (downloadedEpisodes.length === 0) return null;
 
@@ -86,6 +117,35 @@ export function DownloadsWidget({
       className="w-full p-0"
       variant="vanilla"
     >
+      <AlertDialog
+        open={isDeleteEpisodeDialogOpen}
+        onOpenChange={setIsDeleteEpisodeDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {episodeToDelete != null &&
+                getDeleteEpisodeConfirmationMessage(episodeToDelete)}
+            </AlertDialogTitle>
+            <AlertDialogDescription>{data.modal.warnIrreversible}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel variant="outline" onClick={closeDeleteEpisodeDialog}>
+              {data.modal.no}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (episodeToDelete != null) {
+                  deleteEpisode(episodeToDelete);
+                }
+              }}
+              variant="destructive"
+            >
+              {data.modal.yes}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <div
         className="clickable peer flex w-full justify-center py-1"
         onClick={() => setCollapsed((old) => !old)}
@@ -114,9 +174,7 @@ export function DownloadsWidget({
             const card = (
               <div className="flex w-full flex-col items-start p-2 text-sm sm:text-base">
                 <div className="w-full">
-                  <span>
-                    {episode.showName} {serialise(episode)}
-                  </span>
+                  <span>{serialise(episode)}</span>
                   <span className="font-serif"> {downloadProgress}</span>
                   {episode.speed != null && episode.status === DownloadStatus.PENDING && (
                     <span className="font-serif">
@@ -167,7 +225,7 @@ export function DownloadsWidget({
                 )}
                 <div
                   className="clickable delete"
-                  onClick={() => handleDeleteEpisode(episode)}
+                  onClick={() => askDeleteEpisode(episode)}
                 >
                   <Trash2Icon className="scale-75 sm:scale-100" />
                 </div>

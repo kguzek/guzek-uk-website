@@ -99,6 +99,7 @@ export type Translation = Readonly<{
   modal: {
     yes: string;
     no: string;
+    warnIrreversible: string;
   };
   projects: {
     title: string;
@@ -132,7 +133,8 @@ export type Translation = Readonly<{
       unlike: string;
       subscribe: string;
       unsubscribe: string;
-      confirmSubscribe: (unwatched: number) => string;
+      confirmSubscribe: string;
+      unwatchedEpisodes: (unwatched: number) => string;
       showDetails: string;
       markWatched: (un: string) => string;
       markAllWatched: (un: string) => string;
@@ -142,6 +144,7 @@ export type Translation = Readonly<{
     search: {
       title: string;
       label: string;
+      labelShort: string;
       prompt: string;
       search: string;
       searching: string;

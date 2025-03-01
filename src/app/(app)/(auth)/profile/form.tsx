@@ -190,7 +190,7 @@ export function ProfileForm({
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Ok</AlertDialogCancel>
+                      <AlertDialogCancel variant="outline">Ok</AlertDialogCancel>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { Episode as TvMazeEpisode, Show as TvMazeShow } from "tvmaze-wrapper-ts";
 import Link from "next/link";
+import { Search, TrendingUp } from "lucide-react";
 import { findShowById, getShowEpisodes } from "tvmaze-wrapper-ts";
 
 import type { EpisodeArray } from "@/payload-types";
@@ -8,6 +9,7 @@ import { ErrorComponent } from "@/components/error/component";
 import { EpisodesList } from "@/components/liveseries/episodes-list";
 import { TextWrapper } from "@/components/text-wrapper";
 import { Tile } from "@/components/tile";
+import { Button } from "@/components/ui/button";
 import { getUserLikedShows } from "@/lib/backend/liveseries";
 import { ErrorCode } from "@/lib/enums";
 import { getAuth } from "@/lib/providers/auth-provider";
@@ -90,20 +92,23 @@ export default async function Home() {
         {likedShowIds.length === 0 ? (
           <>
             <p className="mb-3 whitespace-pre-wrap">{data.liveSeries.home.noLikes}</p>
-            <p>
-              <Link href="/liveseries/search" className="hover-underline text-accent">
-                {data.liveSeries.search.label}
-              </Link>
-            </p>
-            <p>
+            <Button variant="link" className="px-0" asChild>
               <Link
                 href="/liveseries/most-popular"
-                className="hover-underline text-accent"
+                className="group flex items-center gap-2"
               >
-                {data.liveSeries.home.explore} {data.liveSeries.mostPopular.title}{" "}
-                {data.liveSeries.home.shows}
+                <TrendingUp />{" "}
+                <span className="group-hover:underlined hover-underline text-xs sm:text-sm md:text-base">
+                  {data.liveSeries.home.explore} {data.liveSeries.mostPopular.title}{" "}
+                  {data.liveSeries.home.shows}
+                </span>
               </Link>
-            </p>
+            </Button>
+            <Button asChild className="text-xs sm:text-sm md:text-base">
+              <Link href="/liveseries/search">
+                <Search /> {data.liveSeries.search.label}
+              </Link>
+            </Button>
           </>
         ) : (
           <>

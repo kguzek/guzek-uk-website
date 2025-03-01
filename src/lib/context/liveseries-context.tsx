@@ -8,12 +8,19 @@ import type { Language } from "@/lib/enums";
 import type { DownloadedEpisode } from "@/lib/types";
 import type { User } from "@/payload-types";
 import { showErrorToast } from "@/components/error/toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { showSuccessToast } from "@/components/ui/sonner";
 import { DownloadStatus } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import { compareEpisodes } from "@/lib/util";
-
-import { useModals } from "./modal-context";
 
 const LiveSeriesContext = createContext<
   | {
@@ -46,7 +53,7 @@ export function LiveSeriesProvider({
 }) {
   const [existingSocket, setExistingSocket] = useState<null | WebSocket>(null);
   const [downloadedEpisodes, setDownloadedEpisodes] = useState<DownloadedEpisode[]>([]);
-  const { setModalChoice } = useModals();
+  const [isDialogRetryOpen, setIsDialogRetryOpen] = useState(false);
   const pathname = usePathname();
   const data = TRANSLATIONS[userLanguage];
 
@@ -119,8 +126,7 @@ export function LiveSeriesProvider({
         return;
       }
       if (socketFailed) return;
-      const reconnect = await setModalChoice(data.liveSeries.websockets.askReconnect);
-      if (reconnect) await connectToWebsocket();
+      setIsDialogRetryOpen(true);
     };
     socket.onmessage = (message) => {
       const torrentInfo = JSON.parse(message.data).data as DownloadedEpisode[];
@@ -148,7 +154,7 @@ export function LiveSeriesProvider({
         const sorted = mapped.sort((a, b) =>
           serialiseEpisodeForSorting(a).localeCompare(
             serialiseEpisodeForSorting(b),
-            "en",
+            undefined,
             {
               numeric: true,
             },
@@ -170,6 +176,19 @@ export function LiveSeriesProvider({
         downloadedEpisodes,
       }}
     >
+      <AlertDialog open={isDialogRetryOpen} onOpenChange={setIsDialogRetryOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{data.liveSeries.websockets.askReconnect}</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{data.modal.no}</AlertDialogCancel>
+            <AlertDialogAction onClick={connectToWebsocket}>
+              {data.modal.yes}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       {children}
     </LiveSeriesContext.Provider>
   );
