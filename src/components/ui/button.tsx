@@ -13,9 +13,11 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-accent/80 shadow-xs text-primary-strong shadow-sm hover:bg-accent",
+        cancel: "border-background-soft shadow-xs shadow-xs hover:text-error",
         destructive:
-          "bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90",
-        outline: "border-input shadow-xs hover:bg-accent",
+          "bg-error/80 shadow-xs text-primary shadow-xs hover:bg-error hover:text-primary-strong",
+        outline:
+          "border-background-soft shadow-xs hover:border-accent hover:text-primary-strong",
         secondary:
           "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
         ghost: "border-background-soft hover:border-primary-strong",

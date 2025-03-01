@@ -1,5 +1,6 @@
 "use client";
 
+import type { VariantProps } from "class-variance-authority";
 import * as React from "react";
 import { Glow, GlowCapture } from "@codaworks/react-glow";
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
@@ -44,8 +45,14 @@ function AlertDialogOverlay({
 function AlertDialogContent({
   className,
   children,
+  glow = false,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Content>) {
+}: React.ComponentProps<typeof AlertDialogPrimitive.Content> & { glow?: boolean }) {
+  const content = (
+    <div className="border-background-soft glow:border-accent rounded-lg border p-6">
+      {children}
+    </div>
+  );
   return (
     <AlertDialogPortal>
       <AlertDialogOverlay />
@@ -57,13 +64,13 @@ function AlertDialogContent({
         )}
         {...props}
       >
-        <GlowCapture>
-          <Glow>
-            <div className="border-background-soft glow:border-accent rounded-lg border p-6">
-              {children}
-            </div>
-          </Glow>
-        </GlowCapture>
+        {glow ? (
+          <GlowCapture>
+            <Glow>{content}</Glow>
+          </GlowCapture>
+        ) : (
+          content
+        )}
       </AlertDialogPrimitive.Content>
     </AlertDialogPortal>
   );
@@ -73,7 +80,10 @@ function AlertDialogHeader({ className, ...props }: React.ComponentProps<"div">)
   return (
     <div
       data-slot="alert-dialog-header"
-      className={cn("flex flex-col gap-2 text-center sm:text-left", className)}
+      className={cn(
+        "mb-6 flex flex-col gap-2 text-center text-balance sm:mb-0 sm:text-left sm:text-wrap",
+        className,
+      )}
       {...props}
     />
   );
@@ -117,20 +127,27 @@ function AlertDialogDescription({
 
 function AlertDialogAction({
   className,
+  variant,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Action>) {
+}: React.ComponentProps<typeof AlertDialogPrimitive.Action> &
+  VariantProps<typeof buttonVariants>) {
   return (
-    <AlertDialogPrimitive.Action className={cn(buttonVariants(), className)} {...props} />
+    <AlertDialogPrimitive.Action
+      className={cn(buttonVariants({ variant }), className)}
+      {...props}
+    />
   );
 }
 
 function AlertDialogCancel({
   className,
+  variant = "cancel",
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Cancel>) {
+}: React.ComponentProps<typeof AlertDialogPrimitive.Cancel> &
+  VariantProps<typeof buttonVariants>) {
   return (
     <AlertDialogPrimitive.Cancel
-      className={cn(buttonVariants({ variant: "outline" }), className)}
+      className={cn(buttonVariants({ variant }), className)}
       {...props}
     />
   );

@@ -6,7 +6,6 @@ import Script from "next/script";
 import { Footer } from "@/components/footer";
 import { LanguageCookie } from "@/components/language-cookie";
 import { Navigation } from "@/components/navigation";
-import { ModalProvider } from "@/lib/context/modal-context";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { cn } from "@/lib/utils";
 
@@ -56,10 +55,10 @@ const robotoSlab = Roboto_Slab({
 });
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  const { userLanguage } = await getTranslations();
+  const { userLocale } = await getTranslations();
   return (
     <html
-      lang={userLanguage.toLowerCase()}
+      lang={userLocale}
       className={cn("dark bg-background-strong", raleway.variable, robotoSlab.variable)}
     >
       <head>
@@ -72,12 +71,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <QueryProvider>
           <TooltipProvider>
             <GlowCapture className="flex min-h-screen flex-col pt-(--navbar-height) sm:pt-(--navbar-height-sm)">
-              <ModalProvider userLanguage={userLanguage}>
-                <LanguageCookie />
-                <Navigation />
-                <main className="grow">{children}</main>
-                <Footer />
-              </ModalProvider>
+              <LanguageCookie />
+              <Navigation />
+              <main className="grow">{children}</main>
+              <Footer />
             </GlowCapture>
             <Toaster />
           </TooltipProvider>

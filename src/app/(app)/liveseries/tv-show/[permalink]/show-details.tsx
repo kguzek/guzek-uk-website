@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useOptimistic, useState, useTransition } from "react";
 import { Glow } from "@codaworks/react-glow";
-import { HeartIcon, StarIcon } from "lucide-react";
+import { Dot, HeartIcon, StarIcon, TriangleAlert } from "lucide-react";
 
 import type { Language } from "@/lib/enums";
 import type { User } from "@/payload-types";
@@ -222,10 +222,18 @@ export function ShowDetails({
           </div>
         ) : null}
       </div>
-      <p className="mt-2 text-xl">
-        <i className="font-serif font-normal">{tvShow.network?.name}</i>{" "}
-        {tvShow.network?.country ? `(${tvShow.network.country.code}) | ` : ""}
-        {runtime ? `${runtime} min` : ""}
+      <p className="mt-2 flex items-center gap-1 text-xl">
+        {tvShow.network ? (
+          <span className="flex items-center gap-2">
+            <i className="font-serif font-normal">{tvShow.network.name}</i> (
+            {tvShow.network.country.code})
+          </span>
+        ) : null}
+        {runtime ? (
+          <>
+            <Dot /> {runtime} min
+          </>
+        ) : null}
       </p>
       <label className="border-background-soft mt-1 mb-2 rounded-sm border-l-[5px] pl-2.5 text-sm sm:text-base md:text-lg">
         <input type="checkbox" className="peer hidden" />
@@ -334,16 +342,20 @@ export function ShowDetails({
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle></AlertDialogTitle>
-            <AlertDialogDescription>
-              {data.liveSeries.tvShow.confirmSubscribe(unwatchedEpisodesCount)}
+            <AlertDialogTitle>{data.liveSeries.tvShow.confirmSubscribe}</AlertDialogTitle>
+            <AlertDialogDescription className="flex gap-2">
+              <TriangleAlert className="text-accent2" size={18} />{" "}
+              {data.liveSeries.tvShow.unwatchedEpisodes(unwatchedEpisodesCount)}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setIsSubscribeModalOpen(false)}>
+            <AlertDialogCancel
+              variant="outline"
+              onClick={() => setIsSubscribeModalOpen(false)}
+            >
               {data.modal.no}
             </AlertDialogCancel>
-            <AlertDialogAction onClick={handleSubscribe}>
+            <AlertDialogAction variant="destructive" onClick={handleSubscribe}>
               {data.modal.yes}
             </AlertDialogAction>
           </AlertDialogFooter>

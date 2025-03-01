@@ -127,6 +127,7 @@ export const POLISH: Translation = {
   modal: {
     yes: "Tak",
     no: "Nie",
+    warnIrreversible: "Ta operacja jest nieodwracalna.",
   },
   projects: {
     title: "Projekty",
@@ -161,8 +162,9 @@ export const POLISH: Translation = {
       unlike: "Odlub",
       subscribe: "Włącz automatyczne pobieranie odcinków",
       unsubscribe: "Wyłącz automatyczne pobieranie odcinków",
-      confirmSubscribe: (unwatched) =>
-        `Uwaga: Czy na pewno chcesz automatycznie pobierać wszystkie nieobejrzane odcinki dla tego serialu? Ilość nieobejrzanych odcinków: ${unwatched}.`,
+      confirmSubscribe:
+        "Czy na pewno chcesz automatycznie pobierać wszystkie nieobejrzane odcinki dla tego serialu?",
+      unwatchedEpisodes: (unwatched) => `Liczba nieobejrzanych odcinków: ${unwatched}.`,
       showDetails: "Dane Serialu",
       markWatched: (un) => `Zaznacz odcinek jako ${un}obejrzany`,
       markAllWatched: (un) => `Zaznacz wszystkie odcinki w sezonie jako ${un}obejrzane`,
@@ -172,6 +174,7 @@ export const POLISH: Translation = {
     search: {
       title: "Wyszukiwarka",
       label: "Wyszukaj Serial",
+      labelShort: "Znajdź Serial",
       prompt: "Co chciałbyś obejrzeć?",
       search: "Wyszkuaj",
       searching: "Szukam",
@@ -205,7 +208,8 @@ Gdy znajdziesz serial, który Ci się podoba, kliknij ikonę serca, aby dodać g
       },
       downloadComplete: (episode) => `Pomyśłnie pobrano ${episode}.`,
       downloadError: (episode) => `Pobieranie ${episode} nie powiodło się.`,
-      confirmDelete: (episode) => `Na pewno chcesz usunąć ${episode} z serwera?`,
+      confirmDelete: (episode) =>
+        `Czy na pewno chcesz usunąć z serwera odcinek ${episode}?`,
       deleted: (episode) => `Pomyślnie usunięto odcinek ${episode}.`,
       serialise: (episode) => `S${episode.season}:O${episode.number}`,
     },

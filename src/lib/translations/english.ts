@@ -126,6 +126,7 @@ export const ENGLISH: Translation = {
   modal: {
     yes: "Yes",
     no: "No",
+    warnIrreversible: "This operation is irreversible.",
   },
   projects: {
     title: "Projects",
@@ -160,8 +161,9 @@ export const ENGLISH: Translation = {
       unlike: "Unlike",
       subscribe: "Subscribe to automatic downloads",
       unsubscribe: "Unsubscribe from automatic downloads",
-      confirmSubscribe: (unwatched) =>
-        `Warning: Are you sure you want to automatically download unwatched episodes for this show? You have ${unwatched} unwatched episodes.`,
+      confirmSubscribe:
+        "Are you sure you want to automatically download unwatched episodes for this show?",
+      unwatchedEpisodes: (unwatched) => `You have ${unwatched} unwatched episodes.`,
       showDetails: "Show Details",
       markWatched: (un) => `Mark episode as ${un}watched`,
       markAllWatched: (un) => `Mark all episodes in season as ${un}watched`,
@@ -171,6 +173,7 @@ export const ENGLISH: Translation = {
     search: {
       title: "Search",
       label: "Search TV Shows",
+      labelShort: "Find Show",
       prompt: "What would you like to watch?",
       search: "Search",
       searching: "Searching",

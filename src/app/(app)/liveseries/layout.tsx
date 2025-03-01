@@ -49,7 +49,7 @@ export default async function LiveSeriesLayout({ children }: { children: ReactNo
           <Dot className="hidden sm:block" />
           <Button asChild className="text-xs sm:text-sm md:text-base">
             <Link href="/liveseries/search">
-              <Search /> {data.liveSeries.search.label}
+              <Search /> {data.liveSeries.search.labelShort}
             </Link>
           </Button>
         </div>
