@@ -10,7 +10,7 @@ export default async function ForgotPassword() {
   const { data, userLanguage } = await getTranslations();
   return (
     <div className="mt-10 flex justify-center">
-      <Tile className="min-w-xs">
+      <Tile variant="form">
         <h1 className="text-xl font-bold">
           {data.profile.formDetails.resetPassword.header}
         </h1>

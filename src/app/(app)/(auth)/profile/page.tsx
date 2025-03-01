@@ -31,7 +31,7 @@ export default async function Profile() {
       <div className="max-w-[640px]">
         <h2 className="my-6 text-3xl font-bold">{data.profile.title}</h2>
         <h3 className="my-5 text-2xl font-bold">{data.profile.body}</h3>
-        <Tile className="min-w-xs">
+        <Tile variant="form">
           <ProfileForm user={user} userLanguage={userLanguage} />
           <p className="text-sm">{data.profile.formDetails.or}</p>
           <LogoutButton userLanguage={userLanguage} />
