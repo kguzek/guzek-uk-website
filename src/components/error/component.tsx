@@ -47,7 +47,7 @@ export async function ErrorComponent({
           </Badge>
         ) : null}
       </h3>
-      <Tile>
+      <Tile glow>
         <div className="sm:min-w-sm">
           <h1 className="my-2 text-3xl font-extrabold">
             {errorCode} {data.error[errorCode].title}

@@ -83,6 +83,7 @@ export async function EpisodesList({
       <div className="collapsible collapsed peer-has-checked:expanded focus-within:expanded">
         <div className="overflow-hidden">
           <Tile
+            glow
             containerClassName="w-full"
             className="grid w-full gap-3 xl:grid-cols-2 xl:gap-x-6 xl:gap-y-4"
           >

@@ -10,12 +10,12 @@ export function Tile({
   className,
   header,
   containerClassName,
-  noGlow = false,
+  glow = false,
   ...props
 }: ComponentProps<typeof CardContent> & {
   containerClassName?: ClassValue;
   header?: ReactNode;
-  noGlow?: boolean;
+  glow?: boolean;
 }) {
   const component = (
     <Card className={cn("glow:border-accent w-fit items-center", containerClassName)}>
@@ -28,5 +28,5 @@ export function Tile({
       </CardContent>
     </Card>
   );
-  return noGlow ? component : <Glow>{component}</Glow>;
+  return glow ? <Glow>{component}</Glow> : component;
 }

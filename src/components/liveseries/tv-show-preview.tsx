@@ -73,7 +73,7 @@ export function TvShowPreview({
   const link = `/liveseries/tv-show/${tvShow.id}`;
 
   return (
-    <Tile containerClassName="w-[240px] pb-10 pt-3 h-full" className="w-full p-0">
+    <Tile glow containerClassName="w-[240px] pb-10 pt-3 h-full" className="w-full p-0">
       <div className="flex w-full justify-between gap-1 px-4 py-2">
         <Link href={link} title={tvShow?.name} className="overflow-hidden">
           <p className="cutoff text-primary">
