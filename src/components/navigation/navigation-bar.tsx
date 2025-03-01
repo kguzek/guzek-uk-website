@@ -63,6 +63,9 @@ export function NavigationBar({
         {
           "border-background-soft bg-background-strong/70 backdrop-blur-2xl": scrollY > 0,
         },
+        // These don't work yet, but will in Tailwind v4.1.0 (hopefully)
+        // https://github.com/tailwindlabs/tailwindcss/pull/11929#pullrequestreview-2645322420
+        "scripting-none:border-background-soft scripting-none:bg-background-strong/70 scripting-none:backdrop-blur-2xl",
       )}
     >
       <Logo size={80} />

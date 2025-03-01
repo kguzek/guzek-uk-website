@@ -41,6 +41,7 @@ export default async function ProjectsPage() {
         <div className="grid w-full max-w-[640px] gap-4 lg:max-w-max lg:grid-cols-2">
           {projects.docs.map((project) => (
             <Tile
+              glow
               containerClassName="group"
               key={project.id}
               header={

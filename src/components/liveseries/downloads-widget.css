@@ -1,8 +1,0 @@
-.downloads-card-container {
-  --card-width: 500px;
-  max-width: 100%;
-  box-sizing: border-box;
-  border-radius: 5px;
-  width: var(--card-width);
-  background-color: var(--color-background);
-}

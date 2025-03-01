@@ -102,7 +102,7 @@ export default async function ProjectPage(props: Props) {
           width={project.mainImage.width}
           height={project.mainImage.height}
         />
-        <Tile>
+        <Tile glow>
           <RichText data={project.description} />
           {project.extraImages && (
             <Carousel className="sm:mx-12">

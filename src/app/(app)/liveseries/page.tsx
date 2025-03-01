@@ -72,7 +72,7 @@ export default async function Home() {
           : ""}
       </h3>
       {user == null || likedShowIds?.length === 0 ? (
-        <Tile className="items-start">
+        <Tile glow className="items-start">
           <p className="mb-3 whitespace-pre-wrap">{data.liveSeries.home.noLikes}</p>
           <p>
             <Link href="/liveseries/search" className="hover-underline text-accent">
@@ -88,7 +88,7 @@ export default async function Home() {
         </Tile>
       ) : (
         <>
-          <Tile className="items-start">
+          <Tile glow className="items-start">
             {/* <LikedShowsCarousel
             likedShows={likedShows}
             userLanguage={userLanguage}

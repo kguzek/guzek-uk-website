@@ -38,7 +38,7 @@ export async function TvShowPreviewList({
     return (
       <div className="grid place-items-center gap-4">
         {paginator}
-        <Tile>
+        <Tile glow>
           <p>{data.liveSeries.search.noResults}</p>
         </Tile>
       </div>

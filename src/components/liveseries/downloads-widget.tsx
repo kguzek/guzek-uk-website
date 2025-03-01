@@ -6,17 +6,14 @@ import { ChevronUpIcon, Trash2Icon } from "lucide-react";
 
 import type { Language } from "@/lib/enums";
 import type { DownloadedEpisode } from "@/lib/types";
+import type { User } from "@/payload-types";
+import { fetchFromApi } from "@/lib/backend";
 import { useLiveSeriesContext } from "@/lib/context/liveseries-context";
 import { useModals } from "@/lib/context/modal-context";
 import { DownloadStatus } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
 import { bytesToReadable, getDuration } from "@/lib/util";
 import { cn } from "@/lib/utils";
-
-import "./downloads-widget.css";
-
-import type { User } from "@/payload-types";
-import { fetchFromApi } from "@/lib/backend";
 
 import { showErrorToast, showFetchErrorToast } from "../error/toast";
 import { showInfoToast, showSuccessToast } from "../ui/sonner";
@@ -137,12 +134,15 @@ export function DownloadsWidget({
               </div>
             );
             return (
-              <div className="downloads-card-container flex overflow-hidden" key={key}>
+              <div
+                className="bg-background box-border flex w-[500px] max-w-full overflow-hidden rounded-sm"
+                key={key}
+              >
                 {episode.status === DownloadStatus.COMPLETE ? (
                   <>
                     <Link
                       href={episodeLink}
-                      className="downloads-card-container flex overflow-hidden"
+                      className="w-full"
                       onClick={() => setCollapsed(true)}
                     >
                       {card}
