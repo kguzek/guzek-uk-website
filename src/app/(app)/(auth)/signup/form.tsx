@@ -139,7 +139,7 @@ export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
               )}
             />
             <Button type="submit" loading={isPending}>
-              {data.profile.formDetails.login}
+              {data.profile.formDetails.signup}
             </Button>
           </form>
           <p className="text-sm">{data.profile.formDetails.haveAccountAlready}</p>

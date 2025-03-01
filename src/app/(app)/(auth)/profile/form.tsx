@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
+import { Info } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -147,23 +148,23 @@ export function ProfileForm({
           name="serverUrl"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
+              <FormLabel className="flex items-center gap-2">
                 {data.profile.formDetails.serverUrl}
                 <AlertDialog defaultOpen={focusServerUrl}>
                   <AlertDialogTrigger asChild>
                     <Button
                       type="button"
                       role="dialog"
-                      className="h-min cursor-help! py-0"
+                      className="h-min cursor-help! items-center p-0"
                       variant="link"
                     >
-                      <span className="hover-underline">{data.liveSeries.whatsThis}</span>
+                      <Info />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent
                     onCloseAutoFocus={(event_) => {
                       event_.preventDefault();
-                      if (serverUrlInputRef.current) {
+                      if (serverUrlInputRef.current && focusServerUrl) {
                         serverUrlInputRef.current.focus();
                       }
                     }}

@@ -1,6 +1,7 @@
 import type { User } from "@/payload-types";
 
 import type { ApiMessage } from "../types";
+import { WEBSITE_URL } from "../constants";
 import { getResponse } from "./error-handling";
 
 const SANDWICHED_JSON_PATTERN = /.*?(\{.*\}).*?/;
@@ -109,7 +110,7 @@ export async function fetchFromApi<T>(
     headers["Content-Length"] = "0";
   }
   requestInit.headers = headers;
-  const prefix = fetchOptions.urlBase ?? `${process.env.WEBSITE_URL ?? ""}/api/`;
+  const prefix = fetchOptions.urlBase ?? `${WEBSITE_URL ?? ""}/api/`;
   const url = `${prefix}${path}${getSearchParams(fetchOptions.params)}`;
   return getResponse<T>(url, requestInit);
 }

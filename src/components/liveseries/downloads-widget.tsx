@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronUpIcon, Trash2Icon } from "lucide-react";
 
 import type { Language } from "@/lib/enums";
@@ -16,6 +16,7 @@ import { bytesToReadable, getDuration } from "@/lib/util";
 import { cn } from "@/lib/utils";
 
 import { showErrorToast, showFetchErrorToast } from "../error/toast";
+import { Tile } from "../tile";
 import { showInfoToast, showSuccessToast } from "../ui/sonner";
 
 export function DownloadsWidget({
@@ -32,6 +33,7 @@ export function DownloadsWidget({
     downloadedEpisodes.find((episode) => episode.status === DownloadStatus.PENDING) ==
       null,
   );
+  const [collapsedAnimated, setCollapsedAnimated] = useState(collapsed);
   const { setModalChoice } = useModals();
   const data = TRANSLATIONS[userLanguage];
   function serialise(episode: DownloadedEpisode) {
@@ -64,17 +66,28 @@ export function DownloadsWidget({
     showSuccessToast(data.liveSeries.episodes.deleted(episodeString));
   }
 
+  useEffect(() => {
+    setTimeout(
+      () => {
+        setCollapsedAnimated(collapsed);
+      },
+      collapsed ? 0 : 300,
+    );
+  }, [collapsed]);
+
   if (downloadedEpisodes.length === 0) return null;
 
   return (
-    <div
-      className={cn(
-        "border-background bg-background-soft fixed right-0 bottom-0 left-0 z-7 rounded-t-xl border-2 p-1 px-2 shadow-lg transition-opacity duration-300 hover:opacity-100 sm:left-[unset] sm:rounded-tr-none",
+    <Tile
+      containerClassName={cn(
+        "fixed right-0 bottom-0 z-7 w-full sm:max-w-lg rounded-t-xl rounded-b-none border-x-2 border-t-2 border-b-0 p-0 pl-2 shadow-lg transition-opacity duration-300 hover:opacity-100 sm:rounded-tr-none sm:border-r-0",
         { "sm:opacity-50": collapsed, "sm:opacity-80": !collapsed },
       )}
+      className="w-full p-0"
+      variant="vanilla"
     >
       <div
-        className="clickable peer flex justify-center"
+        className="clickable peer flex w-full justify-center py-1"
         onClick={() => setCollapsed((old) => !old)}
       >
         <ChevronUpIcon
@@ -84,12 +97,16 @@ export function DownloadsWidget({
         ></ChevronUpIcon>
       </div>
       <div
-        className={cn("collapsible", {
+        className={cn("collapsible max-h-[80vh] overflow-y-auto pr-2", {
           collapsed,
-          "expanded pb-2": !collapsed,
+          "expanded mb-2": !collapsed,
         })}
       >
-        <div className="flex flex-col items-center justify-around gap-2 overflow-hidden">
+        <div
+          className={cn("flex flex-col items-center justify-around gap-2", {
+            "overflow-hidden": collapsedAnimated,
+          })}
+        >
           {downloadedEpisodes.map((episode, idx) => {
             const downloadProgress = (100 * (episode.progress ?? 0)).toFixed(1) + "%";
             const episodeLink = `/liveseries/watch/${episode.showName}/${episode.season}/${episode.episode}`;
@@ -120,7 +137,7 @@ export function DownloadsWidget({
                     </span>
                   )}
                 </div>
-                <div className="bg-primary mb-[5px] h-4 w-full overflow-hidden rounded-full">
+                <div className="bg-primary mb-1.25 h-4 w-full overflow-hidden rounded-full">
                   <div
                     className={cn(
                       "bg-success h-full self-start transition-all [transition-duration:400ms]",
@@ -134,10 +151,7 @@ export function DownloadsWidget({
               </div>
             );
             return (
-              <div
-                className="bg-background box-border flex w-[500px] max-w-full overflow-hidden rounded-sm"
-                key={key}
-              >
+              <div className="bg-background flex w-full rounded-sm" key={key}>
                 {episode.status === DownloadStatus.COMPLETE ? (
                   <>
                     <Link
@@ -162,6 +176,6 @@ export function DownloadsWidget({
           })}
         </div>
       </div>
-    </div>
+    </Tile>
   );
 }

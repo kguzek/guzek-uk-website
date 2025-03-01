@@ -6,6 +6,7 @@ import { findShowById, getShowEpisodes } from "tvmaze-wrapper-ts";
 import type { EpisodeArray } from "@/payload-types";
 import { ErrorComponent } from "@/components/error/component";
 import { EpisodesList } from "@/components/liveseries/episodes-list";
+import { TextWrapper } from "@/components/text-wrapper";
 import { Tile } from "@/components/tile";
 import { getUserLikedShows } from "@/lib/backend/liveseries";
 import { ErrorCode } from "@/lib/enums";
@@ -61,61 +62,65 @@ export default async function Home() {
   }
 
   return (
-    <>
+    <TextWrapper
+      outer={
+        totalUnwatchedEpisodes === 0
+          ? null
+          : Object.entries(unwatchedEpisodes).map(([showId, unwatchedInShow], idx) =>
+              unwatchedInShow.length === 0 ? null : (
+                <div key={`liked-show-${showId}-${idx}`}>
+                  <EpisodesList
+                    tvShow={likedShows[+showId]}
+                    heading={`${likedShows[+showId].name} (${unwatchedInShow.length})`}
+                    episodes={unwatchedInShow}
+                  />
+                </div>
+              ),
+            )
+      }
+    >
       <h2 className="my-6 text-3xl font-bold">
         {getTitle(data.liveSeries.home.title, data.liveSeries.title, false)}
       </h2>
       <h3 className="mb-5 text-2xl font-bold">
         {data.liveSeries.home.likedShows}
-        {likedShowIds != null && likedShowIds.length > 0
-          ? ` (${likedShowIds.length})`
-          : ""}
+        {likedShowIds.length > 0 ? ` (${likedShowIds.length})` : ""}
       </h3>
-      {user == null || likedShowIds?.length === 0 ? (
-        <Tile glow className="items-start">
-          <p className="mb-3 whitespace-pre-wrap">{data.liveSeries.home.noLikes}</p>
-          <p>
-            <Link href="/liveseries/search" className="hover-underline text-accent">
-              {data.liveSeries.search.label}
-            </Link>
-          </p>
-          <p>
-            <Link href="/liveseries/most-popular" className="hover-underline text-accent">
-              {data.liveSeries.home.explore} {data.liveSeries.mostPopular.title}{" "}
-              {data.liveSeries.home.shows}
-            </Link>
-          </p>
-        </Tile>
-      ) : (
-        <>
-          <Tile glow className="items-start">
+      <Tile glow containerClassName="w-full">
+        {likedShowIds.length === 0 ? (
+          <>
+            <p className="mb-3 whitespace-pre-wrap">{data.liveSeries.home.noLikes}</p>
+            <p>
+              <Link href="/liveseries/search" className="hover-underline text-accent">
+                {data.liveSeries.search.label}
+              </Link>
+            </p>
+            <p>
+              <Link
+                href="/liveseries/most-popular"
+                className="hover-underline text-accent"
+              >
+                {data.liveSeries.home.explore} {data.liveSeries.mostPopular.title}{" "}
+                {data.liveSeries.home.shows}
+              </Link>
+            </p>
+          </>
+        ) : (
+          <>
             {/* <LikedShowsCarousel
-            likedShows={likedShows}
-            userLanguage={userLanguage}
-            user={user}
-          /> */}
+        likedShows={likedShows}
+        userLanguage={userLanguage}
+        user={user}
+      /> */}
             <h3 className="text-2xl font-bold">
               {data.liveSeries.tvShow.unwatched} {data.liveSeries.tvShow.episodes}
             </h3>
             {totalUnwatchedEpisodes === 0 ? (
               <p className="mt-5">{data.liveSeries.home.noUnwatched}</p>
             ) : null}
-          </Tile>
-          {totalUnwatchedEpisodes === 0
-            ? null
-            : Object.entries(unwatchedEpisodes).map(([showId, unwatchedInShow], idx) =>
-                unwatchedInShow.length === 0 ? null : (
-                  <div key={`liked-show-${showId}-${idx}`}>
-                    <EpisodesList
-                      tvShow={likedShows[+showId]}
-                      heading={`${likedShows[+showId].name} (${unwatchedInShow.length})`}
-                      episodes={unwatchedInShow}
-                    />
-                  </div>
-                ),
-              )}
-        </>
-      )}
-    </>
+          </>
+        )}
+      </Tile>
+    </TextWrapper>
   );
 }

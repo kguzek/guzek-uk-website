@@ -3,7 +3,8 @@ export const PAGINATED_REGEX_INVALID =
 
 export const PAGINATED_REGEX = /^(\/liveseries\/(?:search\/[^\/]+|most-popular))\/\d+?$/;
 
-export const PRODUCTION_URL = process.env.WEBSITE_URL || "https://www.guzek.uk";
+export const WEBSITE_URL = process.env.NEXT_PUBLIC_WEBSITE_URL || process.env.WEBSITE_URL;
+export const PRODUCTION_URL = WEBSITE_URL || "https://www.guzek.uk";
 
 export const LONG_DATE_FORMAT = {
   day: "2-digit",
