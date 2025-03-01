@@ -43,7 +43,7 @@ export async function ErrorComponent({
         {data.error[errorCode].title}
         {path ? (
           <Badge variant="outline" className="mx-1 py-1 font-mono">
-            {path}
+            {decodeURIComponent(path)}
           </Badge>
         ) : null}
       </h3>

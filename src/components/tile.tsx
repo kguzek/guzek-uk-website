@@ -7,17 +7,24 @@ import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/ui/card";
 
-export const tileVariants = cva("flex flex-col items-center gap-3", {
+export const tileVariants = cva(null, {
   variants: {
     variant: {
-      default: "",
-      form: "min-w-full sm:min-w-xs",
+      default: "flex flex-col items-center gap-3",
+      vanilla: "",
+      form: "flex flex-col items-center gap-3 min-w-full sm:min-w-xs",
     },
   },
   defaultVariants: {
     variant: "default",
   },
 });
+
+type TileProps = {
+  containerClassName?: ClassValue;
+  header?: ReactNode;
+  glow?: boolean;
+};
 
 export function Tile({
   children,
@@ -27,11 +34,7 @@ export function Tile({
   glow = false,
   variant,
   ...props
-}: ComponentProps<typeof CardContent> & {
-  containerClassName?: ClassValue;
-  header?: ReactNode;
-  glow?: boolean;
-} & VariantProps<typeof tileVariants>) {
+}: ComponentProps<typeof CardContent> & VariantProps<typeof tileVariants> & TileProps) {
   const component = (
     <Card className={cn("glow:border-accent w-fit items-center", containerClassName)}>
       {header}

@@ -38,7 +38,7 @@ export default async function ProjectsPage() {
     <>
       <DynamicPageLoader slug="/projects" />
       <div className="text flex justify-center">
-        <div className="grid w-full max-w-[640px] gap-4 lg:max-w-max lg:grid-cols-2">
+        <div className="grid w-full gap-4 lg:grid-cols-2">
           {projects.docs.map((project) => (
             <Tile
               glow

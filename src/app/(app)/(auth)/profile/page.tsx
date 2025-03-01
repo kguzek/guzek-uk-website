@@ -1,4 +1,5 @@
 import { PageSkeleton } from "@/components/pages/skeleton";
+import { TextWrapper } from "@/components/text-wrapper";
 import { Tile } from "@/components/tile";
 import { Badge } from "@/components/ui/badge";
 import { getAuth } from "@/lib/providers/auth-provider";
@@ -27,17 +28,14 @@ export default async function Profile() {
     );
 
   return (
-    <div className="text grid place-items-center gap-2">
-      <div className="max-w-[640px]">
-        <h2 className="my-6 text-3xl font-bold">{data.profile.title}</h2>
-        <h3 className="my-5 text-2xl font-bold">{data.profile.body}</h3>
-        <Tile variant="form">
-          <ProfileForm user={user} userLanguage={userLanguage} />
-          <p className="text-sm">{data.profile.formDetails.or}</p>
-          <LogoutButton userLanguage={userLanguage} />
-        </Tile>
-      </div>
-      <Badge>{user.id}</Badge>
-    </div>
+    <TextWrapper className="gap-2" centered outer={<Badge>{user.id}</Badge>}>
+      <h2 className="my-6 text-3xl font-bold">{data.profile.title}</h2>
+      <h3 className="my-5 text-2xl font-bold">{data.profile.body}</h3>
+      <Tile variant="form">
+        <ProfileForm user={user} userLanguage={userLanguage} />
+        <p className="text-sm">{data.profile.formDetails.or}</p>
+        <LogoutButton userLanguage={userLanguage} />
+      </Tile>
+    </TextWrapper>
   );
 }
