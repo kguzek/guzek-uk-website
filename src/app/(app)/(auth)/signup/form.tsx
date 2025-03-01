@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -26,7 +25,6 @@ import {
 import { Input } from "@/ui/input";
 
 export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
-  const [isFirstRender, setIsFirstRender] = useState(true);
   const data = TRANSLATIONS[userLanguage];
   const router = useRouter();
 
@@ -51,10 +49,6 @@ export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
     router.push("/profile");
     router.refresh();
   }
-
-  useEffect(() => {
-    setIsFirstRender(false);
-  });
 
   return (
     <Form {...form}>
@@ -91,7 +85,7 @@ export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
                   <FormControl>
                     <Input
                       autoComplete="username"
-                      autoFocus={isFirstRender}
+                      autoFocus
                       placeholder={data.placeholder.username}
                       {...field}
                     />

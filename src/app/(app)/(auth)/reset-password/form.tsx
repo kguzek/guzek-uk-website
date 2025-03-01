@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -32,7 +31,6 @@ export function ResetPasswordForm({
   token: string;
   userLanguage: Language;
 }) {
-  const [isFirstRender, setIsFirstRender] = useState(true);
   const data = TRANSLATIONS[userLanguage];
   const router = useRouter();
 
@@ -62,10 +60,6 @@ export function ResetPasswordForm({
     router.refresh();
   }
 
-  useEffect(() => {
-    setIsFirstRender(false);
-  });
-
   return (
     <Form {...form}>
       <form
@@ -87,12 +81,7 @@ export function ResetPasswordForm({
             <FormItem>
               <FormLabel>{data.profile.formDetails.resetPassword.field}</FormLabel>
               <FormControl>
-                <Input
-                  type="password"
-                  autoComplete="new-password"
-                  autoFocus={isFirstRender}
-                  {...field}
-                />
+                <Input type="password" autoComplete="new-password" autoFocus {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

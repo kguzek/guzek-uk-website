@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
 
@@ -22,7 +21,6 @@ import {
 import { Input } from "@/ui/input";
 
 export function SearchForm({ userLanguage }: { userLanguage: Language }) {
-  const [isFirstRender, setIsFirstRender] = useState(true);
   const router = useRouter();
   const data = TRANSLATIONS[userLanguage];
 
@@ -41,10 +39,6 @@ export function SearchForm({ userLanguage }: { userLanguage: Language }) {
       <Search /> {data.liveSeries.search.search}
     </>
   );
-
-  useEffect(() => {
-    setIsFirstRender(false);
-  });
 
   return (
     <>
@@ -71,7 +65,7 @@ export function SearchForm({ userLanguage }: { userLanguage: Language }) {
                     <FormLabel>{data.liveSeries.search.label}</FormLabel>
                     <FormControl>
                       <Input
-                        autoFocus={isFirstRender}
+                        autoFocus
                         placeholder={data.liveSeries.search.prompt}
                         {...field}
                       />

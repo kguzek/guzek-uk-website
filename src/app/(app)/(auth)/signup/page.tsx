@@ -20,7 +20,7 @@ export default async function SignUp() {
   if (user) return null;
   return (
     <div className="mt-10 flex justify-center">
-      <Tile className="min-w-xs">
+      <Tile variant="form">
         <SignUpForm userLanguage={userLanguage} />
       </Tile>
     </div>

@@ -35,7 +35,7 @@ export default async function LogIn({
   const { from } = await searchParams;
   return (
     <div className="mt-10 flex justify-center">
-      <Tile className="min-w-xs">
+      <Tile variant="form">
         <h1 className="text-xl font-bold">{data.profile.formDetails.login}</h1>
         <LogInForm userLanguage={userLanguage} from={from} />
         <p className="text-sm">{data.profile.formDetails.or}</p>

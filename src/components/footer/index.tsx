@@ -13,30 +13,34 @@ export async function Footer() {
       <Glow>
         <hr className="border-background glow:border-accent/70" />
       </Glow>
-      <div className="mt-4 flex items-center justify-center gap-3 text-xs">
-        <Logo size={20} />
-        <small>
+      <div className="mt-4 flex flex-col items-center justify-center gap-3 text-xs sm:flex-row">
+        <div className="flex items-center gap-2">
+          <Logo size={20} />
+          <small>
+            <Link
+              className="hover-underline text-xs"
+              href="https://github.com/kguzek"
+              target="_blank"
+            >
+              {data.footer("2021–2025")}
+            </Link>
+          </small>
+        </div>
+        <div className="flex items-center gap-3">
+          {version?.length !== 0 && <small className="text-xs">v{version}</small>}
           <Link
-            className="hover-underline text-xs"
-            href="https://github.com/kguzek"
-            target="_blank"
+            href="https://github.com/kguzek/guzek-uk-website/pull/18"
+            className="group flex items-center gap-1"
           >
-            {data.footer(new Date().getFullYear().toString())}
+            <FlaskConical
+              size={24}
+              className="scale-75 transition-transform duration-300 group-hover:scale-100"
+            />
+            <span className="hover-underline group-hover:underlined text-xs">
+              PayloadCMS
+            </span>
           </Link>
-        </small>
-        <small className="text-xs">{version ? `v${version}` : ""}</small>
-        <Link
-          href="https://github.com/kguzek/guzek-uk-website/pull/18"
-          className="group flex items-center gap-1"
-        >
-          <FlaskConical
-            size={24}
-            className="scale-75 transition-transform duration-300 group-hover:scale-100"
-          />
-          <span className="hover-underline group-hover:underlined text-xs">
-            PayloadCMS
-          </span>
-        </Link>
+        </div>
       </div>
     </footer>
   );
