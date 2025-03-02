@@ -4,7 +4,6 @@ import { Raleway, Roboto_Slab } from "next/font/google";
 import Script from "next/script";
 
 import { Footer } from "@/components/footer";
-import { LanguageCookie } from "@/components/language-cookie";
 import { Navigation } from "@/components/navigation";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { cn } from "@/lib/utils";
@@ -71,7 +70,6 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <QueryProvider>
           <TooltipProvider>
             <GlowCapture className="flex min-h-screen flex-col pt-(--navbar-height) sm:pt-(--navbar-height-sm)">
-              <LanguageCookie />
               <Navigation />
               <main className="grow">{children}</main>
               <Footer />

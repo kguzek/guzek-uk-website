@@ -75,6 +75,12 @@ export const POLISH: Translation = {
         submit: "Zresetuj hasło",
         success: "Hasło zostało pomyślnie zresetowane",
       },
+      delete: {
+        label: "Usuń konto",
+        confirmation: "Na pewno chcesz usunąć swoje konto?",
+        currentUser: (user) => `Obecnie jesteś zalogowany jako ${user}`,
+        success: "Konto zostało pomyślnie usunięte",
+      },
     },
   },
   error: {

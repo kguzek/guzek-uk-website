@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import type { MiddlewareFactory } from "@/lib/types";
 import { PAGINATED_REGEX_INVALID } from "@/lib/constants";
-import { getAuthFromCookies } from "@/lib/providers/auth-provider/cookies";
+import { getUser } from "@/lib/providers/auth-provider/api";
 
 const ROUTES_REQUIRING_AUTH = ["/profile", "/admin-logs", "/liveseries/watch"];
 const ROUTES_REQUIRING_NOAUTH = ["/login", "/signup", "/verify-email", "/reset-password"];
@@ -23,7 +23,7 @@ export const authMiddleware: MiddlewareFactory = (next) =>
     }
 
     const response = await next(request);
-    const { user } = await getAuthFromCookies(request.cookies);
+    const user = await getUser(request, response);
     const [redirectFrom, redirectTo] =
       user == null
         ? [ROUTES_REQUIRING_AUTH, "/login"]

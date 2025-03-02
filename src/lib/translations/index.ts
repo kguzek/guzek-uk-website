@@ -69,6 +69,12 @@ export type Translation = Readonly<{
         submit: string;
         success: string;
       };
+      delete: {
+        label: string;
+        confirmation: string;
+        currentUser: (user: string) => string;
+        success: string;
+      };
     };
   };
   admin: {

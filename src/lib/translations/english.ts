@@ -74,6 +74,12 @@ export const ENGLISH: Translation = {
         submit: "Reset password",
         success: "Password reset successfully",
       },
+      delete: {
+        label: "Delete Account",
+        confirmation: "Are you sure you want to delete your account?",
+        currentUser: (user) => `You are currently logged in as ${user}`,
+        success: "Account deleted successfully",
+      },
     },
   },
   error: {

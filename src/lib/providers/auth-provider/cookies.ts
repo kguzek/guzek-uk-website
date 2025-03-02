@@ -3,6 +3,7 @@ import type { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension
 
 import type { User } from "@/payload-types";
 import { refreshAccessToken as performTokenRefresh } from "@/lib/backend";
+import { getCookieOptions } from "@/lib/util";
 
 const USER_REQUIRED_PROPERTIES = ["id", "username", "email", "role", "serverUrl"];
 let refreshPromise: ReturnType<typeof _refreshAccessToken> | null = null;
@@ -64,9 +65,9 @@ function decodeAccessToken(accessToken: string | null) {
 async function getAccessToken(
   cookieStore: RequestCookies | ReadonlyRequestCookies,
 ): Promise<string | null> {
-  const token = cookieStore.get("payload-token")?.value;
-  if (!token) return null;
-  return token;
+  const cookie = cookieStore.get("payload-token");
+  if (cookie == null || cookie.value === "") return null;
+  return cookie.value;
 }
 
 /** Refreshes the access token using the refresh token.
@@ -125,6 +126,11 @@ export async function getAuthFromCookies(
         console.error("Refreshed token still expires soon", jwtPayload, "->", newPayload);
       } else {
         jwtPayload = newPayload;
+        cookieStore.set(
+          "payload-token",
+          accessToken,
+          getCookieOptions({ exp: newPayload.exp, httpOnly: true }),
+        );
       }
     } catch (error) {
       console.error("Failed to refresh token which will expire soon", error);

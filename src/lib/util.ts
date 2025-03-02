@@ -138,21 +138,29 @@ type EpisodeLike = Pick<DownloadedEpisode, "showName" | "season" | "episode">;
 export const compareEpisodes = (a: EpisodeLike, b: EpisodeLike) =>
   a.showName === b.showName && a.season === b.season && a.episode === b.episode;
 
-export const getLanguageCookieOptions = () =>
-  ({
-    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+export function getCookieOptions({
+  exp = 60 * 60 * 24 * 365,
+  ...options
+}: {
+  exp?: number;
+  httpOnly?: boolean;
+} = {}) {
+  return {
+    expires: new Date(Date.now() + exp * 1000),
     path: "/",
     sameSite: "lax",
     domain: PRODUCTION_MODE ? ".guzek.uk" : undefined,
     secure: PRODUCTION_MODE,
-  }) as const;
+    ...options,
+  } as const;
+}
 
 export function setLanguageCookie(langString: string) {
   if (!(langString in Language)) {
     throw new Error("Invalid language name.");
   }
   const language = Language[langString as keyof typeof Language];
-  Cookies.set("lang", langString, getLanguageCookieOptions());
+  Cookies.set("lang", langString, getCookieOptions());
   console.debug("Set language cookie to", langString);
   return language;
 }
@@ -198,3 +206,30 @@ export const ensureUnique = <T>(items: T[]) =>
   [...new Set(items)].sort((a, b) =>
     typeof a === "number" && typeof b === "number" ? a - b : 0,
   );
+
+const EMAIL_CLIENT_INFO: {
+  [domain: string]: { url: string; label: string } | undefined;
+} = {
+  "gmail.com": { url: "https://mail.google.com/mail/u/0/#inbox", label: "Gmail" },
+  "guzek.uk": { url: "https://mail.google.com/mail/u/0/#inbox", label: "GuzMail" },
+  "outlook.com": { url: "https://outlook.live.com/mail/0/inbox", label: "Outlook" },
+  "yahoo.com": { url: "https://mail.yahoo.com/d/folders/1", label: "Yahoo Mail" },
+  "icloud.com": { url: "https://www.icloud.com/mail", label: "iCloud Mail" },
+  "protonmail.com": { url: "https://mail.proton.me/u/0/inbox", label: "Proton Mail" },
+  "aol.com": { url: "https://mail.aol.com/d/folders/1", label: "AOL Mail" },
+  "onet.pl": { url: "https://poczta.onet.pl/", label: "Poczta Onet" },
+  "wp.pl": { url: "https://poczta.wp.pl/w/mails", label: "Poczta WP" },
+};
+
+export function getEmailClientInfo(email: string) {
+  const domain = email.split("@").at(1);
+  if (!domain) {
+    return null;
+  }
+  return EMAIL_CLIENT_INFO[domain.toLowerCase()];
+}
+
+export function removeUserCookie() {
+  console.info("Removing user cookie");
+  Cookies.remove("payload-token", getCookieOptions());
+}
