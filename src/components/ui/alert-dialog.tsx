@@ -5,7 +5,7 @@ import * as React from "react";
 import { Glow, GlowCapture } from "@codaworks/react-glow";
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/config";
 import { cn } from "@/lib/utils";
 
 function AlertDialog({
@@ -81,7 +81,7 @@ function AlertDialogHeader({ className, ...props }: React.ComponentProps<"div">)
     <div
       data-slot="alert-dialog-header"
       className={cn(
-        "mb-6 flex flex-col gap-2 text-center text-balance sm:mb-0 sm:text-left sm:text-wrap",
+        "mb-6 flex flex-col gap-2 text-center text-balance sm:mb-3 sm:text-left sm:text-wrap",
         className,
       )}
       {...props}

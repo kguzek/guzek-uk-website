@@ -12,11 +12,18 @@ export async function getAuth() {
   if (user == null) {
     return { user: null, accessToken: null };
   }
-  return {
-    user: await payload.findByID({
+  let payloadUser;
+  try {
+    payloadUser = await payload.findByID({
       collection: "users",
       id: user.id,
-    }),
+    });
+  } catch (error) {
+    console.warn("Error fetching user from payload", error);
+    return { user: null, accessToken: null };
+  }
+  return {
+    user: payloadUser,
     accessToken,
   };
 }

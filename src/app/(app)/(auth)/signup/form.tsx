@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 
 import type { SignUpSchema } from "@/lib/backend/schemas";
@@ -13,6 +13,7 @@ import { fetchErrorToast } from "@/components/error/toast";
 import { fetchFromApi } from "@/lib/backend";
 import { signUpSchema } from "@/lib/backend/schemas";
 import { TRANSLATIONS } from "@/lib/translations";
+import { getEmailClientInfo } from "@/lib/util";
 import { Button } from "@/ui/button";
 import {
   Form,
@@ -26,7 +27,7 @@ import { Input } from "@/ui/input";
 
 export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
   const data = TRANSLATIONS[userLanguage];
-  const router = useRouter();
+  const [emailVerificationPending, setEmailVerificationPending] = useState(true);
 
   const form = useForm<SignUpSchema>({
     resolver: zodResolver(signUpSchema),
@@ -46,22 +47,44 @@ export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
       body: values,
     });
     console.info("Created new user:", result);
-    router.push("/profile");
-    router.refresh();
+
+    setTimeout(() => {
+      setEmailVerificationPending(false);
+    }, 10000);
   }
+
+  const email = useWatch({
+    control: form.control,
+    name: "email",
+  });
+
+  const emailClientInfo = getEmailClientInfo(email);
 
   return (
     <Form {...form}>
       {isSuccess ? (
-        <div className="grid max-w-xs gap-4">
-          <h1 className="text-xl font-bold">
-            {data.profile.formDetails.verifyEmail.header}
-          </h1>
-          <div className="grid gap-2 text-sm">
-            <p>{data.profile.formDetails.verifyEmail.info(form.getValues("email"))}</p>
-            <p>{data.profile.formDetails.verifyEmail.cta}</p>
+        <>
+          <div className="grid max-w-xs gap-4">
+            <h1 className="text-xl font-bold">
+              {data.profile.formDetails.verifyEmail.header}
+            </h1>
+            <div className="grid gap-2 text-sm">
+              <p>{data.profile.formDetails.verifyEmail.info(form.getValues("email"))}</p>
+              <p>{data.profile.formDetails.verifyEmail.cta}</p>
+            </div>
           </div>
-        </div>
+          {emailClientInfo && emailVerificationPending ? (
+            <Button asChild variant="ghost">
+              <Link href={emailClientInfo.url} target="_blank">
+                {emailClientInfo.label}
+              </Link>
+            </Button>
+          ) : (
+            <Button asChild variant={emailVerificationPending ? "disabled" : "ghost"}>
+              <Link href="/login">{data.profile.formDetails.login}</Link>
+            </Button>
+          )}
+        </>
       ) : (
         <>
           <h1 className="text-xl font-bold">{data.profile.formDetails.signup}</h1>
@@ -143,11 +166,11 @@ export function SignUpForm({ userLanguage }: { userLanguage: Language }) {
             </Button>
           </form>
           <p className="text-sm">{data.profile.formDetails.haveAccountAlready}</p>
+          <Button asChild variant="ghost">
+            <Link href="/login">{data.profile.formDetails.login}</Link>
+          </Button>
         </>
       )}
-      <Button asChild variant="ghost">
-        <Link href="/login">{data.profile.formDetails.login}</Link>
-      </Button>
     </Form>
   );
 }

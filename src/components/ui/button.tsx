@@ -1,50 +1,15 @@
-import type { VariantProps } from "class-variance-authority";
-import * as React from "react";
+"use client";
+
+import type { CSSProperties, EventHandler, MouseEvent, TouchEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Glow } from "@codaworks/react-glow";
 import { Slot } from "@radix-ui/react-slot";
-import { cva } from "class-variance-authority";
-import { Loader } from "lucide-react";
+import { Loader, Lock } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-export const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 border border-transparent whitespace-nowrap rounded-md text-sm font-medium transition-all duration-300 focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
-  {
-    variants: {
-      variant: {
-        default: "bg-accent/80 shadow-xs text-primary-strong shadow-sm hover:bg-accent",
-        cancel: "border-background-soft shadow-xs shadow-xs hover:text-error",
-        destructive:
-          "bg-error/80 shadow-xs text-primary shadow-xs hover:bg-error hover:text-primary-strong",
-        outline:
-          "border-background-soft shadow-xs hover:border-accent hover:text-primary-strong",
-        secondary:
-          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
-        ghost: "border-background-soft hover:border-primary-strong",
-        link: "text-primary-strong",
-        disabled: "pointer-events-none text-primary/50",
-        glow: "border-background-soft glow:bg-accent/10 glow:border-accent glow:text-primary-strong",
-      },
-      size: {
-        default: "h-9 px-4 py-2",
-        lg: "h-10 rounded-md px-8",
-        sm: "h-9 min-w-9 rounded-md px-2 text-sm",
-        "sm-icon":
-          "h-7 min-w-7 text-xs sm:h-9 sm:min-w-9 sm:rounded-md sm:px-2 lg:text-sm",
-        icon: "h-9 w-9 text-xs",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  },
-);
-
-export type ButtonProps = React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean;
-  };
+import type { ButtonProps } from "./config";
+import { buttonVariants } from "./config";
 
 export function Button({
   className,
@@ -53,18 +18,154 @@ export function Button({
   loading = false,
   asChild = false,
   ...props
-}: ButtonProps & { loading?: boolean }) {
+}: ButtonProps & { loading?: boolean; onClick?: EventHandler<MouseEvent | TouchEvent> }) {
   const Comp = asChild ? Slot : "button";
-  const result = (
+  const clickProtectionEnabled = variant === "super-destructive";
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [sliderProgress, setSliderProgress] = useState(0);
+  const [canClick, setCanClick] = useState(!clickProtectionEnabled);
+  const [isHovering, setIsHovering] = useState(false);
+  const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const sliderRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    const ref = hoverTimerRef.current;
+    if (ref == null) {
+      return;
+    }
+    return () => {
+      clearInterval(ref);
+    };
+  }, [hoverTimerRef]);
+
+  function startHoverTimer() {
+    stopHoverTimer();
+    setIsHovering(true);
+    if (hoverTimerRef.current != null) {
+      clearTimeout(hoverTimerRef.current);
+    }
+    hoverTimerRef.current = setTimeout(() => {
+      setCanClick(true);
+    }, 2000);
+  }
+
+  function stopHoverTimer() {
+    setIsHovering(false);
+    if (clickProtectionEnabled) {
+      setCanClick(false);
+    }
+    if (hoverTimerRef.current != null) {
+      clearTimeout(hoverTimerRef.current);
+    }
+  }
+
+  function click(event_: MouseEvent | TouchEvent) {
+    if (!canClick) {
+      return;
+    }
+    stopHoverTimer();
+    return props.onClick?.(event_);
+  }
+
+  function getColorMixStyle(
+    percentage: number,
+    from: string,
+    to: string,
+  ): CSSProperties | undefined {
+    if (isHovering || !clickProtectionEnabled) {
+      return props.style;
+    }
+    const mixAmount = Math.min(100, percentage * 1.4);
+    return {
+      ...props.style,
+      transition: "all 300ms ease, background 0ms",
+      backgroundColor: `color-mix(in hsl, var(--color-${from}) ${100 - mixAmount}%, var(--color-${to}) ${mixAmount}%)`,
+    };
+  }
+
+  const content = (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
-      disabled={loading || props.disabled}
+      className={cn(buttonVariants({ variant, size, className }), {
+        "bg-error [transition:all_300ms_ease,background_2s_linear]":
+          clickProtectionEnabled && isHovering,
+        "cursor-not-allowed": clickProtectionEnabled && !canClick,
+      })}
       {...props}
+      style={getColorMixStyle(sliderProgress, "success", "error")}
+      disabled={loading || props.disabled}
+      onMouseEnter={(event_) => (startHoverTimer(), props.onMouseEnter?.(event_))}
+      onMouseLeave={(event_) => (stopHoverTimer(), props.onMouseLeave?.(event_))}
+      onClick={(event_) => click(event_)}
+      onTouchMove={(event_) => {
+        const touch = event_.touches[0];
+        if (touchStart == null) {
+          setTouchStart(touch.clientX);
+          setSliderProgress(0);
+          return;
+        }
+        const progress = Math.round(
+          100 *
+            Math.min(
+              1,
+              (1.5 * Math.max(touch.clientX - touchStart, 0)) /
+                (sliderRef.current?.clientWidth ?? 1),
+            ),
+        );
+        if (progress >= 90) {
+          setSliderProgress(100);
+          setCanClick(true);
+        } else {
+          setSliderProgress(progress);
+        }
+      }}
+      onTouchEnd={(event_) => {
+        setTouchStart(null);
+        if (sliderProgress < 100) {
+          setSliderProgress(0);
+        }
+        props.onTouchEnd?.(event_);
+      }}
+      ref={(element) => {
+        sliderRef.current = element;
+        if (props.ref == null) {
+          return;
+        }
+        if (typeof props.ref === "function") {
+          props.ref(element);
+        } else {
+          props.ref.current = element;
+        }
+      }}
     >
-      {loading ? <Loader className="animate-spin" /> : props.children}
+      {loading ? (
+        <Loader className="animate-spin" />
+      ) : clickProtectionEnabled ? (
+        <>
+          <div
+            className={cn(
+              "bg-background absolute inset-0 grid h-full w-full place-items-center border-l border-transparent",
+              {
+                "transition-[border,transform,translate] duration-300":
+                  sliderProgress === 0,
+                "border-primary-strong translate-x-full [transition:border_300ms_ease,transform_2s_linear,translate_2s_linear]":
+                  isHovering && sliderProgress === 0,
+                "border-primary-strong": sliderProgress > 0,
+              },
+            )}
+            style={{
+              transform: `translateX(${sliderProgress}%)`,
+            }}
+          >
+            <Lock />
+          </div>
+          {props.children}
+        </>
+      ) : (
+        props.children
+      )}
     </Comp>
   );
 
-  return variant?.endsWith("glow") ? <Glow>{result}</Glow> : result;
+  return variant?.endsWith("glow") ? <Glow>{content}</Glow> : content;
 }
