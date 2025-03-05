@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { Info } from "lucide-react";
+import { Info, Save } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -210,8 +210,13 @@ export function ProfileForm({
             </FormItem>
           )}
         />
-        <Button type="submit" loading={isPending}>
-          {data.admin.contentManager.formDetails.update}
+        <Button
+          type="submit"
+          className="mx-auto w-full sm:w-fit"
+          loading={isPending}
+          disabled={!form.formState.isDirty}
+        >
+          {data.admin.contentManager.formDetails.update} <Save />
         </Button>
       </form>
     </Form>

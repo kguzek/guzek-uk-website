@@ -54,7 +54,7 @@ const config: Config = {
       },
       backgroundImage: {
         "gradient-main":
-          "radial-gradient(circle at bottom, hsl(195 2 13) 0%, hsl(195 2 9) 20%, transparent 100%)",
+          "radial-gradient(circle at bottom, hsl(195 2 13) -10%, hsl(195 2 9) 20%, transparent 100%)",
       },
     },
   },

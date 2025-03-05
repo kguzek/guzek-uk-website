@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import type { Language } from "@/lib/enums";
@@ -72,9 +73,10 @@ export function DeleteAccountButton({
           onClick={() => {
             setIsDialogOpen(true);
           }}
-          className="min-w-14"
+          className="group min-w-14"
         >
-          {data.profile.formDetails.delete.label}
+          {data.profile.formDetails.delete.label}{" "}
+          <Trash2 className="transition-opacity duration-300 group-hover:opacity-80" />
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

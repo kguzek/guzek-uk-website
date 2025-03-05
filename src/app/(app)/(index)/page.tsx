@@ -9,5 +9,6 @@ export async function generateMetadata() {
 }
 
 export default function Index() {
-  return <DynamicPageLoader slug="/" />;
+  // TODO: convert `tile` into a CMS richtext editor block
+  return <DynamicPageLoader slug="/" tile />;
 }
