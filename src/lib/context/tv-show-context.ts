@@ -3,12 +3,11 @@
 import type { Episode as TvMazeEpisode } from "tvmaze-wrapper-ts";
 import { createContext, useContext } from "react";
 
+import type { Numeric } from "@/lib/types";
+
 interface TvShowContextType {
-  isSeasonWatched: (season: number | `${number}`, episodes: TvMazeEpisode[]) => boolean;
-  updateWatchedEpisodes: (
-    season: number | `${number}`,
-    episodes: TvMazeEpisode[],
-  ) => void;
+  isSeasonWatched: (season: Numeric, episodes: TvMazeEpisode[]) => boolean;
+  updateWatchedEpisodes: (season: Numeric, episodes: TvMazeEpisode[]) => void;
   isUpdating: boolean;
 }
 

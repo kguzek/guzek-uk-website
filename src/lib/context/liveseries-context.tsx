@@ -2,11 +2,18 @@
 
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useOptimistic,
+  useState,
+  useTransition,
+} from "react";
 
 import type { Language } from "@/lib/enums";
-import type { DownloadedEpisode } from "@/lib/types";
-import type { User } from "@/payload-types";
+import type { DownloadedEpisode, Numeric } from "@/lib/types";
+import type { EpisodeArray, User, WatchedEpisodes } from "@/payload-types";
 import { showErrorToast } from "@/components/error/toast";
 import {
   AlertDialog,
@@ -20,11 +27,20 @@ import {
 import { showSuccessToast } from "@/components/ui/sonner";
 import { DownloadStatus } from "@/lib/enums";
 import { TRANSLATIONS } from "@/lib/translations";
-import { compareEpisodes } from "@/lib/util";
+import { compareEpisodes, ensureUnique } from "@/lib/util";
+
+import { tryPatchUser } from "../backend/liveseries";
 
 const LiveSeriesContext = createContext<
   | {
       downloadedEpisodes: DownloadedEpisode[];
+      watchedEpisodes: WatchedEpisodes | null;
+      updateUserWatchedEpisodes: (
+        showId: number,
+        season: Numeric,
+        watchedInSeason: EpisodeArray,
+      ) => Promise<void>;
+      isUpdatingWatchedEpisodes: boolean;
     }
   | undefined
 >(undefined);
@@ -40,6 +56,27 @@ export function useLiveSeriesContext() {
 const serialiseEpisodeForSorting = (episode: DownloadedEpisode) =>
   `${episode.showName}.${episode.season}.${episode.episode}`;
 
+function getWatchedEpisodes(
+  watchedEpisodes: WatchedEpisodes,
+  {
+    showId,
+    season,
+    watchedInSeason,
+  }: { showId: number; season: Numeric; watchedInSeason: EpisodeArray },
+) {
+  const unique = ensureUnique(watchedInSeason);
+  // Not updating state directly to avoid "Updated more hooks than during the previous render"
+  const { [showId]: showData, ...updatedWatchedEpisodes } = watchedEpisodes;
+  const { [season]: _, ...updatedShowData } = showData ?? {}; // eslint-disable-line @typescript-eslint/no-unused-vars
+  if (unique.length > 0) {
+    updatedShowData[season] = unique;
+  }
+  if (Object.keys(updatedShowData).length > 0) {
+    updatedWatchedEpisodes[showId] = updatedShowData;
+  }
+  return updatedWatchedEpisodes;
+}
+
 export function LiveSeriesProvider({
   children,
   user,
@@ -51,8 +88,14 @@ export function LiveSeriesProvider({
   userLanguage: Language;
   accessToken: string | null;
 }) {
+  const [isPending, startTransition] = useTransition();
   const [existingSocket, setExistingSocket] = useState<null | WebSocket>(null);
   const [downloadedEpisodes, setDownloadedEpisodes] = useState<DownloadedEpisode[]>([]);
+  const [watchedEpisodes, setWatchedEpisodes] = useState(user?.watchedEpisodes ?? {});
+  const [watchedEpisodesOptimistic, setWatchedEpisodesOptimistic] = useOptimistic(
+    watchedEpisodes,
+    getWatchedEpisodes,
+  );
   const [isDialogRetryOpen, setIsDialogRetryOpen] = useState(false);
   const pathname = usePathname();
   const data = TRANSLATIONS[userLanguage];
@@ -170,16 +213,42 @@ export function LiveSeriesProvider({
     };
   }
 
+  async function updateUserWatchedEpisodes(
+    showId: number,
+    season: Numeric,
+    watchedInSeason: EpisodeArray,
+  ) {
+    if (user == null) {
+      throw new Error("updateUserWatchedEpisodes cannot be called if user is null");
+    }
+    startTransition(async () => {
+      const args = { showId, season, watchedInSeason };
+      setWatchedEpisodesOptimistic(args);
+      const updatedWatchedEpisodes = getWatchedEpisodes(watchedEpisodes, args);
+      const success = await tryPatchUser(user, userLanguage, {
+        watchedEpisodes: updatedWatchedEpisodes,
+      });
+      if (success) {
+        setWatchedEpisodes(updatedWatchedEpisodes);
+      }
+    });
+  }
+
   return (
     <LiveSeriesContext.Provider
       value={{
         downloadedEpisodes,
+        watchedEpisodes: watchedEpisodesOptimistic,
+        updateUserWatchedEpisodes,
+        isUpdatingWatchedEpisodes: isPending,
       }}
     >
       <AlertDialog open={isDialogRetryOpen} onOpenChange={setIsDialogRetryOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent aria-describedby="modal-ask-reconnect">
           <AlertDialogHeader>
-            <AlertDialogTitle>{data.liveSeries.websockets.askReconnect}</AlertDialogTitle>
+            <AlertDialogTitle id="modal-ask-reconnect">
+              {data.liveSeries.websockets.askReconnect}
+            </AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{data.modal.no}</AlertDialogCancel>

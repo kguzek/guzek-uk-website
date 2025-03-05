@@ -111,8 +111,12 @@ export function DownloadsWidget({
   return (
     <Tile
       containerClassName={cn(
-        "fixed right-0 bottom-0 z-7 w-full sm:max-w-lg rounded-t-xl rounded-b-none border-x-2 border-t-2 border-b-0 p-0 pl-2 shadow-lg transition-opacity duration-300 hover:opacity-100 sm:rounded-tr-none sm:border-r-0",
-        { "sm:opacity-50": collapsed, "sm:opacity-80": !collapsed },
+        "group fixed right-0 bottom-0 z-7 w-full sm:max-w-lg rounded-t-xl rounded-b-none border border-b-0 p-0 pl-2 shadow-lg backdrop-blur-2xl transition-colors duration-300 sm:rounded-tr-none sm:border-r-0",
+        {
+          "bg-background-strong/70 sm:bg-background-strong/25": collapsed,
+          "bg-background-strong sm:bg-background-strong/70 hover:bg-background-strong":
+            !collapsed,
+        },
       )}
       className="w-full p-0"
       variant="vanilla"
@@ -157,7 +161,7 @@ export function DownloadsWidget({
         ></ChevronUpIcon>
       </div>
       <div
-        className={cn("collapsible max-h-[80vh] overflow-y-auto pr-2", {
+        className={cn("collapsible max-h-[80vh] overflow-y-auto overscroll-y-none pr-2", {
           collapsed,
           "expanded mb-2": !collapsed,
         })}
@@ -209,12 +213,15 @@ export function DownloadsWidget({
               </div>
             );
             return (
-              <div className="bg-background flex w-full rounded-sm" key={key}>
+              <div
+                className="bg-background/50 group-hover:bg-background/70 hover:bg-background flex w-full rounded-sm backdrop-blur-3xl transition-colors duration-300"
+                key={key}
+              >
                 {episode.status === DownloadStatus.COMPLETE ? (
                   <>
                     <Link
                       href={episodeLink}
-                      className="w-full"
+                      className="text-primary hover:text-primary-strong w-full transition-colors duration-300"
                       onClick={() => setCollapsed(true)}
                     >
                       {card}

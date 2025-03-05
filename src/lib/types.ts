@@ -1,19 +1,11 @@
 import type { NextRequest, NextResponse } from "next/server";
-import type { Dispatch, SetStateAction } from "react";
 
 import type { DownloadStatus, LOG_LEVELS } from "./enums";
 import type { getTranslations } from "./providers/translation-provider";
 
 export type UserLocale = Awaited<ReturnType<typeof getTranslations>>["userLocale"];
 
-export interface MenuItem {
-  id: number;
-  title: string;
-  url: string;
-  label?: string;
-}
-
-/** Admin logs */
+// #region Legacy Admin Logs
 
 type LogLevel = (typeof LOG_LEVELS)[number];
 
@@ -36,6 +28,10 @@ export interface LogEntry {
 
 export type LogResponse = { date: string; logs: (LegacyLogEntry | LogEntry)[] };
 
+// #endregion
+
+// #region API Responses
+
 export type ApiMessage = { message?: string };
 
 export type ErrorResponseBodyCustom = { [code: string]: string };
@@ -47,6 +43,10 @@ export type ErrorResponseMultiple = { errors: ErrorResponseSingle[] };
 export type ErrorResponseBodyPayloadCms = ErrorResponseSingle | ErrorResponseMultiple;
 
 export type ErrorResponseBody = ErrorResponseBodyCustom | ErrorResponseBodyPayloadCms;
+
+// #endregion
+
+// #region LiveSeries
 
 export type DownloadStatusType = (typeof DownloadStatus)[keyof typeof DownloadStatus];
 
@@ -60,10 +60,14 @@ export interface DownloadedEpisode {
   eta?: number;
 }
 
-export type StateSetter<T> = Dispatch<SetStateAction<T>>;
+// #endregion
+
+// #region Middleware
 
 export type CustomMiddleware = (req: NextRequest) => NextResponse | Promise<NextResponse>;
 
 export type MiddlewareFactory = (middleware: CustomMiddleware) => CustomMiddleware;
 
-export type ModalHandler = (primary: boolean) => void;
+// #endregion
+
+export type Numeric = number | `${number}`;

@@ -9,6 +9,7 @@ import { Glow } from "@codaworks/react-glow";
 import { Dot, HeartIcon, StarIcon, TriangleAlert } from "lucide-react";
 
 import type { Language } from "@/lib/enums";
+import type { Numeric } from "@/lib/types";
 import type { User } from "@/payload-types";
 import { showErrorToast } from "@/components/error/toast";
 import {
@@ -27,8 +28,8 @@ import {
   getUserLikedShows,
   updateUserShowLike,
   updateUserShowSubscription,
-  updateUserWatchedEpisodes,
 } from "@/lib/backend/liveseries";
+import { useLiveSeriesContext } from "@/lib/context/liveseries-context";
 import { TvShowContext } from "@/lib/context/tv-show-context";
 import { TRANSLATIONS } from "@/lib/translations";
 import { getEpisodeAirDate, isInvalidDate } from "@/lib/util";
@@ -60,14 +61,11 @@ export function ShowDetails({
     (user != null && user.userShows?.subscribed?.includes(tvShow.id)) ?? false,
   );
   const [isSubscribedOptimistic, setIsSubscribedOptimistic] = useOptimistic(isSubscribed);
-  const [watchedInShow, setWatchedInShow] = useState(
-    user?.watchedEpisodes?.[tvShow.id] ?? {},
-  );
-  const [watchedInShowOptimistic, setWatchedInShowOptimistic] =
-    useOptimistic(watchedInShow);
   const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState(false);
   const data = TRANSLATIONS[userLanguage];
   const router = useRouter();
+  const { watchedEpisodes, updateUserWatchedEpisodes } = useLiveSeriesContext();
+  const watchedInShow = watchedEpisodes?.[tvShow.id] ?? {};
 
   function formatDate(which: "start" | "end") {
     const latestEpisode = episodes?.at(-1);
@@ -125,38 +123,23 @@ export function ShowDetails({
     });
   }
 
-  async function updateWatchedEpisodes(
-    season: number | `${number}`,
-    episodes: TvMazeEpisode[],
-  ) {
+  function updateWatchedEpisodes(season: Numeric, episodes: TvMazeEpisode[]) {
     if (user == null) {
       promptLogin();
       return;
     }
-    const watchedEpisodes = episodes.map((episode) => episode.number);
-
-    const newWatchedInShow = {
-      ...watchedInShowOptimistic,
-      [+season]: watchedEpisodes,
-    };
-
-    startTransition(async () => {
-      setWatchedInShowOptimistic(newWatchedInShow);
-      if (
-        await updateUserWatchedEpisodes(user, userLanguage, tvShow.id, season, {
-          watchedEpisodes: { ...user.watchedEpisodes, [tvShow.id]: newWatchedInShow },
-        })
-      ) {
-        setWatchedInShow(newWatchedInShow);
-      }
-    });
+    return updateUserWatchedEpisodes(
+      tvShow.id,
+      season,
+      episodes.map((episode) => episode.number),
+    );
   }
 
-  const isSeasonWatched = (season: number | `${number}`, episodes: TvMazeEpisode[]) =>
-    watchedInShowOptimistic[+season]?.length === episodes.length;
+  const isSeasonWatched = (season: Numeric, episodes: TvMazeEpisode[]) =>
+    watchedInShow[+season]?.length === episodes.length;
 
   const totalEpisodes = episodes?.length ?? 0;
-  const watchedEpisodesCount = Object.values(watchedInShowOptimistic).reduce(
+  const watchedEpisodesCount = Object.values(watchedInShow).reduce(
     (acc, episodes) => acc + episodes.length,
     0,
   );

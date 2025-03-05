@@ -6,7 +6,7 @@ import { fetchFromApi } from "@/lib/backend";
 import { getAuthFromCookies } from "./cookies";
 
 export async function getUser(request: NextRequest, response: NextResponse) {
-  const { user, accessToken } = await getAuthFromCookies(request.cookies);
+  const { user, accessToken } = await getAuthFromCookies(request.cookies, true);
   if (user == null) {
     response.cookies.delete("payload-token");
     return null;

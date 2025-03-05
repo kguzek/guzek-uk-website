@@ -36,7 +36,13 @@ export function Tile({
   ...props
 }: ComponentProps<typeof CardContent> & VariantProps<typeof tileVariants> & TileProps) {
   const component = (
-    <Card className={cn("glow:border-accent w-fit items-center", containerClassName)}>
+    <Card
+      className={cn(
+        "w-fit items-center",
+        { "glow:border-accent": glow },
+        containerClassName,
+      )}
+    >
       {header}
       <CardContent className={cn(tileVariants({ variant, className }))} {...props}>
         {children}
