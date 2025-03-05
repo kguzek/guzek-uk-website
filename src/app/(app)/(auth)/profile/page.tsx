@@ -26,23 +26,25 @@ export default async function Profile() {
   }
 
   return (
-    <TextWrapper
-      className="gap-2"
-      centered
-      outer={
-        <>
-          <Badge>{user.id}</Badge>
-          <DeleteAccountButton user={user} userLanguage={userLanguage} />
-        </>
-      }
-    >
-      <h2 className="my-6 text-3xl font-bold">{data.profile.title}</h2>
-      <h3 className="my-5 text-2xl font-bold">{data.profile.body}</h3>
-      <Tile variant="form">
-        <ProfileForm user={user} userLanguage={userLanguage} />
-        <p className="text-sm">{data.profile.formDetails.or}</p>
-        <LogoutButton userLanguage={userLanguage} />
-      </Tile>
-    </TextWrapper>
+    <div className="text">
+      <TextWrapper
+        className="gap-2"
+        outer={
+          <>
+            <div className="my-4 flex flex-col gap-4 sm:flex-row-reverse">
+              <LogoutButton userLanguage={userLanguage} />
+              <DeleteAccountButton user={user} userLanguage={userLanguage} />
+            </div>
+            <Badge>{user.id}</Badge>
+          </>
+        }
+      >
+        <h2 className="my-6 text-3xl font-bold">{data.profile.title}</h2>
+        <h3 className="my-5 text-2xl font-bold">{data.profile.body}</h3>
+        <Tile variant="form" containerClassName="w-full" className="w-full">
+          <ProfileForm user={user} userLanguage={userLanguage} />
+        </Tile>
+      </TextWrapper>
+    </div>
   );
 }

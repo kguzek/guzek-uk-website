@@ -21,6 +21,7 @@ export async function Footer() {
               className="hover-underline text-xs"
               href="https://github.com/kguzek"
               target="_blank"
+              rel="me"
             >
               {data.footer("2021–2025")}
             </Link>

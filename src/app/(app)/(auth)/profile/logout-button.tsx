@@ -3,6 +3,7 @@
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
+import { LogOut } from "lucide-react";
 import { toast } from "sonner";
 
 import type { Language } from "@/lib/enums";
@@ -36,7 +37,7 @@ export function LogoutButton({ userLanguage }: { userLanguage: Language }) {
       }}
     >
       <Button type="submit" loading={isPending} disabled={isSuccess} className="min-w-28">
-        {data.profile.formDetails.logout}
+        {data.profile.formDetails.logout} <LogOut />
       </Button>
     </form>
   );

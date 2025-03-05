@@ -8,6 +8,8 @@ import { PRODUCTION_URL } from "@/lib/constants";
 import { ErrorCode } from "@/lib/enums";
 import { getTranslations } from "@/lib/providers/translation-provider";
 
+import { Tile } from "../tile";
+
 export async function getPageBySlug(slug: string) {
   const { userLocale } = await getTranslations();
   const payload = await getPayload({ config });
@@ -43,7 +45,7 @@ const SCHEMA_LD_DEFINITIONS: {
       addressCountry: "Poland",
     },
     url: PRODUCTION_URL,
-    sameAs: ["https://www.linkedin.com/in/konrad-guzek/"],
+    sameAs: ["https://www.linkedin.com/in/konrad-guzek/", "https://github.com/kguzek"],
     jobTitle: "Software Developer",
     worksFor: {
       "@type": "Organization",
@@ -99,15 +101,29 @@ function JsonLdScript({ page }: { page: Page }) {
   );
 }
 
-export async function DynamicPageLoader({ slug }: { slug: string }) {
+export async function DynamicPageLoader({
+  slug,
+  tile = false,
+}: {
+  slug: string;
+  tile?: boolean;
+}) {
   const page = await getPageBySlug(slug);
-  if (!page) return <ErrorComponent errorCode={ErrorCode.NotFound} path={slug} />;
+  if (page == null) {
+    return <ErrorComponent errorCode={ErrorCode.NotFound} path={slug} />;
+  }
   return (
     <div className="text flex justify-center">
       <JsonLdScript page={page} />
       <div className="mt-6">
         <div className="prose">
-          <RichText data={page.content} />
+          {tile ? (
+            <Tile glow>
+              <RichText data={page.content} />
+            </Tile>
+          ) : (
+            <RichText data={page.content} />
+          )}
         </div>
       </div>
     </div>
