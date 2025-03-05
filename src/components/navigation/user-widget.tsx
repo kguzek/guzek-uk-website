@@ -33,7 +33,11 @@ export function UserWidget({
           </Button>
         </div>
       ) : (
-        <Link href="/profile" className="flex min-w-20 justify-center">
+        <Link
+          href="/profile"
+          className="flex min-w-20 justify-center"
+          onClick={closeMenu}
+        >
           @
           <span
             className={cn(

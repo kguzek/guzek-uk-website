@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { useRef } from "react";
 
 import type { Language } from "@/lib/enums";
-import type { MenuItem } from "@/lib/types";
 import type { User } from "@/payload-types";
 import { useScroll } from "@/lib/hooks/scroll";
 import { PAGE_NAME } from "@/lib/util";
@@ -15,6 +14,13 @@ import { cn } from "@/lib/utils";
 import { Logo } from "../logo";
 import { LanguageSelector } from "./language-selector";
 import { UserWidget } from "./user-widget";
+
+interface MenuItem {
+  id: number;
+  title: string;
+  url: string;
+  label?: string;
+}
 
 function NavBarItem({
   item,

@@ -22,8 +22,6 @@ async function Episode({
 
   const airDate = data.format.dateTime.format(getEpisodeAirDate(episode));
 
-  const watchedInSeason = user?.watchedEpisodes?.[tvShow.id]?.[+episode.season];
-
   return (
     <div className="bg-background box-border flex w-full flex-col items-center gap-2 rounded-lg p-2 px-4 sm:flex-row sm:justify-between">
       <div className="w-full self-start overflow-hidden">
@@ -47,7 +45,6 @@ async function Episode({
               userLanguage={userLanguage}
               showId={tvShow.id}
               episode={episode}
-              watchedInSeason={watchedInSeason ?? []}
               user={user}
             />
           </>
@@ -83,7 +80,6 @@ export async function EpisodesList({
       <div className="collapsible collapsed peer-has-checked:expanded focus-within:expanded">
         <div className="overflow-hidden">
           <Tile
-            glow
             containerClassName="w-full"
             className="grid w-full gap-3 xl:grid-cols-2 xl:gap-x-6 xl:gap-y-4"
           >

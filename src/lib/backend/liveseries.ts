@@ -1,12 +1,26 @@
-import type { EpisodeArray, User, WatchedEpisodes } from "@/payload-types";
+import type { EpisodeArray, User } from "@/payload-types";
 import { showFetchErrorToast } from "@/components/error/toast";
 
 import type { Language } from "../enums";
 import { fetchFromApi } from ".";
 import { TRANSLATIONS } from "../translations";
-import { addOrRemove, ensureUnique } from "../util";
+import { addOrRemove } from "../util";
 
-async function tryPatchUser(user: User, userLanguage: Language, body: Partial<User>) {
+// export type UpdatedWatchedEpisodes =
+//   | {
+//       watchedInSeason: number[];
+//       watchedEpisodes?: never;
+//     }
+//   | {
+//       watchedInSeason?: never;
+//       watchedEpisodes: WatchedEpisodes;
+//     };
+
+export async function tryPatchUser(
+  user: User,
+  userLanguage: Language,
+  body: Partial<User>,
+) {
   let res;
   try {
     res = await fetchFromApi(`users/${user.id}`, {
@@ -20,34 +34,6 @@ async function tryPatchUser(user: User, userLanguage: Language, body: Partial<Us
   console.debug("Updated user details:", res.data);
   return true;
 }
-
-export const updateUserWatchedEpisodes = async (
-  user: User,
-  userLanguage: Language,
-  showId: number,
-  season: number | `${number}`,
-  {
-    watchedEpisodes: newWatchedEpisodes,
-    watchedInSeason: newWatchedEpisodesInSeason,
-  }:
-    | {
-        watchedInSeason: number[];
-        watchedEpisodes?: never;
-      }
-    | {
-        watchedInSeason?: never;
-        watchedEpisodes: WatchedEpisodes;
-      },
-) =>
-  tryPatchUser(user, userLanguage, {
-    watchedEpisodes: newWatchedEpisodes ?? {
-      ...user.watchedEpisodes,
-      [showId]: {
-        ...user.watchedEpisodes[showId],
-        [season]: ensureUnique(newWatchedEpisodesInSeason),
-      },
-    },
-  });
 
 export const updateUserShowLike = (
   user: User,

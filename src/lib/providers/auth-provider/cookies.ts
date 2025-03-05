@@ -107,6 +107,7 @@ function expiresSoon(exp: number, thresholdMinutes = 5) {
 /** Retrieves the access token from cookies and decodes the payload into a user object. */
 export async function getAuthFromCookies(
   cookieStore: RequestCookies | ReadonlyRequestCookies,
+  canModifyCookies = false,
 ) {
   let accessToken = await getAccessToken(cookieStore);
   if (accessToken == null || accessToken === "") return { user: null, accessToken: null };
@@ -115,7 +116,7 @@ export async function getAuthFromCookies(
     console.warn("No user found in access token", jwtPayload);
     return { user: null, accessToken: null };
   }
-  if (expiresSoon(jwtPayload.exp)) {
+  if (expiresSoon(jwtPayload.exp) && canModifyCookies) {
     try {
       const refreshResult = await refreshAccessToken("soon to expire", accessToken);
       accessToken = refreshResult.refreshedToken;
