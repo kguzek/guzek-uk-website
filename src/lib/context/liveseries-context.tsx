@@ -20,6 +20,7 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
+  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -244,11 +245,12 @@ export function LiveSeriesProvider({
       }}
     >
       <AlertDialog open={isDialogRetryOpen} onOpenChange={setIsDialogRetryOpen}>
-        <AlertDialogContent aria-describedby="modal-ask-reconnect">
+        <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle id="modal-ask-reconnect">
+            <AlertDialogTitle>{data.liveSeries.websockets.askReconnect}</AlertDialogTitle>
+            <AlertDialogDescription className="sr-only">
               {data.liveSeries.websockets.askReconnect}
-            </AlertDialogTitle>
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{data.modal.no}</AlertDialogCancel>

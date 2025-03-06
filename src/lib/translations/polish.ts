@@ -148,6 +148,10 @@ export const POLISH: Translation = {
       "Aby móc wyszukiwać i pobierać torrenty seriali, musisz skonfigurować serwer LiveSeries. Serwer ten będzie używany do pobierania torrentów i przesyłania do przeglądarki filmów.",
     cta: "Dowiedz się więcej na ",
     setup: "Odwiedz swój profil aby ustawić adres serwera LiveSeries.",
+    tvMazeCredits:
+      "Niniejsza strona korzysta z danych z API TVmaze, które są licencjonowane na zasadach CC BY-SA. Dziękujemy TVmaze za dostarczenie danych o serialach dla LiveSeries.",
+    tvMazeCreditsCta:
+      "Aby dowiedzieć się więcej o TVmaze i ich usługach, odwiedz ich stronę pod adresem",
     tvShowList: {
       showing: "Wynik",
       of: "z",

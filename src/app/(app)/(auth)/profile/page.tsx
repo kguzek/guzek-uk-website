@@ -29,7 +29,7 @@ export default async function Profile() {
     <div className="text">
       <TextWrapper
         className="gap-2"
-        outer={
+        after={
           <>
             <div className="my-4 flex flex-col gap-4 sm:flex-row-reverse">
               <LogoutButton userLanguage={userLanguage} />

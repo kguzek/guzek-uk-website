@@ -119,6 +119,8 @@ export type Translation = Readonly<{
     explanation: string;
     cta: string;
     setup: string;
+    tvMazeCredits: string;
+    tvMazeCreditsCta: string;
     tvShowList: {
       showing: string;
       of: string;

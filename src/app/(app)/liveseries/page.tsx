@@ -7,6 +7,7 @@ import { findShowById, getShowEpisodes } from "tvmaze-wrapper-ts";
 import type { EpisodeArray } from "@/payload-types";
 import { ErrorComponent } from "@/components/error/component";
 import { EpisodesList } from "@/components/liveseries/episodes-list";
+import { LikedShowsCarousel } from "@/components/liveseries/liked-shows-carousel";
 import { TextWrapper } from "@/components/text-wrapper";
 import { Tile } from "@/components/tile";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import { ErrorCode } from "@/lib/enums";
 import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { getTitle, hasEpisodeAired } from "@/lib/util";
+import { cn } from "@/lib/utils";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data } = await getTranslations();
@@ -26,7 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
 type ShowWithEpisodes = TvMazeShow & { episodes: TvMazeEpisode[] };
 
 export default async function Home() {
-  const { data } = await getTranslations();
+  const { data, userLanguage } = await getTranslations();
   const { user } = await getAuth();
 
   const watchedEpisodes = user?.watchedEpisodes ?? {};
@@ -63,24 +65,8 @@ export default async function Home() {
     }
   }
 
-  return (
-    <TextWrapper
-      outer={
-        totalUnwatchedEpisodes === 0
-          ? null
-          : Object.entries(unwatchedEpisodes).map(([showId, unwatchedInShow], idx) =>
-              unwatchedInShow.length === 0 ? null : (
-                <div key={`liked-show-${showId}-${idx}`}>
-                  <EpisodesList
-                    tvShow={likedShows[+showId]}
-                    heading={`${likedShows[+showId].name} (${unwatchedInShow.length})`}
-                    episodes={unwatchedInShow}
-                  />
-                </div>
-              ),
-            )
-      }
-    >
+  const header = (
+    <>
       <h2 className="my-6 text-3xl font-bold">
         {getTitle(data.liveSeries.home.title, data.liveSeries.title, false)}
       </h2>
@@ -88,44 +74,80 @@ export default async function Home() {
         {data.liveSeries.home.likedShows}
         {likedShowIds.length > 0 ? ` (${likedShowIds.length})` : ""}
       </h3>
-      <Tile glow containerClassName="w-full">
-        {likedShowIds.length === 0 ? (
+    </>
+  );
+
+  return (
+    <TextWrapper
+      before={
+        likedShowIds.length > 0 ? <div className="place-self-start">{header}</div> : null
+      }
+      after={
+        user == null ? null : (
           <>
-            <p className="mb-3 whitespace-pre-wrap">{data.liveSeries.home.noLikes}</p>
-            <Button variant="link" className="px-0" asChild>
-              <Link
-                href="/liveseries/most-popular"
-                className="group flex items-center gap-2"
-              >
-                <TrendingUp />{" "}
-                <span className="group-hover:underlined hover-underline text-xs sm:text-sm md:text-base">
-                  {data.liveSeries.home.explore} {data.liveSeries.mostPopular.title}{" "}
-                  {data.liveSeries.home.shows}
-                </span>
-              </Link>
-            </Button>
-            <Button asChild className="text-xs sm:text-sm md:text-base">
-              <Link href="/liveseries/search">
-                <Search /> {data.liveSeries.search.label}
-              </Link>
-            </Button>
-          </>
-        ) : (
-          <>
-            {/* <LikedShowsCarousel
-        likedShows={likedShows}
-        userLanguage={userLanguage}
-        user={user}
-      /> */}
-            <h3 className="text-2xl font-bold">
+            <h3
+              className={cn("mt-4 text-2xl font-bold", {
+                "place-self-start": likedShowIds.length > 0,
+              })}
+            >
               {data.liveSeries.tvShow.unwatched} {data.liveSeries.tvShow.episodes}
             </h3>
-            {totalUnwatchedEpisodes === 0 ? (
-              <p className="mt-5">{data.liveSeries.home.noUnwatched}</p>
-            ) : null}
+            {totalUnwatchedEpisodes > 0 ? (
+              <div className="w-full">
+                {Object.entries(unwatchedEpisodes).map(
+                  ([showId, unwatchedInShow], idx) =>
+                    unwatchedInShow.length === 0 ? null : (
+                      <EpisodesList
+                        key={`liked-show-${showId}-${idx}`}
+                        tvShow={likedShows[+showId]}
+                        heading={`${likedShows[+showId].name} (${unwatchedInShow.length})`}
+                        episodes={unwatchedInShow}
+                      />
+                    ),
+                )}
+              </div>
+            ) : (
+              <p
+                className={cn("mt-5", {
+                  "place-self-start": likedShowIds.length > 0,
+                })}
+              >
+                {data.liveSeries.home.noUnwatched}
+              </p>
+            )}
           </>
-        )}
-      </Tile>
+        )
+      }
+    >
+      {likedShowIds.length > 0 ? null : header}
+      {likedShowIds.length === 0 ? (
+        <Tile glow containerClassName="w-full">
+          <p className="mb-3 whitespace-pre-wrap">{data.liveSeries.home.noLikes}</p>
+          <Button variant="link" className="px-0" asChild>
+            <Link
+              href="/liveseries/most-popular"
+              className="group flex items-center gap-2"
+            >
+              <TrendingUp />{" "}
+              <span className="group-hover:underlined hover-underline text-xs sm:text-sm md:text-base">
+                {data.liveSeries.home.explore} {data.liveSeries.mostPopular.title}{" "}
+                {data.liveSeries.home.shows}
+              </span>
+            </Link>
+          </Button>
+          <Button asChild className="text-xs sm:text-sm md:text-base">
+            <Link href="/liveseries/search">
+              <Search /> {data.liveSeries.search.label}
+            </Link>
+          </Button>
+        </Tile>
+      ) : (
+        <LikedShowsCarousel
+          likedShows={likedShows}
+          userLanguage={userLanguage}
+          user={user}
+        />
+      )}
     </TextWrapper>
   );
 }
