@@ -75,6 +75,8 @@ export interface Config {
     media: Media;
     projects: Project;
     pages: Page;
+    'project-categories': ProjectCategory;
+    technologies: Technology;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -85,6 +87,8 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
+    'project-categories': ProjectCategoriesSelect<false> | ProjectCategoriesSelect<true>;
+    technologies: TechnologiesSelect<false> | TechnologiesSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -214,8 +218,36 @@ export interface Project {
   };
   repository?: string | null;
   url?: string | null;
+  downloadUrl?: string | null;
   mainImage: number | Media;
   extraImages?: (number | Media)[] | null;
+  categories?: (number | ProjectCategory)[] | null;
+  technologies?: (number | Technology)[] | null;
+  datePublished: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "project-categories".
+ */
+export interface ProjectCategory {
+  id: number;
+  label: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "technologies".
+ */
+export interface Technology {
+  id: number;
+  name: string;
+  /**
+   * https://simpleicons.org
+   */
+  hasLogo: boolean;
   updatedAt: string;
   createdAt: string;
 }
@@ -267,6 +299,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'pages';
         value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'project-categories';
+        value: number | ProjectCategory;
+      } | null)
+    | ({
+        relationTo: 'technologies';
+        value: number | Technology;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -366,8 +406,12 @@ export interface ProjectsSelect<T extends boolean = true> {
   description?: T;
   repository?: T;
   url?: T;
+  downloadUrl?: T;
   mainImage?: T;
   extraImages?: T;
+  categories?: T;
+  technologies?: T;
+  datePublished?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -379,6 +423,25 @@ export interface PagesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   content?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "project-categories_select".
+ */
+export interface ProjectCategoriesSelect<T extends boolean = true> {
+  label?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "technologies_select".
+ */
+export interface TechnologiesSelect<T extends boolean = true> {
+  name?: T;
+  hasLogo?: T;
   updatedAt?: T;
   createdAt?: T;
 }

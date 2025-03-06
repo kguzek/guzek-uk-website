@@ -9,7 +9,9 @@ import sharp from "sharp";
 
 import { Media } from "./collections/Media";
 import { Pages } from "./collections/Pages";
+import { ProjectCategories } from "./collections/ProjectCategories";
 import { Projects } from "./collections/Projects";
+import { Technologies } from "./collections/Technologies";
 import { Users } from "./collections/Users";
 
 const filename = fileURLToPath(import.meta.url);
@@ -22,7 +24,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Projects, Pages],
+  collections: [Users, Media, Projects, Pages, ProjectCategories, Technologies],
   editor: lexicalEditor({
     features: ({ defaultFeatures, rootFeatures }) => [
       ...defaultFeatures,

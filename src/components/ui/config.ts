@@ -22,6 +22,8 @@ export const buttonVariants = cva(
         link: "text-primary-strong",
         disabled: "pointer-events-none text-primary/50",
         glow: "border-background-soft glow:bg-accent/10 glow:border-accent glow:text-primary-strong",
+        "github-glow":
+          "bg-primary-strong glow:bg-accent/20 glow:border-accent text-background hover:text-background/80",
       },
       size: {
         default: "h-9 px-4 py-2",

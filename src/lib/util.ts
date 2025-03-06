@@ -233,3 +233,8 @@ export function removeUserCookie() {
   console.info("Removing user cookie");
   Cookies.remove("payload-token", getCookieOptions());
 }
+
+export function truncateText(text?: string, maxLength = 160) {
+  if (!text || text.length <= maxLength) return text;
+  return `${text.slice(0, maxLength)}…`;
+}
