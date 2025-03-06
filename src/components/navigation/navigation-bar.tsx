@@ -4,6 +4,7 @@ import type { ComponentProps } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef } from "react";
+import { GlowCapture } from "@codaworks/react-glow";
 
 import type { Language } from "@/lib/enums";
 import type { User } from "@/payload-types";
@@ -66,10 +67,12 @@ export function NavigationBar({
     <UserWidget user={user} userLanguage={userLanguage} closeMenu={closeMenu} />
   );
 
+  const Comp = scrollY > 0 ? GlowCapture : "div";
+
   return (
     <nav
       className={cn(
-        "fixed top-0 z-10 flex h-(--navbar-height) w-screen items-center gap-4 border-0 border-b border-solid border-transparent bg-transparent px-4 py-2 [transition:all_300ms_ease,border-color_1s_ease] sm:h-(--navbar-height-sm) sm:px-10 lg:gap-6",
+        "fixed top-0 z-10 flex h-(--navbar-height) w-screen items-center gap-4 border-0 border-b border-solid border-transparent bg-transparent px-4 [transition:all_300ms_ease,border-color_1s_ease] sm:h-(--navbar-height-sm) sm:px-10 lg:gap-6",
         {
           "border-background-soft bg-background-strong/70 backdrop-blur-2xl": scrollY > 0,
         },
@@ -80,7 +83,7 @@ export function NavigationBar({
     >
       <Logo size={80} />
       <p className="font-bold whitespace-nowrap sm:text-3xl">{PAGE_NAME}</p>
-      <div className="ml-auto flex flex-row-reverse lg:flex-row">
+      <Comp className="ml-auto flex flex-row-reverse self-stretch lg:flex-row">
         {/* Hamburger */}
         <label
           aria-controls="menu"
@@ -126,7 +129,7 @@ export function NavigationBar({
           <LanguageSelector userLanguage={userLanguage} />
         </ul>
         <div className="mx-3 hidden sm:block">{userWidget}</div>
-      </div>
+      </Comp>
     </nav>
   );
 }

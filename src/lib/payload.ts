@@ -22,11 +22,20 @@ export function validateUrl(value?: string | null): string | true {
   try {
     url = new URL(value);
   } catch (error) {
-    return `Invalid URL: ${(error as Error).message}`;
+    return `Invalid URL: ${(error as Error).message}.`;
   }
   return (
     ["http:", "https:"].includes(url.protocol) ||
-    "URL must start with http:// or https://"
+    "URL must use either HTTP or HTTPS protocols."
+  );
+}
+
+/** Ensures the value is falseys or a valid GitHub repository URL. */
+export function validateGitHubUrl(value?: string | null): string | true {
+  return (
+    !value ||
+    /^https:\/\/github\.com\/[^/]+\/[^/]+$/.test(value) ||
+    "Must be a valid GitHub repository URL."
   );
 }
 
@@ -50,15 +59,13 @@ type Validator<F extends object, T> = (
 ) => string | true | Promise<string | true>;
 
 /** Allows the stacking of multiple validators for a given field. */
-export const stackValidators = <F extends object, T>(
-  ...validators: Validator<F, T>[]
-) => {
-  const stacked: Validator<F, T> = (value, options) => {
-    for (const validator of validators) {
-      const result = validator(value, options);
-      if (result !== true) return result;
-    }
-    return true;
-  };
-  return stacked;
-};
+export const stackValidators =
+  <F extends object, T>(...validators: Validator<F, T>[]): Validator<F, T> =>
+  (value, options) =>
+    validators
+      .reduce(async (acc, validator) => {
+        const messages = await acc;
+        const message = await validator(value, options);
+        return message === true ? messages : [...messages, message];
+      }, Promise.resolve<string[]>([]))
+      .then((results) => results.length === 0 || results.join(" "));

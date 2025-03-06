@@ -6,15 +6,18 @@ import config from "@payload-config";
 import { RichText } from "@payloadcms/richtext-lexical/react";
 import { ArrowUpRight } from "lucide-react";
 
-import { DynamicPageLoader } from "@/components/pages/dynamic-page";
+import { DynamicPageLoader, getPageBySlug } from "@/components/pages/dynamic-page";
 import { Tile } from "@/components/tile";
+import { convertLexicalToPlainText } from "@/lib/lexical";
 import { getTranslations } from "@/lib/providers/translation-provider";
-import { isImage } from "@/lib/util";
+import { getTitle, isImage, truncateText } from "@/lib/util";
 import { cn } from "@/lib/utils";
 import { CardDescription, CardHeader, CardTitle } from "@/ui/card";
 
 // const titleToSlug = (title: string) =>
 //   title.trim().toLowerCase().replace(/\s/g, "-");
+
+const PROJECTS_PAGE_SLUG = "/projects";
 
 const htmlWithoutLinks: JSXConvertersFunction = ({ defaultConverters }) => ({
   ...defaultConverters,
@@ -27,6 +30,19 @@ const htmlWithoutLinks: JSXConvertersFunction = ({ defaultConverters }) => ({
   ),
 });
 
+export async function generateMetadata() {
+  const { data } = await getTranslations();
+  const page = await getPageBySlug(PROJECTS_PAGE_SLUG);
+  const description =
+    page == null
+      ? undefined
+      : (await convertLexicalToPlainText(page.content)) || undefined;
+  return {
+    title: getTitle(data.projects.title),
+    description: truncateText(description),
+  };
+}
+
 export default async function ProjectsPage() {
   const payload = await getPayload({ config });
   const { userLocale } = await getTranslations();
@@ -36,7 +52,7 @@ export default async function ProjectsPage() {
   });
   return (
     <>
-      <DynamicPageLoader slug="/projects" />
+      <DynamicPageLoader slug={PROJECTS_PAGE_SLUG} />
       <div className="text flex justify-center">
         <div className="grid w-full gap-4 lg:grid-cols-2">
           {projects.docs.map((project) => (

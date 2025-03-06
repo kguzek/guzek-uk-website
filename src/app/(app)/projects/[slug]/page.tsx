@@ -3,22 +3,29 @@ import Link from "next/link";
 import { getPayload } from "payload";
 import config from "@payload-config";
 import { RichText } from "@payloadcms/richtext-lexical/react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Download } from "lucide-react";
 
+import type { SchemaOrgDefinition } from "@/components/schema-org";
 import type { UserLocale } from "@/lib/types";
+import type { Project } from "@/payload-types";
 import { CarouselArrows } from "@/components/carousel/carousel-arrows";
 import { ErrorComponent } from "@/components/error/component";
+import { SchemaOrgScript } from "@/components/schema-org";
+import { SimpleIcon } from "@/components/simple-icon";
 import { Tile } from "@/components/tile";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ErrorCode } from "@/lib/enums";
+import { convertLexicalToPlainText } from "@/lib/lexical";
 import { getTranslations } from "@/lib/providers/translation-provider";
-import { isImage } from "@/lib/util";
+import { getTitle, isImage, truncateText } from "@/lib/util";
 import { Carousel, CarouselContent, CarouselItem } from "@/ui/carousel";
 
 type Props = { params: Promise<{ slug: string }> };
 
 const propsToSlug = async ({ params }: Props) => (await params).slug;
 
-const BADGE_LABELS = {
+const SHIELD_LABELS = {
   "created-at": {
     en: "first+released",
     pl: "opublikowano",
@@ -29,21 +36,87 @@ const BADGE_LABELS = {
   },
 };
 
-function Badge({
+async function propsToProject(props: Props) {
+  const slug = await propsToSlug(props);
+  const { userLocale } = await getTranslations();
+  const payload = await getPayload({ config });
+  const { docs } = await payload.find({
+    collection: "projects",
+    locale: userLocale,
+    where: { slug: { equals: slug } },
+    limit: 1,
+  });
+  return docs.at(0);
+}
+
+export async function generateMetadata(props: Props) {
+  const project = await propsToProject(props);
+  if (project == null) {
+    return {};
+  }
+  const description = (await convertLexicalToPlainText(project.description)) || undefined;
+  return {
+    title: getTitle(project.title),
+    description: truncateText(description, 160),
+    image: isImage(project.mainImage) ? project.mainImage.url : undefined,
+  };
+}
+
+function getProjectSchema(project: Project, userLocale: UserLocale): SchemaOrgDefinition {
+  const schema: SchemaOrgDefinition = {
+    "@context": "http://schema.org",
+    "@type": "SoftwareApplication",
+    name: {
+      "@language": userLocale,
+      "@value": project.title,
+    },
+    author: {
+      "@type": "Person",
+      name: "Konrad Guzek",
+    },
+    datePublished: project.datePublished,
+  };
+  if (isImage(project.mainImage)) {
+    schema.image = project.mainImage.url;
+  }
+  if (project.categories != null && project.categories.length > 0) {
+    schema.applicationCategory = {
+      "@language": userLocale,
+      "@value": project.categories
+        .map((category) => (typeof category === "number" ? category : category.label))
+        .join(", "),
+    };
+  }
+  if (project.url) {
+    schema.url = project.url;
+  }
+  if (project.downloadUrl) {
+    schema.downloadUrl = project.downloadUrl;
+  }
+  if (project.extraImages != null && project.extraImages.length > 0) {
+    const screenshot = project.extraImages.find((image) => isImage(image));
+    if (screenshot != null) {
+      schema.screenshot = screenshot.url;
+    }
+  }
+  return schema;
+}
+
+function Shield({
   repository,
   locale,
-  badge,
+  shield,
 }: {
   repository: string;
   locale: UserLocale;
-  badge: keyof typeof BADGE_LABELS;
+  shield: keyof typeof SHIELD_LABELS;
 }) {
-  const url = `${repository.replace("github.com", `img.shields.io/github/${badge}`)}?style=for-the-badge&label=${BADGE_LABELS[badge][locale]}`;
+  const url = `${repository.replace("github.com", `img.shields.io/github/${shield}`)}?style=for-the-badge&label=${SHIELD_LABELS[shield][locale]}`;
   return (
     <Image
       className="m-0 h-5 w-auto rounded-md sm:h-8 sm:rounded-lg"
       src={url}
-      alt={BADGE_LABELS[badge][locale]}
+      alt={SHIELD_LABELS[shield][locale]}
       height={0}
       width={0}
       unoptimized // needed to serve SVGs
@@ -52,23 +125,17 @@ function Badge({
 }
 
 export default async function ProjectPage(props: Props) {
-  const payload = await getPayload({ config });
   const { data, userLocale } = await getTranslations();
-  const { docs } = await payload.find({
-    collection: "projects",
-    locale: userLocale,
-    where: { slug: { equals: await propsToSlug(props) } },
-    limit: 1,
-  });
-  if (docs.length === 0) {
+  const project = await propsToProject(props);
+  if (project == null) {
     return <ErrorComponent errorCode={ErrorCode.NotFound} />;
   }
-  const project = docs[0];
   if (!isImage(project.mainImage)) {
     return null;
   }
   return (
     <div className="text flex justify-center">
+      <SchemaOrgScript schema={getProjectSchema(project, userLocale)} />
       <div className="prose mt-6">
         <h2 className="mb-2">{project.title}</h2>
         {project.url && (
@@ -82,15 +149,15 @@ export default async function ProjectPage(props: Props) {
         {project.repository && (
           <>
             <div className="mt-2 grid grid-cols-[auto_auto] gap-x-2">
-              <Badge
+              <Shield
                 repository={project.repository}
                 locale={userLocale}
-                badge="created-at"
+                shield="created-at"
               />
-              <Badge
+              <Shield
                 repository={project.repository}
                 locale={userLocale}
-                badge="last-commit"
+                shield="last-commit"
               />
             </div>
           </>
@@ -103,6 +170,31 @@ export default async function ProjectPage(props: Props) {
           height={project.mainImage.height}
         />
         <Tile>
+          {
+            <div className="-mb-5 flex items-center gap-4 self-start">
+              <div className="flex gap-2">
+                {(project.technologies ?? []).map((technology, idx) =>
+                  typeof technology === "number" || !technology.hasLogo ? null : (
+                    <SimpleIcon
+                      colored
+                      key={`project-technology-${idx}`}
+                      name={technology.name}
+                      alt={technology.name}
+                    />
+                  ),
+                )}
+              </div>
+              <div className="flex gap-2">
+                {(project.categories ?? []).map((category, idx) =>
+                  typeof category === "number" ? null : (
+                    <Badge key={`project-category-${idx}`} className="py-1">
+                      {category.label}
+                    </Badge>
+                  ),
+                )}
+              </div>
+            </div>
+          }
           <RichText data={project.description} />
           {project.extraImages && (
             <Carousel className="sm:mx-12">
@@ -122,9 +214,22 @@ export default async function ProjectPage(props: Props) {
               <CarouselArrows data={data} />
             </Carousel>
           )}
-          {project.repository ? (
-            <Link href={project.repository}>Check it out on GitHub!</Link>
-          ) : null}
+          <div className="flex gap-2">
+            {project.downloadUrl ? (
+              <Button asChild variant="glow">
+                <Link href={project.downloadUrl} className="bg-none!">
+                  {data.projects.download} <Download />
+                </Link>
+              </Button>
+            ) : null}
+            {project.repository ? (
+              <Button asChild variant="github-glow">
+                <Link href={project.repository} className="bg-none!">
+                  GitHub <SimpleIcon name="GitHub" alt="GitHub repository" />
+                </Link>
+              </Button>
+            ) : null}
+          </div>
         </Tile>
       </div>
     </div>

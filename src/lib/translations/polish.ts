@@ -137,6 +137,7 @@ export const POLISH: Translation = {
   },
   projects: {
     title: "Projekty",
+    download: "Pobierz",
   },
   liveSeries: {
     title: "LiveSeries",

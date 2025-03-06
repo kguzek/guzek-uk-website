@@ -109,6 +109,7 @@ export type Translation = Readonly<{
   };
   projects: {
     title: string;
+    download: string;
   };
   liveSeries: {
     title: string;

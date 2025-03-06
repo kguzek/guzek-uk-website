@@ -19,6 +19,9 @@ const nextConfig = {
         // TVmaze API TV Show thumbnails
         hostname: "static.tvmaze.com",
       },
+      {
+        hostname: "raw.githubusercontent.com",
+      },
     ],
   },
 };

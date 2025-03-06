@@ -136,6 +136,7 @@ export const ENGLISH: Translation = {
   },
   projects: {
     title: "Projects",
+    download: "Download",
   },
   liveSeries: {
     title: "LiveSeries",
