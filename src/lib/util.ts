@@ -83,9 +83,10 @@ const STATUS_CODES: { [code in number]?: string } = {
 };
 
 const isErrorSingle = (json: ErrorResponseBody): json is ApiMessage =>
-  "message" in json && json.message != null;
+  typeof json === "object" && "message" in json && json.message != null;
 
 const isErrorMultiple = (json: ErrorResponseBody): json is ErrorResponseMultiple =>
+  typeof json === "object" &&
   "errors" in json &&
   Array.isArray(json.errors) &&
   json.errors.every((error) => "message" in error);

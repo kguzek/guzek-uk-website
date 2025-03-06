@@ -10,10 +10,7 @@ export function CarouselArrows({
   ...props
 }: React.ComponentProps<"div"> & { data: Translation }) {
   return (
-    <div
-      className={cn("mt-4 flex w-full justify-center gap-4 sm:mt-0", className)}
-      {...props}
-    >
+    <div className={cn("mt-4 flex w-full justify-center gap-4", className)} {...props}>
       <CarouselProgress />
       <CarouselPrevious title={data.liveSeries.tvShow.previousImage} />
       <CarouselNext title={data.liveSeries.tvShow.nextImage} />
