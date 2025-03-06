@@ -140,6 +140,7 @@ export const POLISH: Translation = {
     download: "Pobierz",
     gallery: "Galeria",
     visit: "Odwiedź",
+    by: "– Portfolio |",
   },
   liveSeries: {
     title: "LiveSeries",

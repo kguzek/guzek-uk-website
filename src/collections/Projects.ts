@@ -65,6 +65,9 @@ export const Projects: CollectionConfig = {
     beforeChange: [
       async (args) => {
         const project: Partial<Project> = { ...args.originalDoc, ...args.data };
+        if (!project.slug) {
+          project.slug = project.title?.toLowerCase().replace(/\s+/g, "-");
+        }
         if (!project.repository) {
           return project;
         }
@@ -89,9 +92,10 @@ export const Projects: CollectionConfig = {
       name: "slug",
       type: "text",
       required: true,
+      defaultValue: "",
       unique: true,
       validate: (value?: string | null) =>
-        ALPHANUMERIC_PATTERN.test(value ?? "") || "Invalid slug",
+        value === "" || ALPHANUMERIC_PATTERN.test(value ?? "") || "Invalid slug",
     },
     {
       name: "title",

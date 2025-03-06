@@ -6,25 +6,25 @@ import { ErrorComponent } from "@/components/error/component";
 import { TvShowPreviewList } from "@/components/liveseries/tv-show-preview-list";
 import { ErrorCode } from "@/lib/enums";
 import { getTranslations } from "@/lib/providers/translation-provider";
-import { getTitle, isNumber } from "@/lib/util";
+import { isNumber } from "@/lib/util";
 
 import { SearchForm } from "../../form";
 
-export async function generateMetadata({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string>>;
-}): Promise<Metadata> {
-  const { data } = await getTranslations();
-  const params = await searchParams;
+interface SearchProps {
+  params: Promise<{ query: string; page: string }>;
+}
 
-  const title = params.q
-    ? `${data.liveSeries.search.results} "${params.q}"`
+export async function generateMetadata({ params }: SearchProps): Promise<Metadata> {
+  const { data } = await getTranslations();
+  const { query, page } = await params;
+
+  const title = query
+    ? `${data.liveSeries.search.results} ${data.format.quote(query)} (${data.liveSeries.tvShowList.page} ${page})`
     : data.liveSeries.search.title;
 
   return {
-    title: getTitle(title, data.liveSeries.title),
-  };
+    title,
+  } satisfies Metadata;
 }
 
 async function SearchResults({ query, page }: { query: string; page: `${number}` }) {
@@ -59,11 +59,7 @@ async function SearchResults({ query, page }: { query: string; page: `${number}`
   );
 }
 
-export default async function Search({
-  params,
-}: {
-  params: Promise<{ query: string; page: string }>;
-}) {
+export default async function Search({ params }: SearchProps) {
   const { userLanguage } = await getTranslations();
   const { query, page } = await params;
   if (!isNumber(page)) {

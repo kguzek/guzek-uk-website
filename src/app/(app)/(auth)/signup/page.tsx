@@ -3,14 +3,13 @@ import type { Metadata } from "next";
 import { Tile } from "@/components/tile";
 import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
-import { getTitle } from "@/lib/util";
 
 import { SignUpForm } from "./form";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data } = await getTranslations();
   return {
-    title: getTitle(data.profile.formDetails.signup),
+    title: data.profile.formDetails.signup,
   };
 }
 

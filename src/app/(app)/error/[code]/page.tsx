@@ -1,7 +1,7 @@
 import { ErrorComponent } from "@/components/error/component";
 import { ErrorCode } from "@/lib/enums";
 import { getTranslations } from "@/lib/providers/translation-provider";
-import { getTitle, isNumber } from "@/lib/util";
+import { isNumber } from "@/lib/util";
 
 type Props = {
   params: Promise<{ code: string }>;
@@ -23,7 +23,7 @@ export async function generateMetadata(props: Props) {
   const { data } = await getTranslations();
   const { code } = await propsToErrorCode(props);
   return {
-    title: getTitle(`${code} ${data.error[code].title}`),
+    title: `${code} ${data.error[code].title}`,
   };
 }
 

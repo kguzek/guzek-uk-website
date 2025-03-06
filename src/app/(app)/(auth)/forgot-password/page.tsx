@@ -1,10 +1,16 @@
-import Link from "next/link";
+import type { Metadata } from "next";
 
 import { Tile } from "@/components/tile";
-import { Button } from "@/components/ui/button";
 import { getTranslations } from "@/lib/providers/translation-provider";
 
 import { ForgotPasswordForm } from "./form";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { data } = await getTranslations();
+  return {
+    title: data.profile.formDetails.forgotPassword.header,
+  };
+}
 
 export default async function ForgotPassword() {
   const { data, userLanguage } = await getTranslations();
@@ -15,9 +21,6 @@ export default async function ForgotPassword() {
           {data.profile.formDetails.resetPassword.header}
         </h1>
         <ForgotPasswordForm userLanguage={userLanguage} />
-        <Button variant="ghost" asChild>
-          <Link href="/login">{data.profile.formDetails.login}</Link>
-        </Button>
       </Tile>
     </div>
   );

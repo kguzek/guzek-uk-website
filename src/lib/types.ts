@@ -64,9 +64,14 @@ export interface DownloadedEpisode {
 
 // #region Middleware
 
-export type CustomMiddleware = (req: NextRequest) => NextResponse | Promise<NextResponse>;
+export type CustomMiddleware<T extends Array<unknown> = Array<never>> = (
+  req: NextRequest,
+  ...args: T
+) => NextResponse | Promise<NextResponse>;
 
-export type MiddlewareFactory = (middleware: CustomMiddleware) => CustomMiddleware;
+export type MiddlewareFactory<T extends Array<unknown> = Array<never>> = (
+  middleware: CustomMiddleware<T>,
+) => CustomMiddleware<T>;
 
 // #endregion
 

@@ -1,10 +1,19 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { ErrorComponent } from "@/components/error/component";
 import { ErrorCode } from "@/lib/enums";
+import { getTranslations } from "@/lib/providers/translation-provider";
 
 import type { PropsWithToken } from "../with-token";
 import { withToken } from "../with-token";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { data } = await getTranslations();
+  return {
+    title: data.profile.formDetails.verifyEmail.header,
+  };
+}
 
 export default async function VerifyEmail({ searchParams }: PropsWithToken) {
   const { error, token, payload } = await withToken({ searchParams });

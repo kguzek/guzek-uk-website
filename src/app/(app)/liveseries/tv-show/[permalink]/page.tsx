@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { Episode as TvMazeEpisode } from "tvmaze-wrapper-ts";
 import { findShowById, getShowEpisodes } from "tvmaze-wrapper-ts";
 
@@ -6,7 +7,7 @@ import { EpisodesList } from "@/components/liveseries/episodes-list";
 import { ErrorCode } from "@/lib/enums";
 import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
-import { getTitle, isNumber } from "@/lib/util";
+import { isNumber } from "@/lib/util";
 
 import { ShowDetails } from "./show-details";
 import { WatchedIndicator } from "./watched-indicator";
@@ -22,11 +23,8 @@ export async function generateMetadata({ params }: Props) {
   const { data } = await getTranslations();
   const show = await getShowDetails(params);
   return {
-    title: getTitle(
-      show?.name || data.liveSeries.tvShow.showDetails,
-      data.liveSeries.title,
-    ),
-  };
+    title: show?.name || data.liveSeries.tvShow.showDetails,
+  } satisfies Metadata;
 }
 
 function sortEpisodes(episodes: TvMazeEpisode[]) {

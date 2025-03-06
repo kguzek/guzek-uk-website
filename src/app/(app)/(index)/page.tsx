@@ -1,14 +1,15 @@
+import type { Metadata } from "next";
+
 import type { SchemaOrgDefinition } from "@/components/schema-org";
 import { DynamicPageLoader, getPageBySlug } from "@/components/pages/dynamic-page";
 import { SchemaOrgScript } from "@/components/schema-org";
 import { PRODUCTION_URL } from "@/lib/constants";
-import { getTitle } from "@/lib/util";
 
 export async function generateMetadata() {
   const homepage = await getPageBySlug("/");
   return {
-    title: getTitle(homepage?.title),
-  };
+    title: homepage?.seoTitle || homepage?.title,
+  } satisfies Metadata;
 }
 
 const KONRAD_GUZEK_SCHEMA: SchemaOrgDefinition = {

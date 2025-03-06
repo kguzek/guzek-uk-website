@@ -18,6 +18,11 @@ export const Pages: CollectionConfig = {
       required: true,
     },
     {
+      name: "seoTitle",
+      type: "text",
+      localized: true,
+    },
+    {
       name: "slug",
       type: "text",
       required: true,

@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 
 import type { ForgotPasswordSchema } from "@/lib/backend/schemas";
@@ -22,9 +24,11 @@ import { Input } from "@/components/ui/input";
 import { fetchFromApi } from "@/lib/backend";
 import { forgotPasswordSchema } from "@/lib/backend/schemas";
 import { TRANSLATIONS } from "@/lib/translations";
+import { getEmailClientInfo } from "@/lib/util";
 
 export function ForgotPasswordForm({ userLanguage }: { userLanguage: Language }) {
   const data = TRANSLATIONS[userLanguage];
+  const [passwordResetPending, setPasswordResetPending] = useState(true);
 
   const form = useForm({
     resolver: zodResolver(forgotPasswordSchema),
@@ -44,14 +48,39 @@ export function ForgotPasswordForm({ userLanguage }: { userLanguage: Language })
       },
     );
     console.info("Reset password:", result.data.message);
+
+    setTimeout(() => {
+      setPasswordResetPending(false);
+    }, 10000);
+
+    return result;
   }
+
+  const email = useWatch({
+    control: form.control,
+    name: "email",
+  });
+
+  const emailClientInfo = getEmailClientInfo(email);
 
   return (
     <Form {...form}>
       {isSuccess ? (
         <div className="grid max-w-xs gap-2 text-sm">
-          <p>{data.profile.formDetails.forgotPassword.info(form.getValues("email"))}</p>
+          <p>{data.profile.formDetails.forgotPassword.info(email)}</p>
           <p>{data.profile.formDetails.verifyEmail.cta}</p>
+
+          {emailClientInfo && passwordResetPending ? (
+            <Button asChild variant="ghost">
+              <Link href={emailClientInfo.url} target="_blank">
+                {emailClientInfo.label}
+              </Link>
+            </Button>
+          ) : (
+            <Button asChild variant={passwordResetPending ? "disabled" : "ghost"}>
+              <Link href="/login">{data.profile.formDetails.login}</Link>
+            </Button>
+          )}
         </div>
       ) : (
         <>
@@ -91,6 +120,9 @@ export function ForgotPasswordForm({ userLanguage }: { userLanguage: Language })
             </Button>
           </form>
           <p className="text-sm">{data.profile.formDetails.or}</p>
+          <Button variant="ghost" asChild>
+            <Link href="/login">{data.profile.formDetails.login}</Link>
+          </Button>
         </>
       )}
     </Form>

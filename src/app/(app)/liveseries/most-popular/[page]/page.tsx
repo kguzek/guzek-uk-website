@@ -15,7 +15,7 @@ const RESULTS_PER_PAGE_FROM_API = 250;
 export async function generateMetadata() {
   const { data } = await getTranslations();
   return {
-    title: getTitle(data.liveSeries.mostPopular.title, data.liveSeries.title),
+    title: data.liveSeries.mostPopular.title,
   };
 }
 
@@ -50,7 +50,7 @@ export default async function MostPopular({
   return (
     <>
       <h2 className="my-6 text-3xl font-bold">
-        {getTitle(data.liveSeries.mostPopular.title, data.liveSeries.title, false)}
+        {getTitle(data.liveSeries.mostPopular.title, data.liveSeries.title)}
       </h2>
       <TvShowPreviewList
         userLanguage={userLanguage}

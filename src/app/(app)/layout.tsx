@@ -12,15 +12,23 @@ import "./globals.css";
 
 import { GlowCapture } from "@codaworks/react-glow";
 
-import { PRODUCTION_URL } from "@/lib/constants";
+import { OG_IMAGE_SIZE, PRODUCTION_URL } from "@/lib/constants";
 import { QueryProvider } from "@/lib/providers/query-provider";
+import { PAGE_NAME } from "@/lib/util";
 import { Toaster } from "@/ui/sonner";
 import { TooltipProvider } from "@/ui/tooltip";
 
+const SEO_TITLE = "Konrad Guzek – Software Engineer, Web Developer, Student";
+
 export const metadata: Metadata = {
-  title: "Konrad Guzek – Software Engineer, Web Developer, Student | Guzek UK",
+  title: {
+    template: `%s | ${PAGE_NAME}`,
+    default: SEO_TITLE,
+  },
   description:
     "The portfiolio website of Konrad Guzek, a Polish software developer from the UK. Home to LiveSeries – free TV show tracking & streaming.",
+  authors: [{ name: "Konrad Guzek", url: "https://www.guzek.uk" }],
+  creator: "Konrad Guzek",
   keywords: [
     "portfolio",
     "web developer",
@@ -28,10 +36,35 @@ export const metadata: Metadata = {
     "software developer",
     "student",
     "computer science",
-    "liveseries",
     "konrad guzek",
     "guzek uk",
+    "liveseries",
+    "tv shows",
+    "wrocław",
+    "wroclaw",
+    "gliwice",
+    "poland",
+    "wust",
+    "pwr",
+    "politechnika wrocławska",
   ],
+  metadataBase: new URL(PRODUCTION_URL),
+  alternates: {
+    canonical: "/",
+    languages: {
+      // TODO: complete after i18n overhaul
+    },
+  },
+  openGraph: {
+    title: SEO_TITLE,
+    images: {
+      url: "/api/og-image",
+      ...OG_IMAGE_SIZE,
+    },
+  },
+  twitter: {
+    images: "/api/og-image",
+  },
 };
 
 export const viewport: Viewport = {

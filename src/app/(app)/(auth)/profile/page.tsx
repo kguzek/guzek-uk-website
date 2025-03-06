@@ -3,7 +3,7 @@ import { Tile } from "@/components/tile";
 import { Badge } from "@/components/ui/badge";
 import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
-import { getTitle, removeUserCookie } from "@/lib/util";
+import { removeUserCookie } from "@/lib/util";
 
 import { DeleteAccountButton } from "./delete-account-button";
 import { ProfileForm } from "./form";
@@ -12,7 +12,7 @@ import { LogoutButton } from "./logout-button";
 export async function generateMetadata() {
   const { data } = await getTranslations();
   return {
-    title: getTitle(data.profile.title),
+    title: data.profile.title,
   };
 }
 

@@ -5,7 +5,6 @@ import { PageSkeleton } from "@/components/pages/skeleton";
 import { Tile } from "@/components/tile";
 import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
-import { getTitle } from "@/lib/util";
 import { Button } from "@/ui/button";
 
 import { LogInForm } from "./form";
@@ -13,7 +12,7 @@ import { LogInForm } from "./form";
 export async function generateMetadata(): Promise<Metadata> {
   const { data } = await getTranslations();
   return {
-    title: getTitle(data.profile.formDetails.login),
+    title: data.profile.formDetails.login,
   };
 }
 

@@ -12,17 +12,9 @@ const PRODUCTION_MODE = process.env.NODE_ENV !== "development";
 
 export const PAGE_NAME = "Guzek UK";
 
-export function getTitle(
-  title?: string,
-  suffix: string | null = null,
-  addPageName = true,
-) {
-  if (!title) return PAGE_NAME;
-  const withSuffix = `${title}${suffix ? ` – ${suffix}` : ""}`;
-  return addPageName ? `${withSuffix} | ${PAGE_NAME}` : withSuffix;
+export function getTitle(title: string, suffix: string) {
+  return `${title} – ${suffix}`;
 }
-
-export const setTitle = (title: string) => void (document.title = getTitle(title));
 
 const divmod = (dividend: number, divisor: number) => [
   Math.floor(dividend / divisor),

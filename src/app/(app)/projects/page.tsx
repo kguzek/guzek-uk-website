@@ -1,4 +1,5 @@
 import type { JSXConvertersFunction } from "@payloadcms/richtext-lexical/react";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { getPayload } from "payload";
@@ -8,9 +9,10 @@ import { ArrowUpRight } from "lucide-react";
 
 import { DynamicPageLoader, getPageBySlug } from "@/components/pages/dynamic-page";
 import { Tile } from "@/components/tile";
+import { OG_IMAGE_SIZE } from "@/lib/constants";
 import { convertLexicalToPlainText } from "@/lib/lexical";
 import { getTranslations } from "@/lib/providers/translation-provider";
-import { getTitle, isImage, truncateText } from "@/lib/util";
+import { isImage, truncateText } from "@/lib/util";
 import { cn } from "@/lib/utils";
 import { CardDescription, CardHeader, CardTitle } from "@/ui/card";
 
@@ -36,11 +38,19 @@ export async function generateMetadata() {
   const description =
     page == null
       ? undefined
-      : (await convertLexicalToPlainText(page.content)) || undefined;
+      : truncateText(await convertLexicalToPlainText(page.content)) || undefined;
+
+  const title = data.projects.title;
   return {
-    title: getTitle(data.projects.title),
-    description: truncateText(description),
-  };
+    title,
+    description,
+    openGraph: {
+      images: {
+        url: "/api/og-image/projects",
+        ...OG_IMAGE_SIZE,
+      },
+    },
+  } satisfies Metadata;
 }
 
 export default async function ProjectsPage() {

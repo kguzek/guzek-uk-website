@@ -112,6 +112,7 @@ export type Translation = Readonly<{
     download: string;
     gallery: string;
     visit: string;
+    by: string;
   };
   liveSeries: {
     title: string;

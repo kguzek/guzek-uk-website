@@ -139,6 +139,7 @@ export const ENGLISH: Translation = {
     download: "Download",
     gallery: "Gallery",
     visit: "Visit",
+    by: "by",
   },
   liveSeries: {
     title: "LiveSeries",
