@@ -72,8 +72,11 @@ export function TvShowPreview({
   // const link = `/liveseries/tv-show/${useIdNotPermalink ? showDetails.id : showDetails?.permalink}`;
   const link = `/liveseries/tv-show/${tvShow.id}`;
 
+  const imageUrl = tvShow.image?.medium ?? tvShow.image?.original;
+  const imageAlt = `${tvShow.name} thumbnail`;
+
   return (
-    <Tile glow containerClassName="w-[240px] pb-10 pt-3 h-full" className="w-full p-0">
+    <Tile glow containerClassName="w-[240px] pt-3 pb-0 h-full" className="w-full p-0">
       <div className="flex w-full justify-between gap-1 px-4 py-2">
         <Link href={link} title={tvShow?.name} className="overflow-hidden">
           <p className="cutoff text-primary">
@@ -95,17 +98,17 @@ export function TvShowPreview({
           <HeartIcon fill={isLikedOptimistic ? "currentColor" : "none"} />
         </button>
       </div>
-      <Link href={link} title={tvShow?.name} className="w-full">
-        {tvShow.image?.medium ? (
+      <Link href={link} title={tvShow?.name} className="min-h-[300px] w-full pb-10">
+        {imageUrl ? (
           <Image
             className="text-primary block h-[300px] w-full bg-cover bg-center object-cover italic"
-            src={tvShow.image?.medium}
-            alt={tvShow.name + " thumbnail"}
+            src={imageUrl}
+            alt={imageAlt}
             width={240}
             height={600}
           />
         ) : (
-          tvShow.name
+          imageAlt
         )}
       </Link>
     </Tile>

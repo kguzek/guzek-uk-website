@@ -1,4 +1,7 @@
-import type { RequestCookies } from "next/dist/compiled/@edge-runtime/cookies";
+import type {
+  RequestCookies,
+  ResponseCookies,
+} from "next/dist/compiled/@edge-runtime/cookies";
 import type { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
 import type { User } from "@/payload-types";
@@ -106,17 +109,17 @@ function expiresSoon(exp: number, thresholdMinutes = 5) {
 
 /** Retrieves the access token from cookies and decodes the payload into a user object. */
 export async function getAuthFromCookies(
-  cookieStore: RequestCookies | ReadonlyRequestCookies,
-  canModifyCookies = false,
+  requestCookies: RequestCookies | ReadonlyRequestCookies,
+  responseCookies?: ResponseCookies,
 ) {
-  let accessToken = await getAccessToken(cookieStore);
+  let accessToken = await getAccessToken(requestCookies);
   if (accessToken == null || accessToken === "") return { user: null, accessToken: null };
   let jwtPayload = decodeAccessToken(accessToken);
   if (jwtPayload == null) {
     console.warn("No user found in access token", jwtPayload);
     return { user: null, accessToken: null };
   }
-  if (expiresSoon(jwtPayload.exp) && canModifyCookies) {
+  if (expiresSoon(jwtPayload.exp) && responseCookies != null) {
     try {
       const refreshResult = await refreshAccessToken("soon to expire", accessToken);
       accessToken = refreshResult.refreshedToken;
@@ -127,7 +130,7 @@ export async function getAuthFromCookies(
         console.error("Refreshed token still expires soon", jwtPayload, "->", newPayload);
       } else {
         jwtPayload = newPayload;
-        cookieStore.set(
+        responseCookies.set(
           "payload-token",
           accessToken,
           getCookieOptions({ exp: newPayload.exp, httpOnly: true }),

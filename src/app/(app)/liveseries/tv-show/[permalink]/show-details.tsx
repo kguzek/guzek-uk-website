@@ -218,16 +218,18 @@ export function ShowDetails({
           </>
         ) : null}
       </p>
-      <label className="border-background-soft mt-1 mb-2 rounded-sm border-l-[5px] pl-2.5 text-sm sm:text-base md:text-lg">
-        <input type="checkbox" className="peer hidden" />
-        <blockquote
-          className="line-clamp-6 cursor-s-resize peer-checked:line-clamp-none peer-checked:cursor-n-resize"
-          dangerouslySetInnerHTML={{
-            // Trim description end from line breaks
-            __html: tvShow.summary.replace(/(<br\s?>|\\n|\s)*$/, ""),
-          }}
-        />
-      </label>
+      {tvShow.summary ? (
+        <label className="border-background-soft mt-1 mb-2 rounded-sm border-l-[5px] pl-2.5 text-sm sm:text-base md:text-lg">
+          <input type="checkbox" className="peer hidden" />
+          <blockquote
+            className="line-clamp-6 cursor-s-resize peer-checked:line-clamp-none peer-checked:cursor-n-resize"
+            dangerouslySetInnerHTML={{
+              // Trim description end from line breaks
+              __html: tvShow.summary.replace(/(<br\s?>|\\n|\s)*$/, ""),
+            }}
+          />
+        </label>
+      ) : null}
       <small className="text-xs md:text-sm">
         {data.liveSeries.tvShow.source}: {/* TODO: ?? */}
         {/* {tvShow.description_source ? (

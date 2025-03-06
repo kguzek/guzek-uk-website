@@ -6,6 +6,7 @@ import { Tile } from "@/components/tile";
 import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { getEpisodeAirDate, hasEpisodeAired } from "@/lib/util";
+import { cn } from "@/lib/utils";
 
 import { EpisodeDownloadIndicator } from "./episode-download-indicator";
 import { EpisodeWatchedIndicator } from "./episode-watched-indicator";
@@ -81,7 +82,9 @@ export async function EpisodesList({
         <div className="overflow-hidden">
           <Tile
             containerClassName="w-full"
-            className="grid w-full gap-3 xl:grid-cols-2 xl:gap-x-6 xl:gap-y-4"
+            className={cn("grid w-full gap-3 xl:gap-x-6 xl:gap-y-4", {
+              "xl:grid-cols-2": episodes.length > 1,
+            })}
           >
             {episodes.map((episode, idx) => (
               <Episode

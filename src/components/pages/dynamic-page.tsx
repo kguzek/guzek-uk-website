@@ -29,7 +29,6 @@ export async function getPageBySlug(slug: string) {
 
 function CustomUploadConverter({ node }: { node: SerializedUploadNode }) {
   if (node.relationTo === "media" && typeof node.value === "object") {
-    console.info("Node value:", node.value);
     const media = node.value as unknown as Media;
     return (
       <Image

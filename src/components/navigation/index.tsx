@@ -32,6 +32,14 @@ const MENU_ITEMS = [
   },
 ];
 
+const ADMIN_MENU_ITEMS = [
+  {
+    id: 4,
+    url: "/admin",
+    title: "CMS",
+  },
+];
+
 export async function Navigation() {
   const { data, userLanguage } = await getTranslations();
   const { user } = await getAuth();
@@ -68,11 +76,14 @@ export async function Navigation() {
     },
   ] satisfies Parallels;
 
+  const menuItems =
+    user?.role === "admin" ? MENU_ITEMS.concat(ADMIN_MENU_ITEMS) : MENU_ITEMS;
+
   return (
     <>
       <NavigationBar
         user={user}
-        menuItems={MENU_ITEMS.map((item) => ({
+        menuItems={menuItems.map((item) => ({
           ...item,
           title: typeof item.title === "string" ? item.title : item.title[userLocale],
         }))}

@@ -147,6 +147,9 @@ export const ENGLISH: Translation = {
       "In order to search for and download TV show torrents, you must set up a LiveSeries server. This server will be used to fetch torrent files and stream video content.",
     cta: "Find out more at ",
     setup: "Visit your profile to set up your LiveSeries server URL.",
+    tvMazeCredits:
+      "This website uses data from the TVmaze API, which is licensed under CC BY-SA. We gratefully acknowledge TVmaze as the source of show data for LiveSeries.",
+    tvMazeCreditsCta: "For more details about TVmaze and their services, please visit",
     tvShowList: {
       showing: "Showing",
       of: "of",
