@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Glow } from "@codaworks/react-glow";
 import { FlaskConical } from "lucide-react";
 
-import { Logo } from "@/components/logo";
+import { Logo } from "@/components/image/logo";
 import { getTranslations } from "@/lib/providers/translation-provider";
 
 export async function Footer() {

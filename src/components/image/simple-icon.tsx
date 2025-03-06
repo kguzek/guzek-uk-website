@@ -4,7 +4,7 @@ import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 export const simpleIconUrl = (name: string, colored: boolean) =>
   colored
@@ -14,26 +14,30 @@ export const simpleIconUrl = (name: string, colored: boolean) =>
 export function SimpleIcon({
   name,
   colored = false,
+  tooltip = false,
   alt,
   className,
   ...props
-}: { name: string; colored?: boolean; className?: ClassValue } & Omit<
+}: { name: string; colored?: boolean; tooltip?: boolean; className?: ClassValue } & Omit<
   ComponentProps<typeof Image>,
   "src"
 >) {
-  return (
+  const image = (
+    <Image
+      alt={alt}
+      {...props}
+      src={simpleIconUrl(name.trim().toLowerCase(), colored)}
+      width={24}
+      height={24}
+      className={cn("my-0!", className)}
+    />
+  );
+  return tooltip ? (
     <Tooltip>
-      <TooltipTrigger>
-        <Image
-          alt={alt}
-          {...props}
-          src={simpleIconUrl(name.trim().toLowerCase(), colored)}
-          width={24}
-          height={24}
-          className={cn("my-0!", className)}
-        />
-      </TooltipTrigger>
+      <TooltipTrigger>{image}</TooltipTrigger>
       <TooltipContent>{name}</TooltipContent>
     </Tooltip>
+  ) : (
+    image
   );
 }

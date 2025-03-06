@@ -12,7 +12,7 @@ import { useScroll } from "@/lib/hooks/scroll";
 import { PAGE_NAME } from "@/lib/util";
 import { cn } from "@/lib/utils";
 
-import { Logo } from "../logo";
+import { Logo } from "../image/logo";
 import { LanguageSelector } from "./language-selector";
 import { UserWidget } from "./user-widget";
 
