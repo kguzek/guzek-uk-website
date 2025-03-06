@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import type { MiddlewareFactory } from "@/lib/types";
+import type { User } from "@/payload-types";
 import { PAGINATED_REGEX_INVALID } from "@/lib/constants";
 import { getUser } from "@/lib/providers/auth-provider/api";
 
@@ -23,7 +24,12 @@ export const authMiddleware: MiddlewareFactory = (next) =>
     }
 
     const response = await next(request);
-    const user = await getUser(request, response);
+    let user: User | null = null;
+    try {
+      user = await getUser(request, response);
+    } catch (error) {
+      console.warn("Error fetching user at middleware level:", (error as Error).message);
+    }
     const [redirectFrom, redirectTo] =
       user == null
         ? [ROUTES_REQUIRING_AUTH, "/login"]

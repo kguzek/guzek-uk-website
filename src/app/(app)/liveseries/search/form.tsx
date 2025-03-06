@@ -43,7 +43,7 @@ export function SearchForm({ userLanguage }: { userLanguage: Language }) {
   return (
     <>
       <h2 className="my-6 text-3xl font-bold">
-        {getTitle(data.liveSeries.search.title, data.liveSeries.title, false)}
+        {getTitle(data.liveSeries.search.title, data.liveSeries.title)}
       </h2>
       <div className="w-full">
         <Tile containerClassName="w-full" className="w-full items-stretch">

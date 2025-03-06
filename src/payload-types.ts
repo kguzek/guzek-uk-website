@@ -258,6 +258,7 @@ export interface Technology {
 export interface Page {
   id: number;
   title: string;
+  seoTitle?: string | null;
   slug: string;
   content: {
     root: {
@@ -421,6 +422,7 @@ export interface ProjectsSelect<T extends boolean = true> {
  */
 export interface PagesSelect<T extends boolean = true> {
   title?: T;
+  seoTitle?: T;
   slug?: T;
   content?: T;
   updatedAt?: T;

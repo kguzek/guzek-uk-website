@@ -32,3 +32,5 @@ export const LIVESERIES_SERVER_HOMEPAGE =
   "https://github.com/kguzek/guzek-uk-liveseries-server";
 
 export const CAROUSEL_INDICATOR_FULL_WIDTH = 140;
+
+export const OG_IMAGE_SIZE = { width: 1200, height: 630 };

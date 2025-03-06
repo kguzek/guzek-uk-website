@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Tile } from "@/components/tile";
@@ -7,6 +8,13 @@ import { getTranslations } from "@/lib/providers/translation-provider";
 import type { PropsWithToken } from "../with-token";
 import { withToken } from "../with-token";
 import { ResetPasswordForm } from "./form";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { data } = await getTranslations();
+  return {
+    title: data.profile.formDetails.resetPassword.header,
+  };
+}
 
 export default async function ResetPassword({ searchParams }: PropsWithToken) {
   const { error, token } = await withToken({ searchParams });

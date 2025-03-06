@@ -30,12 +30,12 @@ function fillHtmlTemplate(
   templateName: TemplateName,
   args?: { req?: PayloadRequest; token?: string; user?: { username?: string } },
 ) {
-  const { req, token, user } = args ?? {};
-  const base =
-    process.env.NODE_ENV === "development" && req?.protocol != null && req?.host != null
-      ? `${req.protocol}//${req.host}`
-      : PRODUCTION_URL;
-  const url = `${base}/${templateName}?token=${token}`;
+  const { token, user } = args ?? {};
+  // const base =
+  //   process.env.NODE_ENV === "development" && req?.protocol != null && req?.host != null
+  //     ? `${req.protocol}//${req.host}`
+  //     : PRODUCTION_URL;
+  const url = `${PRODUCTION_URL}/${templateName}?token=${token}`;
   const template = templateName === "reset-password" ? resetPassword : verifyEmail;
   return template
     .replaceAll(TEMPLATE_URL_FIELDS[templateName], url)

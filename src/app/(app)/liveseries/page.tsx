@@ -12,6 +12,7 @@ import { TextWrapper } from "@/components/text-wrapper";
 import { Tile } from "@/components/tile";
 import { Button } from "@/components/ui/button";
 import { getUserLikedShows } from "@/lib/backend/liveseries";
+import { OG_IMAGE_SIZE } from "@/lib/constants";
 import { ErrorCode } from "@/lib/enums";
 import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
@@ -22,6 +23,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const { data } = await getTranslations();
   return {
     title: getTitle(data.liveSeries.home.title, data.liveSeries.title),
+    openGraph: {
+      images: {
+        url: "/api/og-image/liveseries/most-popular/1",
+        ...OG_IMAGE_SIZE,
+      },
+    },
   };
 }
 
@@ -68,7 +75,7 @@ export default async function Home() {
   const header = (
     <>
       <h2 className="my-6 text-3xl font-bold">
-        {getTitle(data.liveSeries.home.title, data.liveSeries.title, false)}
+        {getTitle(data.liveSeries.home.title, data.liveSeries.title)}
       </h2>
       <h3 className="mb-5 text-2xl font-bold">
         {data.liveSeries.home.likedShows}

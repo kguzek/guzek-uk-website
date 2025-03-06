@@ -1,12 +1,28 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { Dot, LayoutDashboard, Search, TrendingUp } from "lucide-react";
 
 import { DownloadsWidget } from "@/components/liveseries/downloads-widget";
 import { Button } from "@/components/ui/button";
+import { OG_IMAGE_SIZE } from "@/lib/constants";
 import { LiveSeriesProvider } from "@/lib/context/liveseries-context";
 import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
+import { getTitle, PAGE_NAME } from "@/lib/util";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { data } = await getTranslations();
+  return {
+    title: {
+      template: `${getTitle("%s", data.liveSeries.title)} | ${PAGE_NAME}`,
+      default: "LiveSeries",
+    },
+    openGraph: {
+      images: { url: "/api/og-image/liveseries/most-popular/1", ...OG_IMAGE_SIZE },
+    },
+  };
+}
 
 export default async function LiveSeriesLayout({ children }: { children: ReactNode }) {
   const { data, userLanguage } = await getTranslations();

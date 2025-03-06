@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { getPayload } from "payload";
@@ -19,14 +20,19 @@ import { Badge } from "@/components/ui/badge";
 import { ErrorCode } from "@/lib/enums";
 import { convertLexicalToPlainText } from "@/lib/lexical";
 import { getTranslations } from "@/lib/providers/translation-provider";
-import { getTitle, isImage, truncateText } from "@/lib/util";
+import { isImage, truncateText } from "@/lib/util";
 import { Carousel, CarouselContent, CarouselItem } from "@/ui/carousel";
 
 import { ExternalLinkButton } from "./external-link";
 
-type Props = { params: Promise<{ slug: string }> };
+export interface ProjectProps {
+  params: Promise<{ slug: string }>;
+}
 
-const propsToSlug = async ({ params }: Props) => (await params).slug;
+const propsToSlug = async ({ params }: ProjectProps) => (await params).slug;
+
+const getImages = (project: Project) =>
+  [project.mainImage, ...(project.extraImages ?? [])].filter(isImage);
 
 const SHIELD_LABELS = {
   "created-at": {
@@ -39,7 +45,7 @@ const SHIELD_LABELS = {
   },
 };
 
-async function propsToProject(props: Props) {
+async function propsToProject(props: ProjectProps) {
   const slug = await propsToSlug(props);
   const { userLocale } = await getTranslations();
   const payload = await getPayload({ config });
@@ -52,17 +58,27 @@ async function propsToProject(props: Props) {
   return docs.at(0);
 }
 
-export async function generateMetadata(props: Props) {
+export async function generateMetadata(props: ProjectProps) {
+  const { data } = await getTranslations();
   const project = await propsToProject(props);
   if (project == null) {
     return {};
   }
   const description = (await convertLexicalToPlainText(project.description)) || undefined;
   return {
-    title: getTitle(project.title),
+    title: {
+      absolute: `${project.title} ${data.projects.by} Konrad Guzek`,
+    },
     description: truncateText(description, 160),
-    image: isImage(project.mainImage) ? project.mainImage.url : undefined,
-  };
+    openGraph: {
+      images: getImages(project).map((image) => ({
+        url: image.url,
+        width: image.width,
+        height: image.height,
+        alt: image.alt,
+      })),
+    },
+  } satisfies Metadata;
 }
 
 function getProjectSchema(project: Project, userLocale: UserLocale): SchemaOrgDefinition {
@@ -127,7 +143,7 @@ function Shield({
   );
 }
 
-export default async function ProjectPage(props: Props) {
+export default async function ProjectPage(props: ProjectProps) {
   const { data, userLocale } = await getTranslations();
   const project = await propsToProject(props);
   if (project == null) {
@@ -136,7 +152,7 @@ export default async function ProjectPage(props: Props) {
   if (!isImage(project.mainImage)) {
     return null;
   }
-  const images = [project.mainImage, ...(project.extraImages ?? []).filter(isImage)];
+  const images = getImages(project);
   return (
     <div className="text flex justify-center">
       <SchemaOrgScript schema={getProjectSchema(project, userLocale)} />
