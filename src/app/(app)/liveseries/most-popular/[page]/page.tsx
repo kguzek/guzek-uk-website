@@ -57,7 +57,7 @@ export default async function MostPopular({
         tvShows={results}
         page={pageFrontend}
         // TODO: obtain this value from the API
-        total={82827}
+        total={83085} // https://api.tvmaze.com/shows?page=332 at the time of writing
       />
     </>
   );

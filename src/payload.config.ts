@@ -8,6 +8,7 @@ import { FixedToolbarFeature, lexicalEditor } from "@payloadcms/richtext-lexical
 import sharp from "sharp";
 
 import { Media } from "./collections/Media";
+import { OgImages } from "./collections/OgImages";
 import { Pages } from "./collections/Pages";
 import { ProjectCategories } from "./collections/ProjectCategories";
 import { Projects } from "./collections/Projects";
@@ -24,7 +25,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Projects, Pages, ProjectCategories, Technologies],
+  collections: [Users, Media, Projects, Pages, ProjectCategories, Technologies, OgImages],
   editor: lexicalEditor({
     features: ({ defaultFeatures, rootFeatures }) => [
       ...defaultFeatures,
