@@ -7,14 +7,18 @@ import config from "@payload-config";
 import { RichText } from "@payloadcms/richtext-lexical/react";
 import { ArrowUpRight } from "lucide-react";
 
+import { SimpleIcon } from "@/components/image/simple-icon";
 import { DynamicPageLoader, getPageBySlug } from "@/components/pages/dynamic-page";
 import { Tile } from "@/components/tile";
-import { OG_IMAGE_METADATA } from "@/lib/constants";
+import { GITHUB_URL, OG_IMAGE_METADATA } from "@/lib/constants";
 import { convertLexicalToPlainText } from "@/lib/lexical";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { isImage, truncateText } from "@/lib/util";
 import { cn } from "@/lib/utils";
 import { CardDescription, CardHeader, CardTitle } from "@/ui/card";
+
+import { ExternalLinkButton } from "./[slug]/external-link";
+import { ProjectTechnologies } from "./[slug]/project-technologies";
 
 // const titleToSlug = (title: string) =>
 //   title.trim().toLowerCase().replace(/\s/g, "-");
@@ -55,7 +59,7 @@ export async function generateMetadata() {
 
 export default async function ProjectsPage() {
   const payload = await getPayload({ config });
-  const { userLocale } = await getTranslations();
+  const { data, userLocale } = await getTranslations();
   const projects = await payload.find({
     collection: "projects",
     locale: userLocale,
@@ -64,7 +68,7 @@ export default async function ProjectsPage() {
   return (
     <>
       <DynamicPageLoader slug={PROJECTS_PAGE_SLUG} />
-      <div className="text flex justify-center">
+      <div className="text flex flex-col items-center gap-4">
         <div className="grid w-full gap-4 lg:grid-cols-2">
           {projects.docs.map((project) => (
             <Tile
@@ -74,21 +78,31 @@ export default async function ProjectsPage() {
               header={
                 <CardHeader className="flex w-full flex-row justify-between gap-x-4 gap-y-1 sm:h-32 sm:items-center">
                   <div>
-                    <CardTitle className="text-primary-strong">
-                      <Link
-                        className="hover-underline"
-                        href={`/projects/${project.slug}`}
+                    <CardTitle className="flex flex-wrap items-center gap-2 text-balance">
+                      <div
+                        className={cn("mr-2", {
+                          "mr-0 w-full": (project.technologies?.length ?? 0) > 4,
+                        })}
                       >
-                        {project.title}
-                      </Link>
+                        <Link
+                          className="hover-underline"
+                          href={`/projects/${project.slug}`}
+                        >
+                          {project.title}
+                        </Link>
+                      </div>
+                      <ProjectTechnologies project={project} />
                     </CardTitle>
-                    {project.url && (
-                      <CardDescription className="mt-2 text-xs sm:text-sm">
-                        <Link className="hover-underline text-accent" href={project.url}>
+                    <CardDescription className="mt-2 text-xs sm:text-sm">
+                      {project.url && (
+                        <Link
+                          className="hover-underline text-accent col-span-full"
+                          href={project.url}
+                        >
                           {project.url}
                         </Link>
-                      </CardDescription>
-                    )}
+                      )}
+                    </CardDescription>
                   </div>
                   <Link
                     className={cn("flex items-center gap-4")}
@@ -123,6 +137,9 @@ export default async function ProjectsPage() {
             </Tile>
           ))}
         </div>
+        <ExternalLinkButton href={GITHUB_URL} variant="github-glow">
+          {data.projects.myGithub} <SimpleIcon name="github" alt="GitHub" />
+        </ExternalLinkButton>
       </div>
     </>
   );

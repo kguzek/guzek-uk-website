@@ -140,6 +140,7 @@ export const ENGLISH: Translation = {
     gallery: "Gallery",
     visit: "Visit",
     by: "by",
+    myGithub: "See more on GitHub",
   },
   liveSeries: {
     title: "LiveSeries",

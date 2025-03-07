@@ -3,6 +3,7 @@ import { Glow } from "@codaworks/react-glow";
 import { FlaskConical, Info } from "lucide-react";
 
 import { Logo } from "@/components/image/logo";
+import { GITHUB_URL } from "@/lib/constants";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import {
   AlertDialog,
@@ -16,6 +17,12 @@ import {
 } from "@/ui/alert-dialog";
 
 const TV_MAZE_URL = "https://www.tvmaze.com/";
+
+const BETA_INFO = {
+  enabled: false,
+  url: `${GITHUB_URL}/guzek-uk-website/pull/18`,
+  label: "PayloadCMS",
+};
 
 export async function Footer() {
   const { data } = await getTranslations();
@@ -31,7 +38,7 @@ export async function Footer() {
           <small>
             <Link
               className="hover-underline text-xs"
-              href="https://github.com/kguzek"
+              href={GITHUB_URL}
               target="_blank"
               rel="me"
             >
@@ -40,21 +47,21 @@ export async function Footer() {
           </small>
         </div>
         <div className="flex items-center gap-3">
-          {version?.length !== 0 && <small className="text-xs">v{version}</small>}
-          <div>
-            <Link
-              href="https://github.com/kguzek/guzek-uk-website/pull/18"
-              className="group flex items-center gap-1"
-            >
+          <div className="flex gap-1">
+            {BETA_INFO.enabled ? null : <span>main</span>}
+            {version?.length !== 0 && <span>v{version}</span>}
+          </div>
+          {BETA_INFO.enabled ? (
+            <Link href={BETA_INFO.url} className="group flex items-center gap-1">
               <FlaskConical
                 size={20}
                 className="scale-85 transition-transform duration-300 group-hover:scale-100"
               />
               <span className="hover-underline group-hover:underlined text-xs">
-                PayloadCMS
+                {BETA_INFO.label}
               </span>
             </Link>
-          </div>
+          ) : null}
           <AlertDialog>
             <AlertDialogTrigger className="group flex cursor-help items-center gap-1">
               {/* <Tv2

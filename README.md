@@ -23,10 +23,8 @@ If you wish to use LiveSeries to its full extent, you can now setup your own [Li
 
 ## Backend
 
-The website features an authentication server hosted on [auth.guzek.uk](https://auth.guzek.uk/), a REST API on [api.guzek.uk](https://api.guzek.uk/), and a self-hosted LiveSeries server, which **every user can host for themself**. These are all open-source, and you can find them on GitHub.
+The website uses [PayloadCMS](https://payloadcms.com/) for its data storage and user authentication & authorisation. In addition to this, it has a separate, self-hosted LiveSeries server, which **every user can host for themself**. The project is open source and you can find it here on GitHub:
 
-- [https://github.com/kguzek/guzek-uk-api](https://github.com/kguzek/guzek-uk-api)
-- [https://github.com/kguzek/guzek-uk-auth-server](https://github.com/kguzek/guzek-uk-auth-server)
 - [https://github.com/kguzek/guzek-uk-liveseries-server](https://github.com/kguzek/guzek-uk-liveseries-server)
 
 ## Usage

@@ -6,6 +6,8 @@ export const PAGINATED_REGEX = /^(\/liveseries\/(?:search\/[^\/]+|most-popular))
 export const WEBSITE_URL = process.env.NEXT_PUBLIC_WEBSITE_URL || process.env.WEBSITE_URL;
 export const PRODUCTION_URL = WEBSITE_URL || "https://www.guzek.uk";
 
+export const GITHUB_URL = "https://github.com/kguzek";
+
 export const LONG_DATE_FORMAT = {
   day: "2-digit",
   month: "long",
@@ -28,8 +30,7 @@ export const SHORT_TIME_FORMAT = {
 //   second: "2-digit",
 // } as const;
 
-export const LIVESERIES_SERVER_HOMEPAGE =
-  "https://github.com/kguzek/guzek-uk-liveseries-server";
+export const LIVESERIES_SERVER_HOMEPAGE = `${GITHUB_URL}/guzek-uk-liveseries-server`;
 
 export const CAROUSEL_INDICATOR_FULL_WIDTH = 140;
 
