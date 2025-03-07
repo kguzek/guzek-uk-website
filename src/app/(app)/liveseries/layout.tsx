@@ -5,7 +5,7 @@ import { Dot, LayoutDashboard, Search, TrendingUp } from "lucide-react";
 
 import { DownloadsWidget } from "@/components/liveseries/downloads-widget";
 import { Button } from "@/components/ui/button";
-import { OG_IMAGE_SIZE } from "@/lib/constants";
+import { OG_IMAGE_METADATA } from "@/lib/constants";
 import { LiveSeriesProvider } from "@/lib/context/liveseries-context";
 import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       images: {
         url: "/api/og-image/liveseries/most-popular/1",
-        ...OG_IMAGE_SIZE,
+        ...OG_IMAGE_METADATA,
       },
     },
   };
