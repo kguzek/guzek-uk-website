@@ -247,7 +247,7 @@ export interface Technology {
   id: number;
   name: string;
   /**
-   * https://simpleicons.org
+   * https://github.com/marwin1991/profile-technology-icons/tree/main/icons/ | https://simpleicons.org
    */
   hasLogo: boolean;
   updatedAt: string;

@@ -59,6 +59,7 @@ export default async function ProjectsPage() {
   const projects = await payload.find({
     collection: "projects",
     locale: userLocale,
+    sort: "id",
   });
   return (
     <>
