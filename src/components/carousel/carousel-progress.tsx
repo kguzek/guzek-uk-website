@@ -7,6 +7,7 @@ import { Progress } from "@/ui/progress";
 export function CarouselProgress() {
   const { api } = useCarousel();
   const progress = useEmblaScroll(api);
+  // TODO: initial width
   return (
     <Progress
       value={progress}

@@ -6,7 +6,13 @@ import { PAGINATED_REGEX_INVALID } from "@/lib/constants";
 import { getUser } from "@/lib/providers/auth-provider/api";
 
 const ROUTES_REQUIRING_AUTH = ["/profile", "/admin-logs", "/liveseries/watch"];
-const ROUTES_REQUIRING_NOAUTH = ["/login", "/signup", "/verify-email", "/reset-password"];
+const ROUTES_REQUIRING_NOAUTH = [
+  "/login",
+  "/signup",
+  "/verify-email",
+  "/forgot-password",
+  "/reset-password",
+];
 const ROUTES_REQUIRING_ADMIN = ["/admin-logs"];
 
 export const authMiddleware: MiddlewareFactory = (next) =>
