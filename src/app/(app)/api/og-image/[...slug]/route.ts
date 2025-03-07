@@ -17,10 +17,14 @@ export const revalidate = 86400;
 
 const PUPPETEER_EXECUTABLE_PATH = process.env.PUPPETEER_EXECUTABLE_PATH;
 const OG_IMAGE_VALIDITY_PERIOD = revalidate * 1000;
+const PUPPETEER_ARGS = process.env.PUPPETEER_ARGS || "";
 
 async function generateScreenshot(path: string) {
   console.info("Generating screenshot for", path, "with Puppeteer...");
-  const browser = await puppeteer.launch({ executablePath: PUPPETEER_EXECUTABLE_PATH });
+  const browser = await puppeteer.launch({
+    executablePath: PUPPETEER_EXECUTABLE_PATH,
+    args: PUPPETEER_ARGS.split(" "),
+  });
   const page = await browser.newPage();
   const { width, height } = OG_IMAGE_METADATA;
   await page.setViewport({
