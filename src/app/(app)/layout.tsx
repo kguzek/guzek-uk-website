@@ -12,7 +12,7 @@ import "./globals.css";
 
 import { GlowCapture } from "@codaworks/react-glow";
 
-import { OG_IMAGE_SIZE, PRODUCTION_URL } from "@/lib/constants";
+import { OG_IMAGE_METADATA, PRODUCTION_URL } from "@/lib/constants";
 import { QueryProvider } from "@/lib/providers/query-provider";
 import { PAGE_NAME } from "@/lib/util";
 import { Toaster } from "@/ui/sonner";
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     title: SEO_TITLE,
     images: {
       url: "/api/og-image",
-      ...OG_IMAGE_SIZE,
+      ...OG_IMAGE_METADATA,
     },
   },
 };

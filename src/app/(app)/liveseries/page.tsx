@@ -12,7 +12,7 @@ import { TextWrapper } from "@/components/text-wrapper";
 import { Tile } from "@/components/tile";
 import { Button } from "@/components/ui/button";
 import { getUserLikedShows } from "@/lib/backend/liveseries";
-import { OG_IMAGE_SIZE } from "@/lib/constants";
+import { OG_IMAGE_METADATA } from "@/lib/constants";
 import { ErrorCode } from "@/lib/enums";
 import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
@@ -28,7 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       images: {
         url: "/api/og-image/liveseries/most-popular/1",
-        ...OG_IMAGE_SIZE,
+        ...OG_IMAGE_METADATA,
       },
     },
   };

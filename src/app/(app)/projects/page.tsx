@@ -9,7 +9,7 @@ import { ArrowUpRight } from "lucide-react";
 
 import { DynamicPageLoader, getPageBySlug } from "@/components/pages/dynamic-page";
 import { Tile } from "@/components/tile";
-import { OG_IMAGE_SIZE } from "@/lib/constants";
+import { OG_IMAGE_METADATA } from "@/lib/constants";
 import { convertLexicalToPlainText } from "@/lib/lexical";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { isImage, truncateText } from "@/lib/util";
@@ -47,7 +47,7 @@ export async function generateMetadata() {
     openGraph: {
       images: {
         url: "/api/og-image/projects",
-        ...OG_IMAGE_SIZE,
+        ...OG_IMAGE_METADATA,
       },
     },
   } satisfies Metadata;

@@ -33,6 +33,6 @@ export const LIVESERIES_SERVER_HOMEPAGE =
 
 export const CAROUSEL_INDICATOR_FULL_WIDTH = 140;
 
-export const OG_IMAGE_SIZE = { width: 1200, height: 630 };
+export const OG_IMAGE_METADATA = { width: 1200, height: 630, type: "image/png" };
 export const NAV_BAR_HEIGHT_DESKTOP = 100;
 export const NAV_BAR_HEIGHT_MOBILE = 80;

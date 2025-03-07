@@ -4,7 +4,7 @@ import { findShowById, getShowEpisodes } from "tvmaze-wrapper-ts";
 
 import { ErrorComponent } from "@/components/error/component";
 import { EpisodesList } from "@/components/liveseries/episodes-list";
-import { OG_IMAGE_SIZE } from "@/lib/constants";
+import { OG_IMAGE_METADATA } from "@/lib/constants";
 import { ErrorCode } from "@/lib/enums";
 import { convertHtmlToPlainText } from "@/lib/lexical";
 import { getAuth } from "@/lib/providers/auth-provider";
@@ -46,7 +46,7 @@ export async function generateMetadata(props: ShowDetailsProps): Promise<Metadat
     openGraph: {
       images: {
         url: `/api/og-image/liveseries/tv-show/${show.id}`,
-        ...OG_IMAGE_SIZE,
+        ...OG_IMAGE_METADATA,
       },
     },
   };

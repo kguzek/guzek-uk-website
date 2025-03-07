@@ -6,7 +6,11 @@ import puppeteer from "puppeteer";
 
 import type { CustomMiddleware } from "@/lib/types";
 import type { Media } from "@/payload-types";
-import { NAV_BAR_HEIGHT_DESKTOP, OG_IMAGE_SIZE, PRODUCTION_URL } from "@/lib/constants";
+import {
+  NAV_BAR_HEIGHT_DESKTOP,
+  OG_IMAGE_METADATA,
+  PRODUCTION_URL,
+} from "@/lib/constants";
 import { rateLimitMiddleware } from "@/middleware/ratelimit-middleware";
 
 export const revalidate = 86400;
@@ -18,9 +22,10 @@ async function generateScreenshot(path: string) {
   console.info("Generating screenshot for", path, "with Puppeteer...");
   const browser = await puppeteer.launch({ executablePath: PUPPETEER_EXECUTABLE_PATH });
   const page = await browser.newPage();
+  const { width, height } = OG_IMAGE_METADATA;
   await page.setViewport({
-    width: OG_IMAGE_SIZE.width,
-    height: OG_IMAGE_SIZE.height + NAV_BAR_HEIGHT_DESKTOP,
+    width,
+    height: height + NAV_BAR_HEIGHT_DESKTOP,
   });
   await page.goto(`${PRODUCTION_URL}${path}`, {
     waitUntil: "networkidle0",
@@ -28,7 +33,7 @@ async function generateScreenshot(path: string) {
   });
   const screenshot = await page.screenshot({
     type: "png",
-    clip: { ...OG_IMAGE_SIZE, x: 0, y: NAV_BAR_HEIGHT_DESKTOP },
+    clip: { width, height, x: 0, y: NAV_BAR_HEIGHT_DESKTOP },
   });
   await browser.close();
   return screenshot;
