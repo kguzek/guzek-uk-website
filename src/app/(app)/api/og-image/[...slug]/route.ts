@@ -6,7 +6,7 @@ import puppeteer from "puppeteer";
 
 import type { CustomMiddleware } from "@/lib/types";
 import type { Media } from "@/payload-types";
-import { OG_IMAGE_SIZE, PRODUCTION_URL } from "@/lib/constants";
+import { NAV_BAR_HEIGHT_DESKTOP, OG_IMAGE_SIZE, PRODUCTION_URL } from "@/lib/constants";
 import { rateLimitMiddleware } from "@/middleware/ratelimit-middleware";
 
 export const revalidate = 86400;
@@ -15,18 +15,22 @@ const PUPPETEER_EXECUTABLE_PATH = process.env.PUPPETEER_EXECUTABLE_PATH;
 const OG_IMAGE_VALIDITY_PERIOD = revalidate * 1000;
 
 async function generateScreenshot(path: string) {
-  console.info("Generating screenshot for", path, "with Puppeteer");
+  console.info("Generating screenshot for", path, "with Puppeteer...");
   const browser = await puppeteer.launch({ executablePath: PUPPETEER_EXECUTABLE_PATH });
   const page = await browser.newPage();
-  await page.setViewport(OG_IMAGE_SIZE);
-
+  await page.setViewport({
+    width: OG_IMAGE_SIZE.width,
+    height: OG_IMAGE_SIZE.height + NAV_BAR_HEIGHT_DESKTOP,
+  });
   await page.goto(`${PRODUCTION_URL}${path}`, {
     waitUntil: "networkidle0",
     timeout: 120000,
   });
-  const screenshot = await page.screenshot({ type: "png" });
+  const screenshot = await page.screenshot({
+    type: "png",
+    clip: { ...OG_IMAGE_SIZE, x: 0, y: NAV_BAR_HEIGHT_DESKTOP },
+  });
   await browser.close();
-
   return screenshot;
 }
 
@@ -82,12 +86,19 @@ async function tryGenerateScreenshot(
         data: { slug: path, image: createdMedia.id },
       });
     } else {
-      console.info("Updating media record", existingMedia.id, "with OG image for", path);
+      console.info(
+        "Updating media record",
+        existingMedia.id,
+        "with OG image for",
+        path,
+        "& filename",
+        file.name,
+      );
       await payload.update({
         collection: "media",
         id: existingMedia.id,
         data: {
-          filename: file.name,
+          filename: existingMedia.filename || file.name,
         },
         file,
       });

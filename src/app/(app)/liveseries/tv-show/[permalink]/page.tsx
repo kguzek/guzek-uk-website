@@ -4,7 +4,9 @@ import { findShowById, getShowEpisodes } from "tvmaze-wrapper-ts";
 
 import { ErrorComponent } from "@/components/error/component";
 import { EpisodesList } from "@/components/liveseries/episodes-list";
+import { OG_IMAGE_SIZE } from "@/lib/constants";
 import { ErrorCode } from "@/lib/enums";
+import { convertHtmlToPlainText } from "@/lib/lexical";
 import { getAuth } from "@/lib/providers/auth-provider";
 import { getTranslations } from "@/lib/providers/translation-provider";
 import { isNumber } from "@/lib/util";
@@ -12,19 +14,42 @@ import { isNumber } from "@/lib/util";
 import { ShowDetails } from "./show-details";
 import { WatchedIndicator } from "./watched-indicator";
 
-interface Props {
+interface ShowDetailsProps {
   params: Promise<Record<string, string>>;
 }
 
 const isTvShow = (tvShow: unknown) =>
   typeof tvShow === "object" && tvShow != null && "id" in tvShow && "summary" in tvShow;
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata(props: ShowDetailsProps): Promise<Metadata> {
   const { data } = await getTranslations();
-  const show = await getShowDetails(params);
+  const show = await getShowDetails(props);
+  if (!show) {
+    return {
+      title: data.liveSeries.tvShow.showDetails,
+    };
+  }
   return {
-    title: show?.name || data.liveSeries.tvShow.showDetails,
-  } satisfies Metadata;
+    title: show.name || data.liveSeries.tvShow.showDetails,
+    description: show.summary ? convertHtmlToPlainText(show.summary) : undefined,
+    keywords: [
+      show.name,
+      ...show.genres,
+      "LiveSeries",
+      "TV Show",
+      "watch",
+      "stream",
+      "summary",
+      "episodes",
+      "seasons",
+    ],
+    openGraph: {
+      images: {
+        url: `/api/og-image/liveseries/tv-show/${show.id}`,
+        ...OG_IMAGE_SIZE,
+      },
+    },
+  };
 }
 
 function sortEpisodes(episodes: TvMazeEpisode[]) {
@@ -40,7 +65,7 @@ function sortEpisodes(episodes: TvMazeEpisode[]) {
   return Object.entries(seasons) as [`${number}`, TvMazeEpisode[]][];
 }
 
-async function getShowDetails(params: Props["params"]) {
+async function getShowDetails({ params }: ShowDetailsProps) {
   const { permalink } = await params;
   if (!isNumber(permalink)) {
     console.warn("Invalid tv show permalink:", permalink);
@@ -54,10 +79,10 @@ async function getShowDetails(params: Props["params"]) {
   return tvShow;
 }
 
-export default async function TvShow({ params }: Props) {
+export default async function TvShow(props: ShowDetailsProps) {
   const { data, userLanguage } = await getTranslations();
   const { user } = await getAuth();
-  const tvShow = await getShowDetails(params);
+  const tvShow = await getShowDetails(props);
   if (tvShow == null) {
     return <ErrorComponent errorCode={ErrorCode.NotFound} />;
   }

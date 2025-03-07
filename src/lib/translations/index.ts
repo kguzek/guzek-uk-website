@@ -116,6 +116,8 @@ export type Translation = Readonly<{
   };
   liveSeries: {
     title: string;
+    seoTitle: string;
+    description: string;
     whatsThis: string;
     explanation: string;
     cta: string;

@@ -18,8 +18,12 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `${getTitle("%s", data.liveSeries.title)} | ${PAGE_NAME}`,
       default: "LiveSeries",
     },
+    description: data.liveSeries.description,
     openGraph: {
-      images: { url: "/api/og-image/liveseries/most-popular/1", ...OG_IMAGE_SIZE },
+      images: {
+        url: "/api/og-image/liveseries/most-popular/1",
+        ...OG_IMAGE_SIZE,
+      },
     },
   };
 }

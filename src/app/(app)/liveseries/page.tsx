@@ -22,7 +22,9 @@ import { cn } from "@/lib/utils";
 export async function generateMetadata(): Promise<Metadata> {
   const { data } = await getTranslations();
   return {
-    title: getTitle(data.liveSeries.home.title, data.liveSeries.title),
+    title: {
+      absolute: `${data.liveSeries.seoTitle} | Konrad Guzek`,
+    },
     openGraph: {
       images: {
         url: "/api/og-image/liveseries/most-popular/1",
