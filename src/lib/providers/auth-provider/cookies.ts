@@ -119,6 +119,10 @@ export async function getAuthFromCookies(
     console.warn("No user found in access token", jwtPayload);
     return { user: null, accessToken: null };
   }
+  if (expiresSoon(jwtPayload.exp, 0)) {
+    console.warn("Access token has expired", jwtPayload);
+    return { user: null, accessToken: null };
+  }
   if (expiresSoon(jwtPayload.exp) && responseCookies != null) {
     try {
       const refreshResult = await refreshAccessToken("soon to expire", accessToken);
@@ -133,7 +137,7 @@ export async function getAuthFromCookies(
         responseCookies.set(
           "payload-token",
           accessToken,
-          getCookieOptions({ exp: newPayload.exp, httpOnly: true }),
+          getCookieOptions({ exp: newPayload.exp * 1000, httpOnly: true }),
         );
       }
     } catch (error) {

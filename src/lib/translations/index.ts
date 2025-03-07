@@ -113,6 +113,7 @@ export type Translation = Readonly<{
     gallery: string;
     visit: string;
     by: string;
+    myGithub: string;
   };
   liveSeries: {
     title: string;

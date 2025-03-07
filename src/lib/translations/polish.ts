@@ -141,6 +141,7 @@ export const POLISH: Translation = {
     gallery: "Galeria",
     visit: "Odwiedź",
     by: "– Portfolio |",
+    myGithub: "Zobacz więcej na GitHubie",
   },
   liveSeries: {
     title: "LiveSeries",

@@ -32,7 +32,7 @@ export default async function LiveSeriesLayout({ children }: { children: ReactNo
   const { data, userLanguage } = await getTranslations();
   const { user, accessToken } = await getAuth();
   return (
-    <div className="text liveseries">
+    <div className="text">
       <LiveSeriesProvider
         userLanguage={userLanguage}
         user={user}

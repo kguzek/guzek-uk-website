@@ -212,11 +212,8 @@ export function ShowDetails({
             {tvShow.network.country.code})
           </span>
         ) : null}
-        {runtime ? (
-          <>
-            <Dot /> {runtime} min
-          </>
-        ) : null}
+        {tvShow.network && runtime ? <Dot /> : null}
+        {runtime ? <>{runtime} min</> : null}
       </p>
       {tvShow.summary ? (
         <label className="border-background-soft mt-1 mb-2 rounded-sm border-l-[5px] pl-2.5 text-sm sm:text-base md:text-lg">
@@ -293,7 +290,7 @@ export function ShowDetails({
           <Button
             variant={isSubscribed ? "default" : "glow"}
             loading={isUpdating}
-            className="min-w-xs"
+            className="min-w-20 text-xs sm:text-base"
             onClick={() => {
               if (user == null) {
                 promptLogin();

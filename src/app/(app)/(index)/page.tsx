@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import type { SchemaOrgDefinition } from "@/components/schema-org";
 import { DynamicPageLoader, getPageBySlug } from "@/components/pages/dynamic-page";
 import { SchemaOrgScript } from "@/components/schema-org";
-import { PRODUCTION_URL } from "@/lib/constants";
+import { GITHUB_URL, PRODUCTION_URL } from "@/lib/constants";
 
 export async function generateMetadata() {
   const homepage = await getPageBySlug("/");
@@ -25,7 +25,7 @@ const KONRAD_GUZEK_SCHEMA: SchemaOrgDefinition = {
     addressCountry: "Poland",
   },
   url: PRODUCTION_URL,
-  sameAs: ["https://www.linkedin.com/in/konrad-guzek/", "https://github.com/kguzek"],
+  sameAs: ["https://www.linkedin.com/in/konrad-guzek/", GITHUB_URL],
   jobTitle: "Software Developer",
   worksFor: {
     "@type": "Organization",

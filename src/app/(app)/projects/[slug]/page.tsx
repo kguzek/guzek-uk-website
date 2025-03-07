@@ -24,6 +24,7 @@ import { isImage, truncateText } from "@/lib/util";
 import { Carousel, CarouselContent, CarouselItem } from "@/ui/carousel";
 
 import { ExternalLinkButton } from "./external-link";
+import { ProjectTechnologies } from "./project-technologies";
 
 export interface ProjectProps {
   params: Promise<{ slug: string }>;
@@ -191,19 +192,9 @@ export default async function ProjectPage(props: ProjectProps) {
         )}
         <Tile containerClassName="mt-2">
           {
-            <div className="-mb-5 flex items-center gap-4 self-start">
+            <div className="-mb-5 flex flex-wrap items-center gap-4 self-start">
               <div className="flex gap-2">
-                {(project.technologies ?? []).map((technology, idx) =>
-                  typeof technology === "number" || !technology.hasLogo ? null : (
-                    <SimpleIcon
-                      colored
-                      tooltip
-                      key={`project-technology-${idx}`}
-                      name={technology.name}
-                      alt={technology.name}
-                    />
-                  ),
-                )}
+                <ProjectTechnologies project={project} />
               </div>
               <div className="flex gap-2">
                 {(project.categories ?? []).map((category, idx) =>

@@ -132,14 +132,16 @@ export const compareEpisodes = (a: EpisodeLike, b: EpisodeLike) =>
   a.showName === b.showName && a.season === b.season && a.episode === b.episode;
 
 export function getCookieOptions({
-  exp = 60 * 60 * 24 * 365,
+  exp,
+  expiresIn = 60 * 60 * 24 * 365,
   ...options
 }: {
   exp?: number;
+  expiresIn?: number;
   httpOnly?: boolean;
 } = {}) {
   return {
-    expires: new Date(Date.now() + exp * 1000),
+    expires: new Date(exp ?? Date.now() + expiresIn * 1000),
     path: "/",
     sameSite: "lax",
     domain: PRODUCTION_MODE ? ".guzek.uk" : undefined,
