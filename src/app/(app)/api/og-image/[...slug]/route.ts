@@ -19,6 +19,8 @@ const PUPPETEER_EXECUTABLE_PATH = process.env.PUPPETEER_EXECUTABLE_PATH;
 const OG_IMAGE_VALIDITY_PERIOD = revalidate * 1000;
 const PUPPETEER_ARGS = process.env.PUPPETEER_ARGS || "";
 
+const imageGenerationPromises = new Map<string, Promise<NextResponse>>();
+
 async function generateScreenshot(path: string) {
   console.info("Generating screenshot for", path, "with Puppeteer...");
   const browser = await puppeteer.launch({
@@ -62,7 +64,7 @@ const slugToFilename = (slug: string) =>
 const isOgImageStale = (updatedAt: string) =>
   Date.now() - new Date(updatedAt).getTime() > OG_IMAGE_VALIDITY_PERIOD;
 
-async function tryGenerateScreenshot(
+async function _tryGenerateScreenshot(
   path: string,
   payload: Payload,
   existingMedia?: Media,
@@ -122,7 +124,15 @@ async function tryGenerateScreenshot(
       },
       { status: 500 },
     );
+  } finally {
+    imageGenerationPromises.delete(path);
   }
+}
+
+function tryGenerateScreenshot(path: string, payload: Payload, existingMedia?: Media) {
+  const promise = _tryGenerateScreenshot(path, payload, existingMedia);
+  imageGenerationPromises.set(path, promise);
+  return promise;
 }
 
 const routeHandler: CustomMiddleware<[{ params: Promise<{ slug: string[] }> }]> = async (
@@ -132,6 +142,11 @@ const routeHandler: CustomMiddleware<[{ params: Promise<{ slug: string[] }> }]> 
   const payload = await getPayload({ config });
   const segments = args?.params ? (await args.params).slug : [];
   const slug = Array.isArray(segments) ? `/${segments.join("/")}` : "/";
+  const previousPromise = imageGenerationPromises.get(slug);
+  if (previousPromise != null) {
+    console.info("Returning existing promise for", slug);
+    return await previousPromise;
+  }
   const docs = await payload.find({
     collection: "og-images",
     where: { slug: { equals: slug } },
@@ -139,7 +154,7 @@ const routeHandler: CustomMiddleware<[{ params: Promise<{ slug: string[] }> }]> 
   });
   const doc = docs.docs.at(0);
   if (doc == null) {
-    return await tryGenerateScreenshot(slug, payload);
+    return tryGenerateScreenshot(slug, payload);
   }
   const image =
     typeof doc.image === "number"
