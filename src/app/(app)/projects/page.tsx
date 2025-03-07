@@ -109,19 +109,18 @@ export default async function ProjectsPage() {
                     href={`/projects/${project.slug}`}
                   >
                     {[project.mainImage, ...(project.extraImages ?? [])]
-                      .slice(0, 2)
-                      .map((image) =>
-                        isImage(image) ? (
-                          <Image
-                            className="hidden h-auto w-20 sm:block sm:w-24"
-                            key={image.id}
-                            src={image.url}
-                            alt={image.alt}
-                            height={0}
-                            width={96}
-                          />
-                        ) : null,
-                      )}
+                      .filter(isImage)
+                      .slice(0, 1)
+                      .map((image) => (
+                        <Image
+                          className="hidden h-auto w-20 sm:block sm:w-24"
+                          key={image.id}
+                          src={image.url}
+                          alt={image.alt}
+                          height={0}
+                          width={96}
+                        />
+                      ))}
                     <ArrowUpRight className="group-hover:animate-jump group-hover:text-primary-strong sm:text-primary transition-all duration-300 group-hover:scale-125" />
                   </Link>
                 </CardHeader>
