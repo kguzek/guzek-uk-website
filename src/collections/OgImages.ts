@@ -2,8 +2,12 @@ import type { CollectionConfig } from "payload";
 
 import { isAdmin } from "@/lib/payload";
 
-export const Pages: CollectionConfig = {
-  slug: "pages",
+export const OgImages: CollectionConfig = {
+  slug: "og-images",
+  labels: {
+    singular: "OpenGraph Image",
+    plural: "OpenGraph Images",
+  },
   access: {
     create: isAdmin,
     read: () => true,
@@ -12,27 +16,15 @@ export const Pages: CollectionConfig = {
   },
   fields: [
     {
-      name: "title",
-      type: "text",
-      localized: true,
-      required: true,
-    },
-    {
-      name: "seoTitle",
-      label: "SEO Title",
-      type: "text",
-      localized: true,
-    },
-    {
       name: "slug",
       type: "text",
       required: true,
       unique: true,
     },
     {
-      name: "content",
-      type: "richText",
-      localized: true,
+      name: "image",
+      type: "upload",
+      relationTo: "media",
       required: true,
     },
   ],

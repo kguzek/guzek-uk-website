@@ -77,6 +77,7 @@ export interface Config {
     pages: Page;
     'project-categories': ProjectCategory;
     technologies: Technology;
+    'og-images': OgImage;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -89,6 +90,7 @@ export interface Config {
     pages: PagesSelect<false> | PagesSelect<true>;
     'project-categories': ProjectCategoriesSelect<false> | ProjectCategoriesSelect<true>;
     technologies: TechnologiesSelect<false> | TechnologiesSelect<true>;
+    'og-images': OgImagesSelect<false> | OgImagesSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -280,6 +282,17 @@ export interface Page {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "og-images".
+ */
+export interface OgImage {
+  id: number;
+  slug: string;
+  image: number | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -308,6 +321,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'technologies';
         value: number | Technology;
+      } | null)
+    | ({
+        relationTo: 'og-images';
+        value: number | OgImage;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -444,6 +461,16 @@ export interface ProjectCategoriesSelect<T extends boolean = true> {
 export interface TechnologiesSelect<T extends boolean = true> {
   name?: T;
   hasLogo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "og-images_select".
+ */
+export interface OgImagesSelect<T extends boolean = true> {
+  slug?: T;
+  image?: T;
   updatedAt?: T;
   createdAt?: T;
 }
