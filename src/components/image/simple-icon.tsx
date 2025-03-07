@@ -35,7 +35,7 @@ export function SimpleIcon({
   return tooltip ? (
     <Tooltip>
       <TooltipTrigger>{image}</TooltipTrigger>
-      <TooltipContent>{name}</TooltipContent>
+      <TooltipContent>{name.replaceAll("_", " ")}</TooltipContent>
     </Tooltip>
   ) : (
     image

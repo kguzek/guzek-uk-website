@@ -26,7 +26,8 @@ export const Technologies: CollectionConfig = {
       defaultValue: true,
       required: true,
       admin: {
-        description: "https://simpleicons.org",
+        description:
+          "https://github.com/marwin1991/profile-technology-icons/tree/main/icons/ | https://simpleicons.org",
       },
     },
   ],
