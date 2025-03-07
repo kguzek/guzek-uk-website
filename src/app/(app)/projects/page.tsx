@@ -76,7 +76,7 @@ export default async function ProjectsPage() {
               containerClassName="group"
               key={project.id}
               header={
-                <CardHeader className="flex w-full flex-row justify-between gap-x-4 gap-y-1 sm:h-32 sm:items-center">
+                <CardHeader className="flex w-full flex-row justify-between gap-x-4 gap-y-1 sm:h-24 sm:items-center">
                   <div>
                     <CardTitle className="flex flex-wrap items-center gap-2 text-balance">
                       <div
@@ -85,7 +85,7 @@ export default async function ProjectsPage() {
                         })}
                       >
                         <Link
-                          className="hover-underline"
+                          className="glow:text-primary-strong text-primary"
                           href={`/projects/${project.slug}`}
                         >
                           {project.title}
@@ -96,7 +96,7 @@ export default async function ProjectsPage() {
                     <CardDescription className="mt-2 text-xs sm:text-sm">
                       {project.url && (
                         <Link
-                          className="hover-underline text-accent col-span-full"
+                          className="glow:underlined text-accent col-span-full"
                           href={project.url}
                         >
                           {project.url}
@@ -128,7 +128,7 @@ export default async function ProjectsPage() {
             >
               <Link href={`/projects/${project.slug}`}>
                 <RichText
-                  className="text-primary hover:text-primary-strong line-clamp-3 text-xs transition-all duration-300 sm:text-base"
+                  className="text-primary glow:text-primary-strong line-clamp-3 text-xs transition-all duration-300 sm:text-base"
                   data={project.description}
                   converters={htmlWithoutLinks}
                 />
@@ -136,7 +136,7 @@ export default async function ProjectsPage() {
             </Tile>
           ))}
         </div>
-        <ExternalLinkButton href={GITHUB_URL} variant="github-glow">
+        <ExternalLinkButton href={GITHUB_URL} variant="github-glow" rel="me">
           {data.projects.myGithub} <SimpleIcon name="github" alt="GitHub" />
         </ExternalLinkButton>
       </div>

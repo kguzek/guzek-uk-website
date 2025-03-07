@@ -57,7 +57,8 @@
 }
 
 @utility underlined {
-  @apply bg-left-bottom;
+  @apply bg-left-bottom bg-no-repeat;
+  background-image: linear-gradient(currentColor, currentColor);
   background-size: 100% 1px;
 }
 
@@ -65,7 +66,7 @@
   background-image: linear-gradient(currentColor, currentColor);
   background-size: 0 1px;
   transition:
-    background 300ms,
+    all 300ms,
     background-position 0ms ease-in !important;
   @apply hover:underlined bg-right-bottom bg-no-repeat;
 }

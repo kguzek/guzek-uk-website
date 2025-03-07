@@ -6,14 +6,8 @@ import { Progress } from "@/ui/progress";
 
 export function CarouselProgress() {
   const { api } = useCarousel();
-  const progress = useEmblaScroll(api);
-  // TODO: initial width
+  const { progress, total } = useEmblaScroll(api);
   return (
-    <Progress
-      value={progress}
-      className="h-4 w-2/3"
-      disableTransitions
-      steps={api?.slideNodes().length || 1}
-    />
+    <Progress value={progress} className="h-4 w-2/3" disableTransitions steps={total} />
   );
 }

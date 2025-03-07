@@ -25,10 +25,10 @@ export function SimpleIcon({
   const image = (
     <Image
       alt={alt}
-      {...props}
       src={simpleIconUrl(name.trim().toLowerCase(), colored)}
       width={24}
       height={24}
+      {...props}
       className={cn("my-0!", className)}
     />
   );

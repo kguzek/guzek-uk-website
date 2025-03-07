@@ -18,15 +18,18 @@ import {
 
 const TV_MAZE_URL = "https://www.tvmaze.com/";
 
+const REPO_NAME = "guzek-uk-website";
+
 const BETA_INFO = {
   enabled: false,
-  url: `${GITHUB_URL}/guzek-uk-website/pull/18`,
+  url: `${GITHUB_URL}/${REPO_NAME}/pull/18`,
   label: "PayloadCMS",
 };
 
 export async function Footer() {
   const { data } = await getTranslations();
   const version = process.env.npm_package_version;
+  const versionSpan = version ? <span>v{version}</span> : null;
   return (
     <footer className="py-4">
       <Glow>
@@ -35,33 +38,33 @@ export async function Footer() {
       <div className="mt-4 flex flex-col items-center justify-center gap-3 text-xs sm:flex-row">
         <div className="flex items-center gap-2">
           <Logo size={20} />
-          <small>
-            <Link
-              className="hover-underline text-xs"
-              href={GITHUB_URL}
-              target="_blank"
-              rel="me"
-            >
-              {data.footer("2021–2025")}
-            </Link>
-          </small>
+          <Link className="hover-underline" href={GITHUB_URL} target="_blank">
+            {data.footer("2021–2025")}
+          </Link>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex gap-1">
-            {BETA_INFO.enabled ? null : <span>main</span>}
-            {version?.length !== 0 && <span>v{version}</span>}
-          </div>
           {BETA_INFO.enabled ? (
-            <Link href={BETA_INFO.url} className="group flex items-center gap-1">
-              <FlaskConical
-                size={20}
-                className="scale-85 transition-transform duration-300 group-hover:scale-100"
-              />
-              <span className="hover-underline group-hover:underlined text-xs">
-                {BETA_INFO.label}
-              </span>
+            <>
+              {versionSpan}
+              <Link href={BETA_INFO.url} className="group flex items-center gap-1">
+                <FlaskConical
+                  size={20}
+                  className="scale-85 transition-transform duration-300 group-hover:scale-100"
+                />
+                <span className="hover-underline group-hover:underlined text-primary group-hover:text-primary-strong text-xs">
+                  {BETA_INFO.label}
+                </span>
+              </Link>
+            </>
+          ) : (
+            <Link
+              href={`${GITHUB_URL}/${REPO_NAME}`}
+              className="hover-underline text-primary hover:text-primary-strong flex items-center gap-1"
+            >
+              <span>main</span>
+              {versionSpan}
             </Link>
-          ) : null}
+          )}
           <AlertDialog>
             <AlertDialogTrigger className="group flex cursor-help items-center gap-1">
               {/* <Tv2
