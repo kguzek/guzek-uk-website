@@ -144,6 +144,9 @@ export const POLISH: Translation = {
   },
   liveSeries: {
     title: "LiveSeries",
+    seoTitle: "LiveSeries – Śledzenie Seriali i Serwis Streamowania Torrentów",
+    description:
+      "Serwis do śledzenia seriali i streamowania torrentów. Oglądaj odcinki seriali w czasie rzeczywistym, sprawdzaj oceny i więcej. Znajdź swoje ulubione seriale i bądź na bieżąco za pomocą usługi automatycznego pobierania odcinków.",
     whatsThis: "Co to?",
     explanation:
       "Aby móc wyszukiwać i pobierać torrenty seriali, musisz skonfigurować serwer LiveSeries. Serwer ten będzie używany do pobierania torrentów i przesyłania do przeglądarki filmów.",

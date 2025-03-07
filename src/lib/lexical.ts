@@ -31,7 +31,7 @@ const SELECTORS = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
 
 export async function convertLexicalToPlainText(
   editorStateJSON: SerializedEditorState,
-  wordWrap = 150,
+  wordWrap: HtmlToTextOptions["wordwrap"] = false,
 ) {
   const payload = await getPayload({ config });
   const editorConfig = defaultEditorConfig;
@@ -47,6 +47,13 @@ export async function convertLexicalToPlainText(
     converters: consolidateHTMLConverters({ editorConfig: sanitizedEditorConfig }),
     payload,
   });
+  return convertHtmlToPlainText(html, wordWrap);
+}
+
+export function convertHtmlToPlainText(
+  html: string,
+  wordWrap: HtmlToTextOptions["wordwrap"] = false,
+) {
   const options: HtmlToTextOptions = {
     wordwrap: wordWrap,
     formatters: Object.fromEntries(

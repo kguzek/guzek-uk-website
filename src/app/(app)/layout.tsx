@@ -62,9 +62,6 @@ export const metadata: Metadata = {
       ...OG_IMAGE_SIZE,
     },
   },
-  twitter: {
-    images: "/api/og-image",
-  },
 };
 
 export const viewport: Viewport = {
