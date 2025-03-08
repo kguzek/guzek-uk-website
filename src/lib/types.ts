@@ -1,9 +1,9 @@
 import type { NextRequest, NextResponse } from "next/server";
 
 import type { DownloadStatus, LOG_LEVELS } from "./enums";
-import type { getTranslations } from "./providers/translation-provider";
 
-export type UserLocale = Awaited<ReturnType<typeof getTranslations>>["userLocale"];
+// TODO: extract from LOCALES constant
+export type UserLocale = "en" | "pl";
 
 // #region Legacy Admin Logs
 

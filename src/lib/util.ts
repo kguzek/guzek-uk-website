@@ -2,13 +2,16 @@ import type { NextRequest } from "next/server";
 import type { Episode as TvMazeEpisode } from "tvmaze-wrapper-ts";
 import Cookies from "js-cookie";
 
-import type { ApiMessage, ErrorResponseBody, ErrorResponseMultiple } from "@/lib/types";
+import type {
+  ApiMessage,
+  ErrorResponseBody,
+  ErrorResponseMultiple,
+  UserLocale,
+} from "@/lib/types";
 import type { Media } from "@/payload-types";
 
-import type { Translation } from "./translations";
 import type { DownloadedEpisode } from "./types";
-import { EMAIL_VERIFICATION_COOKIE } from "./constants";
-import { Language } from "./enums";
+import { EMAIL_VERIFICATION_COOKIE, LOCALES } from "./constants";
 
 const PRODUCTION_MODE = process.env.NODE_ENV !== "development";
 
@@ -97,16 +100,16 @@ const mapErrorMultiple = (json?: ErrorResponseMultiple): string[] =>
 export const getErrorMessage = (
   res: Response,
   json: ErrorResponseBody,
-  data: Translation,
+  fallbackMessage: string,
 ): string =>
   (json == null
-    ? data.unknownError
+    ? fallbackMessage
     : isErrorSingle(json)
       ? json.message
       : isErrorMultiple(json)
         ? mapErrorMultiple(json).join("\n")
         : (json[`${res.status} ${STATUS_CODES[res.status] ?? res.statusText}`] ??
-          JSON.stringify(json))) || data.unknownError;
+          JSON.stringify(json))) || fallbackMessage;
 
 export const getUTCDateString = (...dateInit: ConstructorParameters<typeof Date>) =>
   new Date(...dateInit).toISOString().split("T")[0];
@@ -150,16 +153,6 @@ export function getCookieOptions({
     secure: PRODUCTION_MODE,
     ...options,
   } as const;
-}
-
-export function setLanguageCookie(langString: string) {
-  if (!(langString in Language)) {
-    throw new Error("Invalid language name.");
-  }
-  const language = Language[langString as keyof typeof Language];
-  Cookies.set("lang", langString, getCookieOptions());
-  console.debug("Set language cookie to", langString);
-  return language;
 }
 
 export function randomElement<T>(array: Array<T>): T {
@@ -252,3 +245,6 @@ export function getRequestIp(request: NextRequest, fallback = "<unknown-ip>") {
   }
   return unparsedIp.split(",")[0].trim();
 }
+
+export const isValidLocale = (locale?: string): locale is UserLocale =>
+  !!locale && LOCALES.includes(locale as UserLocale);

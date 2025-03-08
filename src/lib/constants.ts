@@ -1,3 +1,5 @@
+import type { UserLocale } from "./types";
+
 export const PAGINATED_REGEX_INVALID =
   /^(\/liveseries\/(?:search\/[^\/]+|most-popular))(?:\/[^\/]*[^\/\d].*)?$/;
 
@@ -43,3 +45,5 @@ export const EMAIL_VERIFICATION_COOKIE = "pending_email_address";
 export const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
 export const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY;
 export const IP_BLACKLIST = (process.env.IP_BLACKLIST || "").split(";");
+export const LOCALES = ["en", "pl"] as const;
+export const DEFAULT_LOCALE = "en";

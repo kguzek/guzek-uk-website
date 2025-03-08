@@ -6,14 +6,17 @@ import { getCookieOptions } from "@/lib/util";
 
 export const languageMiddleware: MiddlewareFactory = (next) =>
   async function (request) {
-    for (const language of Object.keys(Language)) {
-      const slug = `/${language.toLowerCase()}`;
-      if (request.nextUrl.pathname.startsWith(slug)) {
-        const path = request.nextUrl.pathname.replace(slug, "") || "/";
-        const url = new URL(path, request.url);
-        const response = NextResponse.redirect(url);
-        response.cookies.set("lang", language.toUpperCase(), getCookieOptions());
-        return response;
+    const firstSegment = request.nextUrl.pathname.split("/").at(1);
+    console.log({ firstSegment });
+    if (firstSegment != null) {
+      for (const language of Object.keys(Language)) {
+        if (firstSegment === language.toLowerCase()) {
+          const path = request.nextUrl.pathname.replace(`/${firstSegment}`, "") || "/";
+          const url = new URL(path, request.url);
+          const response = NextResponse.redirect(url);
+          response.cookies.set("lang", language.toUpperCase(), getCookieOptions());
+          return response;
+        }
       }
     }
     const response = await next(request);
