@@ -1,6 +1,6 @@
-import { getTranslations } from "@/lib/providers/translation-provider";
+import { getFormatter } from "next-intl/server";
 
 export async function NumericValue({ value }: { value: number | string }) {
-  const { data } = await getTranslations();
-  return <span className="font-serif">{data.format.number.format(+value)}</span>;
+  const formatter = await getFormatter();
+  return <span className="font-serif">{formatter.number(+value)}</span>;
 }

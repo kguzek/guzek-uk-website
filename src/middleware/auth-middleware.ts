@@ -17,16 +17,16 @@ const ROUTES_REQUIRING_ADMIN = ["/admin-logs"];
 
 export const authMiddleware: MiddlewareFactory = (next) =>
   async function (request) {
-    function redirect(to: string) {
+    function redirect(to: string, method: "redirect" | "rewrite" = "redirect") {
       console.debug(
-        "Redirecting",
+        method === "rewrite" ? "Proxying" : "Redirecting",
         user?.username ?? "<anonymous>",
         "from",
         request.url,
         "to",
         to,
       );
-      return NextResponse.redirect(new URL(to, request.url));
+      return NextResponse[method](new URL(to, request.url));
     }
 
     const response = await next(request);
@@ -56,7 +56,7 @@ export const authMiddleware: MiddlewareFactory = (next) =>
     // redirect to first page of liveseries/search/:query and liveseries/most-popular if the page is invalid or missing
     const match = PAGINATED_REGEX_INVALID.exec(request.nextUrl.pathname);
     if (match != null) {
-      return redirect(`${match[1]}/1`);
+      return redirect(`${match[1]}/1`, "rewrite");
     }
     const search = request.nextUrl.searchParams.get("search");
     if (request.nextUrl.pathname === "/liveseries/search" && search != null) {

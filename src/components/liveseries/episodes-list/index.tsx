@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
 import type { Episode as TvMazeEpisode, Show as TvMazeShow } from "tvmaze-wrapper-ts";
 import { ChevronRightIcon, ClockIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Tile } from "@/components/tile";
 import { getAuth } from "@/lib/providers/auth-provider";
-import { getTranslations } from "@/lib/providers/translation-provider";
 import { getEpisodeAirDate, hasEpisodeAired } from "@/lib/util";
 import { cn } from "@/lib/utils";
 
@@ -21,13 +21,13 @@ async function Episode({
   const { data, userLanguage } = await getTranslations();
   const { user, accessToken } = await getAuth();
 
-  const airDate = data.format.dateTime.format(getEpisodeAirDate(episode));
+  const airDate = t("format.dateTime.format")(getEpisodeAirDate(episode));
 
   return (
     <div className="bg-background box-border flex w-full flex-col items-center gap-2 rounded-lg p-2 px-4 sm:flex-row sm:justify-between">
       <div className="w-full self-start overflow-hidden">
         <div className="grid grid-cols-[auto_1fr] gap-2" title={episode.name}>
-          <p>{data.liveSeries.episodes.serialise(episode)}</p>
+          <p>{t("liveSeries.episodes.serialise", { episode })}</p>
           <div className="cutoff text-accent-soft w-full">{episode.name}</div>
         </div>
         <small className="text-background-soft">{airDate}</small>
@@ -37,17 +37,11 @@ async function Episode({
           <>
             <EpisodeDownloadIndicator
               user={user}
-              userLanguage={userLanguage}
               accessToken={accessToken}
               episode={episode}
               tvShow={tvShow}
             />
-            <EpisodeWatchedIndicator
-              userLanguage={userLanguage}
-              showId={tvShow.id}
-              episode={episode}
-              user={user}
-            />
+            <EpisodeWatchedIndicator showId={tvShow.id} episode={episode} user={user} />
           </>
         ) : (
           <ClockIcon className="cursor-not-allowed" />

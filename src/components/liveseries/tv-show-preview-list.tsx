@@ -1,10 +1,9 @@
 import type { Show as TvMazeShow } from "tvmaze-wrapper-ts";
+import { getTranslations } from "next-intl/server";
 
-import type { Language } from "@/lib/enums";
 import { NumericValue } from "@/components/numeric-value";
 import { Paginator } from "@/components/pagination/paginator";
 import { getAuth } from "@/lib/providers/auth-provider";
-import { TRANSLATIONS } from "@/lib/translations";
 
 import { Tile } from "../tile";
 import { TvShowPreview } from "./tv-show-preview";
@@ -13,16 +12,14 @@ export const RESULTS_PER_PAGE = 25;
 
 export async function TvShowPreviewList({
   tvShows,
-  userLanguage,
   page,
   total,
 }: {
   tvShows: TvMazeShow[];
-  userLanguage: Language;
   page: number;
   total: number;
 }) {
-  const data = TRANSLATIONS[userLanguage];
+  const t = await getTranslations();
 
   const startIdx = 1 + (page - 1) * RESULTS_PER_PAGE;
   const endIdx = Math.min(total, startIdx + RESULTS_PER_PAGE - 1);
@@ -39,7 +36,7 @@ export async function TvShowPreviewList({
       <div className="grid place-items-center gap-4">
         {paginator}
         <Tile glow>
-          <p>{data.liveSeries.search.noResults}</p>
+          <p>{t("liveSeries.search.noResults")}</p>
         </Tile>
       </div>
     );
@@ -48,8 +45,8 @@ export async function TvShowPreviewList({
   return (
     <div className="flex flex-col items-center">
       <small className="self-start">
-        {data.liveSeries.tvShowList.showing} <NumericValue value={startIdx} />-
-        <NumericValue value={endIdx} /> {data.liveSeries.tvShowList.of}{" "}
+        {t("liveSeries.tvShowList.showing")} <NumericValue value={startIdx} />-
+        <NumericValue value={endIdx} /> {t("liveSeries.tvShowList.of")}{" "}
         <NumericValue value={total} />
       </small>
       {paginator}
@@ -59,7 +56,6 @@ export async function TvShowPreviewList({
             key={`tv-show-${tvShow.id}-${idx}`}
             idx={idx % 8}
             tvShow={tvShow}
-            userLanguage={userLanguage}
             user={user}
           />
         ))}

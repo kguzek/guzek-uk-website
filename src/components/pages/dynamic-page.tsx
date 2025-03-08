@@ -4,22 +4,23 @@ import Image from "next/image";
 import { getPayload } from "payload";
 import config from "@payload-config";
 import { RichText } from "@payloadcms/richtext-lexical/react";
+import { getLocale } from "next-intl/server";
 
+import type { UserLocale } from "@/lib/types";
 import type { Media } from "@/payload-types";
 import { ErrorComponent } from "@/components/error/component";
 import { ErrorCode } from "@/lib/enums";
-import { getTranslations } from "@/lib/providers/translation-provider";
 
 import { Tile } from "../tile";
 
 export async function getPageBySlug(slug: string) {
-  const { userLocale } = await getTranslations();
+  const locale = await getLocale();
   const payload = await getPayload({ config });
   const result = await payload.find({
     collection: "pages",
     where: { slug: { equals: slug } },
     limit: 1,
-    locale: userLocale,
+    locale: locale as UserLocale,
   });
   if (result.totalDocs === 0) {
     return null;

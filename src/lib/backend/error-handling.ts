@@ -1,6 +1,8 @@
+import { getTranslations } from "next-intl/server";
+
 import type { ErrorResponseBodyPayloadCms } from "../types";
 import { parseResponseBody } from ".";
-import { TRANSLATIONS } from "../translations";
+import { DEFAULT_LOCALE } from "../constants";
 import { getErrorMessage } from "../util";
 
 type ErrorType = "network" | "http" | "body" | "json";
@@ -24,9 +26,13 @@ export class HttpError extends RequestError {
   response: Response;
   error: ErrorResponseBodyPayloadCms;
 
-  constructor(response: Response, error: ErrorResponseBodyPayloadCms) {
+  constructor(
+    response: Response,
+    error: ErrorResponseBodyPayloadCms,
+    fallbackMessage: string,
+  ) {
     // TODO: PL translation support
-    super(getErrorMessage(response, error, TRANSLATIONS.EN), "http");
+    super(getErrorMessage(response, error, fallbackMessage), "http");
     this.error = error;
     this.response = response;
   }
@@ -99,8 +105,9 @@ export async function getResponse<T>(url: string, options: RequestInit) {
   }
 
   // console.debug("...", res.status, res.statusText);
+  const t = await getTranslations({ locale: DEFAULT_LOCALE });
   if (!res.ok) {
-    throw new HttpError(res, data as ErrorResponseBodyPayloadCms);
+    throw new HttpError(res, data as ErrorResponseBodyPayloadCms, t("unknownError"));
   }
   return { res, data };
 }

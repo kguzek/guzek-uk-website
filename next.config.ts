@@ -1,9 +1,8 @@
 import type { NextConfig } from "next";
 import { withPayload } from "@payloadcms/next/withPayload";
+import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
-  // output: "export", // Outputs a Single-Page Application (SPA).
-  // distDir: "./build", // Changes the build output directory to `./build`.
   images: {
     remotePatterns: [
       {
@@ -29,4 +28,5 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withPayload(nextConfig);
+const withNextIntl = createNextIntlPlugin();
+export default withPayload(withNextIntl(nextConfig));

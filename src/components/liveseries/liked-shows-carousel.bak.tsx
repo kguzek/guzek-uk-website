@@ -3,7 +3,6 @@
 import type { Show as TvMazeShow } from "tvmaze-wrapper-ts";
 import { useRef } from "react";
 
-import type { Language } from "@/lib/enums";
 import type { User } from "@/payload-types";
 import { CarouselArrow, CarouselIndicator } from "@/components/carousel";
 import { TvShowPreview } from "@/components/liveseries/tv-show-preview";
@@ -16,11 +15,9 @@ import { scrollToElement } from "@/lib/util";
 
 export function LikedShowsCarousel({
   likedShows,
-  userLanguage,
   user,
 }: {
   likedShows: { [id: number]: TvMazeShow };
-  userLanguage: Language;
   user: User | null;
 }) {
   const carouselRef = useRef<HTMLUListElement>(null);
@@ -84,12 +81,7 @@ export function LikedShowsCarousel({
       >
         {getUserLikedShows(user).map((showId, idx) => (
           <li key={`home-preview ${showId} ${idx}`}>
-            <TvShowPreview
-              idx={idx}
-              tvShow={likedShows[showId]}
-              userLanguage={userLanguage}
-              user={user}
-            />
+            <TvShowPreview idx={idx} tvShow={likedShows[showId]} user={user} />
           </li>
         ))}
       </ul>

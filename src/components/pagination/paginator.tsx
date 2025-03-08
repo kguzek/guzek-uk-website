@@ -1,4 +1,5 @@
-import { getTranslations } from "@/lib/providers/translation-provider";
+import { getTranslations } from "next-intl/server";
+
 import {
   Pagination,
   PaginationContent,
@@ -16,7 +17,7 @@ export async function Paginator({
   currentPage: number;
   totalPages: number;
 }) {
-  const { data } = await getTranslations();
+  const t = await getTranslations();
   const pages: (undefined | number)[] = [1];
 
   function addPage(page: number) {
@@ -62,7 +63,7 @@ export async function Paginator({
                 <PaginationEllipsis />
               ) : (
                 <PaginationLink href={getHref(page)} isActive={page === currentPage}>
-                  {data.format.number.format(page)}
+                  {t("format.number.format", { page })}
                 </PaginationLink>
               )}
             </PaginationItem>
@@ -73,7 +74,7 @@ export async function Paginator({
             disabled={currentPage === 1}
             href={getHref(currentPage - 1)}
           >
-            {data.liveSeries.tvShowList.previous}
+            {t("liveSeries.tvShowList.previous")}
           </PaginationPrevious>
         </PaginationItem>
         <PaginationItem className="order-3">
@@ -81,7 +82,7 @@ export async function Paginator({
             disabled={currentPage === totalPages}
             href={getHref(currentPage + 1)}
           >
-            {data.liveSeries.tvShowList.next}
+            {t("liveSeries.tvShowList.next")}
           </PaginationNext>
         </PaginationItem>
       </PaginationContent>

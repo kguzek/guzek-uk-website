@@ -10,8 +10,8 @@ import {
   useState,
   useTransition,
 } from "react";
+import { useLocale, useTranslations } from "next-intl";
 
-import type { Language } from "@/lib/enums";
 import type { DownloadedEpisode, Numeric } from "@/lib/types";
 import type { EpisodeArray, User, WatchedEpisodes } from "@/payload-types";
 import { showErrorToast } from "@/components/error/toast";
@@ -26,8 +26,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { showSuccessToast } from "@/components/ui/sonner";
+import { getFormatters } from "@/i18n/request";
 import { DownloadStatus } from "@/lib/enums";
-import { TRANSLATIONS } from "@/lib/translations";
 import { compareEpisodes, ensureUnique } from "@/lib/util";
 
 import { tryPatchUser } from "../backend/liveseries";
@@ -81,12 +81,10 @@ function getWatchedEpisodes(
 export function LiveSeriesProvider({
   children,
   user,
-  userLanguage,
   accessToken,
 }: {
   children: ReactNode;
   user: User | null;
-  userLanguage: Language;
   accessToken: string | null;
 }) {
   const [isPending, startTransition] = useTransition();
@@ -99,7 +97,9 @@ export function LiveSeriesProvider({
   );
   const [isDialogRetryOpen, setIsDialogRetryOpen] = useState(false);
   const pathname = usePathname();
-  const data = TRANSLATIONS[userLanguage];
+  const t = useTranslations();
+  const locale = useLocale();
+  const formatters = getFormatters(locale);
 
   useEffect(() => {
     if (!user) return;
@@ -130,7 +130,7 @@ export function LiveSeriesProvider({
       );
     } catch (error) {
       console.error("Websocket instantiation error:", error);
-      showErrorToast(data.liveSeries.websockets.connectionFailed);
+      showErrorToast(t("liveSeries.websockets.connectionFailed"));
       return;
     }
     setExistingSocket(socket);
@@ -142,7 +142,7 @@ export function LiveSeriesProvider({
         message,
       );
       if (socketFailed !== undefined) {
-        showErrorToast(data.liveSeries.websockets.error);
+        showErrorToast(t("liveSeries.websockets.error"));
       }
       socketFailed = true;
     };
@@ -166,7 +166,7 @@ export function LiveSeriesProvider({
       }
       if (evt.wasClean) {
         // The server URL is probably misconfigured
-        showErrorToast(data.liveSeries.websockets.connectionFailed);
+        showErrorToast(t("liveSeries.websockets.connectionFailed"));
         return;
       }
       if (socketFailed) return;
@@ -187,7 +187,7 @@ export function LiveSeriesProvider({
             val.status === DownloadStatus.COMPLETE
           ) {
             const episodeObject = { number: val.episode, season: val.season };
-            completedDownloadName = `${val.showName} ${data.liveSeries.episodes.serialise(episodeObject)}`;
+            completedDownloadName = `${val.showName} ${formatters.serialiseEpisode(episodeObject)}`;
           }
           return val;
         });
@@ -209,7 +209,7 @@ export function LiveSeriesProvider({
       });
       if (completedDownloadName)
         showSuccessToast(
-          data.liveSeries.episodes.downloadComplete(completedDownloadName),
+          t("liveSeries.episodes.downloadComplete", { completedDownloadName }),
         );
     };
   }
@@ -226,7 +226,7 @@ export function LiveSeriesProvider({
       const args = { showId, season, watchedInSeason };
       setWatchedEpisodesOptimistic(args);
       const updatedWatchedEpisodes = getWatchedEpisodes(watchedEpisodes, args);
-      const success = await tryPatchUser(user, userLanguage, {
+      const success = await tryPatchUser(user, t("networkError"), {
         watchedEpisodes: updatedWatchedEpisodes,
       });
       if (success) {
@@ -247,15 +247,15 @@ export function LiveSeriesProvider({
       <AlertDialog open={isDialogRetryOpen} onOpenChange={setIsDialogRetryOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{data.liveSeries.websockets.askReconnect}</AlertDialogTitle>
+            <AlertDialogTitle>{t("liveSeries.websockets.askReconnect")}</AlertDialogTitle>
             <AlertDialogDescription className="sr-only">
-              {data.liveSeries.websockets.askReconnect}
+              {t("liveSeries.websockets.askReconnect")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{data.modal.no}</AlertDialogCancel>
+            <AlertDialogCancel>{t("modal.no")}</AlertDialogCancel>
             <AlertDialogAction onClick={connectToWebsocket}>
-              {data.modal.yes}
+              {t("modal.yes")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
