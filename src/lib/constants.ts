@@ -1,3 +1,5 @@
+import type { UserLocale } from "./types";
+
 export const PAGINATED_REGEX_INVALID =
   /^(\/liveseries\/(?:search\/[^\/]+|most-popular))(?:\/[^\/]*[^\/\d].*)?$/;
 
@@ -37,3 +39,6 @@ export const CAROUSEL_INDICATOR_FULL_WIDTH = 140;
 export const OG_IMAGE_METADATA = { width: 1200, height: 630, type: "image/png" };
 export const NAV_BAR_HEIGHT_DESKTOP = 100;
 export const NAV_BAR_HEIGHT_MOBILE = 80;
+
+export const LOCALES = ["en", "pl"] as const;
+export const DEFAULT_LOCALE = "en";

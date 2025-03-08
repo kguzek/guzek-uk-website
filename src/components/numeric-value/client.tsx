@@ -1,13 +1,6 @@
-import type { Language } from "@/lib/enums";
-import { TRANSLATIONS } from "@/lib/translations";
+import { useFormatter } from "next-intl";
 
-export function NumericValue({
-  value,
-  userLanguage,
-}: {
-  value: number | string;
-  userLanguage: Language;
-}) {
-  const data = TRANSLATIONS[userLanguage];
-  return <span className="font-serif">{data.format.number.format(+value)}</span>;
+export function NumericValue({ value }: { value: number | string }) {
+  const format = useFormatter();
+  return <span className="font-serif">{format.number(+value)}</span>;
 }

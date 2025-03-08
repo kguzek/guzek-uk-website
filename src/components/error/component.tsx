@@ -1,18 +1,13 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
-import type { Translation } from "@/lib/translations";
 import { ErrorCode } from "@/lib/enums";
-import { getTranslations } from "@/lib/providers/translation-provider";
-import { TRANSLATIONS } from "@/lib/translations";
 import { PAGE_NAME } from "@/lib/util";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 
 import { Tile } from "../tile";
-
-const serialiseError = (error: ErrorCode, data: Translation = TRANSLATIONS.EN) =>
-  `${error} ${data.error[error].title}`;
 
 export async function ErrorComponent({
   errorCode,
@@ -27,7 +22,10 @@ export async function ErrorComponent({
       errorResult: { ok: boolean; error: any; hasBody: boolean; data: any };
     }
 ) & { errorMessage?: ReactNode; path?: string }) {
-  const { data } = await getTranslations();
+  const t = await getTranslations();
+
+  const serialiseError = (error: ErrorCode) => `${error} ${t(`error.${error}.title`)}`;
+
   if (!errorCode) {
     if (!errorResult)
       throw new Error("ErrorComponent called with no errorCode or errorResult");
@@ -40,7 +38,7 @@ export async function ErrorComponent({
   return (
     <div className="grid justify-center">
       <h3 className="my-5 flex items-center gap-2 text-3xl font-bold">
-        {data.error[errorCode].title}
+        {t(`error.${errorCode}.title`)}
         {path ? (
           <Badge variant="outline" className="mx-1 py-1 font-mono">
             {decodeURIComponent(path)}
@@ -50,7 +48,7 @@ export async function ErrorComponent({
       <Tile glow>
         <div className="sm:min-w-sm">
           <h1 className="my-2 text-3xl font-extrabold">
-            {errorCode} {data.error[errorCode].title}
+            {errorCode} {t(`error.${errorCode}.title`)}
           </h1>
           {errorMessage ? (
             typeof errorMessage === "string" ? (
@@ -59,12 +57,12 @@ export async function ErrorComponent({
               errorMessage
             )
           ) : (
-            <p>{data.error[errorCode].body}.</p>
+            <p>{t(`error.${errorCode}.body`)}.</p>
           )}
           <Button className="mt-10 w-full" asChild>
             {errorCode === ErrorCode.Unauthorized ? (
               <Link href="/login" className="btn">
-                {data.profile.formDetails.login}
+                {t("profile.formDetails.login")}
               </Link>
             ) : (
               <Link href="/" className="btn">

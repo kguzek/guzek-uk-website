@@ -2,34 +2,31 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
-import type { Language } from "@/lib/enums";
 import type { User } from "@/payload-types";
-import { TRANSLATIONS } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 import { Button } from "@/ui/button";
 
 export function UserWidget({
   user,
-  userLanguage,
   closeMenu,
 }: {
   user: User | null;
-  userLanguage: Language;
   closeMenu: () => void;
 }) {
   const pathname = usePathname();
-  const data = TRANSLATIONS[userLanguage];
+  const t = useTranslations();
   const isActive = pathname != null && ["/profile", "/login"].includes(pathname);
   return (
     <div className="group text-primary grid h-full max-w-[90%] place-items-center font-light sm:max-w-full">
       {user == null ? (
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button asChild variant="glow" className="min-w-28" onClick={closeMenu}>
-            <Link href="/signup">{data.profile.formDetails.signup}</Link>
+            <Link href="/signup">{t("profile.formDetails.signup")}</Link>
           </Button>
           <Button asChild className="min-w-28" onClick={closeMenu}>
-            <Link href="/login">{data.loginShort}</Link>
+            <Link href="/login">{t("loginShort")}</Link>
           </Button>
         </div>
       ) : (

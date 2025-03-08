@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { useRef } from "react";
 import { GlowCapture } from "@codaworks/react-glow";
 
-import type { Language } from "@/lib/enums";
 import type { User } from "@/payload-types";
 import { useScroll } from "@/lib/hooks/scroll";
 import { PAGE_NAME } from "@/lib/util";
@@ -46,11 +45,9 @@ function NavBarItem({
 
 export function NavigationBar({
   user,
-  userLanguage,
   menuItems,
 }: {
   user: User | null;
-  userLanguage: Language;
   menuItems: MenuItem[];
 }) {
   const { scrollY } = useScroll();
@@ -63,9 +60,7 @@ export function NavigationBar({
     hamburgerRef.current.checked = false;
   }
 
-  const userWidget = (
-    <UserWidget user={user} userLanguage={userLanguage} closeMenu={closeMenu} />
-  );
+  const userWidget = <UserWidget user={user} closeMenu={closeMenu} />;
 
   const Comp = scrollY > 0 ? GlowCapture : "div";
 
@@ -126,7 +121,7 @@ export function NavigationBar({
               <NavBarItem onClick={closeMenu} item={item} />
             </li>
           ))}
-          <LanguageSelector userLanguage={userLanguage} />
+          <LanguageSelector />
         </ul>
         <div className="mx-3 hidden sm:block">{userWidget}</div>
       </Comp>

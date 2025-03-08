@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 import type { CustomMiddleware, MiddlewareFactory } from "@/lib/types";
 import { authMiddleware } from "@/middleware/auth-middleware";
 import { headerMiddleware } from "@/middleware/header-middleware";
-import { languageMiddleware } from "@/middleware/language-middleware";
 import { redirectMiddleware } from "@/middleware/redirect-middleware";
+
+import { i18nMiddleware } from "./middleware/i18n-middleware";
 
 function stackMiddlewares(...factories: MiddlewareFactory[]): CustomMiddleware {
   const current = factories.shift();
@@ -17,7 +18,7 @@ export default stackMiddlewares(
   headerMiddleware,
   redirectMiddleware,
   authMiddleware,
-  languageMiddleware,
+  i18nMiddleware, // This needs to be the last middleware because it doesn't call next(request)
 );
 
 export const config = {

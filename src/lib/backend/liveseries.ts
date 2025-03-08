@@ -1,9 +1,7 @@
 import type { EpisodeArray, User } from "@/payload-types";
 import { showFetchErrorToast } from "@/components/error/toast";
 
-import type { Language } from "../enums";
 import { fetchFromApi } from ".";
-import { TRANSLATIONS } from "../translations";
 import { addOrRemove } from "../util";
 
 // export type UpdatedWatchedEpisodes =
@@ -18,7 +16,7 @@ import { addOrRemove } from "../util";
 
 export async function tryPatchUser(
   user: User,
-  userLanguage: Language,
+  networkErrorMessage: string,
   body: Partial<User>,
 ) {
   let res;
@@ -28,7 +26,7 @@ export async function tryPatchUser(
       body,
     });
   } catch (error) {
-    showFetchErrorToast(TRANSLATIONS[userLanguage], error);
+    showFetchErrorToast(networkErrorMessage, error);
     return false;
   }
   console.debug("Updated user details:", res.data);
@@ -37,11 +35,11 @@ export async function tryPatchUser(
 
 export const updateUserShowLike = (
   user: User,
-  userLanguage: Language,
+  networkErrorMessage: string,
   showId: number,
   isLiked: boolean,
 ) =>
-  tryPatchUser(user, userLanguage, {
+  tryPatchUser(user, networkErrorMessage, {
     userShows: {
       ...user.userShows,
       liked: addOrRemove(user.userShows?.liked, showId, isLiked, true),
@@ -50,11 +48,11 @@ export const updateUserShowLike = (
 
 export const updateUserShowSubscription = (
   user: User,
-  userLanguage: Language,
+  networkErrorMessage: string,
   showId: number,
   isSubscribed: boolean,
 ) =>
-  tryPatchUser(user, userLanguage, {
+  tryPatchUser(user, networkErrorMessage, {
     userShows: {
       ...user.userShows,
       subscribed: addOrRemove(user.userShows?.subscribed, showId, isSubscribed, true),

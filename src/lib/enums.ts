@@ -6,11 +6,6 @@ export enum ErrorCode {
   ServerError = 500,
 }
 
-export enum Language {
-  EN = "EN",
-  PL = "PL",
-}
-
 export const DownloadStatus = {
   STOPPED: 1,
   PENDING: 2,

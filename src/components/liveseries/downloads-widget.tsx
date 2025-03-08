@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ChevronUpIcon, Trash2Icon } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 
-import type { Language } from "@/lib/enums";
 import type { DownloadedEpisode } from "@/lib/types";
 import type { User } from "@/payload-types";
+import { getFormatters } from "@/i18n/request";
 import { fetchFromApi } from "@/lib/backend";
 import { useLiveSeriesContext } from "@/lib/context/liveseries-context";
 import { DownloadStatus } from "@/lib/enums";
-import { TRANSLATIONS } from "@/lib/translations";
 import { bytesToReadable, getDuration } from "@/lib/util";
 import { cn } from "@/lib/utils";
 import {
@@ -30,11 +30,9 @@ import { Tile } from "../tile";
 
 export function DownloadsWidget({
   user,
-  userLanguage,
   accessToken,
 }: {
   user: User;
-  userLanguage: Language;
   accessToken: string;
 }) {
   const { downloadedEpisodes } = useLiveSeriesContext();
@@ -45,21 +43,23 @@ export function DownloadsWidget({
   const [collapsedAnimated, setCollapsedAnimated] = useState(collapsed);
   const [isDeleteEpisodeDialogOpen, setIsDeleteEpisodeDialogOpen] = useState(false);
   const [episodeToDelete, setEpisodeToDelete] = useState<DownloadedEpisode | null>(null);
-  const data = TRANSLATIONS[userLanguage];
+  const t = useTranslations();
+  const locale = useLocale();
+  const formatters = getFormatters(locale);
 
   function serialise(episode: DownloadedEpisode) {
     const episodeObject = { number: episode.episode, season: episode.season };
-    const episodeSerialised = data.liveSeries.episodes.serialise(episodeObject);
+    const episodeSerialised = formatters.serialiseEpisode(episodeObject);
     return `${episode.showName} ${episodeSerialised}`;
   }
 
   function isUserServerUrlValid(user: User): user is User & { serverUrl: string } {
     if (user == null || accessToken == null) {
-      showErrorToast(data.liveSeries.home.login);
+      showErrorToast(t("liveSeries.home.login"));
       return false;
     }
     if (user.serverUrl == null || user.serverUrl === "") {
-      showInfoToast(data.liveSeries.setup);
+      showInfoToast(t("liveSeries.setup"));
       return false;
     }
     return true;
@@ -82,10 +82,10 @@ export function DownloadsWidget({
         { method: "DELETE", accessToken, urlBase: user.serverUrl },
       );
     } catch (error) {
-      showFetchErrorToast(data, error);
+      showFetchErrorToast(t("networkError"), error);
       return;
     }
-    showSuccessToast(data.liveSeries.episodes.deleted(serialise(episode)));
+    showSuccessToast(t("liveSeries.episodes.deleted", { episode: serialise(episode) }));
   }
 
   useEffect(() => {
@@ -102,8 +102,8 @@ export function DownloadsWidget({
   }
 
   function getDeleteEpisodeConfirmationMessage(episode: DownloadedEpisode) {
-    const formattedEpisode = data.format.quote(serialise(episode));
-    return data.liveSeries.episodes.confirmDelete(formattedEpisode);
+    const formattedEpisode = formatters.quote(serialise(episode));
+    return t("liveSeries.episodes.confirmDelete", { formattedEpisode });
   }
 
   if (downloadedEpisodes.length === 0) return null;
@@ -131,11 +131,11 @@ export function DownloadsWidget({
               {episodeToDelete != null &&
                 getDeleteEpisodeConfirmationMessage(episodeToDelete)}
             </AlertDialogTitle>
-            <AlertDialogDescription>{data.modal.warnIrreversible}</AlertDialogDescription>
+            <AlertDialogDescription>{t("modal.warnIrreversible")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel variant="outline" onClick={closeDeleteEpisodeDialog}>
-              {data.modal.no}
+              {t("modal.no")}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
@@ -145,7 +145,7 @@ export function DownloadsWidget({
               }}
               variant="destructive"
             >
-              {data.modal.yes}
+              {t("modal.yes")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -189,7 +189,7 @@ export function DownloadsWidget({
                   {episode.status === DownloadStatus.VERIFYING && (
                     <span>
                       {" " +
-                        data.liveSeries.episodes.downloadStatus[DownloadStatus.VERIFYING]}
+                        t("liveSeries.episodes.downloadStatus")[DownloadStatus.VERIFYING]}
                       ...
                     </span>
                   )}

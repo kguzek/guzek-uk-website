@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { Glow } from "@codaworks/react-glow";
 import { FlaskConical, Info } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { Logo } from "@/components/image/logo";
 import { GITHUB_URL } from "@/lib/constants";
-import { getTranslations } from "@/lib/providers/translation-provider";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -27,7 +27,7 @@ const BETA_INFO = {
 };
 
 export async function Footer() {
-  const { data } = await getTranslations();
+  const t = await getTranslations();
   const version = process.env.npm_package_version;
   const versionSpan = version ? <span>v{version}</span> : null;
   return (
@@ -39,7 +39,7 @@ export async function Footer() {
         <div className="flex items-center gap-2">
           <Logo size={20} />
           <Link className="hover-underline" href={GITHUB_URL} target="_blank">
-            {data.footer("2021–2025")}
+            2021–2025 &copy; Konrad Guzek
           </Link>
         </div>
         <div className="flex items-center gap-3">
@@ -79,9 +79,9 @@ export async function Footer() {
                 <AlertDialogTitle>LiveSeries &times; TVmaze</AlertDialogTitle>
                 <AlertDialogDescription asChild>
                   <div className="space-y-2">
-                    <p>{data.liveSeries.tvMazeCredits}</p>
+                    <p>{t("liveSeries.tvMazeCredits")}</p>
                     <p>
-                      {data.liveSeries.tvMazeCreditsCta}{" "}
+                      {t("liveSeries.tvMazeCreditsCta")}{" "}
                       <Link className="text-accent hover-underline" href={TV_MAZE_URL}>
                         {TV_MAZE_URL}
                       </Link>

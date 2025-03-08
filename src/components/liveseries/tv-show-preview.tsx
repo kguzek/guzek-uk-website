@@ -6,12 +6,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useOptimistic, useState, useTransition } from "react";
 import { HeartIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
-import type { Language } from "@/lib/enums";
 import type { User } from "@/payload-types";
 import { fetchFromApi } from "@/lib/backend";
 import { getUserLikedShows } from "@/lib/backend/liveseries";
-import { TRANSLATIONS } from "@/lib/translations";
 import { addOrRemove } from "@/lib/util";
 import { cn } from "@/lib/utils";
 
@@ -22,23 +21,21 @@ import { TvShowPreviewSkeleton } from "./tv-show-preview-skeleton";
 export function TvShowPreview({
   idx,
   tvShow,
-  userLanguage,
   user,
 }: {
   idx: number;
   tvShow: TvMazeShow;
-  userLanguage: Language;
   user: User | null;
 }) {
   const [isPending, startTransition] = useTransition();
   const [likedShowIds, setLikedShowIds] = useState(getUserLikedShows(user));
   const [likedShowIdsOptimistic, setLikedShowIdsOptimistic] = useOptimistic(likedShowIds);
   const isLikedOptimistic = likedShowIdsOptimistic.includes(tvShow.id);
-  const data = TRANSLATIONS[userLanguage];
+  const t = useTranslations();
 
   function handleHeart(event_: MouseEvent) {
     if (tvShow == null || user == null) {
-      showErrorToast(data.liveSeries.home.login);
+      showErrorToast(t("liveSeries.home.login"));
       return;
     }
     event_.stopPropagation();
@@ -59,7 +56,7 @@ export function TvShowPreview({
           },
         });
       } catch (error) {
-        showFetchErrorToast(data, error);
+        showFetchErrorToast(t("networkError"), error);
         return;
       }
       setLikedShowIds(newLikedShowIds);
@@ -93,7 +90,7 @@ export function TvShowPreview({
             },
           )}
           disabled={isPending}
-          title={data.liveSeries.tvShow[isLikedOptimistic ? "unlike" : "like"]}
+          title={t(`liveSeries.tvShow.${isLikedOptimistic ? "unlike" : "like"}`)}
         >
           <HeartIcon fill={isLikedOptimistic ? "currentColor" : "none"} />
         </button>
