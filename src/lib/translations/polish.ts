@@ -145,7 +145,7 @@ export const POLISH: Translation = {
   },
   liveSeries: {
     title: "LiveSeries",
-    seoTitle: "LiveSeries – Śledzenie Seriali i Serwis Streamowania Torrentów",
+    seoTitle: "LiveSeries – Śledzenie i Streamowanie Seriali",
     description:
       "Serwis do śledzenia seriali i streamowania torrentów. Oglądaj odcinki seriali w czasie rzeczywistym, sprawdzaj oceny i więcej. Znajdź swoje ulubione seriale i bądź na bieżąco za pomocą usługi automatycznego pobierania odcinków.",
     whatsThis: "Co to?",

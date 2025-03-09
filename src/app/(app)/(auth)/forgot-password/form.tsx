@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 import type { ForgotPasswordSchema } from "@/lib/backend/schemas";
 import type { Language } from "@/lib/enums";
-import type { User } from "@/payload-types";
+import { forgotPassword } from "@/app/actions";
 import { fetchErrorToast } from "@/components/error/toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +21,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { fetchFromApi } from "@/lib/backend";
 import { forgotPasswordSchema } from "@/lib/backend/schemas";
 import { TRANSLATIONS } from "@/lib/translations";
 import { getEmailClientInfo } from "@/lib/util";
@@ -40,20 +39,16 @@ export function ForgotPasswordForm({ userLanguage }: { userLanguage: Language })
   const { mutateAsync, isPending, isSuccess } = useMutation({ mutationFn: sendEmail });
 
   async function sendEmail(values: ForgotPasswordSchema) {
-    const result = await fetchFromApi<{ message: string; token: string; user: User }>(
-      "users/forgot-password",
-      {
-        method: "POST",
-        body: values,
-      },
-    );
-    console.info("Reset password:", result.data.message);
+    const success = await forgotPassword(values);
+    if (!success) {
+      throw new Error(`${data.unknownError} ERR_FP_SUC_FLS`);
+    }
 
     setTimeout(() => {
       setPasswordResetPending(false);
     }, 10000);
 
-    return result;
+    return success;
   }
 
   const email = useWatch({

@@ -24,6 +24,7 @@ export const signUpSchema = z
     email: z.string().email(),
     password: z.string().min(8),
     password2: z.string().min(8),
+    token: z.string().nonempty(),
   })
   .superRefine(passwordsMatch);
 

@@ -50,8 +50,7 @@ export const Users: CollectionConfig = {
   },
   auth: {
     verify: {
-      generateEmailHTML: ({ req, token, user }) =>
-        fillHtmlTemplate("verify-email", { req, token, user }),
+      generateEmailHTML: (args) => fillHtmlTemplate("verify-email", args),
     },
     forgotPassword: {
       generateEmailHTML: (args) => fillHtmlTemplate("reset-password", args),

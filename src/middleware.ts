@@ -6,6 +6,9 @@ import { headerMiddleware } from "@/middleware/header-middleware";
 import { languageMiddleware } from "@/middleware/language-middleware";
 import { redirectMiddleware } from "@/middleware/redirect-middleware";
 
+import { rateLimitMiddleware } from "./middleware/rate-limit-middleware";
+import { verifyEmailMiddlware } from "./middleware/verify-email-middleware";
+
 function stackMiddlewares(...factories: MiddlewareFactory[]): CustomMiddleware {
   const current = factories.shift();
   if (!current) return () => NextResponse.next();
@@ -14,8 +17,16 @@ function stackMiddlewares(...factories: MiddlewareFactory[]): CustomMiddleware {
 }
 
 export default stackMiddlewares(
+  rateLimitMiddleware(),
+  rateLimitMiddleware({
+    // Matches all server action calls (i.e. user creation, password reset)
+    matcher: (request) => request.method.toUpperCase() === "POST",
+    maxRequests: 10,
+    windowMs: 30 * 60 * 1000,
+  }),
   headerMiddleware,
   redirectMiddleware,
+  verifyEmailMiddlware,
   authMiddleware,
   languageMiddleware,
 );
@@ -32,4 +43,5 @@ export const config = {
      */
     "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|[^/]+.png).*)",
   ],
+  runtime: "nodejs",
 };

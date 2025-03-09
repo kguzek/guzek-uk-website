@@ -144,7 +144,7 @@ export const ENGLISH: Translation = {
   },
   liveSeries: {
     title: "LiveSeries",
-    seoTitle: "LiveSeries – TV Show Tracker & Torrent Streaming Service",
+    seoTitle: "LiveSeries – TV Show Tracking & Streaming",
     description:
       "A TV show tracking & torrent streaming service. Real-time TV show episodes, ratings, and more. Find your favourite TV shows and stay up-to-date by subscribing to automatic episode downloads.",
     whatsThis: "What's this?",

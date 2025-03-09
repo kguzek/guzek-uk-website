@@ -1,3 +1,4 @@
+import type { NextRequest } from "next/server";
 import type { File, Payload } from "payload";
 import { NextResponse } from "next/server";
 import { getPayload } from "payload";
@@ -11,13 +12,14 @@ import {
   OG_IMAGE_METADATA,
   PRODUCTION_URL,
 } from "@/lib/constants";
-import { rateLimitMiddleware } from "@/middleware/ratelimit-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 
 export const revalidate = 86400;
 
 const PUPPETEER_EXECUTABLE_PATH = process.env.PUPPETEER_EXECUTABLE_PATH;
 const OG_IMAGE_VALIDITY_PERIOD = revalidate * 1000;
 const PUPPETEER_ARGS = process.env.PUPPETEER_ARGS || "";
+const API_SLUG_PATTERN = /^\/api\/og-image((?:\/[.\w-]+)*)/;
 
 const imageGenerationPromises = new Map<string, Promise<NextResponse>>();
 
@@ -63,6 +65,45 @@ const slugToFilename = (slug: string) =>
 
 const isOgImageStale = (updatedAt: string) =>
   Date.now() - new Date(updatedAt).getTime() > OG_IMAGE_VALIDITY_PERIOD;
+
+async function getOgImageStatus(request: NextRequest, slugOverride?: string) {
+  const computedSlug = API_SLUG_PATTERN.exec(request.nextUrl.pathname)?.at(1) || "/";
+  if (slugOverride != null && computedSlug !== slugOverride) {
+    console.warn(
+      `Computed slug '${computedSlug}' does not match override '${slugOverride}'`,
+    );
+  }
+  const slug = slugOverride ?? computedSlug;
+  const previousPromise = imageGenerationPromises.get(slug);
+  if (previousPromise != null) {
+    return {
+      status: "pending",
+      previousPromise,
+    } as const;
+  }
+  const payload = await getPayload({ config });
+  const docs = await payload.find({
+    collection: "og-images",
+    where: { slug: { equals: slug } },
+    limit: 1,
+  });
+  const doc = docs.docs.at(0);
+  if (doc == null) {
+    return { status: "not-found" } as const;
+  }
+  const image =
+    typeof doc.image === "number"
+      ? await payload.findByID({ collection: "media", id: doc.image })
+      : doc.image;
+  if (!image.url) {
+    return { status: "image-invalid" } as const;
+  }
+  const redirectUrl = new URL(image.url, PRODUCTION_URL);
+  if (isOgImageStale(image.updatedAt)) {
+    return { status: "image-stale", redirectUrl, image } as const;
+  }
+  return { status: "image-valid", redirectUrl } as const;
+}
 
 async function _tryGenerateScreenshot(
   path: string,
@@ -142,34 +183,33 @@ const routeHandler: CustomMiddleware<[{ params: Promise<{ slug: string[] }> }]> 
   const payload = await getPayload({ config });
   const segments = args?.params ? (await args.params).slug : [];
   const slug = Array.isArray(segments) ? `/${segments.join("/")}` : "/";
-  const previousPromise = imageGenerationPromises.get(slug);
-  if (previousPromise != null) {
-    console.info("Returning existing promise for", slug);
-    return await previousPromise;
+  const result = await getOgImageStatus(request, slug);
+  switch (result.status) {
+    case "pending":
+      console.info("Returning existing promise for", slug);
+      return await result.previousPromise;
+    case "not-found":
+      return tryGenerateScreenshot(slug, payload);
+    case "image-invalid":
+      console.error("OG image record has no URL", slug);
+      return NextResponse.json({ message: "Image not found" }, { status: 404 });
+    case "image-stale":
+      // Update the image in the background but return the stale image
+      console.info("Updating stale OG image for", slug, "from", result.image.updatedAt);
+      tryGenerateScreenshot(slug, payload, result.image);
+    // Fall through to redirect (deliberately omitted 'break')
+    case "image-valid":
+      return NextResponse.redirect(result.redirectUrl);
   }
-  const docs = await payload.find({
-    collection: "og-images",
-    where: { slug: { equals: slug } },
-    limit: 1,
-  });
-  const doc = docs.docs.at(0);
-  if (doc == null) {
-    return tryGenerateScreenshot(slug, payload);
-  }
-  const image =
-    typeof doc.image === "number"
-      ? await payload.findByID({ collection: "media", id: doc.image })
-      : doc.image;
-  if (!image.url) {
-    console.error("OG image record has no URL", doc, image);
-    return NextResponse.json({ message: "Image not found" }, { status: 404 });
-  }
-  if (isOgImageStale(image.updatedAt)) {
-    // Update the image in the background but return the stale image
-    console.info("Updating stale OG image for", slug, "from", image.updatedAt);
-    tryGenerateScreenshot(slug, payload, image);
-  }
-  return NextResponse.redirect(new URL(image.url, PRODUCTION_URL));
 };
 
-export const GET = rateLimitMiddleware(routeHandler);
+const rateLimiter = rateLimitMiddleware({
+  maxRequests: 1,
+  matcher: async (request) => {
+    const { status } = await getOgImageStatus(request);
+    // Rate limit the requests that will result in a new image being generated
+    return status === "not-found";
+  },
+});
+
+export const GET = rateLimiter(routeHandler);

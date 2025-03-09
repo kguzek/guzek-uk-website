@@ -1,8 +1,7 @@
-// @ts-check
+import type { NextConfig } from "next";
 import { withPayload } from "@payloadcms/next/withPayload";
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig: NextConfig = {
   // output: "export", // Outputs a Single-Page Application (SPA).
   // distDir: "./build", // Changes the build output directory to `./build`.
   images: {
@@ -23,6 +22,9 @@ const nextConfig = {
         hostname: "raw.githubusercontent.com",
       },
     ],
+  },
+  experimental: {
+    nodeMiddleware: true,
   },
 };
 

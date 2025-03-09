@@ -6,6 +6,7 @@ import type { Media } from "@/payload-types";
 
 import type { Translation } from "./translations";
 import type { DownloadedEpisode } from "./types";
+import { EMAIL_VERIFICATION_COOKIE } from "./constants";
 import { Language } from "./enums";
 
 const PRODUCTION_MODE = process.env.NODE_ENV !== "development";
@@ -233,3 +234,9 @@ export function truncateText(text?: string, maxLength = 160) {
   if (!text || text.length <= maxLength) return text;
   return `${text.slice(0, maxLength)}…`;
 }
+
+export const beginEmailVerification = (email: string) =>
+  Cookies.set(EMAIL_VERIFICATION_COOKIE, email, {
+    sameSite: "lax",
+    expires: new Date(Date.now() + 900000), // 15 minutes
+  });
