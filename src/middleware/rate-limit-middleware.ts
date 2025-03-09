@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import type { MiddlewareFactory } from "@/lib/types";
+import { IP_BLACKLIST } from "@/lib/constants";
 
 interface RateLimitRecord {
   lastRequestTime: number;
@@ -34,6 +35,18 @@ export const rateLimitMiddleware: (config?: RateLimitConfig) => MiddlewareFactor
       request.headers.get("x-real-ip") ||
       "<unknown-ip>";
 
+    if (IP_BLACKLIST.includes(clientIp)) {
+      console.warn("Blocked blacklisted IP", clientIp);
+      return NextResponse.json(
+        {
+          message: "You are not allowed to access this resource.",
+        },
+        {
+          status: 403,
+        },
+      );
+    }
+
     const currentTime = Date.now();
     let rateLimitRecord = rateLimitStore.get(clientIp);
 
@@ -59,6 +72,7 @@ export const rateLimitMiddleware: (config?: RateLimitConfig) => MiddlewareFactor
     }
 
     if (rateLimitRecord.requestCount > maxRequests) {
+      console.log("Rate limit exceeded by", clientIp);
       return NextResponse.json(
         {
           message: "Too many requests, please try again later.",
