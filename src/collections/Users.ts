@@ -4,6 +4,7 @@ import { v4 as uuid } from "uuid";
 import { PRODUCTION_URL } from "@/lib/constants";
 import {
   ALPHANUMERIC_PATTERN,
+  isAdmin,
   isAdminFieldLevel,
   isAdminOrSelf,
   isEmptyOrNonNegativeIntegerArray,
@@ -65,7 +66,7 @@ export const Users: CollectionConfig = {
     lockTime: 300_000,
   },
   access: {
-    create: () => true,
+    create: isAdmin,
     read: isAdminOrSelf,
     update: isAdminOrSelf,
     delete: isAdminOrSelf,

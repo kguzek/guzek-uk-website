@@ -48,10 +48,14 @@ export function DeleteAccountButton({
     const deletionResult = await fetchFromApi(`users/${user.id}`, { method: "DELETE" });
     console.info("Account deletion result:", deletionResult.data);
 
-    const logoutResult = await fetchFromApi("users/logout", {
-      method: "POST",
-    });
-    console.info("Log out result:", logoutResult);
+    try {
+      const logoutResult = await fetchFromApi("users/logout", {
+        method: "POST",
+      });
+      console.info("Log out result:", logoutResult);
+    } catch (error) {
+      console.warn("Error logging out:", error);
+    }
     removeUserCookie();
 
     router.push("/");
