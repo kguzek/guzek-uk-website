@@ -30,8 +30,8 @@ export const rateLimitMiddleware: (config?: RateLimitConfig) => MiddlewareFactor
       return response;
     }
     const clientIp =
-      request.headers.get("x-forwarded-for") ||
       request.headers.get("cf-connecting-ip") ||
+      request.headers.get("x-forwarded-for") ||
       request.headers.get("x-real-ip") ||
       "<unknown-ip>";
 
