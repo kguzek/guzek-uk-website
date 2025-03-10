@@ -40,7 +40,7 @@ export function ForgotPasswordForm() {
   async function sendEmail(values: ForgotPasswordSchema) {
     const success = await forgotPassword(values);
     if (!success) {
-      throw new Error(`${data.unknownError} ERR_FP_SUC_FLS`);
+      throw new Error(`${t("unknownError")} ERR_FP_SUC_FLS`);
     }
 
     setTimeout(() => {

@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 
 import type { MiddlewareFactory } from "@/lib/types";
 import { PRODUCTION_URL } from "@/lib/constants";
-import { getMiddlewareLocation } from "@/lib/util";
+
+import { getMiddlewareLocation } from "./util";
 
 export const redirectMiddleware: MiddlewareFactory = (next) =>
   async function (request) {

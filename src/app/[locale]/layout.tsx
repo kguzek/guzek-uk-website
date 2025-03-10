@@ -87,8 +87,6 @@ const robotoSlab = Roboto_Slab({
   variable: "--font-roboto-slab",
 });
 
-export const experimental_ppr = true;
-
 export default async function RootLayout({
   children,
   params,
