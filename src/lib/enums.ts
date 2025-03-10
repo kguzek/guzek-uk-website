@@ -13,7 +13,7 @@ export const DownloadStatus = {
   FAILED: 4,
   UNKNOWN: 5,
   VERIFYING: 6,
-};
+} as const;
 
 export const LOG_LEVELS = [
   "crit",

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { DownloadIcon, TriangleIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
-import type { DownloadedEpisode } from "@/lib/types";
+import type { DownloadedEpisode, DownloadStatusType } from "@/lib/types";
 import type { User } from "@/payload-types";
 import { showErrorToast } from "@/components/error/toast";
 import { showInfoToast } from "@/components/ui/sonner";
@@ -79,10 +79,12 @@ export function EpisodeDownloadIndicator({
   }
 
   const downloadStatus = metadata?.status ?? DownloadStatus.STOPPED;
-  let downloadTooltip = t("liveSeries.episodes.downloadStatus")[downloadStatus];
+  let downloadTooltip = t(`liveSeries.episodes.downloadStatus.${downloadStatus}`);
   const showProgress =
     metadata != null &&
-    [DownloadStatus.PENDING, DownloadStatus.VERIFYING].includes(downloadStatus);
+    ([DownloadStatus.PENDING, DownloadStatus.VERIFYING] as DownloadStatusType[]).includes(
+      downloadStatus,
+    );
   if (metadata?.progress != null) {
     downloadTooltip += ` (${(metadata.progress * 100).toFixed(1)}%${metadata.speed ? ` @ ${bytesToReadable(metadata.speed)}/s` : ""})`;
   }
@@ -122,7 +124,7 @@ export function EpisodeDownloadIndicator({
       {!showProgress && user != null && (
         <Link
           href={`/liveseries/watch/${tvShow.name}/${episode.season}/${episode.number}`}
-          title={t("liveSeries.episodes.downloadStatus")[DownloadStatus.COMPLETE]}
+          title={t(`liveSeries.episodes.downloadStatus.${DownloadStatus.COMPLETE}`)}
         >
           <TriangleIcon
             className={cn("clickable rotate-90", {
