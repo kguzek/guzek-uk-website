@@ -189,7 +189,9 @@ export function DownloadsWidget({
                   {episode.status === DownloadStatus.VERIFYING && (
                     <span>
                       {" " +
-                        t("liveSeries.episodes.downloadStatus")[DownloadStatus.VERIFYING]}
+                        t(
+                          `liveSeries.episodes.downloadStatus.${DownloadStatus.VERIFYING}`,
+                        )}
                       ...
                     </span>
                   )}

@@ -8,14 +8,14 @@ import { isValidLocale } from "@/lib/util";
 import type { Formatters } from "./types";
 import { routing } from "./routing";
 
-export const FORMATS: Formats = {
+export const formats = {
   dateTime: {
     date: LONG_DATE_FORMAT,
     dateShort: SHORT_DATE_FORMAT,
     dateTime: { ...LONG_DATE_FORMAT, ...SHORT_TIME_FORMAT },
     dateTimeShort: { ...SHORT_DATE_FORMAT, ...SHORT_TIME_FORMAT },
   },
-};
+} satisfies Formats;
 
 const FORMATTERS: Record<UserLocale, Formatters> = {
   en: {
@@ -53,6 +53,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
   return {
     locale,
     messages,
-    formats: FORMATS,
+    formats,
   };
 });
