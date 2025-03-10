@@ -1,8 +1,8 @@
-import Link from "next/link";
 import * as React from "react";
 import { ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon } from "lucide-react";
 
 import type { ButtonProps } from "@/ui/config";
+import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/ui/config";
 

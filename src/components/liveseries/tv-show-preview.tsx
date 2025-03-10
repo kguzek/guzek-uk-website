@@ -3,12 +3,12 @@
 import type { MouseEvent } from "react";
 import type { Show as TvMazeShow } from "tvmaze-wrapper-ts";
 import Image from "next/image";
-import Link from "next/link";
 import { useOptimistic, useState, useTransition } from "react";
 import { HeartIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import type { User } from "@/payload-types";
+import { Link } from "@/i18n/navigation";
 import { fetchFromApi } from "@/lib/backend";
 import { getUserLikedShows } from "@/lib/backend/liveseries";
 import { addOrRemove } from "@/lib/util";

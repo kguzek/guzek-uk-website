@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import type { Show as TvMazeShow } from "tvmaze-wrapper-ts";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { searchShows } from "tvmaze-wrapper-ts";
 
 import { ErrorComponent } from "@/components/error/component";
 import { TvShowPreviewList } from "@/components/liveseries/tv-show-preview-list";
+import { getFormatters } from "@/i18n/request";
 import { ErrorCode } from "@/lib/enums";
 import { isNumber } from "@/lib/util";
 
@@ -16,10 +17,12 @@ interface SearchProps {
 
 export async function generateMetadata({ params }: SearchProps): Promise<Metadata> {
   const t = await getTranslations();
+  const locale = await getLocale();
+  const formatters = getFormatters(locale);
   const { query, page } = await params;
 
   const title = query
-    ? `${t("liveSeries.search.results")} ${t("format.quote", { query })} (${t("liveSeries.tvShowList.page")} ${page})`
+    ? `${t("liveSeries.search.results")} ${formatters.quote(query)} (${t("liveSeries.tvShowList.page")} ${page})`
     : t("liveSeries.search.title");
 
   return {
@@ -29,6 +32,8 @@ export async function generateMetadata({ params }: SearchProps): Promise<Metadat
 
 async function SearchResults({ query, page }: { query: string; page: `${number}` }) {
   const t = await getTranslations();
+  const locale = await getLocale();
+  const formatters = getFormatters(locale);
 
   const decodedQuery = decodeURIComponent(query);
 
@@ -47,7 +52,7 @@ async function SearchResults({ query, page }: { query: string; page: `${number}`
   return (
     <>
       <h3 className="my-5 text-2xl font-bold">
-        {t("liveSeries.search.results")} {t("format.quote", { decodedQuery })}
+        {t("liveSeries.search.results")} {formatters.quote(decodedQuery)}
       </h3>
       <TvShowPreviewList tvShows={tvShows} page={+page} total={1} />
     </>

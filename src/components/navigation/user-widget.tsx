@@ -1,12 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import type { User } from "@/payload-types";
+import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/ui/button";
+
+import { ClientLink } from "../link/client";
 
 export function UserWidget({
   user,
@@ -23,10 +24,10 @@ export function UserWidget({
       {user == null ? (
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button asChild variant="glow" className="min-w-28" onClick={closeMenu}>
-            <Link href="/signup">{t("profile.formDetails.signup")}</Link>
+            <ClientLink href="/signup">{t("profile.formDetails.signup")}</ClientLink>
           </Button>
           <Button asChild className="min-w-28" onClick={closeMenu}>
-            <Link href="/login">{t("loginShort")}</Link>
+            <ClientLink href="/login">{t("loginShort")}</ClientLink>
           </Button>
         </div>
       ) : (

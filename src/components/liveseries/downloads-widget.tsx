@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ChevronUpIcon, Trash2Icon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 import type { DownloadedEpisode } from "@/lib/types";
 import type { User } from "@/payload-types";
+import { Link } from "@/i18n/navigation";
 import { getFormatters } from "@/i18n/request";
 import { fetchFromApi } from "@/lib/backend";
 import { useLiveSeriesContext } from "@/lib/context/liveseries-context";

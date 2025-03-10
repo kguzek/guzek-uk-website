@@ -1,7 +1,6 @@
 "use client";
 
 import type { Episode as TvMazeEpisode, Show as TvMazeShow } from "tvmaze-wrapper-ts";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { DownloadIcon, TriangleIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -10,6 +9,7 @@ import type { DownloadedEpisode } from "@/lib/types";
 import type { User } from "@/payload-types";
 import { showErrorToast } from "@/components/error/toast";
 import { showInfoToast } from "@/components/ui/sonner";
+import { Link } from "@/i18n/navigation";
 import { getFormatters } from "@/i18n/request";
 import { fetchFromApi } from "@/lib/backend";
 import { useLiveSeriesContext } from "@/lib/context/liveseries-context";

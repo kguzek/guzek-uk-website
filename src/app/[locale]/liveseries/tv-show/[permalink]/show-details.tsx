@@ -3,11 +3,10 @@
 import type { ReactNode } from "react";
 import type { Episode as TvMazeEpisode, Show as TvMazeShow } from "tvmaze-wrapper-ts";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useOptimistic, useState, useTransition } from "react";
 import { Glow } from "@codaworks/react-glow";
 import { Dot, HeartIcon, StarIcon, TriangleAlert } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 
 import type { Numeric } from "@/lib/types";
 import type { User } from "@/payload-types";
@@ -24,6 +23,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "@/i18n/navigation";
 import {
   getUserLikedShows,
   updateUserShowLike,
@@ -63,6 +63,7 @@ export function ShowDetails({
   const router = useRouter();
   const { watchedEpisodes, updateUserWatchedEpisodes } = useLiveSeriesContext();
   const watchedInShow = watchedEpisodes?.[tvShow.id] ?? {};
+  const formatter = useFormatter();
 
   function formatDate(which: "start" | "end") {
     const latestEpisode = episodes?.at(-1);
@@ -74,7 +75,7 @@ export function ShowDetails({
       }
       const latestEpisodeAirDate = getEpisodeAirDate(latestEpisode);
       if (latestEpisodeAirDate > new Date()) return t("liveSeries.tvShow.present");
-      return t("format.dateShort.format", { latestEpisodeAirDate });
+      return formatter.dateTime(latestEpisodeAirDate, "dateShort");
     }
     const dateString = tvShow?.premiered;
     if (!dateString) {
@@ -82,7 +83,7 @@ export function ShowDetails({
     }
     const date = new Date(dateString);
     if (isInvalidDate(date)) return dateString;
-    return t("format.dateShort.format", { date });
+    return formatter.dateTime(date, "dateShort");
   }
 
   function promptLogin() {

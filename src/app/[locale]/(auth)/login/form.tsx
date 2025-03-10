@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -13,6 +11,7 @@ import { toast } from "sonner";
 import type { LogInSchema } from "@/lib/backend/schemas";
 import { fetchErrorToast } from "@/components/error/toast";
 import { showSuccessToast } from "@/components/ui/sonner";
+import { Link, useRouter } from "@/i18n/navigation";
 import { fetchFromApi } from "@/lib/backend";
 import { logInSchema } from "@/lib/backend/schemas";
 import { Button } from "@/ui/button";

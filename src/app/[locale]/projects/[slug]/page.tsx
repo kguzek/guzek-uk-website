@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { getPayload } from "payload";
 import config from "@payload-config";
 import { RichText } from "@payloadcms/richtext-lexical/react";
@@ -18,6 +17,7 @@ import { SimpleIcon } from "@/components/image/simple-icon";
 import { SchemaOrgScript } from "@/components/schema-org";
 import { Tile } from "@/components/tile";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "@/i18n/navigation";
 import { DEFAULT_LOCALE } from "@/lib/constants";
 import { ErrorCode } from "@/lib/enums";
 import { convertLexicalToPlainText } from "@/lib/lexical";

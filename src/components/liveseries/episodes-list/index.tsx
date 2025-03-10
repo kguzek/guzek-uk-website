@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
 import type { Episode as TvMazeEpisode, Show as TvMazeShow } from "tvmaze-wrapper-ts";
 import { ChevronRightIcon, ClockIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { getFormatter, getLocale } from "next-intl/server";
 
 import { Tile } from "@/components/tile";
+import { getFormatters } from "@/i18n/request";
 import { getAuth } from "@/lib/providers/auth-provider";
 import { getEpisodeAirDate, hasEpisodeAired } from "@/lib/util";
 import { cn } from "@/lib/utils";
@@ -18,16 +19,18 @@ async function Episode({
   episode: TvMazeEpisode;
   tvShow: TvMazeShow;
 }) {
-  const { data, userLanguage } = await getTranslations();
+  const formatter = await getFormatter();
+  const locale = await getLocale();
+  const formatters = getFormatters(locale);
   const { user, accessToken } = await getAuth();
 
-  const airDate = t("format.dateTime.format")(getEpisodeAirDate(episode));
+  const airDate = formatter.dateTime(getEpisodeAirDate(episode), "dateTime");
 
   return (
     <div className="bg-background box-border flex w-full flex-col items-center gap-2 rounded-lg p-2 px-4 sm:flex-row sm:justify-between">
       <div className="w-full self-start overflow-hidden">
         <div className="grid grid-cols-[auto_1fr] gap-2" title={episode.name}>
-          <p>{t("liveSeries.episodes.serialise", { episode })}</p>
+          <p>{formatters.serialiseEpisode(episode)}</p>
           <div className="cutoff text-accent-soft w-full">{episode.name}</div>
         </div>
         <small className="text-background-soft">{airDate}</small>

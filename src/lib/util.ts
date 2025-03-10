@@ -1,3 +1,4 @@
+import type { NextRequest } from "next/server";
 import type { Episode as TvMazeEpisode } from "tvmaze-wrapper-ts";
 import Cookies from "js-cookie";
 
@@ -230,3 +231,10 @@ export function truncateText(text?: string, maxLength = 160) {
 
 export const isValidLocale = (locale?: string): locale is UserLocale =>
   !!locale && LOCALES.includes(locale as UserLocale);
+
+export function getMiddlewareLocation(request: NextRequest) {
+  const segments = request.nextUrl.pathname.split("/");
+  const [locale] = segments.splice(1, 1);
+  const pathname = segments.join("/");
+  return { locale, pathname };
+}

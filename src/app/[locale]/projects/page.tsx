@@ -1,7 +1,6 @@
 import type { JSXConvertersFunction } from "@payloadcms/richtext-lexical/react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { getPayload } from "payload";
 import config from "@payload-config";
 import { RichText } from "@payloadcms/richtext-lexical/react";
@@ -11,6 +10,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { SimpleIcon } from "@/components/image/simple-icon";
 import { DynamicPageLoader, getPageBySlug } from "@/components/pages/dynamic-page";
 import { Tile } from "@/components/tile";
+import { Link } from "@/i18n/navigation";
 import { DEFAULT_LOCALE, GITHUB_URL, OG_IMAGE_METADATA } from "@/lib/constants";
 import { convertLexicalToPlainText } from "@/lib/lexical";
 import { isImage, isValidLocale, truncateText } from "@/lib/util";

@@ -1,8 +1,9 @@
-import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { ErrorComponent } from "@/components/error/component";
 import { TextWithUrl } from "@/components/text-with-url";
+import { Link } from "@/i18n/navigation";
+import { getFormatters } from "@/i18n/request";
 import { fetchFromApi } from "@/lib/backend";
 import { HttpError, NetworkError } from "@/lib/backend/error-handling";
 import { ErrorCode } from "@/lib/enums";
@@ -19,7 +20,9 @@ interface Props {
 }
 
 export default async function Watch({ params }: Props) {
-  const { data, userLanguage } = await getTranslations();
+  const t = await getTranslations();
+  const locale = await getLocale();
+  const formatters = getFormatters(locale);
   const { showName, season: seasonString, episode: episodeString } = await params;
   if (
     Array.isArray(showName) ||
@@ -60,8 +63,7 @@ export default async function Watch({ params }: Props) {
   return (
     <div>
       <h2 className="my-6 text-3xl font-bold">
-        {decodeURIComponent(showName)}{" "}
-        {t("liveSeries.episodes.serialise", { episodeObject })}
+        {decodeURIComponent(showName)} {formatters.serialiseEpisode(episodeObject)}
       </h2>
       <div className="mb-2 flex flex-col items-center text-sm sm:text-xl md:flex-row md:items-start">
         <div className="flex gap-3">
@@ -106,7 +108,7 @@ export default async function Watch({ params }: Props) {
             statError instanceof NetworkError ? ErrorCode.ServerError : ErrorCode.NotFound
           }
           errorMessage={
-            statError instanceof HttpError ? statError.message : data.networkError
+            statError instanceof HttpError ? statError.message : t("networkError")
           }
         />
       )}

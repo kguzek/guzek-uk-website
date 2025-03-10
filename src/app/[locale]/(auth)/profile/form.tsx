@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,6 +41,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { successToast } from "@/components/ui/sonner";
+import { Link } from "@/i18n/navigation";
 import { fetchFromApi, refreshAccessToken } from "@/lib/backend";
 import { updateUserDetailsSchema } from "@/lib/backend/schemas";
 import { LIVESERIES_SERVER_HOMEPAGE } from "@/lib/constants";

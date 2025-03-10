@@ -1,7 +1,7 @@
 import Image from "next/image";
-import Link from "next/link";
 
 import logo128 from "@/../public/logo128.png";
+import { Link } from "@/i18n/navigation";
 
 export function Logo({ size = 80 }) {
   return (

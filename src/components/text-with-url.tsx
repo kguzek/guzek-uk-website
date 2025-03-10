@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 const VALUE_URL_PATTERN = new RegExp("^(.+)(https://[^\\s]+)(\\s.+)?$");
 

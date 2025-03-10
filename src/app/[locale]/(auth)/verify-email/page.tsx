@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { ErrorComponent } from "@/components/error/component";
+import { redirect } from "@/i18n/navigation";
 import { ErrorCode } from "@/lib/enums";
 
 import type { PropsWithToken } from "../with-token";
@@ -36,5 +36,9 @@ export default async function VerifyEmail({ searchParams }: PropsWithToken) {
       <ErrorComponent errorCode={ErrorCode.BadRequest} errorMessage="Invalid token" />
     );
   }
-  redirect("/login?from=verify-email");
+  const locale = await getLocale();
+  redirect({
+    href: { pathname: "/login", query: { from: "verify-email" } },
+    locale,
+  });
 }
