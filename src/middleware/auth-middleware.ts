@@ -34,8 +34,6 @@ export const authMiddleware: MiddlewareFactory = (next) =>
       return NextResponse.redirect(new URL(`/${locale}${to}`, request.url));
     }
 
-    console.log({ pathname, locale });
-
     const response = await next(request);
     let user: User | null = null;
     try {
