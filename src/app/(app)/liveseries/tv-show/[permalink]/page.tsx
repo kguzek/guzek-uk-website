@@ -68,7 +68,7 @@ function sortEpisodes(episodes: TvMazeEpisode[]) {
 async function getShowDetails({ params }: ShowDetailsProps) {
   const { permalink } = await params;
   if (!isNumber(permalink)) {
-    console.warn("Invalid tv show permalink:", permalink);
+    // console.warn("Invalid tv show permalink:", permalink);
     return null;
   }
   const tvShow = await findShowById(permalink);

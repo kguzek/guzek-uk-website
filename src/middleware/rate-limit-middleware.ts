@@ -18,7 +18,7 @@ interface RateLimitConfig {
   windowMs?: number;
 }
 
-const rateLimitStore: Map<string, RateLimitRecord> = new Map();
+const rateLimitStore = new Map<string, RateLimitRecord>();
 
 export const rateLimitMiddleware: (config?: RateLimitConfig) => MiddlewareFactory =
   ({ matcher = () => true, windowMs = 60000, maxRequests = 100 } = {}) =>
@@ -29,11 +29,12 @@ export const rateLimitMiddleware: (config?: RateLimitConfig) => MiddlewareFactor
     if (!isMatch) {
       return response;
     }
-    const clientIp =
+    const unparsedIp =
       request.headers.get("cf-connecting-ip") ||
       request.headers.get("x-forwarded-for") ||
       request.headers.get("x-real-ip") ||
       "<unknown-ip>";
+    const clientIp = unparsedIp.split(",")[0].trim();
 
     if (IP_BLACKLIST.includes(clientIp)) {
       console.warn("Blocked blacklisted IP", clientIp);
@@ -61,8 +62,6 @@ export const rateLimitMiddleware: (config?: RateLimitConfig) => MiddlewareFactor
         rateLimitRecord.requestCount = 1;
         rateLimitRecord.lastRequestTime = currentTime;
       }
-
-      rateLimitStore.set(clientIp, rateLimitRecord);
     } else {
       rateLimitRecord = {
         lastRequestTime: currentTime,
@@ -72,7 +71,9 @@ export const rateLimitMiddleware: (config?: RateLimitConfig) => MiddlewareFactor
     }
 
     if (rateLimitRecord.requestCount > maxRequests) {
-      console.log("Rate limit exceeded by", clientIp);
+      console.log(
+        `Rate limit exceeded by ${clientIp} at ${request.method} ${request.nextUrl.href} (${rateLimitRecord.requestCount}/${maxRequests} requests)`,
+      );
       return NextResponse.json(
         {
           message: "Too many requests, please try again later.",
