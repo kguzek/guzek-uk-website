@@ -248,10 +248,3 @@ export function getRequestIp(request: NextRequest, fallback = "<unknown-ip>") {
 
 export const isValidLocale = (locale?: string): locale is UserLocale =>
   !!locale && LOCALES.includes(locale as UserLocale);
-
-export function getMiddlewareLocation(request: NextRequest) {
-  const segments = request.nextUrl.pathname.split("/");
-  const [locale] = segments.splice(1, 1);
-  const pathname = segments.join("/");
-  return { locale, pathname };
-}

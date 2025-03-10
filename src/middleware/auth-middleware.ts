@@ -1,10 +1,9 @@
-import { NextResponse } from "next/server";
-
 import type { MiddlewareFactory } from "@/lib/types";
 import type { User } from "@/payload-types";
 import { PAGINATED_REGEX_INVALID } from "@/lib/constants";
 import { getUser } from "@/lib/providers/auth-provider/api";
-import { getMiddlewareLocation } from "@/lib/util";
+
+import { getMiddlewareLocation } from "./util";
 
 const ROUTES_REQUIRING_AUTH = ["/profile", "/admin-logs", "/liveseries/watch"];
 const ROUTES_REQUIRING_NOAUTH = [
@@ -18,22 +17,6 @@ const ROUTES_REQUIRING_ADMIN = ["/admin-logs"];
 
 export const authMiddleware: MiddlewareFactory = (next) =>
   async function (request) {
-    const { locale, pathname } = getMiddlewareLocation(request);
-
-    function redirect(to: string, log = true) {
-      if (log) {
-        console.debug(
-          "Redirecting",
-          user?.username ?? "<anonymous>",
-          "from",
-          request.url,
-          "to",
-          to,
-        );
-      }
-      return NextResponse.redirect(new URL(`/${locale}${to}`, request.url));
-    }
-
     const response = await next(request);
     let user: User | null = null;
     try {
@@ -41,6 +24,8 @@ export const authMiddleware: MiddlewareFactory = (next) =>
     } catch (error) {
       console.warn("Error fetching user at middleware level:", (error as Error).message);
     }
+    const { pathname, redirect } = getMiddlewareLocation(request, user);
+
     const [redirectFrom, redirectTo] =
       user == null
         ? [ROUTES_REQUIRING_AUTH, "/login"]
