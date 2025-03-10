@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 
+import { usePathname } from "@/i18n/navigation";
 import { LOCALES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -24,19 +24,13 @@ export function LanguageSelector() {
               "translate-x-9": locale === "pl",
             },
           )}
-        ></div>
+        />
         {LOCALES.map((language) => (
           <Link
             aria-selected={locale === language}
             href={`/${language.toLowerCase()}${pathname}`}
             key={language}
             prefetch={false}
-            // onClick={(evt) => {
-            //   // Link is being used as a fallback for clients without JavaScript enabled
-            //   // If it is enabled, we can handle the language change without a full page reload
-            //   evt.preventDefault();
-            //   router.refresh();
-            // }}
             className={cn("w-8 cursor-default py-2 text-center text-xs font-semibold", {
               "clickable cursor-pointer": locale !== language,
             })}

@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
@@ -22,6 +21,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { showSuccessToast } from "@/components/ui/sonner";
+import { useRouter } from "@/i18n/navigation";
 import { getFormatters } from "@/i18n/request";
 import { fetchFromApi } from "@/lib/backend";
 import { removeUserCookie } from "@/lib/util";

@@ -1,7 +1,8 @@
 "use client";
 
+import type { KeyboardEvent, SyntheticEvent } from "react";
 import { useRouter } from "next/navigation";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { showErrorToast } from "@/components/error/toast";
@@ -31,7 +32,7 @@ export function Player({
     setLoadingFailed(undefined);
   }
 
-  function onError(evt: React.SyntheticEvent<HTMLVideoElement, Event>) {
+  function onError(evt: SyntheticEvent<HTMLVideoElement, Event>) {
     // Only update if it's `undefined`, not `false`
     if (loadingFailed === false) return;
     console.error(evt.nativeEvent);
@@ -43,7 +44,7 @@ export function Player({
     setLoadingFailed(false);
   }
 
-  function onKeyPress(evt: React.KeyboardEvent<HTMLDivElement>) {
+  function onKeyPress(evt: KeyboardEvent<HTMLDivElement>) {
     if (!videoRef) return;
     const video = videoRef.current;
     if (!video) return;

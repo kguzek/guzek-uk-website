@@ -1,7 +1,6 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { usePathname } from "next/navigation";
 import {
   createContext,
   useContext,
@@ -26,6 +25,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { showSuccessToast } from "@/components/ui/sonner";
+import { usePathname } from "@/i18n/navigation";
 import { getFormatters } from "@/i18n/request";
 import { DownloadStatus } from "@/lib/enums";
 import { compareEpisodes, ensureUnique } from "@/lib/util";

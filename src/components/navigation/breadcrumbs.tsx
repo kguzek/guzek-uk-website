@@ -1,10 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Fragment } from "react";
 import { ChevronDown } from "lucide-react";
 
+import { Link, usePathname } from "@/i18n/navigation";
 import { PAGINATED_REGEX } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import {

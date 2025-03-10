@@ -1,7 +1,6 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { LogOut } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -9,6 +8,7 @@ import { toast } from "sonner";
 
 import { fetchErrorToast } from "@/components/error/toast";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "@/i18n/navigation";
 import { fetchFromApi } from "@/lib/backend";
 
 export function LogoutButton() {

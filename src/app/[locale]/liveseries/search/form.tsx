@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useForm, useWatch } from "react-hook-form";
 
+import { ClientLink } from "@/components/link/client";
 import { Tile } from "@/components/tile";
+import { useRouter } from "@/i18n/navigation";
 import { getTitle } from "@/lib/util";
 import { Button } from "@/ui/button";
 import {
@@ -74,7 +74,7 @@ export function SearchForm() {
               />
               {search ? (
                 <Button asChild>
-                  <Link href={getSearchPath(search)}>{label}</Link>
+                  <ClientLink href={getSearchPath(search)}>{label}</ClientLink>
                 </Button>
               ) : (
                 <Button>{label}</Button>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
+import { ClientLink } from "@/components/link/client";
 import { PageSkeleton } from "@/components/pages/skeleton";
 import { Tile } from "@/components/tile";
 import { getAuth } from "@/lib/providers/auth-provider";
@@ -46,7 +46,7 @@ export default async function LogIn({
             <LogInForm from={from} />
             <p className="text-sm">{t("profile.formDetails.or")}</p>
             <Button variant="ghost" asChild>
-              <Link href="/signup">{t("profile.formDetails.signup")}</Link>
+              <ClientLink href="/signup">{t("profile.formDetails.signup")}</ClientLink>
             </Button>
           </>
         )}

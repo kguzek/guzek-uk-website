@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getFormatter, getTranslations } from "next-intl/server";
 
 import {
   Pagination,
@@ -53,6 +53,8 @@ export async function Paginator({
 
   const getHref = (page: number) => `./${page}`;
 
+  const formatter = await getFormatter();
+
   return (
     <Pagination>
       <PaginationContent className="my-2 w-full flex-wrap justify-center gap-y-2 md:flex-nowrap">
@@ -63,7 +65,7 @@ export async function Paginator({
                 <PaginationEllipsis />
               ) : (
                 <PaginationLink href={getHref(page)} isActive={page === currentPage}>
-                  {t("format.number.format", { page })}
+                  {formatter.number(page)}
                 </PaginationLink>
               )}
             </PaginationItem>

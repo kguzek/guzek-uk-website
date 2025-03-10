@@ -1,3 +1,1 @@
-import LoadingPage from "@/app/(app)/(index)/loading.bak";
-
-export default LoadingPage;
+export { default } from "../(index)/loading.bak";
