@@ -1,4 +1,5 @@
 import type { CollectionConfig, NumberField, PayloadRequest } from "payload";
+import { NextResponse } from "next/server";
 import { v4 as uuid } from "uuid";
 
 import { PRODUCTION_URL } from "@/lib/constants";
@@ -71,6 +72,14 @@ export const Users: CollectionConfig = {
     update: isAdminOrSelf,
     delete: isAdminOrSelf,
   },
+  endpoints: [
+    {
+      // Use server actions instead of REST API to implement ratelimit
+      method: "post",
+      path: "/forgot-password",
+      handler: () => NextResponse.json({ message: "404 Not Found" }, { status: 404 }),
+    },
+  ],
   fields: [
     {
       name: "id",
@@ -187,33 +196,6 @@ export const Users: CollectionConfig = {
           additionalProperties: false,
         },
       },
-      // validate: (value) => {
-      //   if (!value) return true;
-      //   let parsed;
-      //   if (typeof value === "string") {
-      //     try {
-      //       parsed = JSON.parse(value);
-      //     } catch (error) {
-      //       return `Invalid JSON: ${(error as Error).message}`;
-      //     }
-      //   } else {
-      //     parsed = value;
-      //   }
-      //   if (Array.isArray(parsed)) return "Must be an object, not an array.";
-      //   const parsedType = typeof parsed;
-      //   if (parsedType !== "object") return `Must be an object, not ${parsedType}.`;
-      //   for (const key in parsed) {
-      //     if (!isPositiveInteger(key)) {
-      //       return `Key "${key}" must be a positive integer.`;
-      //     }
-      //     if (!Array.isArray(parsed[key])) {
-      //       return `Value at key "${key}" must be an array.`;
-      //     }
-      //     const arrayValidation = isEmptyOrPositiveIntegerArray(parsed[key]);
-      //     if (arrayValidation !== true) return arrayValidation;
-      //   }
-      //   return true;
-      // },
     },
   ],
 };
