@@ -134,7 +134,7 @@ export default async function Home() {
           <p className="mb-3 whitespace-pre-wrap">{data.liveSeries.home.noLikes}</p>
           <Button variant="link" className="px-0" asChild>
             <Link
-              href="/liveseries/most-popular"
+              href="/liveseries/most-popular/1"
               className="group flex items-center gap-2"
             >
               <TrendingUp />{" "}

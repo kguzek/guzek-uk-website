@@ -31,7 +31,7 @@ export function SearchForm({ userLanguage }: { userLanguage: Language }) {
     name: "search",
   });
 
-  const getSearchPath = () =>
+  const getSearchPath = (search: string) =>
     search === "" ? "" : `/liveseries/search/${encodeURIComponent(search)}/1`;
 
   const label = (
@@ -52,10 +52,9 @@ export function SearchForm({ userLanguage }: { userLanguage: Language }) {
               action="/liveseries/search"
               method="GET"
               className="flex flex-col gap-4 sm:flex-row sm:items-end"
-              onSubmit={(evt) => {
-                evt.preventDefault();
-                router.push(getSearchPath());
-              }}
+              onSubmit={form.handleSubmit((values) => {
+                router.push(getSearchPath(values.search));
+              })}
             >
               <FormField
                 control={form.control}
@@ -74,12 +73,12 @@ export function SearchForm({ userLanguage }: { userLanguage: Language }) {
                   </FormItem>
                 )}
               />
-              {form.getFieldState("search").invalid ? (
-                <Button disabled>{label}</Button>
-              ) : (
+              {search ? (
                 <Button asChild>
-                  <Link href={getSearchPath()}>{label}</Link>
+                  <Link href={getSearchPath(search)}>{label}</Link>
                 </Button>
+              ) : (
+                <Button>{label}</Button>
               )}
             </form>
           </Form>

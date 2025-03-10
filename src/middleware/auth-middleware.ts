@@ -58,5 +58,9 @@ export const authMiddleware: MiddlewareFactory = (next) =>
     if (match != null) {
       return redirect(`${match[1]}/1`);
     }
+    const search = request.nextUrl.searchParams.get("search");
+    if (request.nextUrl.pathname === "/liveseries/search" && search != null) {
+      return redirect(`/liveseries/search/${search}/1`);
+    }
     return response;
   };

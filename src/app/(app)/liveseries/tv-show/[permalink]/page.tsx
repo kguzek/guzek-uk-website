@@ -89,9 +89,10 @@ export default async function TvShow(props: ShowDetailsProps) {
 
   const result = await getShowEpisodes(tvShow.id);
   const episodes = Array.isArray(result) ? result : [];
-  if (episodes.length === 0) {
-    console.warn("No episodes found for tv show:", tvShow.name, result);
-  }
+  // Some legit shows have no episodes for some reaaso
+  // if (episodes.length === 0) {
+  //   console.warn("No episodes found for tv show:", tvShow.name, result);
+  // }
 
   return (
     <ShowDetails
