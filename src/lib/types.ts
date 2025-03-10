@@ -1,9 +1,23 @@
 import type { NextRequest, NextResponse } from "next/server";
 
+import type { LOCALES } from "./constants";
 import type { DownloadStatus, LOG_LEVELS } from "./enums";
 
-// TODO: extract from LOCALES constant
-export type UserLocale = "en" | "pl";
+// #region TypeScript Utilties
+
+export type ValueOf<T> = T[keyof T];
+
+export type ParseInt<T> = T extends `${infer N extends number}` ? N : never;
+
+export type ArrayIndex<T extends readonly unknown[]> = ParseInt<
+  Exclude<keyof T, keyof []>
+>;
+
+export type ArrayElement<T extends readonly unknown[]> = T[ArrayIndex<T>];
+
+// #endregion
+
+export type UserLocale = ArrayElement<typeof LOCALES>;
 
 // #region Legacy Admin Logs
 
@@ -48,7 +62,7 @@ export type ErrorResponseBody = ErrorResponseBodyCustom | ErrorResponseBodyPaylo
 
 // #region LiveSeries
 
-export type DownloadStatusType = (typeof DownloadStatus)[keyof typeof DownloadStatus];
+export type DownloadStatusType = ValueOf<typeof DownloadStatus>;
 
 export interface DownloadedEpisode {
   status: DownloadStatusType;

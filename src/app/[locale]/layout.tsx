@@ -56,7 +56,8 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
     languages: {
-      // TODO: complete after i18n overhaul
+      en: "/en",
+      pl: "/pl",
     },
   },
   openGraph: {
