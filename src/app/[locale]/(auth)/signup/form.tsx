@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
@@ -11,6 +10,7 @@ import { toast } from "sonner";
 import type { SignUpSchema } from "@/lib/backend/schemas";
 import { createNewUser } from "@/app/actions";
 import { fetchErrorToast } from "@/components/error/toast";
+import { ClientLink } from "@/components/link/client";
 import { useRouter } from "@/i18n/navigation";
 import { signUpSchema } from "@/lib/backend/schemas";
 import { TURNSTILE_SITE_KEY } from "@/lib/constants";
@@ -149,7 +149,7 @@ export function SignUpForm() {
       </form>
       <p className="text-sm">{t("profile.formDetails.haveAccountAlready")}</p>
       <Button asChild variant="ghost">
-        <Link href="/login">{t("profile.formDetails.login")}</Link>
+        <ClientLink href="/login">{t("profile.formDetails.login")}</ClientLink>
       </Button>
     </Form>
   );

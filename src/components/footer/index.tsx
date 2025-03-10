@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { Glow } from "@codaworks/react-glow";
 import { FlaskConical, Info } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { Logo } from "@/components/image/logo";
+import { Link } from "@/i18n/navigation";
 import { GITHUB_URL } from "@/lib/constants";
 import {
   AlertDialog,

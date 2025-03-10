@@ -99,7 +99,7 @@ export default async function RootLayout({
   const { locale } = await params;
 
   if (!routing.locales.includes(locale as UserLocale)) {
-    console.log("Invalid locale:', locale");
+    console.log(`Invalid locale: '${locale}'`);
     notFound();
   }
 

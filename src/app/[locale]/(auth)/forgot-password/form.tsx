@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -11,6 +10,7 @@ import { toast } from "sonner";
 import type { ForgotPasswordSchema } from "@/lib/backend/schemas";
 import { forgotPassword } from "@/app/actions";
 import { fetchErrorToast } from "@/components/error/toast";
+import { ClientLink } from "@/components/link/client";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -66,13 +66,13 @@ export function ForgotPasswordForm() {
 
           {emailClientInfo && passwordResetPending ? (
             <Button asChild variant="ghost">
-              <Link href={emailClientInfo.url} target="_blank">
+              <ClientLink href={emailClientInfo.url} target="_blank">
                 {emailClientInfo.label}
-              </Link>
+              </ClientLink>
             </Button>
           ) : (
             <Button asChild variant={passwordResetPending ? "disabled" : "ghost"}>
-              <Link href="/login">{t("profile.formDetails.login")}</Link>
+              <ClientLink href="/login">{t("profile.formDetails.login")}</ClientLink>
             </Button>
           )}
         </div>
@@ -115,7 +115,7 @@ export function ForgotPasswordForm() {
           </form>
           <p className="text-sm">{t("profile.formDetails.or")}</p>
           <Button variant="ghost" asChild>
-            <Link href="/login">{t("profile.formDetails.login")}</Link>
+            <ClientLink href="/login">{t("profile.formDetails.login")}</ClientLink>
           </Button>
         </>
       )}

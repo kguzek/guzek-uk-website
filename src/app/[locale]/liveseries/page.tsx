@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
 import type { Episode as TvMazeEpisode, Show as TvMazeShow } from "tvmaze-wrapper-ts";
-import Link from "next/link";
 import { Search, TrendingUp } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { findShowById, getShowEpisodes } from "tvmaze-wrapper-ts";
 
 import type { EpisodeArray } from "@/payload-types";
 import { ErrorComponent } from "@/components/error/component";
+import { ClientLink } from "@/components/link/client";
 import { EpisodesList } from "@/components/liveseries/episodes-list";
 import { LikedShowsCarousel } from "@/components/liveseries/liked-shows-carousel";
 import { TextWrapper } from "@/components/text-wrapper";
 import { Tile } from "@/components/tile";
 import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
 import { getUserLikedShows } from "@/lib/backend/liveseries";
 import { OG_IMAGE_METADATA } from "@/lib/constants";
 import { ErrorCode } from "@/lib/enums";
@@ -132,22 +133,20 @@ export default async function Home() {
       {likedShowIds.length === 0 ? (
         <Tile glow containerClassName="w-full">
           <p className="mb-3 whitespace-pre-wrap">{t("liveSeries.home.noLikes")}</p>
-          <Button variant="link" className="px-0" asChild>
-            <Link
-              href="/liveseries/most-popular/1"
-              className="group flex items-center gap-2"
-            >
-              <TrendingUp />{" "}
-              <span className="group-hover:underlined hover-underline text-xs sm:text-sm md:text-base">
-                {t("liveSeries.home.explore")} {t("liveSeries.mostPopular.title")}{" "}
-                {t("liveSeries.home.shows")}
-              </span>
-            </Link>
-          </Button>
+          <Link
+            href="/liveseries/most-popular/1"
+            className="group flex items-center gap-2 px-0"
+          >
+            <TrendingUp />{" "}
+            <span className="glow:underlined text-xs sm:text-sm md:text-base">
+              {t("liveSeries.home.explore")} {t("liveSeries.mostPopular.title")}{" "}
+              {t("liveSeries.home.shows")}
+            </span>
+          </Link>
           <Button asChild className="text-xs sm:text-sm md:text-base">
-            <Link href="/liveseries/search">
+            <ClientLink href="/liveseries/search">
               <Search /> {t("liveSeries.search.label")}
-            </Link>
+            </ClientLink>
           </Button>
         </Tile>
       ) : (

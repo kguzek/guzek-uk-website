@@ -1,5 +1,3 @@
-import type { UserLocale } from "./types";
-
 export const PAGINATED_REGEX_INVALID =
   /^(\/liveseries\/(?:search\/[^\/]+|most-popular))(?:\/[^\/]*[^\/\d].*)?$/;
 

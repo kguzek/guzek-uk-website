@@ -3,12 +3,17 @@ import { NextResponse } from "next/server";
 
 import type { MiddlewareFactory } from "@/lib/types";
 import { PRODUCTION_URL } from "@/lib/constants";
+import { getMiddlewareLocation } from "@/lib/util";
 
 export const redirectMiddleware: MiddlewareFactory = (next) =>
   async function (request) {
+    const { locale, pathname } = getMiddlewareLocation(request);
+
     const redirect = () =>
       NextResponse.redirect(
-        new URL(`${PRODUCTION_URL}${request.nextUrl.pathname}${request.nextUrl.search}`),
+        new URL(
+          `${PRODUCTION_URL}${locale && "/"}${locale}${pathname}${request.nextUrl.search}`,
+        ),
       );
 
     const requestHeaders = await headers();

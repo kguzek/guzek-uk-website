@@ -1,12 +1,11 @@
 "use client";
 
 import type { ComponentProps } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useRef } from "react";
 import { GlowCapture } from "@codaworks/react-glow";
 
 import type { User } from "@/payload-types";
+import { Link, usePathname } from "@/i18n/navigation";
 import { useScroll } from "@/lib/hooks/scroll";
 import { PAGE_NAME } from "@/lib/util";
 import { cn } from "@/lib/utils";

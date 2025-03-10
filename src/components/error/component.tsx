@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
 import { ErrorCode } from "@/lib/enums";
@@ -7,6 +6,7 @@ import { PAGE_NAME } from "@/lib/util";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 
+import { ClientLink } from "../link/client";
 import { Tile } from "../tile";
 
 export async function ErrorComponent({
@@ -61,13 +61,13 @@ export async function ErrorComponent({
           )}
           <Button className="mt-10 w-full" asChild>
             {errorCode === ErrorCode.Unauthorized ? (
-              <Link href="/login" className="btn">
+              <ClientLink href="/login" className="btn">
                 {t("profile.formDetails.login")}
-              </Link>
+              </ClientLink>
             ) : (
-              <Link href="/" className="btn">
+              <ClientLink href="/" className="btn">
                 {PAGE_NAME}
-              </Link>
+              </ClientLink>
             )}
           </Button>
         </div>

@@ -4,14 +4,18 @@ import config from "@payload-config";
 
 import type { MiddlewareFactory } from "@/lib/types";
 import { EMAIL_VERIFICATION_COOKIE } from "@/lib/constants";
+import { getMiddlewareLocation } from "@/lib/util";
 
 export const verifyEmailMiddlware: MiddlewareFactory = (next) => async (request) => {
-  if (request.nextUrl.pathname !== "/verify-email") {
+  const { locale, pathname } = getMiddlewareLocation(request);
+
+  if (pathname !== "/verify-email") {
     return next(request);
   }
   const payload = await getPayload({ config });
 
-  const redirect = (to: string) => NextResponse.redirect(new URL(to, request.url));
+  const redirect = (to: string) =>
+    NextResponse.redirect(new URL(`/${locale}${to}`, request.url));
 
   const token = request.nextUrl.searchParams.get("token");
   if (!token) {

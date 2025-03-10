@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
+import { ClientLink } from "@/components/link/client";
 import { Tile } from "@/components/tile";
 import { Button } from "@/components/ui/button";
 
@@ -31,7 +31,7 @@ export default async function ResetPassword({ searchParams }: PropsWithToken) {
         <ResetPasswordForm token={token} />
         <p className="text-sm">{t("profile.formDetails.or")}</p>
         <Button asChild variant="ghost">
-          <Link href="/login">{t("profile.formDetails.login")}</Link>
+          <ClientLink href="/login">{t("profile.formDetails.login")}</ClientLink>
         </Button>
       </Tile>
     </div>
