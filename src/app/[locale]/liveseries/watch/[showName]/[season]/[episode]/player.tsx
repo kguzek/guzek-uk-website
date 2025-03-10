@@ -1,11 +1,11 @@
 "use client";
 
 import type { KeyboardEvent, SyntheticEvent } from "react";
-import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { showErrorToast } from "@/components/error/toast";
+import { useRouter } from "@/lib/hooks/router";
 
 const VIDEO_FRAME_RATE = 25; // frames per second
 const VIDEO_FRAME_LENGTH = 1 / VIDEO_FRAME_RATE; // seconds per frame

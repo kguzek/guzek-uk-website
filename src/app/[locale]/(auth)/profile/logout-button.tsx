@@ -8,8 +8,8 @@ import { toast } from "sonner";
 
 import { fetchErrorToast } from "@/components/error/toast";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "@/i18n/navigation";
 import { fetchFromApi } from "@/lib/backend";
+import { useRouter } from "@/lib/hooks/router";
 
 export function LogoutButton() {
   const { mutateAsync, isPending, isSuccess } = useMutation({ mutationFn: logOut });

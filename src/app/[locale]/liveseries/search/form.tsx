@@ -6,7 +6,7 @@ import { useForm, useWatch } from "react-hook-form";
 
 import { ClientLink } from "@/components/link/client";
 import { Tile } from "@/components/tile";
-import { useRouter } from "@/i18n/navigation";
+import { useRouter } from "@/lib/hooks/router";
 import { getTitle } from "@/lib/util";
 import { Button } from "@/ui/button";
 import {

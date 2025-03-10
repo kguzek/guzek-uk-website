@@ -19,9 +19,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "@/i18n/navigation";
 import { fetchFromApi } from "@/lib/backend";
 import { resetPasswordSchema } from "@/lib/backend/schemas";
+import { useRouter } from "@/lib/hooks/router";
 
 export function ResetPasswordForm({ token }: { token: string }) {
   const t = useTranslations();

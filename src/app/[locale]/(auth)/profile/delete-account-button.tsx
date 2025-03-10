@@ -21,9 +21,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { showSuccessToast } from "@/components/ui/sonner";
-import { useRouter } from "@/i18n/navigation";
 import { getFormatters } from "@/i18n/request";
 import { fetchFromApi } from "@/lib/backend";
+import { useRouter } from "@/lib/hooks/router";
 import { removeUserCookie } from "@/lib/util";
 
 export function DeleteAccountButton({ user }: { user: User }) {

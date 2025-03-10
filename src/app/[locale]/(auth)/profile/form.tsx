@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -45,6 +45,7 @@ import { Link } from "@/i18n/navigation";
 import { fetchFromApi, refreshAccessToken } from "@/lib/backend";
 import { updateUserDetailsSchema } from "@/lib/backend/schemas";
 import { LIVESERIES_SERVER_HOMEPAGE } from "@/lib/constants";
+import { useRouter } from "@/lib/hooks/router";
 
 export function ProfileForm({ user }: { user: User }) {
   const t = useTranslations();

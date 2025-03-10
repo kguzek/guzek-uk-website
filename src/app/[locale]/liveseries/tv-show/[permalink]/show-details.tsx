@@ -23,7 +23,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "@/i18n/navigation";
 import {
   getUserLikedShows,
   updateUserShowLike,
@@ -31,6 +30,7 @@ import {
 } from "@/lib/backend/liveseries";
 import { useLiveSeriesContext } from "@/lib/context/liveseries-context";
 import { TvShowContext } from "@/lib/context/tv-show-context";
+import { useRouter } from "@/lib/hooks/router";
 import { getEpisodeAirDate, isInvalidDate } from "@/lib/util";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/ui/badge";

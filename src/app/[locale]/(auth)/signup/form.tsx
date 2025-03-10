@@ -11,9 +11,9 @@ import type { SignUpSchema } from "@/lib/backend/schemas";
 import { createNewUser } from "@/app/actions";
 import { fetchErrorToast } from "@/components/error/toast";
 import { ClientLink } from "@/components/link/client";
-import { useRouter } from "@/i18n/navigation";
 import { signUpSchema } from "@/lib/backend/schemas";
 import { TURNSTILE_SITE_KEY } from "@/lib/constants";
+import { useRouter } from "@/lib/hooks/router";
 import { beginEmailVerification } from "@/lib/util";
 import { Button } from "@/ui/button";
 import {

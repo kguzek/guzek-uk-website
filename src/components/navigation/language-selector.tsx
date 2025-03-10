@@ -7,7 +7,6 @@ import { LOCALES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 export function LanguageSelector() {
-  // const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations();
   const locale = useLocale();
