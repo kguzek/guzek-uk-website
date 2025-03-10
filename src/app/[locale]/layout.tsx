@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Raleway, Roboto_Slab } from "next/font/google";
 import Script from "next/script";
+import NextTopLoader from "nextjs-toploader";
 
 import { Footer } from "@/components/footer";
 import { Navigation } from "@/components/navigation";
@@ -123,6 +124,14 @@ export default async function RootLayout({
           <QueryProvider>
             <TooltipProvider>
               <GlowCapture className="flex min-h-screen flex-col pt-(--navbar-height) sm:pt-(--navbar-height-sm)">
+                <NextTopLoader
+                  color="#2596be"
+                  showSpinner={false}
+                  height={2}
+                  crawlSpeed={100}
+                  crawl={true}
+                  initialPosition={0.1}
+                />
                 <Navigation />
                 <main className="grow">{children}</main>
                 <Footer />
