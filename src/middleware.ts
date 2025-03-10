@@ -17,7 +17,7 @@ function stackMiddlewares(...factories: MiddlewareFactory[]): CustomMiddleware {
 }
 
 export default stackMiddlewares(
-  rateLimitMiddleware(),
+  rateLimitMiddleware({ maxRequests: 200 }),
   rateLimitMiddleware({
     // Matches all server action calls (i.e. user creation, password reset)
     matcher: (request) =>

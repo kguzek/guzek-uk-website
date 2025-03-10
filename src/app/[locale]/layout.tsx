@@ -15,6 +15,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 
 import type { UserLocale } from "@/lib/types";
+import { formats } from "@/i18n/request";
 import { routing } from "@/i18n/routing";
 import { OG_IMAGE_METADATA, PRODUCTION_URL } from "@/lib/constants";
 import { QueryProvider } from "@/lib/providers/query-provider";
@@ -118,7 +119,7 @@ export default async function RootLayout({
         <link rel="canonical" href={PRODUCTION_URL} />
       </head>
       <body className="text-primary bg-gradient-main">
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider messages={messages} formats={formats}>
           <QueryProvider>
             <TooltipProvider>
               <GlowCapture className="flex min-h-screen flex-col pt-(--navbar-height) sm:pt-(--navbar-height-sm)">

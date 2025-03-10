@@ -59,6 +59,7 @@ type BodilessFetchOptions = {
   method?: "GET" | "DELETE" | "POST";
   body?: never;
 };
+
 export type FetchOptions = (BodyFetchOptions | BodilessFetchOptions) & {
   params?: Record<string, string>;
   headers?: Record<string, string>;

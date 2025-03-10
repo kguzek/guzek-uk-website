@@ -2,14 +2,16 @@ import { getPayload } from "payload";
 import config from "@payload-config";
 import { getLocale, getTranslations } from "next-intl/server";
 
-import type { UserLocale } from "@/lib/types";
+import type { MenuItem, UserLocale } from "@/lib/types";
 import { getAuth } from "@/lib/providers/auth-provider";
 
 import type { Parallels } from "./breadcrumbs";
 import { Breadcrumbs } from "./breadcrumbs";
 import { NavigationBar } from "./navigation-bar";
 
-const MENU_ITEMS = [
+const MENU_ITEMS: (Omit<MenuItem, "title"> & {
+  title: string | Record<UserLocale, string>;
+})[] = [
   {
     id: 1,
     url: "/",
@@ -33,11 +35,12 @@ const MENU_ITEMS = [
   },
 ];
 
-const ADMIN_MENU_ITEMS = [
+const ADMIN_MENU_ITEMS: MenuItem[] = [
   {
     id: 4,
     url: "/admin",
     title: "CMS",
+    isAbsolute: true,
   },
 ];
 

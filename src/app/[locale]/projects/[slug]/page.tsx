@@ -168,7 +168,10 @@ export default async function ProjectPage(props: ProjectProps) {
         />
         <h2 className="mb-2">{project.title}</h2>
         {project.url && (
-          <Link className="group mb-3 flex items-center gap-2 bg-none" href={project.url}>
+          <Link
+            className="group mb-3 flex items-center gap-2 bg-none!"
+            href={project.url}
+          >
             <div className="hover-underline group-hover:underlined text-accent">
               {project.url}
             </div>

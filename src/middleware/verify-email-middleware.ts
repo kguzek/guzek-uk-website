@@ -27,12 +27,6 @@ export const verifyEmailMiddlware: MiddlewareFactory = (next) => async (request)
     if (success) {
       errorMessage = null;
     }
-    // const response = await fetchFromApi<ApiMessage>(`users/verify/${token}`, {
-    //   method: "POST",
-    // });
-    // if (response.data.message === "Email verified successfully.") {
-    //   errorMessage = null;
-    // }
   } catch (error) {
     if (error instanceof Error && error.message) {
       errorMessage = error.message;

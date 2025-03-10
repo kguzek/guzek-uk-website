@@ -90,3 +90,11 @@ export type MiddlewareFactory<T extends Array<unknown> = Array<never>> = (
 // #endregion
 
 export type Numeric = number | `${number}`;
+
+export interface MenuItem {
+  id: number;
+  title: string;
+  url: string;
+  label?: string;
+  isAbsolute?: boolean;
+}
