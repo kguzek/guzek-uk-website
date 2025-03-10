@@ -20,7 +20,9 @@ export default stackMiddlewares(
   rateLimitMiddleware(),
   rateLimitMiddleware({
     // Matches all server action calls (i.e. user creation, password reset)
-    matcher: (request) => request.method.toUpperCase() === "POST",
+    matcher: (request) =>
+      request.method.toUpperCase() === "POST" &&
+      !request.nextUrl.pathname.startsWith("/admin/"),
     maxRequests: 10,
     windowMs: 30 * 60 * 1000,
   }),
