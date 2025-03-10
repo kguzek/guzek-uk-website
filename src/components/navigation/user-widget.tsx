@@ -22,7 +22,7 @@ export function UserWidget({
   return (
     <div className="group text-primary grid h-full max-w-[90%] place-items-center font-light sm:max-w-full">
       {user == null ? (
-        <div className="flex flex-col gap-2 sm:flex-row">
+        <div className="flex flex-col-reverse gap-x-2 gap-y-4 sm:flex-row">
           <Button asChild variant="glow" className="min-w-28" onClick={closeMenu}>
             <ClientLink href="/signup">{t("profile.formDetails.signup")}</ClientLink>
           </Button>
@@ -39,7 +39,7 @@ export function UserWidget({
           @
           <span
             className={cn(
-              "hover-underline group-hover:underlined max-w-full overflow-hidden text-[1.2rem] text-ellipsis whitespace-nowrap sm:max-w-80 lg:max-w-40",
+              "hover-underline group-hover:underlined text-primary max-w-full overflow-hidden text-[1.2rem] text-ellipsis whitespace-nowrap sm:max-w-80 lg:max-w-40",
               {
                 "underlined text-primary-strong": isActive,
               },
