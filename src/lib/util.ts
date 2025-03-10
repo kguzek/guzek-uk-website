@@ -1,3 +1,4 @@
+import type { NextRequest } from "next/server";
 import type { Episode as TvMazeEpisode } from "tvmaze-wrapper-ts";
 import Cookies from "js-cookie";
 
@@ -240,3 +241,14 @@ export const beginEmailVerification = (email: string) =>
     sameSite: "lax",
     expires: new Date(Date.now() + 900000), // 15 minutes
   });
+
+export function getRequestIp(request: NextRequest, fallback = "<unknown-ip>") {
+  const unparsedIp =
+    request.headers.get("cf-connecting-ip") ||
+    request.headers.get("x-forwarded-for") ||
+    request.headers.get("x-real-ip");
+  if (!unparsedIp) {
+    return fallback;
+  }
+  return unparsedIp.split(",")[0].trim();
+}

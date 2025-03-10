@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import type { MiddlewareFactory } from "@/lib/types";
 import { IP_BLACKLIST } from "@/lib/constants";
+import { getRequestIp } from "@/lib/util";
 
 interface RateLimitRecord {
   lastRequestTime: number;
@@ -31,12 +32,7 @@ export const rateLimitMiddleware: (config?: RateLimitConfig) => MiddlewareFactor
       if (!isMatch) {
         return response;
       }
-      const unparsedIp =
-        request.headers.get("cf-connecting-ip") ||
-        request.headers.get("x-forwarded-for") ||
-        request.headers.get("x-real-ip") ||
-        "<unknown-ip>";
-      const clientIp = unparsedIp.split(",")[0].trim();
+      const clientIp = getRequestIp(request);
 
       if (IP_BLACKLIST.includes(clientIp)) {
         console.warn("Blocked blacklisted IP", clientIp);
