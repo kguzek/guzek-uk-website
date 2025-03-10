@@ -21,7 +21,7 @@ const TV_MAZE_URL = "https://www.tvmaze.com/";
 const REPO_NAME = "guzek-uk-website";
 
 const BETA_INFO = {
-  enabled: true,
+  enabled: false,
   url: `${GITHUB_URL}/${REPO_NAME}/pull/19`,
   label: "next-intl",
 };
