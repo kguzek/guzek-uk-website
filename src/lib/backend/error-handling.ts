@@ -1,5 +1,3 @@
-import { getTranslations } from "next-intl/server";
-
 import type { ErrorResponseBodyPayloadCms } from "../types";
 import { parseResponseBody } from ".";
 import { DEFAULT_LOCALE } from "../constants";
@@ -105,9 +103,12 @@ export async function getResponse<T>(url: string, options: RequestInit) {
   }
 
   // console.debug("...", res.status, res.statusText);
-  const t = await getTranslations({ locale: DEFAULT_LOCALE });
   if (!res.ok) {
-    throw new HttpError(res, data as ErrorResponseBodyPayloadCms, t("unknownError"));
+    // TODO: localise?
+    const { default: messages }: { default: IntlMessages } = await import(
+      `../../../messages/${DEFAULT_LOCALE}.json`
+    );
+    throw new HttpError(res, data as ErrorResponseBodyPayloadCms, messages.unknownError);
   }
   return { res, data };
 }

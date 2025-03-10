@@ -1,9 +1,11 @@
 "use client";
 
 import type { ComponentProps } from "react";
+import AbsoluteLink from "next/link";
 import { useRef } from "react";
 import { GlowCapture } from "@codaworks/react-glow";
 
+import type { MenuItem } from "@/lib/types";
 import type { User } from "@/payload-types";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useScroll } from "@/lib/hooks/scroll";
@@ -14,13 +16,6 @@ import { Logo } from "../image/logo";
 import { LanguageSelector } from "./language-selector";
 import { UserWidget } from "./user-widget";
 
-interface MenuItem {
-  id: number;
-  title: string;
-  url: string;
-  label?: string;
-}
-
 function NavBarItem({
   item,
   ...props
@@ -29,8 +24,9 @@ function NavBarItem({
 
   // Handle edge case for index page ("/")
   const isActive = item.url === "/" ? pathname === "/" : pathname?.startsWith(item.url);
+  const Comp = item.isAbsolute ? AbsoluteLink : Link;
   return (
-    <Link
+    <Comp
       {...props}
       href={item.url}
       className={cn("hover-underline text-primary", {
@@ -38,7 +34,7 @@ function NavBarItem({
       })}
     >
       {item.label || item.title}
-    </Link>
+    </Comp>
   );
 }
 
@@ -60,7 +56,6 @@ export function NavigationBar({
   }
 
   const userWidget = <UserWidget user={user} closeMenu={closeMenu} />;
-
   const Comp = scrollY > 0 ? GlowCapture : "div";
 
   return (

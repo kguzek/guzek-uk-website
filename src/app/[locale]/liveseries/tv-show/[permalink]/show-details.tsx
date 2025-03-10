@@ -327,7 +327,9 @@ export function ShowDetails({
             <AlertDialogTitle>{t("liveSeries.tvShow.confirmSubscribe")}</AlertDialogTitle>
             <AlertDialogDescription className="flex gap-2">
               <TriangleAlert className="text-accent2" size={18} />{" "}
-              {t("liveSeries.tvShow.unwatchedEpisodes", { unwatchedEpisodesCount })}
+              {t("liveSeries.tvShow.unwatchedEpisodes", {
+                unwatched: unwatchedEpisodesCount,
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

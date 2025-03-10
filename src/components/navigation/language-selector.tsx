@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 
-import { usePathname } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { LOCALES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -28,7 +27,8 @@ export function LanguageSelector() {
         {LOCALES.map((language) => (
           <Link
             aria-selected={locale === language}
-            href={`/${language.toLowerCase()}${pathname}`}
+            locale={language}
+            href={pathname}
             key={language}
             prefetch={false}
             className={cn("w-8 cursor-default py-2 text-center text-xs font-semibold", {
