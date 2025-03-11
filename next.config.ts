@@ -24,6 +24,7 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     nodeMiddleware: true,
+    ppr: true,
   },
 };
 

@@ -13,7 +13,7 @@ import "./globals.css";
 import { notFound } from "next/navigation";
 import { GlowCapture } from "@codaworks/react-glow";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
+import { getMessages, setRequestLocale } from "next-intl/server";
 
 import type { UserLocale } from "@/lib/types";
 import { formats } from "@/i18n/request";
@@ -90,6 +90,12 @@ const robotoSlab = Roboto_Slab({
   variable: "--font-roboto-slab",
 });
 
+export const experimental_ppr = true;
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
 export default async function RootLayout({
   children,
   params,
@@ -104,6 +110,8 @@ export default async function RootLayout({
     notFound();
   }
 
+  setRequestLocale(locale);
+
   // Providing all messages to the client
   // side is the easiest way to get started
   const messages = await getMessages();
@@ -117,7 +125,6 @@ export default async function RootLayout({
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/logo192.png" />
         <link rel="manifest" href="/manifest.json" />
-        <link rel="canonical" href={PRODUCTION_URL} />
       </head>
       <body className="text-primary bg-gradient-main">
         <NextIntlClientProvider messages={messages} formats={formats}>
