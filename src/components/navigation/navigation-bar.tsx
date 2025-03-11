@@ -3,7 +3,6 @@
 import type { ComponentProps } from "react";
 import AbsoluteLink from "next/link";
 import { useRef } from "react";
-import { GlowCapture } from "@codaworks/react-glow";
 
 import type { MenuItem } from "@/lib/types";
 import type { User } from "@/payload-types";
@@ -56,7 +55,6 @@ export function NavigationBar({
   }
 
   const userWidget = <UserWidget user={user} closeMenu={closeMenu} />;
-  const Comp = scrollY > 0 ? GlowCapture : "div";
 
   return (
     <nav
@@ -72,7 +70,7 @@ export function NavigationBar({
     >
       <Logo size={80} />
       <p className="font-bold whitespace-nowrap sm:text-3xl">{PAGE_NAME}</p>
-      <Comp className="ml-auto flex flex-row-reverse self-stretch lg:flex-row">
+      <div className="ml-auto flex flex-row-reverse self-stretch lg:flex-row">
         {/* Hamburger */}
         <label
           aria-controls="menu"
@@ -118,7 +116,7 @@ export function NavigationBar({
           <LanguageSelector />
         </ul>
         <div className="mx-3 hidden sm:block">{userWidget}</div>
-      </Comp>
+      </div>
     </nav>
   );
 }
