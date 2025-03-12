@@ -2,7 +2,7 @@ import { getPayload } from "payload";
 import config from "@payload-config";
 
 import type { MiddlewareFactory } from "@/lib/types";
-import { EMAIL_VERIFICATION_COOKIE } from "@/lib/constants";
+import { EMAIL_VERIFICATION_COOKIE, EMAIL_VERIFICATION_PARAM } from "@/lib/constants";
 
 import { getMiddlewareLocation } from "./util";
 
@@ -37,7 +37,7 @@ export const verifyEmailMiddlware: MiddlewareFactory = (next) => async (request)
   if (errorMessage != null) {
     return redirect(`/error/400?message=${errorMessage}`);
   }
-  const response = redirect("/login?from=verify-email");
+  const response = redirect(`/login?from=${EMAIL_VERIFICATION_PARAM}`);
   response.cookies.delete(EMAIL_VERIFICATION_COOKIE);
   return response;
 };

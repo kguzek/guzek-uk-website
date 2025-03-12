@@ -73,7 +73,7 @@ export function EpisodeDownloadIndicator({
       setMetadata((old) => old && { ...old, status: DownloadStatus.PENDING });
     } catch (error) {
       console.error(error);
-      showErrorToast(t("liveSeries.episodes.downloadError", { episodeString }));
+      showErrorToast(t("liveSeries.episodes.downloadError", { episode: episodeString }));
       setMetadata((old) => old && { ...old, status: DownloadStatus.FAILED });
     }
   }

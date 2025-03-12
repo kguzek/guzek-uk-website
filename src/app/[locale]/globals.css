@@ -200,9 +200,12 @@
 
     --card-width: 240px;
     --card-padding: 20px;
-
-    --navbar-height-sm: 100px;
     --navbar-height: 80px;
+  }
+  @media (min-width: 640px) {
+    :root {
+      --navbar-height: 100px;
+    }
   }
 
   a {

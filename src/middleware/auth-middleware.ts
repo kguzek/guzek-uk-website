@@ -28,7 +28,7 @@ export const authMiddleware: MiddlewareFactory = (next) =>
 
     const [redirectFrom, redirectTo] =
       user == null
-        ? [ROUTES_REQUIRING_AUTH, "/login"]
+        ? [ROUTES_REQUIRING_AUTH, `/login?from=${encodeURIComponent(pathname)}`]
         : [ROUTES_REQUIRING_NOAUTH, "/profile"];
     for (const route of redirectFrom) {
       if (pathname.startsWith(route)) {

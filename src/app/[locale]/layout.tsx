@@ -130,7 +130,7 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages} formats={formats}>
           <QueryProvider>
             <TooltipProvider>
-              <GlowCapture className="flex min-h-screen flex-col pt-(--navbar-height) sm:pt-(--navbar-height-sm)">
+              <GlowCapture className="flex min-h-screen flex-col pt-(--navbar-height)">
                 <NextTopLoader
                   color="#2596be"
                   showSpinner={false}

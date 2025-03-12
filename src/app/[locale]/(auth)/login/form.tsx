@@ -14,6 +14,7 @@ import { showSuccessToast } from "@/components/ui/sonner";
 import { Link } from "@/i18n/navigation";
 import { fetchFromApi } from "@/lib/backend";
 import { logInSchema } from "@/lib/backend/schemas";
+import { EMAIL_VERIFICATION_PARAM } from "@/lib/constants";
 import { useRouter } from "@/lib/hooks/router";
 import { Button } from "@/ui/button";
 import {
@@ -40,6 +41,8 @@ export function LogInForm({ from }: { from?: string }) {
   const { mutateAsync, isPending, isSuccess } = useMutation({ mutationFn: login });
 
   const t = useTranslations();
+  const redirectPath =
+    !from || from === "/" || from === EMAIL_VERIFICATION_PARAM ? "/profile" : from;
 
   async function login({ login, password }: LogInSchema) {
     const data = EMAIL_REGEX.test(login) ? { email: login } : { username: login };
@@ -48,12 +51,12 @@ export function LogInForm({ from }: { from?: string }) {
       body: { ...data, password },
     });
     console.info("Logged in:", result);
-    router.push("/profile");
+    router.push(redirectPath);
     router.refresh();
   }
 
   useEffect(() => {
-    if (from === "verify-email") {
+    if (from === EMAIL_VERIFICATION_PARAM) {
       showSuccessToast(t("profile.formDetails.verifyEmail.success"));
     }
   }, [from]);
@@ -67,7 +70,7 @@ export function LogInForm({ from }: { from?: string }) {
         onSubmit={form.handleSubmit((values) => {
           toast.promise(mutateAsync(values), {
             loading: `${t("profile.loading")}...`,
-            error: fetchErrorToast(t("networkError"), t("profile.invalidCredentials")),
+            error: fetchErrorToast(t("profile.invalidCredentials")),
           });
         })}
       >

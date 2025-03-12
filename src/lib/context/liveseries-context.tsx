@@ -207,10 +207,11 @@ export function LiveSeriesProvider({
         poll(sorted);
         return sorted;
       });
-      if (completedDownloadName)
+      if (completedDownloadName) {
         showSuccessToast(
-          t("liveSeries.episodes.downloadComplete", { completedDownloadName }),
+          t("liveSeries.episodes.downloadComplete", { episode: completedDownloadName }),
         );
+      }
     };
   }
 

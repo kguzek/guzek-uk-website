@@ -3,20 +3,20 @@ import { parseResponseBody } from ".";
 import { DEFAULT_LOCALE } from "../constants";
 import { getErrorMessage } from "../util";
 
-type ErrorType = "network" | "http" | "body" | "json";
+type RequestErrorType = "network" | "http" | "body" | "json";
 
 class RequestError extends Error {
-  type: ErrorType;
+  type: RequestErrorType;
 
-  constructor(message: string, type: ErrorType) {
+  constructor(message: string, type: RequestErrorType) {
     super(message);
     this.type = type;
   }
 }
 
 export class NetworkError extends RequestError {
-  constructor() {
-    super("Network error", "network");
+  constructor(networkErrorMessage: string) {
+    super(networkErrorMessage, "network");
   }
 }
 
@@ -64,12 +64,18 @@ export type FetchError =
 
 export async function getResponse<T>(url: string, options: RequestInit) {
   const method = options.method ?? "GET";
+
+  // TODO: localise?
+  const { default: messages }: { default: IntlMessages } = await import(
+    `../../../messages/${DEFAULT_LOCALE}.json`
+  );
+
   let res;
   try {
     res = await fetch(url, options);
   } catch (error) {
     console.error(method, url, "FAILED:", error);
-    throw new NetworkError();
+    throw new NetworkError(messages.networkError);
   }
   let body: string;
   try {
@@ -104,10 +110,6 @@ export async function getResponse<T>(url: string, options: RequestInit) {
 
   // console.debug("...", res.status, res.statusText);
   if (!res.ok) {
-    // TODO: localise?
-    const { default: messages }: { default: IntlMessages } = await import(
-      `../../../messages/${DEFAULT_LOCALE}.json`
-    );
     throw new HttpError(res, data as ErrorResponseBodyPayloadCms, messages.unknownError);
   }
   return { res, data };

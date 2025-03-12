@@ -27,7 +27,9 @@ export function UserWidget({
             <ClientLink href="/signup">{t("profile.formDetails.signup")}</ClientLink>
           </Button>
           <Button asChild className="min-w-28" onClick={closeMenu}>
-            <ClientLink href="/login">{t("loginShort")}</ClientLink>
+            <ClientLink href={`/login?from=${encodeURIComponent(pathname)}`}>
+              {t("loginShort")}
+            </ClientLink>
           </Button>
         </div>
       ) : (

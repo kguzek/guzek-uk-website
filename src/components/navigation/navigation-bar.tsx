@@ -59,7 +59,7 @@ export function NavigationBar({
   return (
     <nav
       className={cn(
-        "fixed top-0 z-10 flex h-(--navbar-height) w-screen items-center gap-4 border-0 border-b border-solid border-transparent bg-transparent px-4 [transition:all_300ms_ease,border-color_1s_ease] sm:h-(--navbar-height-sm) sm:px-10 lg:gap-6",
+        "fixed top-0 z-10 flex h-(--navbar-height) w-screen items-center gap-4 border-0 border-b border-solid border-transparent bg-transparent px-4 [transition:all_300ms_ease,border-color_1s_ease] sm:px-10 lg:gap-6",
         {
           "border-background-soft bg-background-strong/70 backdrop-blur-2xl": scrollY > 0,
         },

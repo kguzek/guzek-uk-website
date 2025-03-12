@@ -103,7 +103,7 @@ export function DownloadsWidget({
 
   function getDeleteEpisodeConfirmationMessage(episode: DownloadedEpisode) {
     const formattedEpisode = formatters.quote(serialise(episode));
-    return t("liveSeries.episodes.confirmDelete", { formattedEpisode });
+    return t("liveSeries.episodes.confirmDelete", { episode: formattedEpisode });
   }
 
   if (downloadedEpisodes.length === 0) return null;
@@ -111,10 +111,11 @@ export function DownloadsWidget({
   return (
     <Tile
       containerClassName={cn(
-        "group fixed right-0 bottom-0 z-7 w-full sm:max-w-lg rounded-t-xl rounded-b-none border border-b-0 p-0 pl-2 shadow-lg backdrop-blur-2xl transition-colors duration-300 sm:rounded-tr-none sm:border-r-0",
+        "group fixed right-0 bottom-0 z-7 w-full sm:max-w-lg rounded-t-xl rounded-b-none border border-b-0 p-0 pl-2 shadow-lg sm:backdrop-blur-2xl transition-colors duration-300 sm:rounded-tr-none sm:border-r-0",
         {
-          "bg-background-strong/70 sm:bg-background-strong/25": collapsed,
-          "bg-background-strong sm:bg-background-strong/70 hover:bg-background-strong":
+          "bg-background-strong/70 sm:bg-background-strong/25 backdrop-blur-lg":
+            collapsed,
+          "bg-background-strong sm:bg-background-strong/70 sm:hover:bg-background-strong":
             !collapsed,
         },
       )}
@@ -161,10 +162,13 @@ export function DownloadsWidget({
         ></ChevronUpIcon>
       </div>
       <div
-        className={cn("collapsible max-h-[80vh] overflow-y-auto overscroll-y-none pr-2", {
-          collapsed,
-          "expanded mb-2": !collapsed,
-        })}
+        className={cn(
+          "collapsible max-h-[calc(85vh-var(--navbar-height))] overflow-y-auto overscroll-y-none pr-2",
+          {
+            collapsed,
+            "expanded mb-2": !collapsed,
+          },
+        )}
       >
         <div
           className={cn("flex flex-col items-center justify-around gap-2", {
@@ -216,7 +220,7 @@ export function DownloadsWidget({
             );
             return (
               <div
-                className="bg-background/50 group-hover:bg-background/70 hover:bg-background flex w-full rounded-sm backdrop-blur-3xl transition-colors duration-300"
+                className="bg-background sm:bg-background/50 sm:group-hover:bg-background/70 sm:hover:bg-background flex w-full rounded-sm transition-colors duration-300"
                 key={key}
               >
                 {episode.status === DownloadStatus.COMPLETE ? (

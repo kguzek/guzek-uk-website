@@ -54,7 +54,6 @@ export default async function Watch({ params }: Props) {
       urlBase: user.serverUrl,
     });
   } catch (error) {
-    console.error("Error fetching video stats:", error);
     statError = error;
   }
 
