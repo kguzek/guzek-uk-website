@@ -1,6 +1,6 @@
 "use client";
 
-import type { ToasterProps } from "sonner";
+import type { ExternalToast, ToasterProps } from "sonner";
 import { Check, Info } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Toaster as Sonner, toast } from "sonner";
@@ -38,11 +38,14 @@ export const infoToast = (message: string) => ({
   message,
 });
 
-export function showSuccessToast(text: string) {
+export function showSuccessToast(
+  text: string,
+  optionsOverride: Omit<ExternalToast, "message"> = {},
+) {
   const { message, ...options } = successToast(text);
   // Timeout needed in case this is called on page load
   setTimeout(() => {
-    toast.success(message, options);
+    toast.success(message, { ...options, ...optionsOverride });
   }, 0);
 }
 

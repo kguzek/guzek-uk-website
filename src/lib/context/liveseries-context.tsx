@@ -201,11 +201,20 @@ export function LiveSeriesProvider({
     };
   }
 
+  function onDownloadComplete(episode: DownloadedEpisode) {
+    const episodeObject = { number: episode.episode, season: episode.season };
+    showSuccessToast(
+      t("liveSeries.episodes.downloadComplete", {
+        episode: `${episode.showName} ${formatters.serialiseEpisode(episodeObject)}`,
+      }),
+      { duration: 10000 },
+    );
+  }
+
   function handleEpisodesUpdate(
     torrentInfo: DownloadedEpisode[],
     poll: (episodes: DownloadedEpisode[]) => void,
   ) {
-    let completedDownloadName = "";
     setDownloadedEpisodes((currentDownloadedEpisodes) => {
       const mapped = torrentInfo.map((val) => {
         const found = currentDownloadedEpisodes.find((info) =>
@@ -217,8 +226,7 @@ export function LiveSeriesProvider({
           found.status !== DownloadStatus.COMPLETE &&
           val.status === DownloadStatus.COMPLETE
         ) {
-          const episodeObject = { number: val.episode, season: val.season };
-          completedDownloadName = `${val.showName} ${formatters.serialiseEpisode(episodeObject)}`;
+          onDownloadComplete(val);
         }
         return val;
       });
@@ -242,11 +250,6 @@ export function LiveSeriesProvider({
       );
       return sorted;
     });
-    if (completedDownloadName) {
-      showSuccessToast(
-        t("liveSeries.episodes.downloadComplete", { episode: completedDownloadName }),
-      );
-    }
   }
 
   async function updateUserWatchedEpisodes(
