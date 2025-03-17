@@ -106,11 +106,15 @@ export function LiveSeriesProvider({
   const t = useTranslations();
   const locale = useLocale();
   const formatters = getFormatters(locale);
+  const [pollTimeout, setPollTimeout] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!user) return;
     connectToWebsocket();
     return () => {
+      if (pollTimeout != null) {
+        clearTimeout(pollTimeout);
+      }
       if (!existingSocket) return;
       const socket = existingSocket;
       setExistingSocket(null);
@@ -180,10 +184,7 @@ export function LiveSeriesProvider({
       const message: WebsocketMessage = JSON.parse(rawMessage.data);
       switch (message.type) {
         case "polled":
-          const newData = handleEpisodesUpdate(message.data);
-          setTimeout(() => {
-            poll(newData);
-          }, WEBSOCKET_POLL_INTERVAL_MS);
+          handleEpisodesUpdate(message.data, poll);
           break;
         case "authenticated":
           if (message.success) {
@@ -200,9 +201,11 @@ export function LiveSeriesProvider({
     };
   }
 
-  function handleEpisodesUpdate(torrentInfo: DownloadedEpisode[]) {
+  function handleEpisodesUpdate(
+    torrentInfo: DownloadedEpisode[],
+    poll: (episodes: DownloadedEpisode[]) => void,
+  ) {
     let completedDownloadName = "";
-    let sorted: DownloadedEpisode[] = [];
     setDownloadedEpisodes((currentDownloadedEpisodes) => {
       const mapped = torrentInfo.map((val) => {
         const found = currentDownloadedEpisodes.find((info) =>
@@ -223,7 +226,7 @@ export function LiveSeriesProvider({
       //if (currentDownloadedEpisodes.find((val) => compareEpisodes(val, info))) continue;
       //mapped.push(info);
       //}
-      sorted = mapped.sort((a, b) =>
+      const sorted = mapped.sort((a, b) =>
         serialiseEpisodeForSorting(a).localeCompare(
           serialiseEpisodeForSorting(b),
           undefined,
@@ -232,6 +235,11 @@ export function LiveSeriesProvider({
           },
         ),
       );
+      setPollTimeout(
+        setTimeout(() => {
+          poll(sorted);
+        }, WEBSOCKET_POLL_INTERVAL_MS),
+      );
       return sorted;
     });
     if (completedDownloadName) {
@@ -239,7 +247,6 @@ export function LiveSeriesProvider({
         t("liveSeries.episodes.downloadComplete", { episode: completedDownloadName }),
       );
     }
-    return sorted;
   }
 
   async function updateUserWatchedEpisodes(
