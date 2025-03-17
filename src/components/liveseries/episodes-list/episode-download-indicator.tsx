@@ -69,6 +69,7 @@ export function EpisodeDownloadIndicator({
           season: episode.season,
         },
         urlBase: user.serverUrl,
+        accessToken,
       });
       setMetadata((old) => old && { ...old, status: DownloadStatus.PENDING });
     } catch (error) {
