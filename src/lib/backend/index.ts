@@ -87,7 +87,7 @@ export async function fetchFromApi<T>(
 ) {
   const requestInit: RequestInit = {
     method: fetchOptions.method,
-    credentials: "include",
+    credentials: accessToken ? "omit" : "include",
     next: {
       tags:
         fetchOptions.method == null || fetchOptions.method === "GET"
