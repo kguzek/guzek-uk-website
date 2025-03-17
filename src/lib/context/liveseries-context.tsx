@@ -32,6 +32,12 @@ import { compareEpisodes, ensureUnique } from "@/lib/util";
 
 import { tryPatchUser } from "../backend/liveseries";
 
+const WEBSOCKET_POLL_INTERVAL_MS = 1000;
+type WebsocketMessage =
+  | { type: "polled"; data: DownloadedEpisode[] }
+  | { type: "authenticated"; success: boolean }
+  | { type: "error"; error: string };
+
 const LiveSeriesContext = createContext<
   | {
       downloadedEpisodes: DownloadedEpisode[];
@@ -125,9 +131,7 @@ export function LiveSeriesProvider({
     let socket: WebSocket;
     const websocketUrlBase = user.serverUrl.replace("http", "ws");
     try {
-      socket = new WebSocket(
-        `${websocketUrlBase}liveseries/downloaded-episodes/ws?access_token=${accessToken}`,
-      );
+      socket = new WebSocket(`${websocketUrlBase}liveseries/downloaded-episodes/ws`);
     } catch (error) {
       console.error("Websocket instantiation error:", error);
       showErrorToast(t("liveSeries.websockets.connectionFailed"));
@@ -149,7 +153,7 @@ export function LiveSeriesProvider({
     const poll = (data: DownloadedEpisode[]) =>
       socket.send(JSON.stringify({ type: "poll", data }));
     socket.onopen = () => {
-      poll([]);
+      socket.send(JSON.stringify({ type: "authenticate", token: accessToken }));
       socketFailed = false;
     };
     socket.onclose = async (evt) => {
@@ -172,47 +176,70 @@ export function LiveSeriesProvider({
       if (socketFailed) return;
       setIsDialogRetryOpen(true);
     };
-    socket.onmessage = (message) => {
-      const torrentInfo = JSON.parse(message.data).data as DownloadedEpisode[];
-      let completedDownloadName = "";
-      setDownloadedEpisodes((currentDownloadedEpisodes) => {
-        const mapped = torrentInfo.map((val) => {
-          const found = currentDownloadedEpisodes.find((info) =>
-            compareEpisodes(val, info),
-          );
-          if (!found) return val;
-          // Check for episodes whose download status just changed
-          if (
-            found.status !== DownloadStatus.COMPLETE &&
-            val.status === DownloadStatus.COMPLETE
-          ) {
-            const episodeObject = { number: val.episode, season: val.season };
-            completedDownloadName = `${val.showName} ${formatters.serialiseEpisode(episodeObject)}`;
+    socket.onmessage = (rawMessage) => {
+      const message: WebsocketMessage = JSON.parse(rawMessage.data);
+      switch (message.type) {
+        case "polled":
+          const newData = handleEpisodesUpdate(message.data);
+          setTimeout(() => {
+            poll(newData);
+          }, WEBSOCKET_POLL_INTERVAL_MS);
+          break;
+        case "authenticated":
+          if (message.success) {
+            poll([]);
+          } else {
+            showErrorToast(t("liveSeries.websockets.connectionFailed"));
+            socket.close();
           }
-          return val;
-        });
-        //for (const info of torrentInfo) {
-        //if (currentDownloadedEpisodes.find((val) => compareEpisodes(val, info))) continue;
-        //mapped.push(info);
-        //}
-        const sorted = mapped.sort((a, b) =>
-          serialiseEpisodeForSorting(a).localeCompare(
-            serialiseEpisodeForSorting(b),
-            undefined,
-            {
-              numeric: true,
-            },
-          ),
-        );
-        poll(sorted);
-        return sorted;
-      });
-      if (completedDownloadName) {
-        showSuccessToast(
-          t("liveSeries.episodes.downloadComplete", { episode: completedDownloadName }),
-        );
+          break;
+        case "error":
+          console.error("Received error frame:", message.error);
+          break;
       }
     };
+  }
+
+  function handleEpisodesUpdate(torrentInfo: DownloadedEpisode[]) {
+    let completedDownloadName = "";
+    let sorted: DownloadedEpisode[] = [];
+    setDownloadedEpisodes((currentDownloadedEpisodes) => {
+      const mapped = torrentInfo.map((val) => {
+        const found = currentDownloadedEpisodes.find((info) =>
+          compareEpisodes(val, info),
+        );
+        if (!found) return val;
+        // Check for episodes whose download status just changed
+        if (
+          found.status !== DownloadStatus.COMPLETE &&
+          val.status === DownloadStatus.COMPLETE
+        ) {
+          const episodeObject = { number: val.episode, season: val.season };
+          completedDownloadName = `${val.showName} ${formatters.serialiseEpisode(episodeObject)}`;
+        }
+        return val;
+      });
+      //for (const info of torrentInfo) {
+      //if (currentDownloadedEpisodes.find((val) => compareEpisodes(val, info))) continue;
+      //mapped.push(info);
+      //}
+      sorted = mapped.sort((a, b) =>
+        serialiseEpisodeForSorting(a).localeCompare(
+          serialiseEpisodeForSorting(b),
+          undefined,
+          {
+            numeric: true,
+          },
+        ),
+      );
+      return sorted;
+    });
+    if (completedDownloadName) {
+      showSuccessToast(
+        t("liveSeries.episodes.downloadComplete", { episode: completedDownloadName }),
+      );
+    }
+    return sorted;
   }
 
   async function updateUserWatchedEpisodes(
