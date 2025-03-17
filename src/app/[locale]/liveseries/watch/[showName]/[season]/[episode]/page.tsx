@@ -52,6 +52,7 @@ export default async function Watch({ params }: Props) {
     await fetchFromApi(`liveseries/video/${showName}/${season}/${episode}`, {
       headers: { Range: "bytes=0-1" },
       urlBase: user.serverUrl,
+      accessToken,
     });
   } catch (error) {
     statError = error;
