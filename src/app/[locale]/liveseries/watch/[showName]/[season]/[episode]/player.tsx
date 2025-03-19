@@ -99,7 +99,7 @@ export function Player({
       <video
         ref={videoRef}
         controls
-        src={`${apiBase}liveseries/video/${path}`}
+        src={`${apiBase}liveseries/video/${path}&allow_non_mp4=false`}
         autoPlay
         onError={onError}
         onLoadStart={onLoadStart}

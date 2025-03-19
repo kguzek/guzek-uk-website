@@ -71,6 +71,9 @@ export default async function Watch(props: Props) {
       headers: { Range: "bytes=0-1" },
       urlBase: user.serverUrl,
       accessToken,
+      params: {
+        allow_non_mp4: "false",
+      },
     });
   } catch (error) {
     statError = error;
