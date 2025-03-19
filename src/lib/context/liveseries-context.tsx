@@ -32,7 +32,7 @@ import { compareEpisodes, ensureUnique } from "@/lib/util";
 
 import { tryPatchUser } from "../backend/liveseries";
 
-const WEBSOCKET_POLL_INTERVAL_MS = 1000;
+const WEBSOCKET_POLL_INTERVAL_MS = 500;
 type WebsocketMessage =
   | { type: "polled"; data: DownloadedEpisode[] }
   | { type: "authenticated"; success: boolean }

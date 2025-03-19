@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { ErrorComponent } from "@/components/error/component";
@@ -19,15 +20,35 @@ interface Props {
   params: Promise<{ showName: string; season: string; episode: string }>;
 }
 
-export default async function Watch({ params }: Props) {
-  const t = await getTranslations();
-  const locale = await getLocale();
-  const formatters = getFormatters(locale);
+async function parseProps({ params }: Props) {
   const { showName, season: seasonString, episode: episodeString } = await params;
   if (
     Array.isArray(showName) ||
     !(showName && isNumber(seasonString) && isNumber(episodeString))
   ) {
+    return { valid: false } as const;
+  }
+  const locale = await getLocale();
+  const formatters = getFormatters(locale);
+  const season = +seasonString;
+  const episode = +episodeString;
+  const episodeObject = { number: episode, season };
+  const serialized = `${decodeURIComponent(showName)} ${formatters.serialiseEpisode(episodeObject)}`;
+  return { valid: true, season, episode, showName, serialized } as const;
+}
+
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const { valid, serialized } = await parseProps(props);
+  const t = await getTranslations();
+  return {
+    title: valid ? t("error.404.title") : serialized,
+  };
+}
+
+export default async function Watch(props: Props) {
+  const t = await getTranslations();
+  const { valid, season, episode, showName, serialized } = await parseProps(props);
+  if (!valid) {
     return <ErrorComponent errorCode={ErrorCode.NotFound} />;
   }
   const { user, accessToken } = await getAuth();
@@ -44,9 +65,6 @@ export default async function Watch({ params }: Props) {
     );
   }
 
-  const season = +seasonString;
-  const episode = +episodeString;
-
   let statError = null;
   try {
     await fetchFromApi(`liveseries/video/${showName}/${season}/${episode}`, {
@@ -58,13 +76,9 @@ export default async function Watch({ params }: Props) {
     statError = error;
   }
 
-  const episodeObject = { number: episode, season };
-
   return (
     <div>
-      <h2 className="my-6 text-3xl font-bold">
-        {decodeURIComponent(showName)} {formatters.serialiseEpisode(episodeObject)}
-      </h2>
+      <h2 className="my-6 text-3xl font-bold">{serialized}</h2>
       <div className="mb-2 flex flex-col items-center text-sm sm:text-xl md:flex-row md:items-start">
         <div className="flex gap-3">
           {season > 1 && (
