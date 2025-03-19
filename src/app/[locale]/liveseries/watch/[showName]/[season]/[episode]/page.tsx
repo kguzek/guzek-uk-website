@@ -41,7 +41,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const { valid, serialized } = await parseProps(props);
   const t = await getTranslations();
   return {
-    title: valid ? t("error.404.title") : serialized,
+    title: valid ? serialized : t("error.404.title"),
   };
 }
 
