@@ -67,13 +67,9 @@ export default async function Watch(props: Props) {
 
   let statError = null;
   try {
-    await fetchFromApi(`liveseries/video/${showName}/${season}/${episode}`, {
-      headers: { Range: "bytes=0-1" },
+    await fetchFromApi(`liveseries/stat/${showName}/${season}/${episode}`, {
       urlBase: user.serverUrl,
       accessToken,
-      params: {
-        allow_non_mp4: "false",
-      },
     });
   } catch (error) {
     statError = error;
