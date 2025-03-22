@@ -46,7 +46,7 @@
     "html-to-text": "^9.0.5",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.475.0",
-    "next": "15.2.2-canary.6",
+    "next": "15.3.0-canary.18",
     "next-intl": "^3.26.5",
     "next-themes": "^0.4.4",
     "next-turnstile": "^1.0.2",
@@ -97,5 +97,5 @@
       "puppeteer"
     ]
   },
-  "packageManager": "pnpm@10.6.2+sha512.47870716bea1572b53df34ad8647b42962bc790ce2bf4562ba0f643237d7302a3d6a8ecef9e4bdfc01d23af1969aa90485d4cebb0b9638fa5ef1daef656f6c1b"
+  "packageManager": "pnpm@10.6.5"
 }
