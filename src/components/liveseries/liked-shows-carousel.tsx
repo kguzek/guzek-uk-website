@@ -1,7 +1,7 @@
 import type { Show as TvMazeShow } from "tvmaze-wrapper-ts";
 
 import type { User } from "@/payload-types";
-import { getUserLikedShows } from "@/lib/backend/liveseries";
+import { getUserShows } from "@/lib/backend/liveseries";
 import { Carousel, CarouselContent, CarouselItem } from "@/ui/carousel";
 
 import { CarouselArrows } from "../carousel/carousel-arrows";
@@ -17,7 +17,7 @@ export function LikedShowsCarousel({
   return (
     <Carousel>
       <CarouselContent>
-        {getUserLikedShows(user).map((showId, idx) => (
+        {getUserShows(user).map((showId, idx) => (
           <CarouselItem
             className="grid w-full place-items-center"
             key={`home-preview-${showId}-${idx}`}

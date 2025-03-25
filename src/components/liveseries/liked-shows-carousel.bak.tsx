@@ -6,7 +6,7 @@ import { useRef } from "react";
 import type { User } from "@/payload-types";
 import { CarouselArrow, CarouselIndicator } from "@/components/carousel";
 import { TvShowPreview } from "@/components/liveseries/tv-show-preview";
-import { getUserLikedShows } from "@/lib/backend/liveseries";
+import { getUserShows } from "@/lib/backend/liveseries";
 import { useElementScroll } from "@/lib/hooks/element-scroll";
 import { scrollToElement } from "@/lib/util";
 
@@ -29,7 +29,7 @@ export function LikedShowsCarousel({
   } = useElementScroll(carouselRef);
 
   function getDisplayedCards() {
-    const totalCards = getUserLikedShows(user).length;
+    const totalCards = getUserShows(user).length;
     const cardWidth = carouselTotalWidth / totalCards;
     // Predetermined card width doesn't take into account padding/spacing, so using this
     const cardsPerPage = Math.floor(carouselVisibleWidth / cardWidth);
@@ -79,7 +79,7 @@ export function LikedShowsCarousel({
         id="previews"
         className="no-scrollbar flex w-full gap-4 overflow-x-scroll"
       >
-        {getUserLikedShows(user).map((showId, idx) => (
+        {getUserShows(user).map((showId, idx) => (
           <li key={`home-preview ${showId} ${idx}`}>
             <TvShowPreview idx={idx} tvShow={likedShows[showId]} user={user} />
           </li>

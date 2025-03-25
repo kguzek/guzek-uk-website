@@ -13,7 +13,7 @@ import { TextWrapper } from "@/components/text-wrapper";
 import { Tile } from "@/components/tile";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { getUserLikedShows } from "@/lib/backend/liveseries";
+import { getUserShows } from "@/lib/backend/liveseries";
 import { OG_IMAGE_METADATA } from "@/lib/constants";
 import { ErrorCode } from "@/lib/enums";
 import { getAuth } from "@/lib/providers/auth-provider";
@@ -42,7 +42,7 @@ export default async function Home() {
   const { user } = await getAuth();
 
   const watchedEpisodes = user?.watchedEpisodes ?? {};
-  const likedShowIds: EpisodeArray = getUserLikedShows(user);
+  const likedShowIds: EpisodeArray = getUserShows(user);
   const likedShows: { [showId: number]: ShowWithEpisodes } = {};
 
   const unwatchedEpisodes: Record<number, TvMazeEpisode[]> = {};

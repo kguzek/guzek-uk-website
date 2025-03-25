@@ -10,7 +10,7 @@ import { useTranslations } from "next-intl";
 import type { User } from "@/payload-types";
 import { Link } from "@/i18n/navigation";
 import { fetchFromApi } from "@/lib/backend";
-import { getUserLikedShows } from "@/lib/backend/liveseries";
+import { getUserShows } from "@/lib/backend/liveseries";
 import { addOrRemove } from "@/lib/util";
 import { cn } from "@/lib/utils";
 
@@ -28,7 +28,7 @@ export function TvShowPreview({
   user: User | null;
 }) {
   const [isPending, startTransition] = useTransition();
-  const [likedShowIds, setLikedShowIds] = useState(getUserLikedShows(user));
+  const [likedShowIds, setLikedShowIds] = useState(getUserShows(user));
   const [likedShowIdsOptimistic, setLikedShowIdsOptimistic] = useOptimistic(likedShowIds);
   const isLikedOptimistic = likedShowIdsOptimistic.includes(tvShow.id);
   const t = useTranslations();

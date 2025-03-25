@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
-  getUserLikedShows,
+  getUserShows,
   updateUserShowLike,
   updateUserShowSubscription,
 } from "@/lib/backend/liveseries";
@@ -51,7 +51,7 @@ export function ShowDetails({
 }) {
   const [isUpdating, startTransition] = useTransition();
   const [isLiked, setIsLiked] = useState(
-    (user != null && getUserLikedShows(user).includes(tvShow.id)) ?? false,
+    (user != null && getUserShows(user).includes(tvShow.id)) ?? false,
   );
   const [isLikedOptimistic, setIsLikedOptimistic] = useOptimistic(isLiked);
   const [isSubscribed, setIsSubscribed] = useState(

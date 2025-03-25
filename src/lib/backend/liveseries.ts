@@ -59,5 +59,7 @@ export const updateUserShowSubscription = (
     },
   });
 
-export const getUserLikedShows = (user: User | null): EpisodeArray =>
-  user?.userShows?.liked?.filter((id) => id > 0) ?? [];
+export const getUserShows = (
+  user: User | null,
+  category: "liked" | "subscribed" = "liked",
+): EpisodeArray => user?.userShows?.[category]?.filter((id) => id > 0) ?? [];
