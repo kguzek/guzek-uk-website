@@ -160,10 +160,10 @@ async function downloadUnwatchedEpisodes(
   let checkedUsers = 0;
   let numErrors = 0;
 
-  const errorMessages: Record<
-    string,
-    Record<string, string | Record<string, string>>
-  > = {};
+  type LogRecord = Record<string, Record<string, string | Record<string, string>>>;
+
+  const logRecord: LogRecord = {};
+  const errorMessages: LogRecord = {};
 
   for (const user of users) {
     if (!user.serverUrl) {
@@ -190,16 +190,19 @@ async function downloadUnwatchedEpisodes(
       errorMessages[user.username] = ers;
     }
   }
-  return NextResponse.json(
-    numErrors === 0
-      ? {
-          message: "Scheduled task performed successfully.",
-          checkedUsers,
-        }
-      : {
+  return numErrors === 0
+    ? NextResponse.json({
+        message: "Scheduled task performed successfully.",
+        checkedUsers,
+        logs: logRecord,
+      })
+    : NextResponse.json(
+        {
           message: `Scheduled task failed with ${numErrors} error${numErrors === 1 ? "" : "s"}`,
           checkedUsers,
+          logs: logRecord,
           errorMessages,
         },
-  );
+        { status: 500 },
+      );
 }
