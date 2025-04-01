@@ -34,6 +34,7 @@
       "haveAccountAlready": "masz już konto?",
       "logout": "Wyloguj się",
       "serverUrl": "URL serwera LiveSeries",
+      "serverUrlInvalid": "Podany adres URL serwera LiveSeries jest niepoprawny. Upewnij się, że został on zainstalowany i uruchomiony poprawnie.",
       "success": "Profil został zaktualizowany pomyślnie",
       "verifyEmail": {
         "header": "Weryfikacja Email",

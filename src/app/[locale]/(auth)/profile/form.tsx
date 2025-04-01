@@ -43,9 +43,17 @@ import {
 import { successToast } from "@/components/ui/sonner";
 import { Link } from "@/i18n/navigation";
 import { fetchFromApi, refreshAccessToken } from "@/lib/backend";
+import { NetworkError } from "@/lib/backend/error-handling";
 import { updateUserDetailsSchema } from "@/lib/backend/schemas";
 import { LIVESERIES_SERVER_HOMEPAGE } from "@/lib/constants";
 import { useRouter } from "@/lib/hooks/router";
+
+interface HealthMessage {
+  message: string;
+  status: string;
+  uptime: number;
+  date: string;
+}
 
 export function ProfileForm({ user }: { user: User }) {
   const t = useTranslations();
@@ -65,8 +73,24 @@ export function ProfileForm({ user }: { user: User }) {
     },
   });
 
+  async function validateServerUrl(serverUrl: string) {
+    try {
+      const result = await fetchFromApi<HealthMessage>("health", { urlBase: serverUrl });
+      if (result.data.message === "Server is up") {
+        return;
+      }
+      console.warn("Invalid LiveSeries server response:", result.data);
+    } catch (error) {
+      console.error("Error testing LiveSeries URL:", error);
+    }
+    throw new NetworkError(t("profile.formDetails.serverUrlInvalid"));
+  }
+
   async function updateUser(values: UpdateUserDetailsSchema) {
     if (!user) return;
+    if (values.serverUrl != null && values.serverUrl !== "") {
+      await validateServerUrl(values.serverUrl);
+    }
     const result = await fetchFromApi(`users/${user.id}`, {
       method: "PATCH",
       body: values,
