@@ -247,9 +247,13 @@ export interface Technology {
   id: number;
   name: string;
   /**
-   * https://github.com/marwin1991/profile-technology-icons/tree/main/icons/ | https://simpleicons.org
+   * https://github.com/marwin1991/profile-technology-icons/tree/main/icons/
    */
   hasLogo: boolean;
+  /**
+   * Use SimpleIcons instead of marwin1991's icons: https://simpleicons.org
+   */
+  isSimpleIcon: boolean;
   updatedAt: string;
   createdAt: string;
 }
@@ -461,6 +465,7 @@ export interface ProjectCategoriesSelect<T extends boolean = true> {
 export interface TechnologiesSelect<T extends boolean = true> {
   name?: T;
   hasLogo?: T;
+  isSimpleIcon?: T;
   updatedAt?: T;
   createdAt?: T;
 }

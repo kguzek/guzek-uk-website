@@ -5,7 +5,7 @@ export function ProjectTechnologies({ project }: { project: Project }) {
   return (project.technologies ?? []).map((technology, idx) =>
     typeof technology === "number" || !technology.hasLogo ? null : (
       <SimpleIcon
-        colored
+        colored={!technology.isSimpleIcon}
         tooltip
         key={`project-technology-${idx}`}
         name={technology.name}

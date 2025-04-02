@@ -27,7 +27,17 @@ export const Technologies: CollectionConfig = {
       required: true,
       admin: {
         description:
-          "https://github.com/marwin1991/profile-technology-icons/tree/main/icons/ | https://simpleicons.org",
+          "https://github.com/marwin1991/profile-technology-icons/tree/main/icons/",
+      },
+    },
+    {
+      name: "isSimpleIcon",
+      type: "checkbox",
+      defaultValue: false,
+      required: true,
+      admin: {
+        description:
+          "Use SimpleIcons instead of marwin1991's icons: https://simpleicons.org",
       },
     },
   ],
