@@ -15,6 +15,16 @@ const config = [
       "@typescript-eslint/no-import-type-side-effects": "error",
       "react-hooks/exhaustive-deps": "off",
     },
+    overrides: [
+      {
+        files: ["src/migrations/*.ts"],
+        rules: {
+          "@typescript-eslint/consistent-type-imports": "off",
+          "@typescript-eslint/no-import-type-side-effects": "off",
+          "@typescript-eslint/no-unused-vars": "off",
+        },
+      },
+    ],
   }),
 ];
 
