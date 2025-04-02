@@ -22,3 +22,9 @@ export const IP_BLACKLIST = (process.env.IP_BLACKLIST || "").split(";");
 export const LOCALES = ["en", "pl"] as const;
 export const DEFAULT_LOCALE = "en";
 export const PATHS_EXCLUDED_FROM_I18N = ["/admin"];
+
+export const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME || "";
+export const S3_SERVER_REGION = process.env.S3_SERVER_REGION || "";
+export const S3_SERVER_URL = process.env.S3_SERVER_URL || "";
+export const S3_ACCESS_KEY_ID = process.env.S3_ACCESS_KEY_ID || "";
+export const S3_ACCESS_KEY_SECRET = process.env.S3_ACCESS_KEY_SECRET || "";

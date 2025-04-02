@@ -4,6 +4,7 @@ import { buildConfig } from "payload";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { nodemailerAdapter } from "@payloadcms/email-nodemailer";
 import { FixedToolbarFeature, lexicalEditor } from "@payloadcms/richtext-lexical";
+import { s3Storage } from "@payloadcms/storage-s3";
 import sharp from "sharp";
 
 import { Media } from "./collections/Media";
@@ -13,6 +14,13 @@ import { ProjectCategories } from "./collections/ProjectCategories";
 import { Projects } from "./collections/Projects";
 import { Technologies } from "./collections/Technologies";
 import { Users } from "./collections/Users";
+import {
+  S3_ACCESS_KEY_ID,
+  S3_ACCESS_KEY_SECRET,
+  S3_BUCKET_NAME,
+  S3_SERVER_REGION,
+  S3_SERVER_URL,
+} from "./lib/constants";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -42,7 +50,23 @@ export default buildConfig({
     },
   }),
   sharp,
-  plugins: [],
+  plugins: [
+    s3Storage({
+      collections: {
+        media: true,
+      },
+      bucket: S3_BUCKET_NAME,
+      config: {
+        credentials: {
+          accessKeyId: S3_ACCESS_KEY_ID,
+          secretAccessKey: S3_ACCESS_KEY_SECRET,
+        },
+        region: S3_SERVER_REGION,
+        endpoint: S3_SERVER_URL,
+        forcePathStyle: true,
+      },
+    }),
+  ],
   localization: {
     locales: ["en", "pl"],
     defaultLocale: "en",
