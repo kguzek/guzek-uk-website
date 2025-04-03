@@ -1,3 +1,4 @@
+import type { HTMLConverter } from "@payloadcms/richtext-lexical";
 import type { SerializedEditorState } from "@payloadcms/richtext-lexical/lexical";
 import type { HtmlToTextOptions } from "html-to-text";
 import type { Payload } from "payload";
@@ -12,6 +13,9 @@ import {
   sanitizeServerEditorConfig,
 } from "@payloadcms/richtext-lexical";
 import { htmlToText } from "html-to-text";
+
+import type { EmailButton } from "@/payload-types";
+import { serializeEmailButton } from "@/collections/blocks/BlockEmailButton";
 
 // export function convertLexicalToPlainText(
 //   editorStateJSON: SerializedEditorState<SerializedLexicalNode>,
@@ -30,6 +34,27 @@ import { htmlToText } from "html-to-text";
 
 const SELECTORS = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
 
+interface BlockNode {
+  type: "block";
+  fields: EmailButton; // add more block types here in the future
+  format: "";
+  version: 2;
+}
+
+const BlockConverter: HTMLConverter = {
+  nodeTypes: ["block"],
+  converter: ({ node }) => {
+    console.log("node is", node);
+    const blockNode = node as BlockNode;
+    switch (blockNode.fields.blockType) {
+      case "email-button":
+        return serializeEmailButton(blockNode.fields);
+      default:
+        return "";
+    }
+  },
+};
+
 export async function convertLexicalToHtmlWithPayload(
   editorStateJSON: SerializedEditorState,
   payload: Payload,
@@ -43,7 +68,10 @@ export async function convertLexicalToHtmlWithPayload(
   );
   const html = await convertLexicalToHTML({
     data: editorStateJSON,
-    converters: consolidateHTMLConverters({ editorConfig: sanitizedEditorConfig }),
+    converters: [
+      ...consolidateHTMLConverters({ editorConfig: sanitizedEditorConfig }),
+      BlockConverter,
+    ],
     payload,
   });
   return html;

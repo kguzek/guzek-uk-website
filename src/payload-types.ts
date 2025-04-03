@@ -94,9 +94,7 @@ export interface Config {
     users: UserAuthOperations;
   };
   blocks: {
-    'email-template': EmailTemplate;
     'email-button': EmailButton;
-    'rich-text': RichText;
   };
   collections: {
     users: User;
@@ -171,17 +169,6 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "email-template".
- */
-export interface EmailTemplate {
-  title: string;
-  paragraphs: (EmailButton | RichText)[];
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'email-template';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "email-button".
  */
 export interface EmailButton {
@@ -190,30 +177,6 @@ export interface EmailButton {
   id?: string | null;
   blockName?: string | null;
   blockType: 'email-button';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "rich-text".
- */
-export interface RichText {
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'rich-text';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -381,7 +344,25 @@ export interface Email {
   fromAddress: string;
   fromName: string;
   recipients: EmailRecipients;
-  content: EmailTemplate[];
+  /**
+   * This is the heading rendered in the email message.
+   */
+  title: string;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
   /**
    * If checked, will send the mail on next save and reset to unchecked.
    */
@@ -586,7 +567,8 @@ export interface EmailsSelect<T extends boolean = true> {
   fromAddress?: T;
   fromName?: T;
   recipients?: T | EmailRecipientsSelect<T>;
-  content?: T | {};
+  title?: T;
+  content?: T;
   shouldSend?: T;
   updatedAt?: T;
   createdAt?: T;

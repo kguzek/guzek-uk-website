@@ -3,13 +3,10 @@ import { fileURLToPath } from "url";
 import { buildConfig } from "payload";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { nodemailerAdapter } from "@payloadcms/email-nodemailer";
-import { FixedToolbarFeature, lexicalEditor } from "@payloadcms/richtext-lexical";
 import { s3Storage } from "@payloadcms/storage-s3";
 import sharp from "sharp";
 
 import { BlockEmailButton } from "./collections/blocks/BlockEmailButton";
-import { BlockEmailTemplate } from "./collections/blocks/BlockEmailTemplate";
-import { BlockRichText } from "./collections/blocks/BlockRichText";
 import { Emails } from "./collections/Emails";
 import { Media } from "./collections/Media";
 import { OgImages } from "./collections/OgImages";
@@ -27,6 +24,7 @@ import {
   S3_SERVER_REGION,
   S3_SERVER_URL,
 } from "./lib/constants";
+import { richTextEditor } from "./lib/payload";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -48,14 +46,8 @@ export default buildConfig({
     OgImages,
     Emails,
   ],
-  blocks: [BlockEmailTemplate, BlockEmailButton, BlockRichText],
-  editor: lexicalEditor({
-    features: ({ defaultFeatures, rootFeatures }) => [
-      ...defaultFeatures,
-      ...rootFeatures,
-      FixedToolbarFeature(),
-    ],
-  }),
+  blocks: [BlockEmailButton],
+  editor: richTextEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {
     outputFile: path.resolve(dirname, "payload-types.ts"),

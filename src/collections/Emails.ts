@@ -1,16 +1,22 @@
+import type { SerializedEditorState } from "@payloadcms/richtext-lexical/lexical";
 import type {
   CollectionConfig,
   Payload,
   PayloadRequest,
   SendEmailOptions,
 } from "payload";
+import { BlocksFeature } from "@payloadcms/richtext-lexical";
 
 import type { EmailRecipient, EmailRecipientManual } from "@/lib/types";
 import type { Email } from "@/payload-types";
-import { EMAIL_FROM_ADDRESS } from "@/lib/constants";
-import { isAdmin } from "@/lib/payload";
-
-import { serializeEmailTemplate } from "./blocks/BlockEmailTemplate";
+import {
+  DEFAULT_RICH_TEXT_CONTENT,
+  EMAIL_FROM_ADDRESS,
+  EMAIL_TEMPLATE_CONTENT,
+  PRODUCTION_URL,
+} from "@/lib/constants";
+import { convertLexicalToHtmlWithPayload } from "@/lib/lexical";
+import { isAdmin, richTextEditor } from "@/lib/payload";
 
 async function getUserRecipient(
   uuid: string,
@@ -30,10 +36,44 @@ async function getUserRecipient(
   };
 }
 
+// async function serializeEmailParagraph(paragraph: EmailButton, payload: Payload) {
+//   switch (paragraph.blockType) {
+//     case "email-button":
+//       return EMAIL_BUTTON_CONTENT.replaceAll("{BUTTON_URL}", paragraph.url).replaceAll(
+//         "{BUTTON_LABEL}",
+//         paragraph.label,
+//       );
+//     case "rich-text":
+//       return await convertLexicalToHtmlWithPayload(paragraph.content, payload);
+//     default:
+//       return "";
+//   }
+// }
+
+async function serializeEmailTemplate(
+  editorState: SerializedEditorState,
+  title: string,
+  payload: Payload,
+  recipient: EmailRecipientManual,
+) {
+  const paragraphs = await convertLexicalToHtmlWithPayload(editorState, payload);
+  const replacements: Record<string, string> = {
+    "{EMAIL_TITLE}": title,
+    "{EMAIL_PARAGRAPHS}": paragraphs,
+    "{CURRENT_YEAR}": new Date().getFullYear().toString(),
+    "{WEBSITE_URL}": PRODUCTION_URL,
+    "{USERNAME}": recipient.name ? ` @${recipient.name}` : "",
+    "{EMAIL}": recipient.email,
+  };
+  let content = EMAIL_TEMPLATE_CONTENT;
+  for (const [key, value] of Object.entries(replacements)) {
+    content = content.replaceAll(key, value);
+  }
+  return content;
+}
+
 async function sendEmail(email: Email, req: PayloadRequest) {
   const { fromAddress, fromName, subject, content, recipients } = email;
-
-  const [layout] = content;
 
   async function _send(emailRecipient: EmailRecipient) {
     let recipient;
@@ -57,7 +97,7 @@ async function sendEmail(email: Email, req: PayloadRequest) {
         name: fromName || EMAIL_FROM_ADDRESS,
       },
       subject,
-      html: await serializeEmailTemplate(layout, req.payload, recipient),
+      html: await serializeEmailTemplate(content, email.title, req.payload, recipient),
     };
     console.info(
       `Sending email with subject "${subject}" to`,
@@ -157,20 +197,20 @@ export const Emails: CollectionConfig = {
       ],
     },
     {
-      name: "content",
-      type: "blocks",
+      name: "title",
+      type: "text",
       required: true,
-      blocks: [],
-      blockReferences: ["email-template"],
-      defaultValue: [
-        {
-          blockType: "email-template",
-          blockName: "Content",
-        },
-      ],
-      validate: (value) =>
-        (Array.isArray(value) && value.length === 1) ||
-        "You must select the email template exactly once.",
+      defaultValue: "",
+      admin: {
+        description: "This is the heading rendered in the email message.",
+      },
+    },
+    {
+      name: "content",
+      type: "richText",
+      required: true,
+      defaultValue: DEFAULT_RICH_TEXT_CONTENT,
+      editor: richTextEditor(BlocksFeature({ blocks: ["email-button"] })),
     },
     {
       name: "shouldSend",

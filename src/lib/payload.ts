@@ -1,9 +1,11 @@
+import type { FeatureProviderServer } from "@payloadcms/richtext-lexical";
 import type {
   Access,
   FieldAccess,
   NumberFieldManyValidation,
   ValidateOptions,
 } from "payload";
+import { FixedToolbarFeature, lexicalEditor } from "@payloadcms/richtext-lexical";
 
 export const ALPHANUMERIC_PATTERN = /^[a-zA-Z0-9][\w-]+[a-zA-Z0-9]$/;
 
@@ -69,3 +71,14 @@ export const stackValidators =
         return message === true ? messages : [...messages, message];
       }, Promise.resolve<string[]>([]))
       .then((results) => results.length === 0 || results.join(" "));
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const richTextEditor = (...features: FeatureProviderServer<any, any, any>[]) =>
+  lexicalEditor({
+    features: ({ defaultFeatures, rootFeatures }) => [
+      ...defaultFeatures,
+      ...rootFeatures,
+      FixedToolbarFeature(),
+      ...features,
+    ],
+  });
