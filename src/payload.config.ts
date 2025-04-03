@@ -56,6 +56,7 @@ export default buildConfig({
         media: true,
       },
       bucket: S3_BUCKET_NAME,
+      acl: "public-read",
       config: {
         credentials: {
           accessKeyId: S3_ACCESS_KEY_ID,
