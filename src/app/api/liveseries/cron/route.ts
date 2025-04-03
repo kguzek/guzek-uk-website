@@ -77,7 +77,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   let error = "Invalid credentials";
   try {
     const data = { username: CRON_USER_USERNAME, password: CRON_USER_PASSWORD };
-    console.log(data);
     const loginResult = await payload.login({
       collection: "users",
       data,
