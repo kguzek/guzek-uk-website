@@ -22,6 +22,8 @@ async function sendEmail(email: Email, req: PayloadRequest) {
         subject,
         html: await serializeEmailTemplate(layout, req.payload, recipient),
       };
+      // resend.com allows 2 emails per second
+      await new Promise((resolve) => setTimeout(resolve, 500));
       console.info(
         `Sending email with subject "${subject}" to ${recipient.email} (${recipient.name || "<no name>"})`,
       );
