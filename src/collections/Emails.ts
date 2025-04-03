@@ -29,7 +29,6 @@ async function sendEmail(email: Email, req: PayloadRequest) {
         return await req.payload.sendEmail(options);
       } catch (error) {
         console.error("Error sending email:", error);
-        throw error;
       }
     }),
   );
