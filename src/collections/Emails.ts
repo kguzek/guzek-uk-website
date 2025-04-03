@@ -22,7 +22,15 @@ async function sendEmail(email: Email, req: PayloadRequest) {
         subject,
         html: await serializeEmailTemplate(layout, req.payload, recipient),
       };
-      return await req.payload.sendEmail(options);
+      console.info(
+        `Sending email with subject "${subject}" to ${recipient.email} (${recipient.name || "<no name>"})`,
+      );
+      try {
+        return await req.payload.sendEmail(options);
+      } catch (error) {
+        console.error("Error sending email:", error);
+        throw error;
+      }
     }),
   );
 }
