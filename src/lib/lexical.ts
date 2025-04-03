@@ -1,5 +1,6 @@
 import type { SerializedEditorState } from "@payloadcms/richtext-lexical/lexical";
 import type { HtmlToTextOptions } from "html-to-text";
+import type { Payload } from "payload";
 import { getPayload } from "payload";
 import config from "@payload-config";
 import {
@@ -29,13 +30,11 @@ import { htmlToText } from "html-to-text";
 
 const SELECTORS = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
 
-export async function convertLexicalToPlainText(
+export async function convertLexicalToHtmlWithPayload(
   editorStateJSON: SerializedEditorState,
-  wordWrap: HtmlToTextOptions["wordwrap"] = false,
+  payload: Payload,
 ) {
-  const payload = await getPayload({ config });
   const editorConfig = defaultEditorConfig;
-
   editorConfig.features = [...defaultEditorFeatures, HTMLConverterFeature({})];
 
   const sanitizedEditorConfig = await sanitizeServerEditorConfig(
@@ -47,6 +46,15 @@ export async function convertLexicalToPlainText(
     converters: consolidateHTMLConverters({ editorConfig: sanitizedEditorConfig }),
     payload,
   });
+  return html;
+}
+
+export async function convertLexicalToPlainText(
+  editorStateJSON: SerializedEditorState,
+  wordWrap: HtmlToTextOptions["wordwrap"] = false,
+) {
+  const payload = await getPayload({ config });
+  const html = await convertLexicalToHtmlWithPayload(editorStateJSON, payload);
   return convertHtmlToPlainText(html, wordWrap);
 }
 

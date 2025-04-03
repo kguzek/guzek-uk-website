@@ -12,6 +12,21 @@
  */
 export type EpisodeArray = number[];
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EmailRecipients".
+ */
+export type EmailRecipients = {
+  /**
+   * Used as the receipient email and for any '{EMAIL}' template replacements in the email message.
+   */
+  email: string;
+  /**
+   * Used for any '{USERNAME}' template replacements in the email message.
+   */
+  name?: string | null;
+  id?: string | null;
+}[];
+/**
  * Supported timezones in IANA format.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -70,7 +85,11 @@ export interface Config {
   auth: {
     users: UserAuthOperations;
   };
-  blocks: {};
+  blocks: {
+    'email-template': EmailTemplate;
+    'email-button': EmailButton;
+    'rich-text': RichText;
+  };
   collections: {
     users: User;
     media: Media;
@@ -79,6 +98,7 @@ export interface Config {
     'project-categories': ProjectCategory;
     technologies: Technology;
     'og-images': OgImage;
+    emails: Email;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -92,6 +112,7 @@ export interface Config {
     'project-categories': ProjectCategoriesSelect<false> | ProjectCategoriesSelect<true>;
     technologies: TechnologiesSelect<false> | TechnologiesSelect<true>;
     'og-images': OgImagesSelect<false> | OgImagesSelect<true>;
+    emails: EmailsSelect<false> | EmailsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -139,6 +160,52 @@ export interface UserAuthOperations {
     | {
         username: string;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-template".
+ */
+export interface EmailTemplate {
+  title: string;
+  paragraphs: (EmailButton | RichText)[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'email-template';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-button".
+ */
+export interface EmailButton {
+  label: string;
+  url: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'email-button';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "rich-text".
+ */
+export interface RichText {
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'rich-text';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -298,6 +365,24 @@ export interface OgImage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "emails".
+ */
+export interface Email {
+  id: number;
+  subject: string;
+  fromAddress: string;
+  fromName: string;
+  recipients: EmailRecipients;
+  content: EmailTemplate[];
+  /**
+   * If checked, will send the mail on next save and reset to unchecked.
+   */
+  sent?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -330,6 +415,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'og-images';
         value: number | OgImage;
+      } | null)
+    | ({
+        relationTo: 'emails';
+        value: number | Email;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -479,6 +568,29 @@ export interface OgImagesSelect<T extends boolean = true> {
   image?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "emails_select".
+ */
+export interface EmailsSelect<T extends boolean = true> {
+  subject?: T;
+  fromAddress?: T;
+  fromName?: T;
+  recipients?: T | EmailRecipientsSelect<T>;
+  content?: T | {};
+  sent?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EmailRecipients_select".
+ */
+export interface EmailRecipientsSelect<T extends boolean = true> {
+  email?: T;
+  name?: T;
+  id?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

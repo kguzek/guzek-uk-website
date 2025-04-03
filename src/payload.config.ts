@@ -7,6 +7,10 @@ import { FixedToolbarFeature, lexicalEditor } from "@payloadcms/richtext-lexical
 import { s3Storage } from "@payloadcms/storage-s3";
 import sharp from "sharp";
 
+import { BlockEmailButton } from "./collections/blocks/BlockEmailButton";
+import { BlockEmailTemplate } from "./collections/blocks/BlockEmailTemplate";
+import { BlockRichText } from "./collections/blocks/BlockRichText";
+import { Emails } from "./collections/Emails";
 import { Media } from "./collections/Media";
 import { OgImages } from "./collections/OgImages";
 import { Pages } from "./collections/Pages";
@@ -15,6 +19,8 @@ import { Projects } from "./collections/Projects";
 import { Technologies } from "./collections/Technologies";
 import { Users } from "./collections/Users";
 import {
+  EMAIL_FROM_ADDRESS,
+  EMAIL_FROM_NAME,
   S3_ACCESS_KEY_ID,
   S3_ACCESS_KEY_SECRET,
   S3_BUCKET_NAME,
@@ -32,7 +38,17 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Projects, Pages, ProjectCategories, Technologies, OgImages],
+  collections: [
+    Users,
+    Media,
+    Projects,
+    Pages,
+    ProjectCategories,
+    Technologies,
+    OgImages,
+    Emails,
+  ],
+  blocks: [BlockEmailTemplate, BlockEmailButton, BlockRichText],
   editor: lexicalEditor({
     features: ({ defaultFeatures, rootFeatures }) => [
       ...defaultFeatures,
@@ -73,8 +89,8 @@ export default buildConfig({
     defaultLocale: "en",
   },
   email: nodemailerAdapter({
-    defaultFromAddress: "noreply@guzek.uk",
-    defaultFromName: "Guzek UK",
+    defaultFromAddress: EMAIL_FROM_ADDRESS,
+    defaultFromName: EMAIL_FROM_NAME,
     transportOptions: {
       host: "smtp.resend.com",
       port: 465,
