@@ -98,3 +98,17 @@ export interface MenuItem {
   label?: string;
   isAbsolute?: boolean;
 }
+
+export interface EmailRecipientManual {
+  type: "manual";
+  name?: string | null;
+  email: string;
+}
+
+export interface EmailRecipientUser {
+  type: "user";
+  /** The user UUID */
+  user: string;
+}
+
+export type EmailRecipient = EmailRecipientManual | EmailRecipientUser;

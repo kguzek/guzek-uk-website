@@ -17,13 +17,21 @@ export type EpisodeArray = number[];
  */
 export type EmailRecipients = {
   /**
-   * Used as the receipient email and for any '{EMAIL}' template replacements in the email message.
+   * Choose whether to manually enter a recipient's details or select an existing user.
    */
-  email: string;
+  type: 'manual' | 'user';
   /**
-   * Used for any '{USERNAME}' template replacements in the email message.
+   * Used for {USERNAME} replacements in the email message.
    */
   name?: string | null;
+  /**
+   * Used as the recipient address and  for {EMAIL} replacements in the email message.
+   */
+  email?: string | null;
+  /**
+   * Select an existing user as the recipient.
+   */
+  user?: (string | null) | User;
   id?: string | null;
 }[];
 /**
@@ -377,7 +385,7 @@ export interface Email {
   /**
    * If checked, will send the mail on next save and reset to unchecked.
    */
-  sent?: boolean | null;
+  shouldSend?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -579,7 +587,7 @@ export interface EmailsSelect<T extends boolean = true> {
   fromName?: T;
   recipients?: T | EmailRecipientsSelect<T>;
   content?: T | {};
-  sent?: T;
+  shouldSend?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -588,8 +596,10 @@ export interface EmailsSelect<T extends boolean = true> {
  * via the `definition` "EmailRecipients_select".
  */
 export interface EmailRecipientsSelect<T extends boolean = true> {
-  email?: T;
+  type?: T;
   name?: T;
+  email?: T;
+  user?: T;
   id?: T;
 }
 /**

@@ -1,17 +1,55 @@
-import type { CollectionConfig, PayloadRequest, SendEmailOptions } from "payload";
+import type {
+  CollectionConfig,
+  Payload,
+  PayloadRequest,
+  SendEmailOptions,
+} from "payload";
 
-import type { Email, EmailRecipients } from "@/payload-types";
+import type { EmailRecipient, EmailRecipientManual } from "@/lib/types";
+import type { Email } from "@/payload-types";
 import { EMAIL_FROM_ADDRESS } from "@/lib/constants";
 import { isAdmin } from "@/lib/payload";
 
 import { serializeEmailTemplate } from "./blocks/BlockEmailTemplate";
+
+async function getUserRecipient(
+  uuid: string,
+  payload: Payload,
+): Promise<EmailRecipientManual> {
+  const user = await payload.findByID({
+    collection: "users",
+    id: uuid,
+  });
+  if (!user) {
+    throw new Error(`Failed to fetch user recipient: ${uuid}`);
+  }
+  return {
+    type: "manual",
+    name: user.username,
+    email: user.email,
+  };
+}
 
 async function sendEmail(email: Email, req: PayloadRequest) {
   const { fromAddress, fromName, subject, content, recipients } = email;
 
   const [layout] = content;
 
-  async function _send(recipient: EmailRecipients[number]) {
+  async function _send(emailRecipient: EmailRecipient) {
+    let recipient;
+    if (emailRecipient.type === "user") {
+      let userRecipient;
+      try {
+        userRecipient = await getUserRecipient(emailRecipient.user, req.payload);
+      } catch (error) {
+        console.error("Error fetching user recipient:", error);
+        return;
+      }
+      recipient = userRecipient;
+    } else {
+      recipient = emailRecipient;
+    }
+
     const options: SendEmailOptions = {
       to: recipient.email,
       from: {
@@ -22,7 +60,9 @@ async function sendEmail(email: Email, req: PayloadRequest) {
       html: await serializeEmailTemplate(layout, req.payload, recipient),
     };
     console.info(
-      `Sending email with subject "${subject}" to ${recipient.email} (${recipient.name || "<no name>"})`,
+      `Sending email with subject "${subject}" to`,
+      recipient.email,
+      `(${recipient.name || "<no name>"})`,
     );
     try {
       return await req.payload.sendEmail(options);
@@ -31,7 +71,7 @@ async function sendEmail(email: Email, req: PayloadRequest) {
     }
   }
 
-  const [firstRecipient, ...remainingRecipients] = recipients;
+  const [firstRecipient, ...remainingRecipients] = recipients as EmailRecipient[];
   await _send(firstRecipient);
   for (const recipient of remainingRecipients) {
     // resend.com allows 2 emails per second
@@ -74,20 +114,44 @@ export const Emails: CollectionConfig = {
       minRows: 1,
       fields: [
         {
-          name: "email",
-          type: "email",
+          name: "type",
+          type: "select",
           required: true,
+          defaultValue: "manual",
+          options: [
+            { label: "Manual Entry", value: "manual" },
+            { label: "Existing User", value: "user" },
+          ],
           admin: {
             description:
-              "Used as the receipient email and for any '{EMAIL}' template replacements in the email message.",
+              "Choose whether to manually enter a recipient's details or select an existing user.",
           },
         },
         {
           name: "name",
           type: "text",
           admin: {
+            description: "Used for {USERNAME} replacements in the email message.",
+            condition: (_, siblingData) => siblingData.type === "manual",
+          },
+        },
+        {
+          name: "email",
+          type: "email",
+          required: true,
+          admin: {
             description:
-              "Used for any '{USERNAME}' template replacements in the email message.",
+              "Used as the recipient address and  for {EMAIL} replacements in the email message.",
+            condition: (_, siblingData) => siblingData.type === "manual",
+          },
+        },
+        {
+          name: "user",
+          type: "relationship",
+          relationTo: "users",
+          admin: {
+            description: "Select an existing user as the recipient.",
+            condition: (_, siblingData) => siblingData.type === "user",
           },
         },
       ],
@@ -109,9 +173,10 @@ export const Emails: CollectionConfig = {
         "You must select the email template exactly once.",
     },
     {
-      name: "sent",
+      name: "shouldSend",
       type: "checkbox",
       defaultValue: false,
+      virtual: true,
       admin: {
         description:
           "If checked, will send the mail on next save and reset to unchecked.",
@@ -122,13 +187,13 @@ export const Emails: CollectionConfig = {
     beforeChange: [
       async (args) => {
         const email: Email = { ...args.originalDoc, ...args.data };
-        if (!args.data.sent) {
+        if (!args.data.shouldSend) {
           return email;
         }
         try {
           await sendEmail(email, args.req);
         } finally {
-          email.sent = false;
+          email.shouldSend = false;
           return email;
         }
       },

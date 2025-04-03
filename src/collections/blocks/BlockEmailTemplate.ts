@@ -1,11 +1,7 @@
 import type { Block, Payload } from "payload";
 
-import type {
-  EmailButton,
-  EmailRecipients,
-  EmailTemplate,
-  RichText,
-} from "@/payload-types";
+import type { EmailRecipientManual } from "@/lib/types";
+import type { EmailButton, EmailTemplate, RichText } from "@/payload-types";
 import { PRODUCTION_URL } from "@/lib/constants";
 import { convertLexicalToHtmlWithPayload } from "@/lib/lexical";
 
@@ -186,7 +182,7 @@ async function serializeEmailParagraph(
 export async function serializeEmailTemplate(
   block: EmailTemplate,
   payload: Payload,
-  recipient: EmailRecipients[number],
+  recipient: EmailRecipientManual,
 ) {
   const replacements: Record<string, string> = {
     "{EMAIL_TITLE}": block.title,
