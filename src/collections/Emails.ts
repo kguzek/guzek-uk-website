@@ -1,6 +1,6 @@
 import type { CollectionConfig, PayloadRequest, SendEmailOptions } from "payload";
 
-import type { Email } from "@/payload-types";
+import type { Email, EmailRecipients } from "@/payload-types";
 import { EMAIL_FROM_ADDRESS } from "@/lib/constants";
 import { isAdmin } from "@/lib/payload";
 
@@ -11,29 +11,33 @@ async function sendEmail(email: Email, req: PayloadRequest) {
 
   const [layout] = content;
 
-  await Promise.all(
-    recipients.map(async (recipient) => {
-      const options: SendEmailOptions = {
-        to: recipient.email,
-        from: {
-          address: fromAddress || EMAIL_FROM_ADDRESS,
-          name: fromName || EMAIL_FROM_ADDRESS,
-        },
-        subject,
-        html: await serializeEmailTemplate(layout, req.payload, recipient),
-      };
-      // resend.com allows 2 emails per second
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      console.info(
-        `Sending email with subject "${subject}" to ${recipient.email} (${recipient.name || "<no name>"})`,
-      );
-      try {
-        return await req.payload.sendEmail(options);
-      } catch (error) {
-        console.error("Error sending email:", error);
-      }
-    }),
-  );
+  async function _send(recipient: EmailRecipients[number]) {
+    const options: SendEmailOptions = {
+      to: recipient.email,
+      from: {
+        address: fromAddress || EMAIL_FROM_ADDRESS,
+        name: fromName || EMAIL_FROM_ADDRESS,
+      },
+      subject,
+      html: await serializeEmailTemplate(layout, req.payload, recipient),
+    };
+    console.info(
+      `Sending email with subject "${subject}" to ${recipient.email} (${recipient.name || "<no name>"})`,
+    );
+    try {
+      return await req.payload.sendEmail(options);
+    } catch (error) {
+      console.error("Error sending email:", error);
+    }
+  }
+
+  const [firstRecipient, ...remainingRecipients] = recipients;
+  await _send(firstRecipient);
+  for (const recipient of remainingRecipients) {
+    // resend.com allows 2 emails per second
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    await _send(recipient);
+  }
 }
 
 export const Emails: CollectionConfig = {
