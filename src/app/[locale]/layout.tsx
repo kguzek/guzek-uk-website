@@ -16,6 +16,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 
 import type { UserLocale } from "@/lib/types";
+import { RefreshRouteOnSave } from "@/components/live-preview";
 import { formats } from "@/i18n/request";
 import { routing } from "@/i18n/routing";
 import { OG_IMAGE_METADATA, PRODUCTION_URL } from "@/lib/constants";
@@ -139,6 +140,7 @@ export default async function RootLayout({
                   crawl={true}
                   initialPosition={0.1}
                 />
+                <RefreshRouteOnSave />
                 <Navigation />
                 <main className="grow">{children}</main>
                 <Footer />

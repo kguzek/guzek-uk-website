@@ -6,21 +6,23 @@ import config from "@payload-config";
 import { RichText } from "@payloadcms/richtext-lexical/react";
 import { getLocale } from "next-intl/server";
 
-import type { UserLocale } from "@/lib/types";
+import type { DraftModeParams, UserLocale } from "@/lib/types";
 import type { Media } from "@/payload-types";
 import { ErrorComponent } from "@/components/error/component";
 import { ErrorCode } from "@/lib/enums";
 
 import { Tile } from "../tile";
 
-export async function getPageBySlug(slug: string) {
+export async function getPageBySlug(slug: string, draftMode?: string) {
   const locale = await getLocale();
   const payload = await getPayload({ config });
+  console.log({ draftMode });
   const result = await payload.find({
     collection: "pages",
     where: { slug: { equals: slug } },
     limit: 1,
     locale: locale as UserLocale,
+    draft: draftMode === "true",
   });
   if (result.totalDocs === 0) {
     return null;
@@ -62,11 +64,12 @@ const jsxConvertersWithImage: JSXConvertersFunction = ({ defaultConverters }) =>
 export async function DynamicPageLoader({
   slug,
   tile = false,
+  draftMode,
 }: {
   slug: string;
   tile?: boolean;
-}) {
-  const page = await getPageBySlug(slug);
+} & DraftModeParams) {
+  const page = await getPageBySlug(slug, draftMode);
   if (page == null) {
     return <ErrorComponent errorCode={ErrorCode.NotFound} path={slug} />;
   }

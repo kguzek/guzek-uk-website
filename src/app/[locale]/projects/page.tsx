@@ -7,6 +7,7 @@ import { RichText } from "@payloadcms/richtext-lexical/react";
 import { ArrowUpRight } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 
+import type { DraftModeProps } from "@/lib/types";
 import { SimpleIcon } from "@/components/image/simple-icon";
 import { DynamicPageLoader, getPageBySlug } from "@/components/pages/dynamic-page";
 import { Tile } from "@/components/tile";
@@ -57,14 +58,16 @@ export async function generateMetadata() {
   } satisfies Metadata;
 }
 
-export default async function ProjectsPage() {
+export default async function ProjectsPage({ searchParams }: DraftModeProps) {
   const payload = await getPayload({ config });
   const t = await getTranslations();
   const locale = await getLocale();
+  const { draftMode } = await searchParams;
   const projects = await payload.find({
     collection: "projects",
     locale: isValidLocale(locale) ? locale : DEFAULT_LOCALE,
     sort: "id",
+    draft: draftMode === "true",
   });
   return (
     <>

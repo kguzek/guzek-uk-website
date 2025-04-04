@@ -36,20 +36,6 @@ async function getUserRecipient(
   };
 }
 
-// async function serializeEmailParagraph(paragraph: EmailButton, payload: Payload) {
-//   switch (paragraph.blockType) {
-//     case "email-button":
-//       return EMAIL_BUTTON_CONTENT.replaceAll("{BUTTON_URL}", paragraph.url).replaceAll(
-//         "{BUTTON_LABEL}",
-//         paragraph.label,
-//       );
-//     case "rich-text":
-//       return await convertLexicalToHtmlWithPayload(paragraph.content, payload);
-//     default:
-//       return "";
-//   }
-// }
-
 async function serializeEmailTemplate(
   editorState: SerializedEditorState,
   title: string,

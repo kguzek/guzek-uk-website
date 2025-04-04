@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import type { SchemaOrgDefinition } from "@/components/schema-org";
+import type { DraftModeProps } from "@/lib/types";
 import { DynamicPageLoader, getPageBySlug } from "@/components/pages/dynamic-page";
 import { SchemaOrgScript } from "@/components/schema-org";
 import { GITHUB_URL, PRODUCTION_URL } from "@/lib/constants";
@@ -52,12 +53,14 @@ const KONRAD_GUZEK_SCHEMA: SchemaOrgDefinition = {
   image: "https://avatars.githubusercontent.com/u/52281528",
 };
 
-export default function Index() {
+export default async function Index(props: DraftModeProps) {
+  const params = await props.searchParams;
+  const draftMode = params.draftMode;
   return (
     <>
       <SchemaOrgScript schema={KONRAD_GUZEK_SCHEMA} />
       {/** TODO: convert `tile` into a CMS richtext editor block */}
-      <DynamicPageLoader slug="/" tile />
+      <DynamicPageLoader slug="/" tile draftMode={draftMode} />
     </>
   );
 }

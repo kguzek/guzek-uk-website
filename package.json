@@ -27,6 +27,7 @@
     "@hookform/resolvers": "^4.1.0",
     "@payloadcms/db-postgres": "^3.32.0",
     "@payloadcms/email-nodemailer": "^3.32.0",
+    "@payloadcms/live-preview-react": "^3.32.0",
     "@payloadcms/next": "^3.32.0",
     "@payloadcms/payload-cloud": "^3.32.0",
     "@payloadcms/richtext-lexical": "^3.32.0",

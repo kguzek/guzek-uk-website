@@ -112,3 +112,11 @@ export interface EmailRecipientUser {
 }
 
 export type EmailRecipient = EmailRecipientManual | EmailRecipientUser;
+
+export interface DraftModeParams {
+  draftMode?: string;
+}
+
+export interface DraftModeProps {
+  searchParams: Promise<DraftModeParams>;
+}

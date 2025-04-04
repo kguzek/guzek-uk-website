@@ -10,6 +10,9 @@ export const Pages: CollectionConfig = {
     update: isAdmin,
     delete: isAdmin,
   },
+  versions: {
+    drafts: true,
+  },
   fields: [
     {
       name: "title",

@@ -7,7 +7,7 @@ import { Download, ExternalLink } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import type { SchemaOrgDefinition } from "@/components/schema-org";
-import type { UserLocale } from "@/lib/types";
+import type { DraftModeProps, UserLocale } from "@/lib/types";
 import type { Project } from "@/payload-types";
 import { CarouselArrows } from "@/components/carousel/carousel-arrows";
 import { ErrorComponent } from "@/components/error/component";
@@ -27,11 +27,9 @@ import { Carousel, CarouselContent, CarouselItem } from "@/ui/carousel";
 import { ExternalLinkButton } from "./external-link";
 import { ProjectTechnologies } from "./project-technologies";
 
-export interface ProjectProps {
+export interface ProjectProps extends DraftModeProps {
   params: Promise<{ slug: string }>;
 }
-
-const propsToSlug = async ({ params }: ProjectProps) => (await params).slug;
 
 const getImages = (project: Project) =>
   [project.mainImage, ...(project.extraImages ?? [])].filter(isImage);
@@ -48,7 +46,8 @@ const SHIELD_LABELS = {
 };
 
 async function propsToProject(props: ProjectProps) {
-  const slug = await propsToSlug(props);
+  const { slug } = await props.params;
+  const { draftMode } = await props.searchParams;
   const locale = await getLocale();
   const payload = await getPayload({ config });
   const { docs } = await payload.find({
@@ -56,6 +55,7 @@ async function propsToProject(props: ProjectProps) {
     locale: isValidLocale(locale) ? locale : DEFAULT_LOCALE,
     where: { slug: { equals: slug } },
     limit: 1,
+    draft: draftMode === "true",
   });
   return docs.at(0);
 }
