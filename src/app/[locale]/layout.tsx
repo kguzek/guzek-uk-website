@@ -152,6 +152,11 @@ export default async function RootLayout({
         data-collect-dnt="true"
         src="https://scripts.simpleanalyticscdn.com/latest.js"
       />
+      <Script
+        defer
+        src="https://analytics.guzek.uk/script.js"
+        data-website-id="03a7c3d3-dcc1-421d-8cd9-400d3734b4ba"
+      ></Script>
     </html>
   );
 }
