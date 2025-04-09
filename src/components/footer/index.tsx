@@ -37,8 +37,12 @@ export async function Footer() {
       </Glow>
       <div className="mt-4 flex flex-col items-center justify-center gap-3 text-xs sm:flex-row">
         <div className="flex items-center gap-2">
-          <Logo size={20} />
-          <Link className="hover-underline" href={GITHUB_URL} target="_blank">
+          <Logo size={24} />
+          <Link
+            className="hover-underline flex min-h-7 items-center"
+            href={GITHUB_URL}
+            target="_blank"
+          >
             2021–2025 &copy; Konrad Guzek
           </Link>
         </div>

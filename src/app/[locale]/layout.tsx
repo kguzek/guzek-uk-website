@@ -15,61 +15,68 @@ import { GlowCapture } from "@codaworks/react-glow";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 
-import type { UserLocale } from "@/lib/types";
 import { formats } from "@/i18n/request";
 import { routing } from "@/i18n/routing";
 import { OG_IMAGE_METADATA, PRODUCTION_URL } from "@/lib/constants";
 import { QueryProvider } from "@/lib/providers/query-provider";
-import { PAGE_NAME } from "@/lib/util";
+import { isValidLocale, PAGE_NAME } from "@/lib/util";
 import { Toaster } from "@/ui/sonner";
 import { TooltipProvider } from "@/ui/tooltip";
 
 const SEO_TITLE = "Konrad Guzek – Software Engineer, Web Developer, Student";
 
-export const metadata: Metadata = {
-  title: {
-    template: `%s | ${PAGE_NAME}`,
-    default: SEO_TITLE,
-  },
-  description:
-    "The portfiolio website of Konrad Guzek, a Polish software developer from the UK. Home to LiveSeries – free TV show tracking & streaming.",
-  authors: [{ name: "Konrad Guzek", url: "https://www.guzek.uk" }],
-  creator: "Konrad Guzek",
-  keywords: [
-    "portfolio",
-    "web developer",
-    "software engineer",
-    "software developer",
-    "student",
-    "computer science",
-    "konrad guzek",
-    "guzek uk",
-    "liveseries",
-    "tv shows",
-    "wrocław",
-    "wroclaw",
-    "gliwice",
-    "poland",
-    "wust",
-    "pwr",
-    "politechnika wrocławska",
-  ],
-  metadataBase: new URL(PRODUCTION_URL),
-  alternates: {
-    canonical: "/",
-    languages: {
-      en: "/en",
-      pl: "/pl",
+interface LocalizedProps {
+  params: Promise<{ locale: string }>;
+}
+
+export async function generateMetadata({ params }: LocalizedProps): Promise<Metadata> {
+  const { locale } = await params;
+
+  return {
+    title: {
+      template: `%s | ${PAGE_NAME}`,
+      default: SEO_TITLE,
     },
-  },
-  openGraph: {
-    title: SEO_TITLE,
-    images: {
-      url: "/api/og-image",
-      ...OG_IMAGE_METADATA,
+    description:
+      "The portfiolio website of Konrad Guzek, a Polish software developer from the UK. Home to LiveSeries – free TV show tracking & streaming.",
+    authors: [{ name: "Konrad Guzek", url: "https://www.guzek.uk" }],
+    creator: "Konrad Guzek",
+    keywords: [
+      "portfolio",
+      "web developer",
+      "software engineer",
+      "software developer",
+      "student",
+      "computer science",
+      "konrad guzek",
+      "guzek uk",
+      "liveseries",
+      "tv shows",
+      "wrocław",
+      "wroclaw",
+      "gliwice",
+      "poland",
+      "wust",
+      "pwr",
+      "politechnika wrocławska",
+    ],
+    metadataBase: new URL(PRODUCTION_URL),
+    alternates: {
+      canonical: isValidLocale(locale) ? `/${locale}` : "/",
+      languages: {
+        en: "/en",
+        pl: "/pl",
+      },
     },
-  },
-};
+    openGraph: {
+      title: SEO_TITLE,
+      images: {
+        url: "/api/og-image",
+        ...OG_IMAGE_METADATA,
+      },
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#2596be",
@@ -99,13 +106,12 @@ export function generateStaticParams() {
 export default async function RootLayout({
   children,
   params,
-}: {
+}: LocalizedProps & {
   children: ReactNode;
-  params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
 
-  if (!routing.locales.includes(locale as UserLocale)) {
+  if (!isValidLocale(locale)) {
     console.log(`Invalid locale: '${locale}'`);
     notFound();
   }
