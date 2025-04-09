@@ -35,11 +35,11 @@ export async function Footer() {
       <Glow>
         <hr className="border-background glow:border-accent/70" />
       </Glow>
-      <div className="mt-4 flex flex-col items-center justify-center gap-3 text-xs sm:flex-row">
-        <div className="flex items-center gap-2">
+      <div className="mt-4 flex flex-col items-center justify-center gap-x-3 gap-y-6 text-xs sm:flex-row">
+        <div className="flex items-center gap-3">
           <Logo size={24} />
           <Link
-            className="hover-underline flex min-h-7 items-center"
+            className="hover-underline flex min-h-6 items-center"
             href={GITHUB_URL}
             target="_blank"
           >
@@ -50,7 +50,10 @@ export async function Footer() {
           {BETA_INFO.enabled ? (
             <>
               {versionSpan}
-              <Link href={BETA_INFO.url} className="group flex items-center gap-1">
+              <Link
+                href={BETA_INFO.url}
+                className="group flex min-h-6 items-center gap-1"
+              >
                 <FlaskConical
                   size={20}
                   className="scale-85 transition-transform duration-300 group-hover:scale-100"
@@ -63,7 +66,7 @@ export async function Footer() {
           ) : (
             <Link
               href={`${GITHUB_URL}/${REPO_NAME}`}
-              className="hover-underline text-primary hover:text-primary-strong flex items-center gap-1"
+              className="hover-underline text-primary hover:text-primary-strong flex min-h-6 items-center gap-1"
             >
               <span>main</span>
               {versionSpan}
@@ -86,7 +89,10 @@ export async function Footer() {
                     <p>{t("liveSeries.tvMazeCredits")}</p>
                     <p>
                       {t("liveSeries.tvMazeCreditsCta")}{" "}
-                      <Link className="text-accent hover-underline" href={TV_MAZE_URL}>
+                      <Link
+                        className="text-accent hover-underline min-h-6"
+                        href={TV_MAZE_URL}
+                      >
                         {TV_MAZE_URL}
                       </Link>
                       .
