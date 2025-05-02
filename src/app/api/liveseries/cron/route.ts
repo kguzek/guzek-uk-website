@@ -123,7 +123,7 @@ async function downloadUnwatchedEpisodes(
 
   /**
    * Traverses the user's subscribed shows and downloads the unwatched episodes of those shows which have aired.
-   * @returns an array of error messages, which can be empty.
+   * @returns an array of episode-error message entries, which can be empty.
    */
   async function downloadUserUnwatchedEpisodes(user: UserWithServerUrl, showId: number) {
     const { episodes, details } = await getShowInfo(showId);
@@ -150,10 +150,7 @@ async function downloadUnwatchedEpisodes(
           ] as const,
       ),
     );
-    return Object.fromEntries(results.filter((result) => result[1] != null)) as Record<
-      string,
-      string
-    >;
+    return results.filter((result) => result[1] != null) as [string, string][];
   }
 
   let checkedUsers = 0;
@@ -170,22 +167,32 @@ async function downloadUnwatchedEpisodes(
       continue;
     }
     checkedUsers++;
-    const errorMessageEntries = await Promise.all(
+    const errorMessagesInfo = await Promise.all(
       getUserShows(user, "subscribed").map(async (showId) => {
         const result = await downloadUserUnwatchedEpisodes(
           user as UserWithServerUrl,
           showId,
         );
         if (result.length === 0) {
-          return [];
+          return [[], 0] as const;
         }
-        return [[showId, result] as const];
+        if (Array.isArray(result)) {
+          return [[[showId, Object.fromEntries(result)]], result.length] as const;
+        }
+        return [[[showId, result]], 1] as const;
       }),
     );
-    const userErrorMessages = errorMessageEntries.flat();
-    if (userErrorMessages.length > 0) {
-      numErrors += userErrorMessages.length;
-      const ers = Object.fromEntries(userErrorMessages);
+    const [errorMessageEntries, numErrorsForUser] = errorMessagesInfo.reduce(
+      (acc, [errorMessageEntries, numErrorsForUser]) => {
+        acc[0].push(...errorMessageEntries);
+        acc[1] += numErrorsForUser;
+        return acc;
+      },
+      [[], 0] as [(readonly [number, string | Record<string, string>])[], number],
+    );
+    if (errorMessageEntries.length > 0) {
+      numErrors += numErrorsForUser;
+      const ers = Object.fromEntries(errorMessageEntries);
       errorMessages[user.username] = ers;
     }
   }

@@ -100,5 +100,5 @@
       "puppeteer"
     ]
   },
-  "packageManager": "pnpm@10.7.1"
+  "packageManager": "pnpm@10.10.0"
 }
