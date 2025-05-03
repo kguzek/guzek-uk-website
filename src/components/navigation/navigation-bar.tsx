@@ -60,12 +60,10 @@ export function NavigationBar({
     <nav
       className={cn(
         "fixed top-0 z-10 flex h-(--navbar-height) w-screen items-center gap-4 border-0 border-b border-solid border-transparent bg-transparent px-4 [transition:all_300ms_ease,border-color_1s_ease] sm:px-10 lg:gap-6",
+        "noscript:border-background-soft noscript:bg-background-strong/70 noscript:backdrop-blur-2xl",
         {
           "border-background-soft bg-background-strong/70 backdrop-blur-2xl": scrollY > 0,
         },
-        // These don't work yet, but will in Tailwind v4.1.0 (hopefully)
-        // https://github.com/tailwindlabs/tailwindcss/pull/11929#pullrequestreview-2645322420
-        "scripting-none:border-background-soft scripting-none:bg-background-strong/70 scripting-none:backdrop-blur-2xl",
       )}
     >
       <Logo size={80} />
