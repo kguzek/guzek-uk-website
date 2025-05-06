@@ -45,7 +45,7 @@ export async function generateMetadata(props: ShowDetailsProps): Promise<Metadat
     ],
     openGraph: {
       images: {
-        url: `/api/og-image/liveseries/tv-show/${show.id}`,
+        url: show.image?.original ?? `/api/og-image/liveseries/tv-show/${show.id}`,
         ...OG_IMAGE_METADATA,
       },
     },
