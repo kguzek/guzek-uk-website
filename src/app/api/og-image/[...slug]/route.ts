@@ -14,7 +14,7 @@ import {
 } from "@/lib/constants";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 
-export const revalidate = 86400;
+export const revalidate = 2592000; // 30 days
 
 const PUPPETEER_EXECUTABLE_PATH = process.env.PUPPETEER_EXECUTABLE_PATH;
 const OG_IMAGE_VALIDITY_PERIOD = revalidate * 1000;
@@ -56,7 +56,7 @@ const getImageResponse = <T extends Awaited<ReturnType<typeof generateScreenshot
     status: updated ? 200 : 201,
     headers: {
       "Content-Type": "image/png",
-      "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
+      "Cache-Control": `public, max-age=${revalidate}, stale-while-revalidate=86400`,
     },
   });
 
