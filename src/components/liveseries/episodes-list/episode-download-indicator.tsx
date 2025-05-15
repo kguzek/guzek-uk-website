@@ -2,7 +2,7 @@
 
 import type { Episode as TvMazeEpisode, Show as TvMazeShow } from "tvmaze-wrapper-ts";
 import { useEffect, useState } from "react";
-import { DownloadIcon, TriangleIcon } from "lucide-react";
+import { CircleDashedIcon, CircleIcon, DownloadIcon, TriangleIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 import type { DownloadedEpisode, DownloadStatusType } from "@/lib/types";
@@ -101,25 +101,37 @@ export function EpisodeDownloadIndicator({
             "text-accent2 cursor-help": downloadStatus === DownloadStatus.UNKNOWN,
           })}
           title={downloadTooltip}
-          style={{ minWidth: 20 }}
+          style={{
+            minWidth: 20,
+            transform: showProgress
+              ? `rotate(${90 + (metadata?.progress ?? 0) * 180}deg)`
+              : undefined,
+          }}
           onClick={downloadStatus === DownloadStatus.STOPPED ? startDownload : undefined}
         >
           {showProgress && (
             <div
-              className="absolute overflow-hidden"
+              className="transition-width absolute overflow-hidden duration-300"
               style={{
                 width: `${100 * (metadata?.progress ?? 0)}%`,
               }}
             >
-              <DownloadIcon
+              <CircleIcon
                 className={cn({
                   "text-success": downloadStatus === DownloadStatus.PENDING,
                   "text-accent2": downloadStatus === DownloadStatus.VERIFYING,
                 })}
-              ></DownloadIcon>
+              ></CircleIcon>
             </div>
           )}
-          <DownloadIcon />
+          {downloadStatus === DownloadStatus.FAILED ||
+          downloadStatus === DownloadStatus.UNKNOWN ? (
+            <CircleDashedIcon />
+          ) : showProgress ? (
+            <CircleIcon />
+          ) : (
+            <DownloadIcon />
+          )}
         </button>
       )}
       {!showProgress && user != null && (
