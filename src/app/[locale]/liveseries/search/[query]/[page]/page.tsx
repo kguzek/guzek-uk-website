@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: SearchProps): Promise<Metadat
   const { query, page } = await params;
 
   const title = query
-    ? `${t("liveSeries.search.results")} ${formatters.quote(query)} (${t("liveSeries.tvShowList.page")} ${page})`
+    ? `${t("liveSeries.search.results")} ${formatters.quote(decodeURIComponent(query))} (${t("liveSeries.tvShowList.page")} ${page})`
     : t("liveSeries.search.title");
 
   return {
