@@ -6,6 +6,7 @@ import type { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension
 
 import type { User } from "@/payload-types";
 import { refreshAccessToken as performTokenRefresh } from "@/lib/backend";
+import { ACCESS_TOKEN_EXPIRING_SOON_SECONDS } from "@/lib/constants";
 import { getCookieOptions } from "@/lib/util";
 
 const USER_REQUIRED_PROPERTIES = ["id", "username", "email", "role", "serverUrl"];
@@ -98,13 +99,14 @@ async function _refreshAccessToken(accessToken?: string) {
 /** Checks if the access token will expire within the threshold.
  *
  * @param exp The expiration time of the token, in seconds.
- * @param thresholdMinutes The number of minutes before expiration to consider the token as expiring soon. Default is 5 minutes.
+ * @param thresholdSeconds The number of seconds before expiration to consider the token as expiring soon.
+ * Default is 10% of the duration that a newly issued token is valid for.
  */
-function expiresSoon(exp: number, thresholdMinutes = 5) {
+function expiresSoon(exp: number, thresholdSeconds = ACCESS_TOKEN_EXPIRING_SOON_SECONDS) {
   const now = Date.now();
   const diff = exp * 1000 - now;
   // console.debug("Token will expire in", diff, "ms");
-  return diff < thresholdMinutes * 60 * 1000;
+  return diff < thresholdSeconds * 1000;
 }
 
 /** Retrieves the access token from cookies and decodes the payload into a user object. */

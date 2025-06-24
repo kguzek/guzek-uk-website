@@ -2,7 +2,7 @@ import type { CollectionConfig, NumberField, PayloadRequest } from "payload";
 import { NextResponse } from "next/server";
 import { v4 as uuid } from "uuid";
 
-import { PRODUCTION_URL } from "@/lib/constants";
+import { ACCESS_TOKEN_EXPIRATION_SECONDS, PRODUCTION_URL } from "@/lib/constants";
 import {
   ALPHANUMERIC_PATTERN,
   isAdmin,
@@ -62,7 +62,7 @@ export const Users: CollectionConfig = {
       requireEmail: true,
       requireUsername: true,
     },
-    tokenExpiration: 3600,
+    tokenExpiration: ACCESS_TOKEN_EXPIRATION_SECONDS,
     maxLoginAttempts: 5,
     lockTime: 300_000,
   },
