@@ -34,8 +34,8 @@ export const S3_ACCESS_KEY_SECRET = process.env.S3_ACCESS_KEY_SECRET || "";
 /** The duration, in seconds, that new access tokens should be valid for. */
 export const ACCESS_TOKEN_EXPIRATION_SECONDS = 60 * 60 * 24 * 7;
 /** When an access token reaches this ratio of its lifetime it will be considered 'expiring soon'. */
-const ACCESS_TOKEN_EXPIRING_SOON_RATIO = 0.1;
-/** Approximately 17 hours. */
+const ACCESS_TOKEN_EXPIRING_SOON_RATIO = 0.3;
+/** Approximately 50 hours. */
 export const ACCESS_TOKEN_EXPIRING_SOON_SECONDS =
   ACCESS_TOKEN_EXPIRATION_SECONDS * ACCESS_TOKEN_EXPIRING_SOON_RATIO;
 
