@@ -94,8 +94,11 @@ export function Button({
       {...props}
       style={getColorMixStyle(sliderProgress, "success", "error")}
       disabled={loading || props.disabled}
+      // use comma notation to return using the original event handler
       onMouseEnter={(event_) => (startHoverTimer(), props.onMouseEnter?.(event_))}
       onMouseLeave={(event_) => (stopHoverTimer(), props.onMouseLeave?.(event_))}
+      onFocus={(event_) => (startHoverTimer(), props.onFocus?.(event_))}
+      onBlur={(event_) => (stopHoverTimer(), props.onBlur?.(event_))}
       onClick={(event_) => click(event_)}
       onTouchMove={(event_) => {
         const touch = event_.touches[0];

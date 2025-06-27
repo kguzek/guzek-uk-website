@@ -11,7 +11,7 @@ export const buttonVariants = cva(
           "bg-accent shadow-xs text-primary-strong shadow-xs hover:bg-accent/80 hover:text-primary-strong/80",
         cancel: "border-background-soft shadow-xs shadow-xs hover:text-error",
         destructive:
-          "bg-background border-error shadow-xs text-error shadow-xs hover:bg-error hover:text-primary-strong",
+          "bg-transparent border-error shadow-xs text-error shadow-xs hover:bg-error hover:text-primary-strong",
         "super-destructive":
           "relative overflow-hidden bg-success text-primary-strong sm:text-primary hover:text-primary-strong shadow-xs min-w-14",
         outline:

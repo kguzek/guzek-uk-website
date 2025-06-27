@@ -32,7 +32,7 @@ export default async function Profile() {
         className="gap-2"
         after={
           <>
-            <div className="my-4 flex flex-col gap-4 sm:flex-row-reverse">
+            <div className="my-4 flex flex-col items-center gap-4 sm:flex-row">
               <LogoutButton />
               <DeleteAccountButton user={user} />
             </div>
