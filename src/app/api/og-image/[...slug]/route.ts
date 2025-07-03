@@ -20,6 +20,7 @@ const PUPPETEER_EXECUTABLE_PATH = process.env.PUPPETEER_EXECUTABLE_PATH;
 const OG_IMAGE_VALIDITY_PERIOD = revalidate * 1000;
 const PUPPETEER_ARGS = process.env.PUPPETEER_ARGS || "";
 const API_SLUG_PATTERN = /^\/api\/og-image((?:\/[.\w-]+)*)/;
+const IMAGE_GENERATION_ENABLED = false;
 
 const imageGenerationPromises = new Map<string, Promise<NextResponse>>();
 
@@ -189,14 +190,19 @@ const routeHandler: CustomMiddleware<[{ params: Promise<{ slug: string[] }> }]> 
       console.info("Returning existing promise for", slug);
       return await result.previousPromise;
     case "not-found":
-      return tryGenerateScreenshot(slug, payload);
+      if (IMAGE_GENERATION_ENABLED) {
+        return tryGenerateScreenshot(slug, payload);
+      }
+    // If image generation is disabled, return a 404
     case "image-invalid":
       console.error("OG image record has no URL", slug);
       return NextResponse.json({ message: "Image not found" }, { status: 404 });
     case "image-stale":
-      // Update the image in the background but return the stale image
-      console.info("Updating stale OG image for", slug, "from", result.image.updatedAt);
-      tryGenerateScreenshot(slug, payload, result.image);
+      if (IMAGE_GENERATION_ENABLED) {
+        // Update the image in the background but return the stale image
+        console.info("Updating stale OG image for", slug, "from", result.image.updatedAt);
+        tryGenerateScreenshot(slug, payload, result.image);
+      }
     // Fall through to redirect (deliberately omitted 'break')
     case "image-valid":
       return NextResponse.redirect(result.redirectUrl);
