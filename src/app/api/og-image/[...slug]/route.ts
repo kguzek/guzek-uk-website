@@ -12,6 +12,7 @@ import {
   OG_IMAGE_METADATA,
   PRODUCTION_URL,
 } from "@/lib/constants";
+import { toReadableStream } from "@/lib/util";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 
 export const revalidate = 2592000; // 30 days
@@ -49,11 +50,8 @@ async function generateScreenshot(path: string) {
 }
 
 /** Returned when a new image is generated. */
-const getImageResponse = <T extends Awaited<ReturnType<typeof generateScreenshot>>>(
-  image: T,
-  updated: boolean,
-) =>
-  new NextResponse<T>(image, {
+const getImageResponse = (image: BodyInit, updated: boolean) =>
+  new NextResponse(image, {
     status: updated ? 200 : 201,
     headers: {
       "Content-Type": "image/png",
@@ -156,7 +154,7 @@ async function _tryGenerateScreenshot(
         file,
       });
     }
-    return getImageResponse(image, existingMedia == null);
+    return getImageResponse(toReadableStream(image), existingMedia == null);
   } catch (error) {
     console.error("error generating screenshot:", error);
     return NextResponse.json(
@@ -177,12 +175,11 @@ function tryGenerateScreenshot(path: string, payload: Payload, existingMedia?: M
   return promise;
 }
 
-const routeHandler: CustomMiddleware<[{ params: Promise<{ slug: string[] }> }]> = async (
-  request,
-  args,
-) => {
+type Args = [{ params: Promise<{ slug: string[] }> }];
+
+const routeHandler: CustomMiddleware<Args> = async (request, { params }) => {
   const payload = await getPayload({ config });
-  const segments = args?.params ? (await args.params).slug : [];
+  const segments = params ? (await params).slug : [];
   const slug = Array.isArray(segments) ? `/${segments.join("/")}` : "/";
   const result = await getOgImageStatus(request, slug);
   switch (result.status) {
@@ -209,7 +206,7 @@ const routeHandler: CustomMiddleware<[{ params: Promise<{ slug: string[] }> }]> 
   }
 };
 
-const rateLimiter = rateLimitMiddleware({
+const rateLimiter = rateLimitMiddleware<Args>({
   maxRequests: 1,
   matcher: async (request) => {
     const { status } = await getOgImageStatus(request);

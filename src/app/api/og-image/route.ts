@@ -5,5 +5,5 @@ import { GET as fetchRoute } from "./[...slug]/route";
 export const revalidate = 86400;
 
 export async function GET(req: NextRequest) {
-  return fetchRoute(req);
+  return fetchRoute(req, { params: Promise.resolve({ slug: [] }) });
 }

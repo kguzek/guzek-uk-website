@@ -248,3 +248,11 @@ export function getRequestIp(request: NextRequest, fallback = "<unknown-ip>") {
 
 export const isValidLocale = (locale?: string): locale is UserLocale =>
   !!locale && LOCALES.includes(locale as UserLocale);
+
+export const toReadableStream = (data: unknown) =>
+  new ReadableStream({
+    start(controller) {
+      controller.enqueue(data);
+      controller.close();
+    },
+  });

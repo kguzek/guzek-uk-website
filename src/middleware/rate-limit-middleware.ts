@@ -19,7 +19,9 @@ interface RateLimitConfig {
   windowMs?: number;
 }
 
-export const rateLimitMiddleware: (config?: RateLimitConfig) => MiddlewareFactory = ({
+export const rateLimitMiddleware: <T extends Array<unknown> = Array<never>>(
+  config?: RateLimitConfig,
+) => MiddlewareFactory<T> = ({
   matcher = () => true,
   windowMs = 60000,
   maxRequests = 100,
