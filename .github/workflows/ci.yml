@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URI: ${{ secrets.DATABASE_URI }}
+      PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Format check
+        run: pnpm format:check
+        if: always()
+
+      - name: Build
+        run: pnpm build
+        if: always()

@@ -1,0 +1,4 @@
+/pnpm-lock.yaml
+/src/migrations
+/src/app/(payload)
+/src/payload-types.ts
