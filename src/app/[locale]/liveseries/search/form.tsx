@@ -1,7 +1,7 @@
 "use client";
 
 import { Search } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useForm, useWatch } from "react-hook-form";
 
 import { ClientLink } from "@/components/link/client";
@@ -22,6 +22,7 @@ import { Input } from "@/ui/input";
 export function SearchForm() {
   const router = useRouter();
   const t = useTranslations();
+  const locale = useLocale();
 
   const form = useForm({ defaultValues: { search: "" } });
 
@@ -48,7 +49,7 @@ export function SearchForm() {
         <Tile containerClassName="w-full" className="w-full items-stretch">
           <Form {...form}>
             <form
-              action="/liveseries/search"
+              action={`/${locale}/liveseries/search`}
               method="GET"
               className="flex flex-col gap-4 sm:flex-row sm:items-end"
               onSubmit={form.handleSubmit((values) => {

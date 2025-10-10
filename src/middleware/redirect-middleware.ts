@@ -1,33 +1,29 @@
 import { headers } from "next/headers";
-import { NextResponse } from "next/server";
 
 import type { MiddlewareFactory } from "@/lib/types";
-import { PRODUCTION_URL } from "@/lib/constants";
 
 import { getMiddlewareLocation } from "./util";
 
 export const redirectMiddleware: MiddlewareFactory = (next) =>
   async function (request) {
-    const { locale, pathname } = getMiddlewareLocation(request);
-
-    const redirect = () =>
-      NextResponse.redirect(
-        new URL(
-          `${PRODUCTION_URL}${locale && "/"}${locale}${pathname}${request.nextUrl.search}`,
-        ),
-      );
+    const { redirect, pathname } = getMiddlewareLocation(request);
 
     const requestHeaders = await headers();
     const host = requestHeaders.get("host") ?? "";
     if (["guzek.uk", "konrad.s.solvro.pl"].includes(host)) {
-      return redirect();
+      return redirect(pathname, { absolute: true });
     }
     if (
       host.endsWith(".guzek.uk") &&
       request.nextUrl.protocol === "http:" &&
       process.env.NODE_ENV !== "development"
     ) {
-      return redirect();
+      return redirect(pathname, { absolute: true });
+    }
+
+    const search = request.nextUrl.searchParams.get("search");
+    if (pathname === "/liveseries/search" && search != null) {
+      return redirect(`/liveseries/search/${search}/1`, { includeSearch: false });
     }
     return next(request);
   };

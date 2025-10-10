@@ -1,6 +1,5 @@
 import type { MiddlewareFactory } from "@/lib/types";
 import type { User } from "@/payload-types";
-import { PAGINATED_REGEX_INVALID } from "@/lib/constants";
 import { getUser } from "@/lib/providers/auth-provider/api";
 
 import { getMiddlewareLocation } from "./util";
@@ -41,16 +40,6 @@ export const authMiddleware: MiddlewareFactory = (next) =>
           return redirect("/error/403");
         }
       }
-    }
-
-    // redirect to first page of liveseries/search/:query and liveseries/most-popular if the page is invalid or missing
-    const match = PAGINATED_REGEX_INVALID.exec(pathname);
-    if (match != null) {
-      return redirect(`${match[1]}/1`, false);
-    }
-    const search = request.nextUrl.searchParams.get("search");
-    if (request.nextUrl.pathname === "/liveseries/search" && search != null) {
-      return redirect(`/liveseries/search/${search}/1`);
     }
     return response;
   };
