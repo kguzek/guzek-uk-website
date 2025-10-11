@@ -21,7 +21,7 @@ async function getOgImageStatus(request: NextRequest, slugOverride?: string) {
   const payload = await getPayload({ config });
   const docs = await payload.find({
     collection: "og-images",
-    where: { slug: { like: `${slug}%` } },
+    where: { slug: { equals: slug } },
     limit: 1,
   });
   const doc = docs.docs.at(0);
