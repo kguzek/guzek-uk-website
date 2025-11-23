@@ -247,6 +247,7 @@ export interface Media {
  */
 export interface Project {
   id: number;
+  _order?: string | null;
   slug: string;
   title: string;
   description: {
@@ -516,6 +517,7 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "projects_select".
  */
 export interface ProjectsSelect<T extends boolean = true> {
+  _order?: T;
   slug?: T;
   title?: T;
   description?: T;

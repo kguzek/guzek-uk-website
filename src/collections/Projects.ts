@@ -61,6 +61,7 @@ export const Projects: CollectionConfig = {
     update: isAdmin,
     delete: isAdmin,
   },
+  orderable: true,
   hooks: {
     beforeChange: [
       async (args) => {

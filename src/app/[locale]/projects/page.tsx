@@ -20,9 +20,6 @@ import { CardDescription, CardHeader, CardTitle } from "@/ui/card";
 import { ExternalLinkButton } from "./[slug]/external-link";
 import { ProjectTechnologies } from "./[slug]/project-technologies";
 
-// const titleToSlug = (title: string) =>
-//   title.trim().toLowerCase().replace(/\s/g, "-");
-
 const PROJECTS_PAGE_SLUG = "/projects";
 
 const htmlWithoutLinks: JSXConvertersFunction = ({ defaultConverters }) => ({
@@ -64,7 +61,6 @@ export default async function ProjectsPage() {
   const projects = await payload.find({
     collection: "projects",
     locale: isValidLocale(locale) ? locale : DEFAULT_LOCALE,
-    sort: "id",
   });
   return (
     <>
