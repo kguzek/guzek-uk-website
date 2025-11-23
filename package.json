@@ -12,7 +12,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
@@ -21,7 +21,7 @@
     "payload": "PAYLOAD_CONFIG_PATH=src/payload.config.ts payload",
     "types:check": "tsc --noEmit",
     "types:generate": "next typegen && payload generate:types",
-    "ci": "payload migrate && pnpm build --webpack",
+    "ci": "payload migrate && pnpm build",
     "prepare": "husky"
   },
   "dependencies": {
