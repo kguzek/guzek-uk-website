@@ -9,14 +9,14 @@ import { i18nMiddleware } from "./middleware/i18n-middleware";
 import { rateLimitMiddleware } from "./middleware/rate-limit-middleware";
 import { verifyEmailMiddlware } from "./middleware/verify-email-middleware";
 
-function stackMiddlewares(...factories: MiddlewareFactory[]): CustomMiddleware {
+function stackProxies(...factories: MiddlewareFactory[]): CustomMiddleware {
   const current = factories.shift();
   if (!current) return () => NextResponse.next();
-  const next = stackMiddlewares(...factories);
+  const next = stackProxies(...factories);
   return current(next);
 }
 
-export default stackMiddlewares(
+export default stackProxies(
   rateLimitMiddleware({ maxRequests: 200 }),
   rateLimitMiddleware({
     // Matches all server action calls (i.e. user creation, password reset)
