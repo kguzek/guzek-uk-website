@@ -25,4 +25,8 @@ const nextConfig: NextConfig = {
 };
 
 const withNextIntl = createNextIntlPlugin();
-export default withPayload(withNextIntl(nextConfig));
+const { experimental, ...config } = withPayload(withNextIntl(nextConfig));
+// @ts-expect-error turbo shouldn't exist but payload sets it
+const { turbo, ...experimentalOptions } = experimental; // eslint-disable-line @typescript-eslint/no-unused-vars
+const finalConfig = { ...config, experimental: experimentalOptions };
+export default finalConfig;
