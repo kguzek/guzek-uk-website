@@ -1,8 +1,10 @@
 services:
   db:
     image: postgres:latest
-    container_name: postgresql
+    container_name: guzek-uk-db
     restart: always
+    env_file:
+      - .env.local
     environment:
       - POSTGRES_USER=${DATABASE_USER}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
