@@ -139,7 +139,7 @@ async function downloadUnwatchedEpisodes(
     const unwatchedAiredEpisodes = episodes.filter(
       (episode) =>
         hasEpisodeAired(episode) &&
-        !user.watchedEpisodes[showId]?.[episode.season].includes(episode.number),
+        !user.watchedEpisodes[showId]?.[episode.season]?.includes(episode.number),
     );
     const results = await Promise.all(
       unwatchedAiredEpisodes.map(
