@@ -59,9 +59,6 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.77.2
         version: 5.80.6(react@19.2.3)
-      '@types/html-to-text':
-        specifier: ^9.0.4
-        version: 9.0.4
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -162,6 +159,9 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.16
         version: 0.5.16(tailwindcss@4.1.10)
+      '@types/html-to-text':
+        specifier: ^9.0.4
+        version: 9.0.4
       '@types/js-cookie':
         specifier: ^3.0.6
         version: 3.0.6
