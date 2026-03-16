@@ -43,7 +43,7 @@ export async function Footer() {
             href={GITHUB_URL}
             target="_blank"
           >
-            2021–2025 &copy; Konrad Guzek
+            2021–2026 &copy; Konrad Guzek
           </Link>
         </div>
         <div className="flex items-center gap-3">
