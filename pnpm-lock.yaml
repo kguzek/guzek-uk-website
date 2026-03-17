@@ -151,8 +151,8 @@ importers:
         specifier: ^4.7.1
         version: 4.7.1(prettier@3.8.1)
       '@next/eslint-plugin-next':
-        specifier: ^15.5.12
-        version: 15.5.12
+        specifier: ^15.5.13
+        version: 15.5.13
       '@tailwindcss/postcss':
         specifier: ^4.2.1
         version: 4.2.1
@@ -1392,9 +1392,6 @@ packages:
 
   '@next/env@16.1.7':
     resolution: {integrity: sha512-rJJbIdJB/RQr2F1nylZr/PJzamvNNhfr3brdKP6s/GW850jbtR70QlSfFselvIBbcPUOlQwBakexjFzqLzF6pg==}
-
-  '@next/eslint-plugin-next@15.5.12':
-    resolution: {integrity: sha512-+ZRSDFTv4aC96aMb5E41rMjysx8ApkryevnvEYZvPZO52KvkqP5rNExLUXJFr9P4s0f3oqNQR6vopCZsPWKDcQ==}
 
   '@next/eslint-plugin-next@15.5.13':
     resolution: {integrity: sha512-VXOc8fVv+Tdi0mcniCYJwhDlAuHdgnSvywCmhAB0PN16yUQq3MH3g0eAuKEpIbamjxxmC3wkgDab/BtoVQDqFA==}
@@ -6781,10 +6778,6 @@ snapshots:
   '@next/env@15.5.12': {}
 
   '@next/env@16.1.7': {}
-
-  '@next/eslint-plugin-next@15.5.12':
-    dependencies:
-      fast-glob: 3.3.1
 
   '@next/eslint-plugin-next@15.5.13':
     dependencies:
