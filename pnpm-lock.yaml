@@ -151,8 +151,8 @@ importers:
         specifier: ^4.7.1
         version: 4.7.1(prettier@3.8.1)
       '@next/eslint-plugin-next':
-        specifier: ^15.5.13
-        version: 15.5.13
+        specifier: ^15.5.14
+        version: 15.5.14
       '@tailwindcss/postcss':
         specifier: ^4.2.2
         version: 4.2.2
