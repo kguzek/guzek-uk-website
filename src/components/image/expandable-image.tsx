@@ -13,7 +13,7 @@ import {
 export function ExpandableImage({ alt, ...props }: ComponentProps<typeof Image>) {
   return (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger className="cursor-zoom-in">
         <Image alt={alt} {...props} />
       </DialogTrigger>
       <DialogContent className="max-w-fit!">
