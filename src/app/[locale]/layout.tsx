@@ -97,8 +97,6 @@ const robotoSlab = Roboto_Slab({
   variable: "--font-roboto-slab",
 });
 
-export const experimental_ppr = true;
-
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
