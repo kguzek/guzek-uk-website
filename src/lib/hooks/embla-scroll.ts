@@ -25,6 +25,8 @@ export function useEmblaScroll(api: EmblaApi) {
     api.on("scroll", updateProgress);
     api.on("init", update);
 
+    update(api);
+
     return () => {
       api.off("scroll", updateProgress);
       api.off("init", update);
