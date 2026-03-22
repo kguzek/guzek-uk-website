@@ -28,14 +28,9 @@ export function useEmblaScroll(api: EmblaApi) {
     api.on("scroll", updateProgress);
     api.on("init", update);
 
-    const handle = requestAnimationFrame(() => {
-      update(api);
-    });
-
     return () => {
       api.off("scroll", updateProgress);
       api.off("init", update);
-      cancelAnimationFrame(handle);
     };
   }, [api]);
 

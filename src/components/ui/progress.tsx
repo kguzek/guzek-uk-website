@@ -1,12 +1,12 @@
 "use client";
 
 import type { ComponentProps } from "react";
-import { useRef } from "react";
 import * as ProgressPrimitive from "@radix-ui/react-progress";
 
+import { useElementSize } from "@/hooks/use-element-size";
 import { cn } from "@/lib/utils";
 
-function Progress({
+export function Progress({
   className,
   disableTransitions = false,
   value,
@@ -16,9 +16,9 @@ function Progress({
   steps?: number;
   disableTransitions?: boolean;
 }) {
-  const parentRef = useRef<HTMLDivElement | null>(null);
-  const parentWidth = parentRef.current?.clientWidth ?? 0;
-  const width = steps == null ? undefined : parentWidth / steps;
+  const [ref, { width: parentWidth }] = useElementSize();
+
+  const stepWidth = steps == null ? null : Math.floor(parentWidth / steps);
 
   return (
     <ProgressPrimitive.Root
@@ -28,24 +28,22 @@ function Progress({
         className,
       )}
       {...props}
-      ref={parentRef}
+      ref={ref}
     >
       <ProgressPrimitive.Indicator
         data-slot="progress-indicator"
         className={cn("bg-accent h-full flex-1", {
           "transition-all": !disableTransitions,
-          "w-full": width == null,
+          "w-full": stepWidth == null,
         })}
         style={{
           transform:
-            width == null
-              ? `translateX(-${100 - (value || 0) * 100}%)`
-              : `translateX(${(parentWidth - width) * (value || 0)}px)`,
-          width,
+            stepWidth == null
+              ? `translateX(-${100 - (value ?? 0) * 100}%)`
+              : `translateX(${(parentWidth - stepWidth) * (value ?? 0)}px)`,
+          width: stepWidth ?? undefined,
         }}
       />
     </ProgressPrimitive.Root>
   );
 }
-
-export { Progress };
