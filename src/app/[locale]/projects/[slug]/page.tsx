@@ -60,7 +60,7 @@ async function propsToProject(props: ProjectProps) {
   return docs.at(0);
 }
 
-export async function generateMetadata(props: ProjectProps) {
+export async function generateMetadata(props: ProjectProps): Promise<Metadata> {
   const t = await getTranslations();
   const project = await propsToProject(props);
   if (project == null) {
@@ -165,6 +165,7 @@ export default async function ProjectPage(props: ProjectProps) {
           alt={project.mainImage.alt}
           width={project.mainImage.width}
           height={project.mainImage.height}
+          preload
         />
         <h2 className="mb-2">{project.title}</h2>
         {project.url && (
