@@ -5,7 +5,7 @@ export const PRODUCTION_URL = WEBSITE_URL || "https://www.guzek.uk";
 export const GITHUB_URL = "https://github.com/kguzek";
 export const LIVESERIES_SERVER_HOMEPAGE = `${GITHUB_URL}/guzek-uk-liveseries-server`;
 export const EMAIL_FROM_ADDRESS = "noreply@guzek.uk";
-export const EMAIL_FROM_NAME = "Guzek UK";
+export const EMAIL_FROM_NAME = "Konrad Guzek";
 
 export const CAROUSEL_INDICATOR_FULL_WIDTH = 140;
 export const EMAIL_VERIFICATION_COOKIE = "pending_email_address";

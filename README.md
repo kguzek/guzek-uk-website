@@ -4,7 +4,7 @@
 
 ## Intro
 
-This repository contains the source code for [Guzek UK](https://www.guzek.uk/), which is the personal portfolio website of Konrad Guzek.
+This repository contains the source code for [www.guzek.uk](https://www.guzek.uk/), which is my personal portfolio website.
 It serves as a showcase of projects as well as the homepage of [LiveSeries](https://www.guzek.uk/liveseries).
 
 ## Pages
