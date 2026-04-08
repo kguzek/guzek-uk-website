@@ -18,7 +18,7 @@ import {
 
 const TV_MAZE_URL = "https://www.tvmaze.com/";
 
-const REPO_NAME = "guzek-uk-website";
+const REPO_NAME = "website";
 
 const BETA_INFO = {
   enabled: false,
