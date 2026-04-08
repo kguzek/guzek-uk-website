@@ -15,7 +15,7 @@ import { EMAIL_VERIFICATION_COOKIE, LOCALES } from "./constants";
 
 const PRODUCTION_MODE = process.env.NODE_ENV !== "development";
 
-export const PAGE_NAME = "Guzek UK";
+export const PAGE_NAME = "Konrad Guzek";
 
 export function getTitle(title: string, suffix: string) {
   return `${title} – ${suffix}`;
