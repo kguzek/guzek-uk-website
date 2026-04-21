@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@codaworks/react-glow':
         specifier: ^1.0.6
-        version: 1.0.6(react@19.2.5)(tailwindcss@4.2.2)
+        version: 1.0.6(react@19.2.5)(tailwindcss@4.2.4)
       '@hookform/resolvers':
         specifier: ^4.1.3
         version: 4.1.3(react-hook-form@7.73.1(react@19.2.5))
@@ -133,7 +133,7 @@ importers:
         version: 3.5.0
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@4.2.2)
+        version: 1.0.7(tailwindcss@4.2.4)
       tvmaze-wrapper-ts:
         specifier: ^2.1.2
         version: 2.1.2
@@ -158,7 +158,7 @@ importers:
         version: 4.2.2
       '@tailwindcss/typography':
         specifier: ^0.5.19
-        version: 0.5.19(tailwindcss@4.2.2)
+        version: 0.5.19(tailwindcss@4.2.4)
       '@types/html-to-text':
         specifier: ^9.0.4
         version: 9.0.4
@@ -193,8 +193,8 @@ importers:
         specifier: ^0.7.2
         version: 0.7.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.3))(prettier@3.8.3)
       tailwindcss:
-        specifier: ^4.2.2
-        version: 4.2.2
+        specifier: ^4.2.4
+        version: 4.2.4
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -5011,6 +5011,9 @@ packages:
   tailwindcss@4.2.2:
     resolution: {integrity: sha512-KWBIxs1Xb6NoLdMVqhbhgwZf2PGBpPEiwOqgI4pFIYbNTfBXiKYyWoTsXgBQ9WFg/OlhnvHaY+AEpW7wSmFo2Q==}
 
+  tailwindcss@4.2.4:
+    resolution: {integrity: sha512-HhKppgO81FQof5m6TEnuBWCZGgfRAWbaeOaGT00KOy/Pf/j6oUihdvBpA7ltCeAvZpFhW3j0PTclkxsd4IXYDA==}
+
   tapable@2.3.0:
     resolution: {integrity: sha512-g9ljZiwki/LfxmQADO3dEY1CbpmXT5Hm2fJ+QaGKwSXUylMybePR7/67YW7jOrrvjEgL1Fmz5kzyAjWVWLlucg==}
     engines: {node: '>=6'}
@@ -5924,10 +5927,10 @@ snapshots:
 
   '@borewit/text-codec@0.2.2': {}
 
-  '@codaworks/react-glow@1.0.6(react@19.2.5)(tailwindcss@4.2.2)':
+  '@codaworks/react-glow@1.0.6(react@19.2.5)(tailwindcss@4.2.4)':
     dependencies:
       react: 19.2.5
-      tailwindcss: 4.2.2
+      tailwindcss: 4.2.4
 
   '@date-fns/tz@1.2.0': {}
 
@@ -7953,10 +7956,10 @@ snapshots:
       postcss: 8.5.10
       tailwindcss: 4.2.2
 
-  '@tailwindcss/typography@0.5.19(tailwindcss@4.2.2)':
+  '@tailwindcss/typography@0.5.19(tailwindcss@4.2.4)':
     dependencies:
       postcss-selector-parser: 6.0.10
-      tailwindcss: 4.2.2
+      tailwindcss: 4.2.4
 
   '@tanstack/query-core@5.99.2': {}
 
@@ -10815,11 +10818,13 @@ snapshots:
 
   tailwind-merge@3.5.0: {}
 
-  tailwindcss-animate@1.0.7(tailwindcss@4.2.2):
+  tailwindcss-animate@1.0.7(tailwindcss@4.2.4):
     dependencies:
-      tailwindcss: 4.2.2
+      tailwindcss: 4.2.4
 
   tailwindcss@4.2.2: {}
+
+  tailwindcss@4.2.4: {}
 
   tapable@2.3.0: {}
 
