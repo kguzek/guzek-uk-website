@@ -68,7 +68,7 @@
     "tailwind-merge": "^3.5.0",
     "tailwindcss-animate": "^1.0.7",
     "tvmaze-wrapper-ts": "^2.1.2",
-    "uuid": "^11.1.0",
+    "uuid": "^14.0.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
