@@ -86,7 +86,7 @@
     "@typescript-eslint/eslint-plugin": "^8.58.1",
     "eslint-config-next": "^15.5.15",
     "eslint-plugin-react-hooks": "^5.2.0",
-    "postcss": "^8.5.13",
+    "postcss": "^8.5.14",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "tailwindcss": "^4.2.4",
     "typescript": "^5.9.3"
