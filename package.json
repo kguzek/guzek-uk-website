@@ -74,7 +74,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
-    "@next/eslint-plugin-next": "^15.5.15",
+    "@next/eslint-plugin-next": "^15.5.16",
     "@tailwindcss/postcss": "^4.2.4",
     "@tailwindcss/typography": "^0.5.19",
     "@types/html-to-text": "^9.0.4",
